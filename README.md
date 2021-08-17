@@ -1,9 +1,7 @@
-# ALEAPP
-Android Logs Events And Protobuf Parser
+# RLEAPP
+Rndroid Logs Events And Protobuf Parser
 
-If you want to contribute hit me up on twitter: https://twitter.com/AlexisBrignoni  
-
-Details in blog post here: https://abrignoni.blogspot.com/2020/02/aleapp-android-logs-events-and-protobuf.html  
+If you want to contribute hit me up on twitter: https://twitter.com/AlexisBrignoni   
 
 ## Requirements
 **Python 3.9 or above** (older versions of 3.x will also work with the exception of one or two modules)
@@ -28,19 +26,19 @@ https://twitter.com/TroySchnack/status/1266085323651444736?s=19
 ### CLI
 
 ```
-$ python aleapp.py -t <zip | tar | fs | gz> -i <path_to_extraction> -o <path_for_report_output>
+$ python rleapp.py -t <zip | tar | fs | gz> -i <path_to_extraction> -o <path_for_report_output>
 ```
 
 ### GUI
 
 ```
-$ python aleappGUI.py 
+$ python rleappGUI.py 
 ```
 
 ### Help
 
 ```
-$ python aleapp.py --help
+$ python rleapp.py --help
 ```
 
 ## Acknowledgements
