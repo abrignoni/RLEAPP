@@ -38,6 +38,7 @@ from scripts.artifacts.cmh import get_cmh
 from scripts.artifacts.contacts import get_contacts
 from scripts.artifacts.DocList import get_DocList
 from scripts.artifacts.emulatedSmeta import get_emulatedSmeta
+from scripts.artifacts.errp import get_errp
 from scripts.artifacts.etc_hosts import get_etc_hosts
 from scripts.artifacts.FacebookMessenger import get_FacebookMessenger
 from scripts.artifacts.fitbitExercise import get_fitbitExercise
@@ -60,6 +61,7 @@ from scripts.artifacts.imo import get_imo
 from scripts.artifacts.installedappsGass import get_installedappsGass
 from scripts.artifacts.installedappsLibrary import get_installedappsLibrary
 from scripts.artifacts.installedappsVending import get_installedappsVending 
+from scripts.artifacts.kikReturns import get_kikReturns
 from scripts.artifacts.pSettings import get_pSettings
 from scripts.artifacts.packageGplinks import get_packageGplinks
 from scripts.artifacts.packageInfo import get_package_info
@@ -71,6 +73,7 @@ from scripts.artifacts.Oruxmaps import get_Oruxmaps
 from scripts.artifacts.roles import get_roles
 from scripts.artifacts.runtimePerms import get_runtimePerms
 from scripts.artifacts.scontextLog import get_scontextLog
+from scripts.artifacts.setupWizardinfo import get_setupWizardinfo
 from scripts.artifacts.setupWizardinfo import get_setupWizardinfo
 from scripts.artifacts.shareit import get_shareit
 from scripts.artifacts.siminfo import get_siminfo
@@ -122,6 +125,11 @@ from scripts.ilapfuncs import *
 # Don't forget to import the module above!!!!
 
 tosearch = {
+    'usagestatsVersion':('Usage Stats', ('*/system/usagestats/*/version', '*/system_ce/*/usagestats/version')),
+    'kikReturns':('Kik Returns', ('*/logs/*.txt','*/content/*')),
+}
+'''
+tosearch = {
     'build':('Device Info', '*/vendor/build.prop'),
     'accounts_ce': ('Accounts_ce', '*/data/system_ce/*/accounts_ce.db'),
     'accounts_ce_authtokens':('Accounts_ce', '*/data/system_ce/*/accounts_ce.db'),
@@ -155,6 +163,7 @@ tosearch = {
     'contacts':('Contacts', ('**/com.android.providers.contacts/databases/contact*', '**/com.sec.android.provider.logsprovider/databases/logs.db*')),
     'DocList':('Google Drive', '*/data/data/com.google.android.apps.docs/databases/DocList.db*'),
     'emulatedSmeta':('Emulated Storage Metadata', '*/data/data/com.google.android.providers.media.module/databases/external.db*'),
+    'errp':('Wipe & Setup', '*/data/system/users/service/eRR.p'),
     'etc_hosts':('Etc Hosts', '*/system/etc/hosts'),
     'FacebookMessenger':('Facebook Messenger', '**/threads_db2*'),
     'fitbitExercise':('Fitbit', '*/data/data/com.fitbit.FitbitMobile/databases/exercise_db*'),
@@ -230,7 +239,7 @@ tosearch = {
     'Xender':('File Transfer', '**/cn.xender/databases/trans-history-db*'), # Get trans-history-db and trans-history-db-wal
     'Zapya':('File Transfer', '**/com.dewmobile.kuaiya.play/databases/transfer20.db*')
     }
-
+'''
 slash = '\\' if is_platform_windows() else '/'
 
 def process_artifact(files_found, artifact_func, artifact_name, seeker, report_folder_base, wrap_text):
