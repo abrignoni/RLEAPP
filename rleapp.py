@@ -8,11 +8,11 @@ import traceback
 from scripts.search_files import *
 from scripts.ilapfuncs import *
 from scripts.ilap_artifacts import *
-from scripts.version_info import aleapp_version
+from scripts.version_info import rleapp_version
 from time import process_time, gmtime, strftime
 
 def main():
-    parser = argparse.ArgumentParser(description='ALEAPP: Android Logs, Events, and Protobuf Parser.')
+    parser = argparse.ArgumentParser(description='RLEAPP: Returns, Logs, Events, and Protobuf Parser.')
     parser.add_argument('-t', choices=['fs','tar','zip', 'gz'], required=False, type=str.lower, action="store", help="Input type (fs = extracted to file system folder)")
     parser.add_argument('-o', '--output_path', required=False, action="store", help='Output folder path')
     parser.add_argument('-i', '--input_path', required=False, action="store", help='Path to input file/folder')
@@ -85,8 +85,8 @@ def crunch_artifacts(search_list, extracttype, input_path, out_params, ratio, wr
     logfunc('Procesing started. Please wait. This may take a few minutes...')
 
     logfunc('\n--------------------------------------------------------------------------------------')
-    logfunc(f'ALEAPP v{aleapp_version}: Android Logs, Events, and Protobuf Parser')
-    logfunc('Objective: Triage Android Full System Extractions.')
+    logfunc(f'RLEAPP v{rleapp_version}: Returns, Logs, Events, and Properties Parser')
+    logfunc('Objective: Triage Service Provider Returns.')
     logfunc('By: Alexis Brignoni | @AlexisBrignoni | abrignoni.com')
     logfunc('By: Yogesh Khatri   | @SwiftForensics | swiftforensics.com')
     logdevinfo()

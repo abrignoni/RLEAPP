@@ -1,11 +1,11 @@
-import aleapp
+import rleapp
 import os
 import PySimpleGUI as sg
 import sys
 import webbrowser
 
 from scripts.ilapfuncs import *
-from scripts.version_info import aleapp_version
+from scripts.version_info import rleapp_version
 from time import process_time, gmtime, strftime
 from scripts.ilap_artifacts import *
 from scripts.search_files import *
@@ -79,18 +79,18 @@ normal_font = ("Helvetica", 12)
 mlist = []
 # go through list of available modules and confirm they exist on the disk
 pickModules()
-GuiWindow.progress_bar_total = len(aleapp.tosearch)
+GuiWindow.progress_bar_total = len(rleapp.tosearch)
 
 
-layout = [  [sg.Text('Android Logs, Events, And Protobuf Parser', font=("Helvetica", 22))],
-            [sg.Text('https://github.com/abrignoni/ALEAPP', font=("Helvetica", 14))],
+layout = [  [sg.Text('Returns, Logs, Events, And Properties Parser', font=("Helvetica", 22))],
+            [sg.Text('https://github.com/abrignoni/RLEAPP', font=("Helvetica", 14))],
             [sg.Frame(layout=[
                     [sg.Input(size=(97,1)), 
                      sg.FileBrowse(font=normal_font, button_text='Browse File', key='INPUTFILEBROWSE'),
                      sg.FolderBrowse(font=normal_font, button_text='Browse Folder', target=(sg.ThisRow, -2), key='INPUTFOLDERBROWSE')
                     ]
                 ],
-                title='Select a file (tar/zip/gz) or directory of the target Android full file system extraction for parsing:')],
+                title='Select a file (tar/zip/gz) or directory of the target service provider return for parsing:')],
             [sg.Frame(layout=[
                     [sg.Input(size=(112,1)), sg.FolderBrowse(font=normal_font, button_text='Browse Folder')]
                 ], 
@@ -102,7 +102,7 @@ layout = [  [sg.Text('Android Logs, Events, And Protobuf Parser', font=("Helveti
             [sg.Submit('Process',font=normal_font), sg.Button('Close', font=normal_font)] ]
             
 # Create the Window
-window = sg.Window(f'ALEAPP version {aleapp_version}', layout)
+window = sg.Window(f'RLEAPP version {rleapp_version}', layout)
 GuiWindow.progress_bar_handle = window['PROGRESSBAR']
 
 
@@ -153,7 +153,7 @@ while True:
             GuiWindow.window_handle = window
             out_params = OutputParameters(output_folder)
             wrap_text = True
-            crunch_successful = aleapp.crunch_artifacts(search_list, extracttype, input_path, out_params, len(aleapp.tosearch)/s_items, wrap_text)
+            crunch_successful = rleapp.crunch_artifacts(search_list, extracttype, input_path, out_params, len(rleapp.tosearch)/s_items, wrap_text)
             if crunch_successful:
                 report_path = os.path.join(out_params.report_folder_base, 'index.html')
                     

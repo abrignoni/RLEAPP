@@ -8,7 +8,7 @@ import sys
 from collections import OrderedDict
 from scripts.html_parts import *
 from scripts.ilapfuncs import logfunc
-from scripts.version_info import aleapp_version, aleapp_contributors
+from scripts.version_info import rleapp_version, rleapp_contributors
 
 def get_icon_name(category, artifact):
     ''' Returns the icon name from the feathericons collection. To add an icon type for 
@@ -22,112 +22,11 @@ def get_icon_name(category, artifact):
     if category.find('ACCOUNT') >= 0:
         if artifact.find('AUTH') >= 0:  icon = 'key'
         else:                           icon = 'user'
-    elif category == 'ADB HOSTS':       icon = 'terminal'
-    elif category == 'APP INTERACTION': icon = 'bar-chart-2'
-    elif category == 'BASH HISTORY':    icon = 'terminal'
     elif category == 'DEVICE HEALTH SERVICES':         
         if artifact.find('BLUETOOTH') >=0:  icon = 'bluetooth'
         elif artifact.find('BATTERY') >=0:  icon = 'battery-charging'
         else:                           icon = 'bar-chart-2'
     elif category == 'BLUETOOTH CONNECTIONS':       icon = 'bluetooth'
-    elif category == 'CAST':            icon = 'cast'
-    elif category == 'FITBIT':            icon = 'watch'
-    elif category == 'CALL LOGS':       icon = 'phone'
-    elif category == 'CHATS':           icon = 'message-circle'
-    elif category == 'CHROMIUM':          
-        if artifact.find('SEARCH TERMS') >= 0:      icon = 'search'
-        elif artifact.find('DOWNLOADS') >= 0:       icon = 'download'
-        elif artifact.find('BOOKMARKS') >= 0:       icon = 'bookmark'
-        elif artifact.find('LOGIN') >= 0:           icon = 'log-in'
-        elif artifact.find('MEDIA HISTORY') >= 0:   icon = 'video'
-        elif artifact.find('NETWORK ACTION PREDICTOR') >=0:    icon = 'type'
-        elif artifact.find('TOP SITES') >= 0:       icon = 'list'
-        elif artifact.find('OFFLINE PAGES') >= 0:   icon = 'cloud-off'
-        elif artifact.find('AUTOFILL') >= 0:        icon = 'edit-3'
-        else:                                       icon = 'chrome'
-    elif category == 'DEVICE INFO':     
-        if artifact == 'BUILD INFO':                icon = 'terminal'
-        elif artifact == 'PARTNER SETTINGS':        icon = 'settings'
-        elif artifact.find('SETTINGS_SECURE_') >= 0: icon = 'settings'
-        else:                                       icon = 'info'
-    elif category == 'ETC HOSTS':       icon = 'globe'
-    elif category == 'WIPE & SETUP':
-        if artifact == 'SUGGESTIONS.XML':                icon = 'loader'
-        if artifact == 'SETUP_WIZARD_INFO.XML':          icon = 'loader'
-        if artifact == 'APPOPS.XML':                     icon = 'loader'
-        if artifact == 'SAMSUNG WIPE HISTORY':           icon = 'trash-2'
-        else:                                            icon = 'loader'
-    elif category == 'EMULATED STORAGE METADATA':     icon = 'database'
-    elif category == 'FACEBOOK MESSENGER':      icon = 'facebook'
-    elif category == 'GOOGLE KEEP':     icon = 'list'
-    elif category == 'GBOARD KEYBOARD': icon = 'edit-3'
-    elif category == 'GOOGLE DRIVE':     icon = 'file'
-    elif category == 'GOOGLE NOW & QUICKSEARCH': icon = 'search'
-    elif category == 'GOOGLE PHOTOS':
-        if artifact.find('LOCAL TRASH') >=0:            icon = 'trash-2'
-        elif artifact.find('BACKED UP FOLDER') >= 0:    icon = 'refresh-cw'
-        else:                                           icon = 'image'
-    elif category == 'GOOGLE PLAY':     
-        if artifact == 'GOOGLE PLAY SEARCHES':      icon = 'search'
-        else:                                       icon = 'play'
-    elif category == 'INSTALLED APPS':  icon = 'package'
-    elif category == 'MEDIA METADATA':  icon = 'file-plus'
-    elif category == 'NOW PLAYING':           icon = 'music'
-    elif category == 'RCS CHATS':       icon = 'message-circle'
-    elif category == 'RECENT ACTIVITY': icon = 'activity'
-    elif category == 'SAMSUNG_CMH':     icon = 'disc'
-    elif category == 'SCRIPT LOGS':     icon = 'archive'
-    elif category == 'SKOUT':
-        if artifact == 'SKOUT MESSAGES':  icon = 'message-circle'
-        if artifact == 'SKOUT USERS':  icon = 'users'
-    elif category == 'TEAMS':
-        if artifact == 'TEAMS MESSAGES':  icon = 'message-circle'
-        elif artifact == 'TEAMS USERS':  icon = 'users'
-        elif artifact == 'TEAMS CALL LOG':  icon = 'phone'
-        elif artifact == 'TEAMS ACTIVITY FEED':  icon = 'at-sign'
-        elif artifact == 'TEAMS FILE INFO':  icon = 'file'
-        else:                           icon = 'file-text'
-    elif category == 'VIBER':
-        if artifact == 'VIBER - CONTACTS':  icon = 'user'
-        if artifact == 'VIBER - MESSAGES':  icon = 'message-square'
-        if artifact == 'VIBER - CALL LOGS':  icon = 'phone'
-    elif category == 'SMS & MMS':       icon = 'message-square'
-    elif category == 'SQLITE JOURNALING': icon = 'book-open'
-    elif category == 'USAGE STATS':     icon = 'bar-chart-2'
-    elif category == 'USER DICTIONARY': icon = 'book'
-    elif category == 'WELLBEING' or category == 'WELLBEING ACCOUNT': 
-        if artifact == 'ACCOUNT DATA':  icon = 'user'
-        else:                           icon = 'layers'
-    elif category == 'WIFI PROFILES':  icon = 'wifi'
-    elif category == 'PERMISSIONS':  icon = 'check'
-    elif category == 'APP ROLES':  icon = 'tool'
-    elif category == 'LINE':
-        if artifact == 'LINE - CONTACTS':  icon = 'user'
-        if artifact == 'LINE - MESSAGES':  icon = 'message-square'
-        if artifact == 'LINE - CALL LOGS':  icon = 'phone'
-    elif category == 'IMO':
-        if artifact == 'IMO - ACCOUNT ID':  icon = 'user'
-        if artifact == 'IMO - MESSAGES':  icon = 'message-square'
-    elif category == 'TANGO':
-        if artifact == 'TANGO - MESSAGES':  icon = 'message-square'
-    elif category == 'VLC':
-        if artifact == 'VLC MEDIA LIST':  icon = 'film'
-        if artifact == 'VLC THUMBNAILS':  icon = 'image'
-    elif category == 'SKYPE':
-        if artifact == 'SKYPE - CALL LOGS':  icon = 'phone'
-        if artifact == 'SKYPE - MESSAGES':  icon = 'message-square'
-        if artifact == 'SKYPE - CONTACTS':  icon = 'user'
-    elif category == 'TEXT NOW':
-        if artifact == 'TEXT NOW - CALL LOGS':  icon = 'phone'
-        if artifact == 'TEXT NOW - MESSAGES':  icon = 'message-square'
-        if artifact == 'TEXT NOW - CONTACTS':  icon = 'user'
-    elif category == 'TIKTOK':
-        if artifact == 'TIKTOK - MESSAGES':  icon = 'message-square'
-        if artifact == 'TIKTOK - CONTACTS':  icon = 'user'
-    elif category == 'WHATSAPP':
-        if artifact == 'WHATSAPP - MESSAGES':  icon = 'messages-square'
-        if artifact == 'WHATSAPP - CONTACTS':  icon = 'user'
-        else:                           icon = 'phone'
     elif category == 'CONTACTS':  icon = 'user'
     return icon
     
@@ -256,19 +155,19 @@ def create_index_html(reportfolderbase, time_in_secs, time_HMS, extraction_type,
     
     content += '</div>' # CARD end
 
-    authors_data = generate_authors_table_code(aleapp_contributors)
+    authors_data = generate_authors_table_code(rleapp_contributors)
     credits_code = credits_block.format(authors_data)
 
     # WRITE INDEX.HTML LAST
     filename = 'index.html'
-    page_title = 'ALEAPP Report'
-    body_heading = 'Android Logs Events And Protobuf Parser'
-    body_description = 'ALEAPP is an open source project that aims to parse every known Android artifact for the purpose of forensic analysis.'
+    page_title = 'RLEAPP Report'
+    body_heading = 'Returns Logs Events And Properties Parser'
+    body_description = 'RLEAPP is an open source project that aims to parse service provider returns for the purpose of triage analysis.'
     active_nav_list_data = mark_item_active(nav_list_data, filename) + nav_bar_script
 
     f = open(os.path.join(reportfolderbase, filename), 'w', encoding='utf8')
     f.write(page_header.format(page_title))
-    f.write(body_start.format(f"ALEAPP {aleapp_version}"))
+    f.write(body_start.format(f"RLEAPP {rleapp_version}"))
     f.write(body_sidebar_setup + active_nav_list_data + body_sidebar_trailer)
     f.write(body_main_header + body_main_data_title.format(body_heading, body_description))
     f.write(content)
@@ -277,9 +176,9 @@ def create_index_html(reportfolderbase, time_in_secs, time_HMS, extraction_type,
     f.write(body_main_trailer + body_end + nav_bar_script_footer + page_footer)
     f.close()
 
-def generate_authors_table_code(aleapp_contributors):
+def generate_authors_table_code(rleapp_contributors):
     authors_data = ''
-    for author_name, blog, tweet_handle, git in aleapp_contributors:
+    for author_name, blog, tweet_handle, git in rleapp_contributors:
         author_data = ''
         if blog:
             author_data += f'<a href="{blog}" target="_blank">{blog_icon}</a> &nbsp;\n'
