@@ -6,7 +6,7 @@
 import traceback
 
 from scripts.artifacts.kikReturns import get_kikReturns
-from scripts.artifacts.usagestatsVersion import get_usagestatsVersion
+
 from scripts.ilapfuncs import *
 
 # GREP searches for each module
@@ -17,7 +17,6 @@ from scripts.ilapfuncs import *
 # Don't forget to import the module above!!!!
 
 tosearch = {
-    'usagestatsVersion':('Usage Stats', ('*/system/usagestats/*/version', '*/system_ce/*/usagestats/version')),
     'kikReturns':('Kik Returns', ('*/logs/*.txt','*/content/*')),
 }
 slash = '\\' if is_platform_windows() else '/'

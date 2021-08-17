@@ -68,11 +68,11 @@ def pickModules():
 
     indx = 1000     # arbitrary number to not interfere with other controls
     for key, val in sorted_tosearch.items():
-        disabled = False if key != 'usagestatsVersion' else True # usagestatsVersion is REQUIRED
+        disabled = False #if key != 'usagestatsVersion' else True # usagestatsVersion is REQUIRED
         mlist.append( CheckList(val[0] + f' [{key}]', indx, key, disabled) )
         indx = indx + 1
         
-sg.theme('LightGreen5')   # Add a touch of color
+sg.theme('DarkTeal7')   # Add a touch of color
 # All the stuff inside your window.
 
 normal_font = ("Helvetica", 12)
@@ -98,7 +98,7 @@ layout = [  [sg.Text('Returns, Logs, Events, And Properties Parser', font=("Helv
             [sg.Text('Available Modules')],
             [sg.Button('SELECT ALL'), sg.Button('DESELECT ALL')], 
             [sg.Column(mlist, size=(300,310), scrollable=True),  sg.Output(size=(85,20))] ,
-            [sg.ProgressBar(max_value=GuiWindow.progress_bar_total, orientation='h', size=(86, 7), key='PROGRESSBAR', bar_color=('DarkGreen', 'White'))],
+            [sg.ProgressBar(max_value=GuiWindow.progress_bar_total, orientation='h', size=(86, 7), key='PROGRESSBAR', bar_color=('Red', 'White'))],
             [sg.Submit('Process',font=normal_font), sg.Button('Close', font=normal_font)] ]
             
 # Create the Window
@@ -119,7 +119,8 @@ while True:
     if event == "DESELECT ALL":  
          # none modules
         for x in range(1000,indx):
-            window[x].Update(False if window[x].metadata != 'usagestatsVersion' else True)  # usagestatsVersion.py is REQUIRED
+            window[x].Update(True)  # usagestatsVersion.py is REQUIRED
+            # alternate version: window[x].Update(False if window[x].metadata != 'usagestatsVersion' else True)  # usagestatsVersion.py 
     if event == 'Process':
         #check is selections made properly; if not we will return to input form without exiting app altogether
         is_valid, extracttype = ValidateInput(values, window)
@@ -135,12 +136,12 @@ while True:
                 if output_folder[1] == ':': output_folder = '\\\\?\\' + output_folder.replace('/', '\\')
             
             # re-create modules list based on user selection
-            search_list = { 'usagestatsVersion' : tosearch['usagestatsVersion'] } # hardcode usagestatsVersion as first item
+            search_list = {} # hardcode usagestatsVersion as first item
             s_items = 0
             for x in range(1000,indx):
                 if window.FindElement(x).Get():
                     key = window[x].metadata
-                    if (key in tosearch) and (key != 'usagestatsVersion'):
+                    if (key in tosearch): #and (key != 'usagestatsVersion'):
                         search_list[key] = tosearch[key]
                     s_items = s_items + 1 # for progress bar
                 
