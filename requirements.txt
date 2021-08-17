@@ -6,3 +6,4 @@ PyCryptodome
 PySimpleGUI==4.16.0
 simplekml
 xmltodict
+python-magic-bin==0.4.14
