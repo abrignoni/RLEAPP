@@ -17,7 +17,7 @@ from scripts.ilapfuncs import *
 # Don't forget to import the module above!!!!
 
 tosearch = {
-    'kikReturns':('Kik Returns', ('*/logs/*.txt','*/content/*')),
+    'kikReturns':('Kik Returns', ('*/logs/*','*/content/*')),
 }
 slash = '\\' if is_platform_windows() else '/'
 
