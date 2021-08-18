@@ -68,7 +68,7 @@ def pickModules():
 
     indx = 1000     # arbitrary number to not interfere with other controls
     for key, val in sorted_tosearch.items():
-        disabled = False #if key != 'usagestatsVersion' else True # usagestatsVersion is REQUIRED
+        disabled = False if key != 'usagestatsVersion' else True # usagestatsVersion is REQUIRED
         mlist.append( CheckList(val[0] + f' [{key}]', indx, key, disabled) )
         indx = indx + 1
         
