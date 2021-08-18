@@ -82,7 +82,7 @@ def main():
 def crunch_artifacts(search_list, extracttype, input_path, out_params, ratio, wrap_text):
     start = process_time()
 
-    logfunc('Procesing started. Please wait. This may take a few minutes...')
+    logfunc('Processing started. Please wait. This may take a few minutes...')
 
     logfunc('\n--------------------------------------------------------------------------------------')
     logfunc(f'RLEAPP v{rleapp_version}: Returns, Logs, Events, and Properties Parser')
