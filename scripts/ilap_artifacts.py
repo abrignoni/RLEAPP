@@ -6,6 +6,7 @@
 import traceback
 
 from scripts.artifacts.kikReturns import get_kikReturns
+from scripts.artifacts.kikProfilepic import get_kikProfilepic
 
 from scripts.ilapfuncs import *
 
@@ -17,7 +18,8 @@ from scripts.ilapfuncs import *
 # Don't forget to import the module above!!!!
 
 tosearch = {
-    'kikReturns':('Kik Returns', ('*/logs/*','*/content/*')),
+    'kikReturns':('Kik Returns', ('*/logs/*.txt','*/logs/*','*/content/*')),
+    'kikProfilepic':('Kik Returns', ('*profile-pic.jpg')),
 }
 slash = '\\' if is_platform_windows() else '/'
 

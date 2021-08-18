@@ -119,8 +119,8 @@ while True:
     if event == "DESELECT ALL":  
          # none modules
         for x in range(1000,indx):
-            window[x].Update(True)  # usagestatsVersion.py is REQUIRED
-            # alternate version: window[x].Update(False if window[x].metadata != 'usagestatsVersion' else True)  # usagestatsVersion.py 
+            #window[x].Update(True)  # usagestatsVersion.py is REQUIRED
+            window[x].Update(False if window[x].metadata != 'usagestatsVersion' else True)  # usagestatsVersion.py 
     if event == 'Process':
         #check is selections made properly; if not we will return to input form without exiting app altogether
         is_valid, extracttype = ValidateInput(values, window)
