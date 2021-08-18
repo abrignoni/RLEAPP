@@ -49,8 +49,8 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
                     utctimestamp = (datetime.datetime.fromtimestamp(int(item[0])/1000).strftime('%Y-%m-%d %H:%M:%S'))
-                    user = item[2]
-                    user_other = item[1]
+                    user = item[1]
+                    user_other = item[2]
                     app = item[3]
                     contentID = item[4]
                     info = item[5]
@@ -115,7 +115,7 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                         
             if data_list:
                 report = ArtifactHtmlReport('Kik - Chat Platform Sent')
-                report.start_artifact_report(report_folder, 'Kik - Sent')
+                report.start_artifact_report(report_folder, 'Kik  - Chat Platform Sent')
                 report.add_script()
                 data_headers = ('Timestamp UTC', 'Timestamp', 'User', 'User', 'App', 'IP', 'Content ID', 'Content')
                 report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
@@ -129,4 +129,114 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc('No Kik Chat Platform Sent data available')
         
+        if filename.startswith('chat_sent_received.txt'):
+            data_list =[]
+            with open(file_found, 'r') as f:
+                delimited = csv.reader(f, delimiter='\t')
+                for item in delimited:
+                    utctimestamp = (datetime.datetime.fromtimestamp(int(item[0])/1000).strftime('%Y-%m-%d %H:%M:%S'))
+                    user = item[1]
+                    user_other = item[2]
+                    info_one = item[3]
+                    info_two = item[4]
+                    timestamp = item[5]
+                    thumb = ''
+                    
+                    data_list.append((utctimestamp, timestamp, user, user_other, info_one, info_two))
+                    #info_two says REDACTED in my data set. Might be some data in other returns. Leaving code for content available in case sample data comes up. If so if REDACTED else content.
+                    '''
+                    for match in files_found:
+                        if contentID in match:
+                            shutil.copy2(match, report_folder)
+                            mimetype = magic.from_file(match, mime = True)
+                            
+                            if mimetype == 'video/mp4':
+                                thumb = f'<video width="320" height="240" controls="controls"><source src="{report_folder}{contentID}" type="video/mp4">Your browser does not support the video tag.</video>'
+                            else:
+                                thumb = f'<img src="{report_folder}{contentID}" width="300"></img>'
+                                
+                            data_list.append((utctimestamp, timestamp, user, user_other, app, info, contentID, thumb))
+                            break
+                    '''    
+                        
+            if data_list:
+                report = ArtifactHtmlReport('Kik - Chat Sent Received')
+                report.start_artifact_report(report_folder, 'Kik - Chat Sent Received')
+                report.add_script()
+                data_headers = ('Timestamp UTC', 'Timestamp', 'User', 'User', 'Info', 'Info')
+                report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
+                report.end_artifact_report()
                 
+                tsvname = f'Kik - Chat Sent Received'
+                tsv(report_folder, data_headers, data_list, tsvname)
+                
+                tlactivity = f'Kik - Chat Sent Received'
+                timeline(report_folder, tlactivity, data_list, data_headers)
+            else:
+                logfunc('No Kik Chat Sent Received data available')
+                
+        if filename.startswith('chat_sent.txt'):
+            data_list =[]
+            with open(file_found, 'r') as f:
+                delimited = csv.reader(f, delimiter='\t')
+                for item in delimited:
+                    utctimestamp = (datetime.datetime.fromtimestamp(int(item[0])/1000).strftime('%Y-%m-%d %H:%M:%S'))
+                    user = item[1]
+                    user_other = item[2]
+                    info_one = item[3]
+                    info_two = item[4]
+                    timestamp = item[5]
+                    thumb = ''
+                    
+                    data_list.append((utctimestamp, timestamp, user, user_other, info_one, info_two))
+                                        
+            if data_list:
+                report = ArtifactHtmlReport('Kik - Chat Sent')
+                report.start_artifact_report(report_folder, 'Kik - Chat Sent')
+                report.add_script()
+                data_headers = ('Timestamp UTC', 'Timestamp', 'User', 'User', 'Info', 'IP')
+                report.write_artifact_data_table(data_headers, data_list, file_found)
+                report.end_artifact_report()
+                
+                tsvname = f'Kik - Chat Sent'
+                tsv(report_folder, data_headers, data_list, tsvname)
+                
+                tlactivity = f'Kik - Chat Sent'
+                timeline(report_folder, tlactivity, data_list, data_headers)
+            else:
+                logfunc('No Kik Chat Sent data available')
+                
+        if filename.endswith('abuse'):
+            if filename.startswith('.'):
+                break
+            else:
+                data_list =[]
+                aggregator = ''
+                with open(file_found, 'r') as f:
+                    for line in f:
+                        if line.startswith('-------Report'):
+                            if aggregator != '':
+                                data_list.append((timestamp, reportFrom, aggregator))
+                                aggregator = ''
+                            line = line.split(' ')
+                            reportFrom = line[2]
+                            timestamp = line[4].strip('(')
+                            timestamp = timestamp + ' ' + line[5]
+                        else:
+                            aggregator = aggregator  + line + '<br>'
+                    data_list.append((timestamp, reportFrom, aggregator))
+                if data_list:
+                    report = ArtifactHtmlReport('Kik - Abuse Report')
+                    report.start_artifact_report(report_folder, 'Kik - Abuse Report')
+                    report.add_script()
+                    data_headers = ('Timestamp', 'Report From', 'Data')
+                    report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Data'])
+                    report.end_artifact_report()
+                    
+                    tsvname = f'Kik - Abuse Report'
+                    tsv(report_folder, data_headers, data_list, tsvname)
+                    
+                    tlactivity = f'Kik - Abuse Report'
+                    timeline(report_folder, tlactivity, data_list, data_headers)
+                else:
+                    logfunc('No Kik Abuse Report data available')
