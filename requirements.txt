@@ -7,3 +7,4 @@ PySimpleGUI==4.16.0
 simplekml
 xmltodict
 python-magic-bin==0.4.14
+xlrd==1.2.0
