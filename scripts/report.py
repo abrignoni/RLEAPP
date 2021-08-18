@@ -32,6 +32,7 @@ def get_icon_name(category, artifact):
         else:
             icon = 'file-text'
     elif category == 'CONTACTS':  icon = 'user'
+    elif category == 'ICLOUD RETURNS':  icon = 'file-text'
     return icon
     
     '''
