@@ -1,5 +1,5 @@
 # RLEAPP
-Rndroid Logs Events And Protobuf Parser
+Returns Logs Events And Protobuf Parser
 
 If you want to contribute hit me up on twitter: https://twitter.com/AlexisBrignoni   
 
