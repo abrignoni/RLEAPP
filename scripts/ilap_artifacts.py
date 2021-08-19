@@ -8,6 +8,8 @@ import traceback
 from scripts.artifacts.kikReturns import get_kikReturns
 from scripts.artifacts.kikProfilepic import get_kikProfilepic
 from scripts.artifacts.icloudReturnsAcc import get_icloudReturnsAcc
+from scripts.artifacts.icloudMsgsInCloud import get_icloudMsgsInCloud
+from scripts.artifacts.icloudReturnsLogs import get_icloudReturnsLogs
 
 from scripts.ilapfuncs import *
 
@@ -22,6 +24,8 @@ tosearch = {
     'kikReturns':('Kik Returns', ('*/logs/*.txt','*/logs/*','*/content/*')),
     'kikProfilepic':('Kik Returns', ('*profile-pic.jpg')),
     'icloudReturnsAcc':('iCloud Returns', ('*/Account/*_AccountDetails.xlsx')),
+    'icloudMsgsInCloud':('iCloud Returns', ('*/Messagesinicloud/*MessagesInICloud.*')),
+    'icloudReturnsLogs':('iCloud Returns', ('*/LOG/*_iCloudLogs.xlsx'))
 }
 slash = '\\' if is_platform_windows() else '/'
 
