@@ -29,10 +29,11 @@ def get_icon_name(category, artifact):
     elif category == 'KIK RETURNS':       
         if artifact == 'KIK - PROFILE PIC':
             icon = 'image'
-        else:
-            icon = 'file-text'
+        else:                           icon = 'file-text'
     elif category == 'CONTACTS':  icon = 'user'
-    elif category == 'ICLOUD RETURNS':  icon = 'file-text'
+    elif category == 'ICLOUD RETURNS': 
+        if artifact == 'ICLOUD - ACCOUNT FEATURES': icon = 'user'
+        else:                           icon = 'file-text'
     return icon
     
     '''
