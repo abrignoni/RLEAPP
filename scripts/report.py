@@ -20,20 +20,22 @@ def get_icon_name(category, artifact):
     icon = 'alert-triangle' # default (if not defined!)
 
     if category.find('ACCOUNT') >= 0:
-        if artifact.find('AUTH') >= 0:  icon = 'key'
-        else:                           icon = 'user'
+        if artifact.find('AUTH') >= 0:      icon = 'key'
+        else:                               icon = 'user'
     elif category == 'DEVICE HEALTH SERVICES':         
         if artifact.find('BLUETOOTH') >=0:  icon = 'bluetooth'
         elif artifact.find('BATTERY') >=0:  icon = 'battery-charging'
-        else:                           icon = 'bar-chart-2'
+        else:                               icon = 'bar-chart-2'
     elif category == 'KIK RETURNS':       
-        if artifact == 'KIK - PROFILE PIC':
-            icon = 'image'
-        else:                           icon = 'file-text'
-    elif category == 'CONTACTS':  icon = 'user'
+        if artifact == 'KIK - PROFILE PIC': icon = 'image'
+        else:                               icon = 'file-text'
+    elif category == 'CONTACTS':            icon = 'user'
+    elif category == 'INSTAGRAM ARCHIVE':  
+        if artifact == 'INSTAGRAM ARCHIVE - ACCOUNT INFO': icon = 'user'
+        else:                               icon = 'instagram'
     elif category == 'ICLOUD RETURNS': 
         if artifact == 'ICLOUD - ACCOUNT FEATURES': icon = 'user'
-        else:                           icon = 'file-text'
+        else:                                       icon = 'file-text'
     return icon
     
     '''

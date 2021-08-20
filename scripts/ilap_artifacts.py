@@ -14,6 +14,7 @@ from scripts.artifacts.icloudQueryLogs import get_icloudQueryLogs
 from scripts.artifacts.icloudBookmarks import get_icloudBookmarks
 from scripts.artifacts.icloudFMFFollowers import get_icloudFMFFollowers
 from scripts.artifacts.icloudFMFFollowing import get_icloudFMFFollowing
+from scripts.artifacts.instagramAccinfo import get_instagramAccinfo
 
 from scripts.ilapfuncs import *
 
@@ -33,7 +34,8 @@ tosearch = {
     'icloudQueryLogs':('iCloud Returns', ('*/LOG/*_IDS_QueryLogs.xlsx')),
     'icloudBookmarks':('iCloud Returns', ('*/Bookmarks/*_iCloud_Bookmarks.xlsx')),
     'icloudFMFFollowers':('iCloud Returns', ('*/fmf/*_Followers.xlsx')),
-    'icloudFMFFollowing':('iCloud Returns', ('*/fmf/*_Following.xlsx'))
+    'icloudFMFFollowing':('iCloud Returns', ('*/fmf/*_Following.xlsx')),
+    'instagramAccinfo':('Instagram Archive', ('*/account_information/account_information.json'))
     
 }
 slash = '\\' if is_platform_windows() else '/'
