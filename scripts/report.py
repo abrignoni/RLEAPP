@@ -34,6 +34,7 @@ def get_icon_name(category, artifact):
     elif category == 'CONTACTS':            icon = 'user'
     elif category == 'INSTAGRAM ARCHIVE':  
         if artifact == 'INSTAGRAM ARCHIVE - ACCOUNT INFO': icon = 'user'
+        elif artifact == 'INSTAGRAM ARCHIVE - PERSONAL INFO': icon = 'user'
         else:                               icon = 'instagram'
     elif category == 'ICLOUD RETURNS': 
         if artifact == 'ICLOUD - ACCOUNT FEATURES': icon = 'user'
