@@ -18,22 +18,23 @@ def get_chromeHistory(files_found, report_folder, seeker, wrap_text):
         url = ''
         title = ''
         timestamp = ''
+        page_transition = ''
 
         for site in data['Browser History']:
             
             url = site['url']
             title = site['title']
-            #timestamp = site['time_usec']
             timestamp = datetime.datetime.fromtimestamp(int(site['time_usec'])/1000000).strftime('%Y-%m-%d %H:%M:%S.%f')
+            page_transition = site['page_transition']
 
-            data_list.append((timestamp, title, url))
+            data_list.append((timestamp, title, url, page_transition))
 
         num_entries = len(data_list)
         if num_entries > 0:
             report = ArtifactHtmlReport('Chrome Web History')
             report.start_artifact_report(report_folder, 'Chrome Web History')
             report.add_script()
-            data_headers = ('Timestamp','Webpage Title','URL') 
+            data_headers = ('Timestamp','Webpage Title','URL','Page Transition') 
 
             report.write_artifact_data_table(data_headers, data_list, file_found)
             report.end_artifact_report()
