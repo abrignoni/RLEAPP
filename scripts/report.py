@@ -19,11 +19,12 @@ def get_icon_name(category, artifact):
     artifact = artifact.upper()
     icon = 'alert-triangle' # default (if not defined!)
 
-    if category.find('ACCOUNT') >= 0:
-        if artifact.find('AUTH') >= 0:      icon = 'key'
+    if category.find('ACCOUNT') >=0:
+        if artifact.find('AUTH') >=0:      icon = 'key'
         else:                               icon = 'user'
     elif category == 'CHROME':
-        if artifact.find('CHROME WEB HISTORY') >= 0: icon = 'chrome'
+        if artifact.find('CHROME WEB HISTORY') >=0: icon = 'chrome'
+        elif artifact.find('CHROME EXTENSIONS') >=0: icon = 'tool'
     elif category == 'DEVICE HEALTH SERVICES':         
         if artifact.find('BLUETOOTH') >=0:  icon = 'bluetooth'
         elif artifact.find('BATTERY') >=0:  icon = 'battery-charging'
