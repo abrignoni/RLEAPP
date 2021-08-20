@@ -11,9 +11,9 @@ def get_icloudMsgsInCloud(files_found, report_folder, seeker, wrap_text):
         filename = os.path.basename(file_found)
         
         if filename.startswith('~'):
-            break
+            continue
         if filename.startswith('.'):
-            break
+            continue
         
         loc = file_found
         

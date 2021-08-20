@@ -10,6 +10,10 @@ from scripts.artifacts.kikProfilepic import get_kikProfilepic
 from scripts.artifacts.icloudReturnsAcc import get_icloudReturnsAcc
 from scripts.artifacts.icloudMsgsInCloud import get_icloudMsgsInCloud
 from scripts.artifacts.icloudReturnsLogs import get_icloudReturnsLogs
+from scripts.artifacts.icloudQueryLogs import get_icloudQueryLogs
+from scripts.artifacts.icloudBookmarks import get_icloudBookmarks
+from scripts.artifacts.icloudFMFFollowers import get_icloudFMFFollowers
+from scripts.artifacts.icloudFMFFollowing import get_icloudFMFFollowing
 
 from scripts.ilapfuncs import *
 
@@ -25,7 +29,12 @@ tosearch = {
     'kikProfilepic':('Kik Returns', ('*profile-pic.jpg')),
     'icloudReturnsAcc':('iCloud Returns', ('*/Account/*_AccountDetails.xlsx')),
     'icloudMsgsInCloud':('iCloud Returns', ('*/Messagesinicloud/*MessagesInICloud.*')),
-    'icloudReturnsLogs':('iCloud Returns', ('*/LOG/*_iCloudLogs.xlsx'))
+    'icloudReturnsLogs':('iCloud Returns', ('*/LOG/*_iCloudLogs.xlsx')),
+    'icloudQueryLogs':('iCloud Returns', ('*/LOG/*_IDS_QueryLogs.xlsx')),
+    'icloudBookmarks':('iCloud Returns', ('*/Bookmarks/*_iCloud_Bookmarks.xlsx')),
+    'icloudFMFFollowers':('iCloud Returns', ('*/fmf/*_Followers.xlsx')),
+    'icloudFMFFollowing':('iCloud Returns', ('*/fmf/*_Following.xlsx'))
+    
 }
 slash = '\\' if is_platform_windows() else '/'
 

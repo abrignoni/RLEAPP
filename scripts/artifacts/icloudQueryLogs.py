@@ -4,7 +4,7 @@ import xlrd
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
 
-def get_icloudReturnsLogs(files_found, report_folder, seeker, wrap_text):
+def get_icloudQueryLogs(files_found, report_folder, seeker, wrap_text):
     
     for file_found in files_found:
         file_found = str(file_found)
@@ -32,25 +32,25 @@ def get_icloudReturnsLogs(files_found, report_folder, seeker, wrap_text):
         
         for i in range(sheet.nrows):
             for j in range(sheet.ncols):
-                if i == 6:
+                if i == 8:
                     dth.append(sheet.cell_value(i, j))
-                if i >= 7:
+                if i >= 9:
                     list.append(sheet.cell_value(i, j))
-            if i >= 7:
+            if i >= 9:
                 data_list.append(list) 
             list =[]
         
         
         if data_list:
             description = f'Sheet name: {sheetnames[0]} - {dsid}'
-            report = ArtifactHtmlReport('iCloud - Logs')
-            report.start_artifact_report(report_folder, 'iCloud - Logs', description)
+            report = ArtifactHtmlReport('iCloud - Query Logs')
+            report.start_artifact_report(report_folder, 'iCloud - Query Logs', description)
             report.add_script()
             data_headers = (dth)
             report.write_artifact_data_table(data_headers, data_list, file_found)
             report.end_artifact_report()
             
         else:
-            logfunc('No iCloud - No Log data available')
+            logfunc('No iCloud - No Query Log data available')
             
         
