@@ -22,6 +22,8 @@ def get_icon_name(category, artifact):
     if category.find('ACCOUNT') >= 0:
         if artifact.find('AUTH') >= 0:      icon = 'key'
         else:                               icon = 'user'
+    elif category == 'CHROME':
+        if artifact.find('CHROME WEB HISTORY') >= 0: icon = 'chrome'
     elif category == 'DEVICE HEALTH SERVICES':         
         if artifact.find('BLUETOOTH') >=0:  icon = 'bluetooth'
         elif artifact.find('BATTERY') >=0:  icon = 'battery-charging'
