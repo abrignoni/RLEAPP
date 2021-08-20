@@ -5,6 +5,7 @@
 
 import traceback
 
+from scripts.artifacts.chromeExtensions import get_chromeExtensions
 from scripts.artifacts.chromeHistory import get_chromeHistory
 from scripts.artifacts.kikReturns import get_kikReturns
 from scripts.artifacts.kikProfilepic import get_kikProfilepic
@@ -28,6 +29,7 @@ from scripts.ilapfuncs import *
 # Don't forget to import the module above!!!!
 
 tosearch = {
+    'chromeExtensions':('Chrome', ('*/Extensions.json')),
     'chromeHistory':('Chrome', ('*/BrowserHistory.json')),
     'kikReturns':('Kik Returns', ('*/logs/*.txt','*/logs/*','*/content/*')),
     'kikProfilepic':('Kik Returns', ('*profile-pic.jpg')),
