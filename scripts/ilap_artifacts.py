@@ -45,7 +45,7 @@ tosearch = {
     'icloudFMFFollowing':('iCloud Returns', ('*/fmf/*_Following.xlsx')),
     'instagramAccinfo':('Instagram Archive', ('*/account_information/account_information.json')),
     'instagramPersinfo':('Instagram Archive', ('*/account_information/personal_information.json', '*/media/other/*.jpg')),
-    'playStorePurchaseHistory':('Google Play Store', ('*/Purchase History.json'))
+    'playStorePurchaseHistory':('Google Play Store', ('*/Purchase History.json')),
     'instagramProfchanges':('Instagram Archive', ('*/account_information/profile_changes.json')),
     
 }
