@@ -30,7 +30,8 @@ def get_icon_name(category, artifact):
         elif artifact.find('BATTERY') >=0:  icon = 'battery-charging'
         else:                               icon = 'bar-chart-2'
     elif category == 'GOOGLE PLAY STORE':
-        if artifact == 'GOOGLE PLAY STORE PURCHASE HISTORY': icon = 'shopping-cart'
+        if artifact == 'GOOGLE PLAY STORE LIBRARY': icon = 'book-open'
+        elif artifact == 'GOOGLE PLAY STORE PURCHASE HISTORY': icon = 'shopping-cart'
     elif category == 'KIK RETURNS':       
         if artifact == 'KIK - PROFILE PIC': icon = 'image'
         else:                               icon = 'file-text'
