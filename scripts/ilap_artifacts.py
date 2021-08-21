@@ -19,6 +19,8 @@ from scripts.artifacts.icloudFMFFollowing import get_icloudFMFFollowing
 from scripts.artifacts.instagramAccinfo import get_instagramAccinfo
 from scripts.artifacts.instagramPersinfo import get_instagramPersinfo
 from scripts.artifacts.playStorePurchaseHistory import get_playStorePurchaseHistory
+from scripts.artifacts.instagramProfchanges import get_instagramProfchanges
+
 
 from scripts.ilapfuncs import *
 
@@ -44,6 +46,7 @@ tosearch = {
     'instagramAccinfo':('Instagram Archive', ('*/account_information/account_information.json')),
     'instagramPersinfo':('Instagram Archive', ('*/account_information/personal_information.json', '*/media/other/*.jpg')),
     'playStorePurchaseHistory':('Google Play Store', ('*/Purchase History.json'))
+    'instagramProfchanges':('Instagram Archive', ('*/account_information/profile_changes.json')),
     
 }
 slash = '\\' if is_platform_windows() else '/'
