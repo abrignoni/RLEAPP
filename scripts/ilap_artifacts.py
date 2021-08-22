@@ -20,6 +20,7 @@ from scripts.artifacts.instagramAccinfo import get_instagramAccinfo
 from scripts.artifacts.instagramDevices import get_instagramDevices
 from scripts.artifacts.instagramDevicescam import get_instagramDevicescam
 from scripts.artifacts.instagramInfotoadv import get_instagramInfotoadv
+from scripts.artifacts.instagramLogin import get_instagramLogin
 from scripts.artifacts.instagramPersinfo import get_instagramPersinfo
 from scripts.artifacts.instagramProfchanges import get_instagramProfchanges
 from scripts.artifacts.instagramPosts import get_instagramPosts
@@ -50,6 +51,7 @@ tosearch = {
     'instagramDevices':('Instagram Archive', ('*/device_information/devices.json')),
     'instagramDevicescam':('Instagram Archive', ('*/device_information/camera_information.json')),
     'instagramInfotoadv':('Instagram Archive', ("*/ads_and_businesses/information_you've_submitted_to_advertisers.json")),
+    'instagramLogin':('Instagram Archive', ('*/login_and_account_creation/login_activity.json')),
     'instagramPersinfo':('Instagram Archive', ('*/account_information/personal_information.json', '*/media/other/*.jpg')),
     'instagramProfchanges':('Instagram Archive', ('*/account_information/profile_changes.json')),
     'instagramPosts':('Instagram Archive', ('*/content/posts_1.json', '*/media/posts/*')),
