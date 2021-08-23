@@ -24,6 +24,8 @@ from scripts.artifacts.instagramLogin import get_instagramLogin
 from scripts.artifacts.instagramPersinfo import get_instagramPersinfo
 from scripts.artifacts.instagramProfchanges import get_instagramProfchanges
 from scripts.artifacts.instagramPosts import get_instagramPosts
+from scripts.artifacts.playStoreDevices import get_playStoreDevices
+from scripts.artifacts.playStoreInstalls import get_playStoreInstalls
 from scripts.artifacts.playStoreLibrary import get_playStoreLibrary
 from scripts.artifacts.playStorePurchaseHistory import get_playStorePurchaseHistory
 
@@ -56,6 +58,8 @@ tosearch = {
     'instagramPersinfo':('Instagram Archive', ('*/account_information/personal_information.json', '*/media/other/*.jpg')),
     'instagramProfchanges':('Instagram Archive', ('*/account_information/profile_changes.json')),
     'instagramPosts':('Instagram Archive', ('*/content/posts_1.json', '*/media/posts/*')),
+    'playStoreDevices':('Google Play Store', ('*/Devices.json')),
+    'playStoreInstalls':('Google Play Store', ('*/Installs.json')),
     'playStoreLibrary':('Google Play Store', ('*/Library.json')),
     'playStorePurchaseHistory':('Google Play Store', ('*/Purchase History.json')),
 }

@@ -12,14 +12,15 @@ def get_playStoreLibrary(files_found, report_folder, seeker, wrap_text):
         if not os.path.basename(file_found) == 'Library.json': # skip -journal and other files
             continue
 
-        with open(file_found, "r") as f:
+        with open(file_found, encoding = 'utf-8', mode = 'r') as f:
             data = json.loads(f.read())
         data_list = []
 
-        for x in range(0, len(data)):
-            docType = data[x]['libraryDoc']['doc']['documentType']
-            title = data[x]['libraryDoc']['doc']['title']
-            acquisitionTime = data[x]['libraryDoc']['acquisitionTime']
+        for x in data:
+            docType = x['libraryDoc']['doc'].get('documentType','')
+            title = x['libraryDoc']['doc'].get('title','')
+            acquisitionTime = x['libraryDoc'].get('acquisitionTime','')
+            acquisitionTime = acquisitionTime.replace('T', ' ').replace('Z', '')
     
             data_list.append((acquisitionTime, title, docType))
 
