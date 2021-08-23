@@ -12,19 +12,19 @@ def get_playStorePurchaseHistory(files_found, report_folder, seeker, wrap_text):
         if not os.path.basename(file_found) == 'Purchase History.json': # skip -journal and other files
             continue
 
-        with open(file_found, "r") as f:
+        with open(file_found, encoding = 'utf-8', mode = 'r') as f:
             data = json.loads(f.read())
         data_list = []
 
-        for x in range(0, len(data)):
-            invoicePrice = data[x]['purchaseHistory']['invoicePrice']
-            paymentMethod = data[x]['purchaseHistory']['paymentMethodTitle']
-            userCountry = data[x]['purchaseHistory']['userCountry']
-            documentType = data[x]['purchaseHistory']['doc']['documentType']
-            itemTitle = data[x]['purchaseHistory']['doc']['title']
-            purchaseTime = data[x]['purchaseHistory']['purchaseTime']
-            
-            x += 1
+        for x in data:
+            invoicePrice = x['purchaseHistory'].get('invoicePrice','')
+            paymentMethod = x['purchaseHistory'].get('paymentMethodTitle','')
+            userCountry = x['purchaseHistory'].get('userCountry','')
+            documentType = x['purchaseHistory']['doc'].get('documentType','')
+
+            itemTitle = x['purchaseHistory']['doc'].get('title','')
+            purchaseTime = x['purchaseHistory'].get('purchaseTime','')
+            purchaseTime = purchaseTime.replace('T', ' ').replace('Z', '')
            
             data_list.append((purchaseTime, itemTitle, documentType, invoicePrice, paymentMethod, userCountry))
 
