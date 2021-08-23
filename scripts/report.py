@@ -33,7 +33,9 @@ def get_icon_name(category, artifact):
         elif artifact == 'GOOGLE PLAY STORE INSTALLS': icon = 'box'
         elif artifact == 'GOOGLE PLAY STORE LIBRARY': icon = 'grid'
         elif artifact == 'GOOGLE PLAY STORE PURCHASE HISTORY': icon = 'shopping-cart'
+        elif artifact == 'GOOGLE PLAY STORE REVIEWS': icon = 'edit-3'
         elif artifact == 'GOOGLE PLAY STORE SUBSCRIPTIONS': icon = 'refresh-cw'
+        else:                               icon = 'user'
     elif category == 'KIK RETURNS':       
         if artifact == 'KIK - PROFILE PIC': icon = 'image'
         else:                               icon = 'file-text'
