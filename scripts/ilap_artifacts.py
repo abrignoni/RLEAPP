@@ -40,8 +40,8 @@ from scripts.ilapfuncs import *
 # Don't forget to import the module above!!!!
 
 tosearch = {
-    'chromeExtensions':('Chrome', ('*/Extensions.json')),
-    'chromeHistory':('Chrome', ('*/BrowserHistory.json')),
+    'chromeExtensions':('Google Takeout Archive', ('*/Chrome/Extensions.json')),
+    'chromeHistory':('Google Takeout Archive', ('*/Chrome/BrowserHistory.json')),
     'kikReturns':('Kik Returns', ('*/logs/*.txt','*/logs/*','*/content/*')),
     'kikProfilepic':('Kik Returns', ('*profile-pic.jpg')),
     'icloudReturnsAcc':('iCloud Returns', ('*/Account/*_AccountDetails.xlsx')),
@@ -58,12 +58,12 @@ tosearch = {
     'instagramLogin':('Instagram Archive', ('*/login_and_account_creation/login_activity.json')),
     'instagramPersinfo':('Instagram Archive', ('*/account_information/personal_information.json', '*/media/other/*.jpg')),
     'instagramProfchanges':('Instagram Archive', ('*/account_information/profile_changes.json')),
-    'instagramPosts':('Instagram Archive', ('*/content/posts_1.json', '*/media/posts/*')),
-    'playStoreDevices':('Google Play Store', ('*/Devices.json')),
-    'playStoreInstalls':('Google Play Store', ('*/Installs.json')),
-    'playStoreLibrary':('Google Play Store', ('*/Library.json')),
-    'playStorePurchaseHistory':('Google Play Store', ('*/Purchase History.json')),
-    'playStoreSubscriptions':('Google Play Store', ('*/Subscriptions.json')),
+    'instagramPosts':('Instagram Takeout Archive', ('*/content/posts_1.json', '*/media/posts/*')),
+    'playStoreDevices':('Google Takeout Archive', ('*/Google Play Store/Devices.json')),
+    'playStoreInstalls':('Google Takeout Archive', ('*/Google Play Store/Installs.json')),
+    'playStoreLibrary':('Google Takeout Archive', ('*/Google Play Store/Library.json')),
+    'playStorePurchaseHistory':('Google Takeout Archive', ('*/Google Play Store/Purchase History.json')),
+    'playStoreSubscriptions':('Google Takeout Archive', ('*/Google Play Store/Subscriptions.json')),
 }
 slash = '\\' if is_platform_windows() else '/'
 

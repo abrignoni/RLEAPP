@@ -25,7 +25,7 @@ def get_playStoreSubscriptions(files_found, report_folder, seeker, wrap_text):
             renewalPrice = x['subscription']['pricing'][0].get('price','')
             renewalUnit = x['subscription']['pricing'][0]['period'].get('unit','')
             renewalCount = x['subscription']['pricing'][0]['period'].get('count','')
-            renewalPeriod = str(renewalCount) + ' ' + renewalUnit
+            renewalPeriod = str(renewalCount) + ' / ' + renewalUnit
             state = x['subscription'].get('state','')
             
             data_list.append((renewalDate, title, renewalPrice, renewalPeriod, state))
@@ -35,7 +35,7 @@ def get_playStoreSubscriptions(files_found, report_folder, seeker, wrap_text):
             report = ArtifactHtmlReport('Google Play Store Subscriptions')
             report.start_artifact_report(report_folder, 'Google Play Store Subscriptions')
             report.add_script()
-            data_headers = ('Renewal Timestamp','Subscription','Renewal Price','Renewal Unit','Status')
+            data_headers = ('Renewal Timestamp','Subscription','Renewal Price','Renewal Period','Status')
 
             report.write_artifact_data_table(data_headers, data_list, file_found)
             report.end_artifact_report()

@@ -21,16 +21,15 @@ def get_icon_name(category, artifact):
 
     if category.find('ACCOUNT') >=0:
         if artifact.find('AUTH') >=0:      icon = 'key'
-        else:                               icon = 'user'
-    elif category == 'CHROME':
-        if artifact.find('CHROME WEB HISTORY') >=0: icon = 'chrome'
-        elif artifact.find('CHROME EXTENSIONS') >=0: icon = 'tool'
+        else:                               icon = 'user'  
     elif category == 'DEVICE HEALTH SERVICES':         
         if artifact.find('BLUETOOTH') >=0:  icon = 'bluetooth'
         elif artifact.find('BATTERY') >=0:  icon = 'battery-charging'
         else:                               icon = 'bar-chart-2'
-    elif category == 'GOOGLE PLAY STORE':
-        if artifact == 'GOOGLE PLAY STORE DEVICES': icon = 'smartphone'
+    elif category == 'GOOGLE TAKEOUT ARCHIVE':
+        if artifact.find('CHROME WEB HISTORY') >=0: icon = 'chrome'
+        elif artifact.find('CHROME EXTENSIONS') >=0: icon = 'tool'
+        elif artifact == 'GOOGLE PLAY STORE DEVICES': icon = 'smartphone'
         elif artifact == 'GOOGLE PLAY STORE INSTALLS': icon = 'box'
         elif artifact == 'GOOGLE PLAY STORE LIBRARY': icon = 'grid'
         elif artifact == 'GOOGLE PLAY STORE PURCHASE HISTORY': icon = 'shopping-cart'
