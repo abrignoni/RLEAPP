@@ -12,7 +12,7 @@ def get_chromeExtensions(files_found, report_folder, seeker, wrap_text):
         if not os.path.basename(file_found) == 'Extensions.json': # skip -journal and other files
             continue
 
-        with open(file_found, "r") as f:
+        with open(file_found, encoding = 'utf-8', mode = 'r') as f:
             data = json.loads(f.read())
         data_list = []
         

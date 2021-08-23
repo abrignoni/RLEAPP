@@ -29,7 +29,7 @@ def get_playStoreLibrary(files_found, report_folder, seeker, wrap_text):
             report = ArtifactHtmlReport('Google Play Store Library')
             report.start_artifact_report(report_folder, 'Google Play Store Library')
             report.add_script()
-            data_headers = ('Purchased Timestamp','Title','Type')
+            data_headers = ('Added Timestamp','Title','Type')
 
             report.write_artifact_data_table(data_headers, data_list, file_found)
             report.end_artifact_report()
