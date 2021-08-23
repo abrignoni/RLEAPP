@@ -6,7 +6,8 @@ from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
 
 def get_icloudMsgsInCloud(files_found, report_folder, seeker, wrap_text):
     
-    for file_found in files_found:
+    #for file_found in files_found:
+    for iteration, file_found in enumerate(files_found):
         file_found = str(file_found)
         filename = os.path.basename(file_found)
         
@@ -44,7 +45,7 @@ def get_icloudMsgsInCloud(files_found, report_folder, seeker, wrap_text):
         if data_list:
             description = f'Sheet name: {sheetnames[0]} - {dsid}'
             report = ArtifactHtmlReport('iCloud - Messages in Cloud')
-            report.start_artifact_report(report_folder, 'iCloud - Messages in Cloud', description)
+            report.start_artifact_report(report_folder, f'iCloud - Messages in Cloud[{iteration}]', description)
             report.add_script()
             data_headers = (dth)
             report.write_artifact_data_table(data_headers, data_list, file_found)
