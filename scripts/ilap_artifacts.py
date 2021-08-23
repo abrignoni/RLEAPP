@@ -28,6 +28,7 @@ from scripts.artifacts.playStoreDevices import get_playStoreDevices
 from scripts.artifacts.playStoreInstalls import get_playStoreInstalls
 from scripts.artifacts.playStoreLibrary import get_playStoreLibrary
 from scripts.artifacts.playStorePurchaseHistory import get_playStorePurchaseHistory
+from scripts.artifacts.playStoreSubscriptions import get_playStoreSubscriptions
 
 from scripts.ilapfuncs import *
 
@@ -62,6 +63,7 @@ tosearch = {
     'playStoreInstalls':('Google Play Store', ('*/Installs.json')),
     'playStoreLibrary':('Google Play Store', ('*/Library.json')),
     'playStorePurchaseHistory':('Google Play Store', ('*/Purchase History.json')),
+    'playStoreSubscriptions':('Google Play Store', ('*/Subscriptions.json')),
 }
 slash = '\\' if is_platform_windows() else '/'
 
