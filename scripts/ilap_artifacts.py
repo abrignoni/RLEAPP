@@ -47,6 +47,7 @@ tosearch = {
     'kikProfilepic':('Kik Returns', ('*profile-pic.jpg')),
     'icloudReturnsAcc':('iCloud Returns', ('*/Account/*_AccountDetails.xlsx')),
     'icloudMsgsInCloud':('iCloud Returns', ('*/Messagesinicloud/*MessagesInICloud.*')),
+    'icloudMsgsInCloud':('iCloud Returns', ('*/Messagesinicloud/*MessagesInICloud*', '*/Messages/MessagesInICloud*')),
     'icloudReturnsLogs':('iCloud Returns', ('*/LOG/*_iCloudLogs.xlsx')),
     'icloudQueryLogs':('iCloud Returns', ('*/LOG/*_IDS_QueryLogs.xlsx')),
     'icloudBookmarks':('iCloud Returns', ('*/Bookmarks/*_iCloud_Bookmarks.xlsx')),
