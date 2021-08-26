@@ -28,16 +28,49 @@ def get_instagramMessages(files_found, report_folder, seeker, wrap_text):
             names = utf8_in_extended_ascii(names)[1]
             
             for x in deserialized['messages']:
+                agregator_reac = ''
+                agregator = ''
+                
                 sender_name = x.get('sender_name', '')
                 sender_name = utf8_in_extended_ascii(sender_name)[1]
+                
                 timestamp = x.get('timestamp_ms', '')
+                
+                share = x.get('share','')
+                link =''
+                if share:
+                    link = share.get('link','')
+                    agregator = f'<a href={link} target="_blank" >{link}</>'
+                
+                reactions = x.get('reactions', '')
+                if reactions:
+                    counter = 0
+                    agregator_reac = agregator_reac + ('<table>')
+                    for reac in reactions:
+                        if counter == 0:
+                            agregator_reac = agregator_reac +('<tr>')
+                        reaction = reac.get('reaction', '')
+                        reaction = utf8_in_extended_ascii(reaction)[1]
+                        actor = reac.get('actor', '')
+                        actor = utf8_in_extended_ascii(actor)[1]
+                            
+                        counter = counter + 1
+                        agregator_reac = agregator_reac + f'<td>{reaction}<br>{actor}</td>'
+                        #hacer uno que no tenga html
+                        if counter == 2:
+                            counter = 0
+                            agregator_reac = agregator_reac + ('</tr>')
+                    if counter == 1:
+                        agregator_reac = agregator_reac + ('</tr>')
+                    agregator_reac = agregator_reac + ('</table><br>')
+                
                 if timestamp > 0:
                     timestamp = (datetime.datetime.fromtimestamp(int(timestamp)/1000).strftime('%Y-%m-%d %H:%M:%S'))
                 content = x.get('content', '' )
                 content = utf8_in_extended_ascii(content)[1]
                 type = x.get('type', '')
                 is_unsent = x.get('is_unsent', '')
-                agregator = ''
+                
                 photos = x.get('photos', '')
                 if photos:
                     counter = 0
@@ -86,7 +119,7 @@ def get_instagramMessages(files_found, report_folder, seeker, wrap_text):
                         agregator = agregator + ('</tr>')
                     agregator = agregator + ('</table><br>')
                         
-                data_list.append((timestamp, names, sender_name, content, agregator, is_unsent, type ))
+                data_list.append((timestamp, names, sender_name, content, agregator, agregator_reac, is_unsent, type ))
     
                 
     if data_list:
@@ -95,8 +128,8 @@ def get_instagramMessages(files_found, report_folder, seeker, wrap_text):
         report = ArtifactHtmlReport('Instagram Archive - Messages')
         report.start_artifact_report(report_folder, 'Instagram Archive - Messages')
         report.add_script()
-        data_headers = ('Timestamp', 'Participants', 'Sender', 'Content', 'Media', 'Is unsent', 'Type')
-        report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Media'])
+        data_headers = ('Timestamp', 'Participants', 'Sender', 'Content', 'Media', 'Reactions', 'Is unsent', 'Type')
+        report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Reactions','Media'])
         report.end_artifact_report()
         
         tsvname = f'Instagram Archive - Messages'
