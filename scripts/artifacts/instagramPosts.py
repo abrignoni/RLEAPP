@@ -6,7 +6,7 @@ import shutil
 from pathlib import Path	
 
 from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, kmlgen, is_platform_windows
+from scripts.ilapfuncs import logfunc, tsv, timeline, kmlgen, is_platform_windows, media_to_html
 
 def get_instagramPosts(files_found, report_folder, seeker, wrap_text):
     
@@ -44,20 +44,8 @@ def get_instagramPosts(files_found, report_folder, seeker, wrap_text):
                                     title = d
                                 if c == 'uri':
                                     uri = d
-                                    for match in files_found:
-                                        if uri in match:
-                                            dirs = os.path.dirname(uri)
-                                            filename = os.path.basename(uri)
-                                            locationfiles = f'{report_folder}{dirs}'
-                                            Path(f'{locationfiles}').mkdir(parents=True, exist_ok=True)
-                                            shutil.copy2(match, locationfiles)
-                                            mimetype = magic.from_file(match, mime = True)
-                                            if mimetype == 'video/mp4':
-                                                thumb = f'<video width="320" height="240" controls="controls"><source src="{locationfiles}/{filename}" type="video/mp4">Your browser does not support the video tag.</video>'
-                                            else:
-                                                thumb = f'<img src="{locationfiles}/{filename}" width="300"></img>'
-                                            break
-                                        
+                                    thumb = media_to_html(uri, files_found, report_folder)
+                                    
                                 if c == 'creation_timestamp':
                                     if d > 0:
                                         timestamp = (datetime.datetime.fromtimestamp(int(d)).strftime('%Y-%m-%d %H:%M:%S'))
