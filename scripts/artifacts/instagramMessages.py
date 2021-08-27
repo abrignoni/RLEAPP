@@ -40,7 +40,16 @@ def get_instagramMessages(files_found, report_folder, seeker, wrap_text):
                 link =''
                 if share:
                     link = share.get('link','')
-                    agregator = f'<a href={link} target="_blank" >{link}</>'
+                    share_text = share.get('share_text','')
+                    share_text = utf8_in_extended_ascii(share_text)[1]
+                    content_owner = share.get('original_content_owner', '')
+                    content_owner = utf8_in_extended_ascii(content_owner)[1]
+                    agregator = f'<a href={link} target="_blank" >{link}</><br><br>'
+                    if share_text:
+                        agregator = agregator + f'Shared Text: {share_text}<br><br>'
+                    if content_owner:
+                        agregator = agregator + f'Original Content Owner: {content_owner}'
+                    
                 
                 reactions = x.get('reactions', '')
                 if reactions:
@@ -86,7 +95,7 @@ def get_instagramMessages(files_found, report_folder, seeker, wrap_text):
                         thumb = media_to_html(pictures, files_found, report_folder)
                         
                         counter = counter + 1
-                        agregator = agregator + f'<td>{thumb}<br>{time}</td>'
+                        agregator = agregator + f'<td>{thumb}</td>'
                         #hacer uno que no tenga html
                         if counter == 2:
                             counter = 0
@@ -110,7 +119,7 @@ def get_instagramMessages(files_found, report_folder, seeker, wrap_text):
                         thumb = media_to_html(movie, files_found, report_folder)
                         
                         counter = counter + 1
-                        agregator = agregator + f'<td>{thumb}<br>{time}</td>'
+                        agregator = agregator + f'<td>{thumb}</td>'
                         #hacer uno que no tenga html
                         if counter == 2:
                             counter = 0
