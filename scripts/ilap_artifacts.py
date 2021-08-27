@@ -22,6 +22,7 @@ from scripts.artifacts.instagramDevicescam import get_instagramDevicescam
 from scripts.artifacts.instagramInfotoadv import get_instagramInfotoadv
 from scripts.artifacts.instagramLogin import get_instagramLogin
 from scripts.artifacts.instagramMessages import get_instagramMessages
+from scripts.artifacts.instagramMessageReq import get_instagramMessageReq
 from scripts.artifacts.instagramPersinfo import get_instagramPersinfo
 from scripts.artifacts.instagramProfchanges import get_instagramProfchanges
 from scripts.artifacts.instagramPosts import get_instagramPosts
@@ -29,7 +30,6 @@ from scripts.artifacts.instagramPostcom import get_instagramPostcom
 from scripts.artifacts.playStoreDevices import get_playStoreDevices
 from scripts.artifacts.playStoreInstalls import get_playStoreInstalls
 from scripts.artifacts.playStoreLibrary import get_playStoreLibrary
-from scripts.artifacts.playStoreProfile import get_playStoreProfile
 from scripts.artifacts.playStorePurchaseHistory import get_playStorePurchaseHistory
 from scripts.artifacts.playStoreReviews import get_playStoreReviews
 from scripts.artifacts.playStoreSubscriptions import get_playStoreSubscriptions
@@ -62,6 +62,7 @@ tosearch = {
     'instagramInfotoadv':('Instagram Archive', ("*/ads_and_businesses/information_you've_submitted_to_advertisers.json")),
     'instagramLogin':('Instagram Archive', ('*/login_and_account_creation/login_activity.json')),
     'instagramMessages':('Instagram Archive', ('*/messages/inbox/*')),
+    'instagramMessageReq':('Instagram Archive', ('*/messages/message_requests/*')),
     'instagramPersinfo':('Instagram Archive', ('*/account_information/personal_information.json', '*/media/other/*.jpg')),
     'instagramProfchanges':('Instagram Archive', ('*/account_information/profile_changes.json')),
     'instagramPosts':('Instagram Archive', ('*/content/posts_1.json', '*/media/posts/*')),
@@ -69,7 +70,6 @@ tosearch = {
     'playStoreDevices':('Google Takeout Archive', ('*/Google Play Store/Devices.json')),
     'playStoreInstalls':('Google Takeout Archive', ('*/Google Play Store/Installs.json')),
     'playStoreLibrary':('Google Takeout Archive', ('*/Google Play Store/Library.json')),
-    'playStoreProfile':('Google Takeout Archive', ('*/Profile/Profile.json','*/Profile/ProfilePhoto.jpg')),
     'playStorePurchaseHistory':('Google Takeout Archive', ('*/Google Play Store/Purchase History.json')),
     'playStoreReviews':('Google Takeout Archive', ('*/Google Play Store/Reviews.json')),
     'playStoreSubscriptions':('Google Takeout Archive', ('*/Google Play Store/Subscriptions.json')),
