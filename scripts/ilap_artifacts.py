@@ -27,6 +27,7 @@ from scripts.artifacts.instagramPersinfo import get_instagramPersinfo
 from scripts.artifacts.instagramProfchanges import get_instagramProfchanges
 from scripts.artifacts.instagramPosts import get_instagramPosts
 from scripts.artifacts.instagramPostcom import get_instagramPostcom
+from scripts.artifacts.instagramSearches import get_instagramSearches
 from scripts.artifacts.playStoreDevices import get_playStoreDevices
 from scripts.artifacts.playStoreInstalls import get_playStoreInstalls
 from scripts.artifacts.playStoreLibrary import get_playStoreLibrary
@@ -67,6 +68,7 @@ tosearch = {
     'instagramProfchanges':('Instagram Archive', ('*/account_information/profile_changes.json')),
     'instagramPosts':('Instagram Archive', ('*/content/posts_1.json', '*/media/posts/*')),
     'instagramPostcom':('Instagram Archive', ('*/comments/post_comments.json')),
+    'instagramSearches':('Instagram Archive', ('*/recent_searches/account_searches.json')),
     'playStoreDevices':('Google Takeout Archive', ('*/Google Play Store/Devices.json')),
     'playStoreInstalls':('Google Takeout Archive', ('*/Google Play Store/Installs.json')),
     'playStoreLibrary':('Google Takeout Archive', ('*/Google Play Store/Library.json')),
