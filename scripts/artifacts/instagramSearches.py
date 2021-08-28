@@ -30,8 +30,6 @@ def get_instagramSearches(files_found, report_folder, seeker, wrap_text):
     
                 
     if data_list:
-        file_found = os.path.dirname(file_found)
-        file_found = os.path.dirname(file_found)
         report = ArtifactHtmlReport('Instagram Archive - Searches')
         report.start_artifact_report(report_folder, 'Instagram Archive - Searches')
         report.add_script()
