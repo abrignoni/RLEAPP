@@ -20,17 +20,20 @@ from scripts.artifacts.instagramAccinfo import get_instagramAccinfo
 from scripts.artifacts.instagramDevices import get_instagramDevices
 from scripts.artifacts.instagramDevicescam import get_instagramDevicescam
 from scripts.artifacts.instagramInfotoadv import get_instagramInfotoadv
+from scripts.artifacts.instagramLikedcomm import get_instagramLikedcomm
 from scripts.artifacts.instagramLogin import get_instagramLogin
 from scripts.artifacts.instagramLogout import get_instagramLogout
 from scripts.artifacts.instagramMessages import get_instagramMessages
 from scripts.artifacts.instagramMessageReq import get_instagramMessageReq
 from scripts.artifacts.instagramPasswordchange import get_instagramPasswordchange
 from scripts.artifacts.instagramPersinfo import get_instagramPersinfo
+from scripts.artifacts.instagramPrivacychange import get_instagramPrivacychange
 from scripts.artifacts.instagramProfchanges import get_instagramProfchanges
 from scripts.artifacts.instagramPosts import get_instagramPosts
 from scripts.artifacts.instagramPostcom import get_instagramPostcom
 from scripts.artifacts.instagramSavedposts import get_instagramSavedposts
 from scripts.artifacts.instagramSearches import get_instagramSearches
+from scripts.artifacts.instagramStories import get_instagramStories
 from scripts.artifacts.playStoreDevices import get_playStoreDevices
 from scripts.artifacts.playStoreInstalls import get_playStoreInstalls
 from scripts.artifacts.playStoreLibrary import get_playStoreLibrary
@@ -64,17 +67,20 @@ tosearch = {
     'instagramDevices':('Instagram Archive', ('*/device_information/devices.json')),
     'instagramDevicescam':('Instagram Archive', ('*/device_information/camera_information.json')),
     'instagramInfotoadv':('Instagram Archive', ("*/ads_and_businesses/information_you've_submitted_to_advertisers.json")),
+    'instagramLikedcomm':('Instagram Archive', ('*/likes/liked_comments.json')),
     'instagramLogin':('Instagram Archive', ('*/login_and_account_creation/login_activity.json')),
     'instagramLogout':('Instagram Archive', ('*/login_and_account_creation/logout_activity.json')),
     'instagramMessages':('Instagram Archive', ('*/messages/inbox/*')),
     'instagramMessageReq':('Instagram Archive', ('*/messages/message_requests/*')),
     'instagramPasswordchange':('Instagram Archive', ('*/login_and_account_creation/password_change_activity.json')),
     'instagramPersinfo':('Instagram Archive', ('*/account_information/personal_information.json', '*/media/other/*.jpg')),
+    'instagramPrivacychange':('Instagram Archive', ('*/login_and_account_creation/account_privacy_changes.json')),
     'instagramProfchanges':('Instagram Archive', ('*/account_information/profile_changes.json')),
     'instagramPosts':('Instagram Archive', ('*/content/posts_1.json', '*/media/posts/*')),
     'instagramPostcom':('Instagram Archive', ('*/comments/post_comments.json')),
     'instagramSavedposts':('Instagram Archive', ('*/saved/saved_posts.json')),
     'instagramSearches':('Instagram Archive', ('*/recent_searches/account_searches.json')),
+    'instagramStories':('Instagram Archive', ('*/content/stories.json', '*/media/stories/*')),
     'playStoreDevices':('Google Takeout Archive', ('*/Google Play Store/Devices.json')),
     'playStoreInstalls':('Google Takeout Archive', ('*/Google Play Store/Installs.json')),
     'playStoreLibrary':('Google Takeout Archive', ('*/Google Play Store/Library.json')),
