@@ -17,23 +17,38 @@ from scripts.artifacts.icloudBookmarks import get_icloudBookmarks
 from scripts.artifacts.icloudFMFFollowers import get_icloudFMFFollowers
 from scripts.artifacts.icloudFMFFollowing import get_icloudFMFFollowing
 from scripts.artifacts.instagramAccinfo import get_instagramAccinfo
+from scripts.artifacts.instagramAdsclicked import get_instagramAdsclicked
+from scripts.artifacts.instagramAdsviewed import get_instagramAdsviewed
+from scripts.artifacts.instagramBlocked import get_instagramBlocked
 from scripts.artifacts.instagramDevices import get_instagramDevices
 from scripts.artifacts.instagramDevicescam import get_instagramDevicescam
+from scripts.artifacts.instagramFollowers import get_instagramFollowers
+from scripts.artifacts.instagramFollowing import get_instagramFollowing
 from scripts.artifacts.instagramInfotoadv import get_instagramInfotoadv
+from scripts.artifacts.instagramInterests import get_instagramInterests
 from scripts.artifacts.instagramLikedcomm import get_instagramLikedcomm
 from scripts.artifacts.instagramLogin import get_instagramLogin
 from scripts.artifacts.instagramLogout import get_instagramLogout
 from scripts.artifacts.instagramMessages import get_instagramMessages
 from scripts.artifacts.instagramMessageReq import get_instagramMessageReq
+from scripts.artifacts.instagramMusicheard import get_instagramMusicheard
+from scripts.artifacts.instagramNointerest import get_instagramNointerest
 from scripts.artifacts.instagramPasswordchange import get_instagramPasswordchange
+from scripts.artifacts.instagramPending import get_instagramPending
 from scripts.artifacts.instagramPersinfo import get_instagramPersinfo
 from scripts.artifacts.instagramPrivacychange import get_instagramPrivacychange
 from scripts.artifacts.instagramProfchanges import get_instagramProfchanges
+from scripts.artifacts.instagramPolls import get_instagramPolls
 from scripts.artifacts.instagramPosts import get_instagramPosts
 from scripts.artifacts.instagramPostcom import get_instagramPostcom
+from scripts.artifacts.instagramPostsviewed import get_instagramPostsviewed
+from scripts.artifacts.instagramRecentreq import get_instagramRecentreq
+from scripts.artifacts.instagramRemovedsug import get_instagramRemovedsug
 from scripts.artifacts.instagramSavedposts import get_instagramSavedposts
 from scripts.artifacts.instagramSearches import get_instagramSearches
 from scripts.artifacts.instagramStories import get_instagramStories
+from scripts.artifacts.instagramVideoswatched import get_instagramVideoswatched
+from scripts.artifacts.instagramSuggestedviewed import get_instagramSuggestedviewed
 from scripts.artifacts.playStoreDevices import get_playStoreDevices
 from scripts.artifacts.playStoreInstalls import get_playStoreInstalls
 from scripts.artifacts.playStoreLibrary import get_playStoreLibrary
@@ -64,23 +79,38 @@ tosearch = {
     'icloudFMFFollowers':('iCloud Returns', ('*/fmf/*_Followers.xlsx')),
     'icloudFMFFollowing':('iCloud Returns', ('*/fmf/*_Following.xlsx')),
     'instagramAccinfo':('Instagram Archive', ('*/account_information/account_information.json')),
+    'instagramAdsclicked':('Instagram Archive', ('*/ads_and_content/ads_clicked.json')),
+    'instagramAdsviewed':('Instagram Archive', ('*/ads_and_content/ads_viewed.json')),
+    'instagramBlocked':('Instagram Archive', ('*/followers_and_following/blocked_accounts.json')),
     'instagramDevices':('Instagram Archive', ('*/device_information/devices.json')),
     'instagramDevicescam':('Instagram Archive', ('*/device_information/camera_information.json')),
+    'instagramFollowers':('Instagram Archive', ('*/followers_and_following/followers.json')),
+    'instagramFollowing':('Instagram Archive', ('*/followers_and_following/following.json')),
     'instagramInfotoadv':('Instagram Archive', ("*/ads_and_businesses/information_you've_submitted_to_advertisers.json")),
+    'instagramInterests':('Instagram Archive', ("*/information_about_you/ads_interests.json")),
     'instagramLikedcomm':('Instagram Archive', ('*/likes/liked_comments.json')),
     'instagramLogin':('Instagram Archive', ('*/login_and_account_creation/login_activity.json')),
     'instagramLogout':('Instagram Archive', ('*/login_and_account_creation/logout_activity.json')),
     'instagramMessages':('Instagram Archive', ('*/messages/inbox/*')),
     'instagramMessageReq':('Instagram Archive', ('*/messages/message_requests/*')),
+    'instagramMusicheard':('Instagram Archive', ('*/ads_and_content/music_heard_in_stories.json')),
+    'instagramNointerest':('Instagram Archive', ('*/ads_and_content/*re_not_interested_in.json')),
     'instagramPasswordchange':('Instagram Archive', ('*/login_and_account_creation/password_change_activity.json')),
+    'instagramPending':('Instagram Archive', ('*/followers_and_following/pending_follow_requests.json')),
     'instagramPersinfo':('Instagram Archive', ('*/account_information/personal_information.json', '*/media/other/*.jpg')),
     'instagramPrivacychange':('Instagram Archive', ('*/login_and_account_creation/account_privacy_changes.json')),
     'instagramProfchanges':('Instagram Archive', ('*/account_information/profile_changes.json')),
+    'instagramPolls':('Instagram Archive', ('*/story_sticker_interactions/polls.json')),
     'instagramPosts':('Instagram Archive', ('*/content/posts_1.json', '*/media/posts/*')),
     'instagramPostcom':('Instagram Archive', ('*/comments/post_comments.json')),
+    'instagramPostsviewed':('Instagram Archive', ('*/ads_and_content/posts_viewed.json')),
+    'instagramRecentreq':('Instagram Archive', ('*/followers_and_following/recent_follow_requests.json')),
+    'instagramRemovedsug':('Instagram Archive', ('*/followers_and_following/removed_suggestions.json')),
     'instagramSavedposts':('Instagram Archive', ('*/saved/saved_posts.json')),
     'instagramSearches':('Instagram Archive', ('*/recent_searches/account_searches.json')),
     'instagramStories':('Instagram Archive', ('*/content/stories.json', '*/media/stories/*')),
+    'instagramSuggestedviewed':('Instagram Archive', ('*/ads_and_content/suggested_accounts_viewed.json')),
+    'instagramVideoswatched':('Instagram Archive', ('*/ads_and_content/videos_watched.json')),
     'playStoreDevices':('Google Takeout Archive', ('*/Google Play Store/Devices.json')),
     'playStoreInstalls':('Google Takeout Archive', ('*/Google Play Store/Installs.json')),
     'playStoreLibrary':('Google Takeout Archive', ('*/Google Play Store/Library.json')),
