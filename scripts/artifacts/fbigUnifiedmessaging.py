@@ -17,6 +17,7 @@ def get_fbigUnifiedmessaging(files_found, report_folder, seeker, wrap_text):
         filename = os.path.basename(file_found)
         
         if filename.startswith('index.html'):
+            file_to_report_data = file_found
             data_list = []
             with open(file_found) as fp:
                 soup = BeautifulSoup(fp, 'html.parser')
@@ -80,7 +81,7 @@ def get_fbigUnifiedmessaging(files_found, report_folder, seeker, wrap_text):
                                             else:
                                                 agregator = ''
                                                 
-                                            data_list.append((itemsdict.get('sent', ''),itemsdict.get('threadid', ''), itemsdict.get('author', ''), itemsdict.get('body', ''), agregator))
+                                            data_list.append((itemsdict.get('sent', ''),itemsdict.get('threadid', ''), itemsdict.get('author', ''), itemsdict.get('body', ''), itemsdict.get('missed', ''), itemsdict.get('duration', ''), agregator, itemsdict.get('summary', ''), itemsdict.get('title', ''), itemsdict.get('url', '') ))
                                             #print(lmf)
                                             #to do: check lmf in dictionary, pull and find the files to attach to the report
                                             agregator = ''
@@ -120,24 +121,23 @@ def get_fbigUnifiedmessaging(files_found, report_folder, seeker, wrap_text):
                                         pass
                         itemsdict['author'] = author
                         itemsdict['threadid'] = threadid
-                        data_list.append((itemsdict.get('sent', ''),itemsdict.get('threadid', ''), itemsdict.get('author', ''), itemsdict.get('body', ''), itemsdict.get('lmf', '')))
-            
+                        data_list.append((itemsdict.get('sent', ''),itemsdict.get('threadid', ''), itemsdict.get('author', ''), itemsdict.get('body', ''),  itemsdict.get('missed', ''), itemsdict.get('duration', ''), agregator, itemsdict.get('summary', ''), itemsdict.get('title', ''), itemsdict.get('url', '') ))
                 
     if data_list:
         report = ArtifactHtmlReport('Facebook & Instagram - Unified Messaging')
-        report.start_artifact_report(report_folder, 'FBIG - Unified Messaging')
+        report.start_artifact_report(report_folder, 'Facebook Instagram - Unified Messaging')
         report.add_script()
-        data_headers = ('Timestamp','Thread ID', 'Author', 'Body', 'LMF')
-        report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['LMF'])
+        data_headers = ('Timestamp','Thread ID', 'Author', 'Body', 'Missed','Duration', 'Linked Media File','Summary', 'Title', 'URL' )
+        report.write_artifact_data_table(data_headers, data_list, file_to_report_data, html_no_escape=['Linked Media File'])
         report.end_artifact_report()
         
-        tsvname = f'FBIG - Unified Messaging'
+        tsvname = f'Facebook Instagram - Unified Messaging'
         tsv(report_folder, data_headers, data_list, tsvname)
         
-        tlactivity = f'FBIG - Unified Messaging'
+        tlactivity = f'Facebook Instagram - Unified Messaging'
         timeline(report_folder, tlactivity, data_list, data_headers)
 
     else:
-        logfunc('No FBIG - Unified Messaging')
+        logfunc('No Facebook Instagram - Unified Messaging')
                 
         
