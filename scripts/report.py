@@ -41,6 +41,7 @@ def get_icon_name(category, artifact):
         if artifact == 'KIK - PROFILE PIC': icon = 'image'
         else:                               icon = 'file-text'
     elif category == 'CONTACTS':            icon = 'user'
+    elif category == 'FACEBOOK - INSTAGRAM RETURNS':            icon = 'facebook'
     elif category == 'INSTAGRAM ARCHIVE':  
         if artifact == 'INSTAGRAM ARCHIVE - ACCOUNT INFO': icon = 'user'
         elif artifact == 'INSTAGRAM ARCHIVE - PERSONAL INFO': icon = 'user'
