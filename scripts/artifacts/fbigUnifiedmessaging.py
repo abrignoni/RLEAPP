@@ -59,7 +59,11 @@ def get_fbigUnifiedmessaging(files_found, report_folder, seeker, wrap_text):
                                             control = 1
                                         else:
                                             itemsdict['threadid'] = threadid
-                                            
+                                            current_split = current_part.split('<br/>', 1)
+                                            ag = ''
+                                            for current_items in current_split[1:]:
+                                                ag = ag + current_items
+                                            itemsdict['currentpart'] = ag.strip()
                                             if len(lmf) > 0:
                                                 counterl = 0
                                                 agregator = agregator + ('<table>')
@@ -81,7 +85,7 @@ def get_fbigUnifiedmessaging(files_found, report_folder, seeker, wrap_text):
                                             else:
                                                 agregator = ''
                                                 
-                                            data_list.append((itemsdict.get('sent', ''),itemsdict.get('threadid', ''), itemsdict.get('author', ''), itemsdict.get('body', ''), itemsdict.get('missed', ''), itemsdict.get('duration', ''), agregator, itemsdict.get('summary', ''), itemsdict.get('title', ''), itemsdict.get('url', '') ))
+                                            data_list.append((itemsdict.get('sent', ''),itemsdict.get('threadid', ''), itemsdict.get('currentpart', ''), itemsdict.get('author', ''), itemsdict.get('body', ''), itemsdict.get('missed', ''), itemsdict.get('duration', ''), agregator, itemsdict.get('summary', ''), itemsdict.get('title', ''), itemsdict.get('url', '') ))
                                             #print(lmf)
                                             #to do: check lmf in dictionary, pull and find the files to attach to the report
                                             agregator = ''
@@ -89,7 +93,7 @@ def get_fbigUnifiedmessaging(files_found, report_folder, seeker, wrap_text):
                                             lmf = []
                                     elif thvalue == 'Sent':
                                         sent = tdvalue
-                                        itemsdict['sent'] = sent
+                                        itemsdict['sent'] = sent.replace('UTC', '').strip()
                                     elif thvalue == 'Body':
                                         body = tdvalue
                                         itemsdict['body'] = body
@@ -121,14 +125,19 @@ def get_fbigUnifiedmessaging(files_found, report_folder, seeker, wrap_text):
                                         pass
                         itemsdict['author'] = author
                         itemsdict['threadid'] = threadid
-                        data_list.append((itemsdict.get('sent', ''),itemsdict.get('threadid', ''), itemsdict.get('author', ''), itemsdict.get('body', ''),  itemsdict.get('missed', ''), itemsdict.get('duration', ''), agregator, itemsdict.get('summary', ''), itemsdict.get('title', ''), itemsdict.get('url', '') ))
+                        current_split = current_part.split('<br/>', 1)
+                        ag = ''
+                        for current_items in current_split[1:]:
+                            ag = ag + current_items
+                        itemsdict['currentpart'] = ag.strip()
+                        data_list.append((itemsdict.get('sent', ''),itemsdict.get('threadid', ''),itemsdict.get('currentpart', ''), itemsdict.get('author', ''), itemsdict.get('body', ''),  itemsdict.get('missed', ''), itemsdict.get('duration', ''), agregator, itemsdict.get('summary', ''), itemsdict.get('title', ''), itemsdict.get('url', '') ))
                 
     if data_list:
         report = ArtifactHtmlReport('Facebook & Instagram - Unified Messaging')
         report.start_artifact_report(report_folder, 'Facebook Instagram - Unified Messaging')
         report.add_script()
-        data_headers = ('Timestamp','Thread ID', 'Author', 'Body', 'Missed','Duration', 'Linked Media File','Summary', 'Title', 'URL' )
-        report.write_artifact_data_table(data_headers, data_list, file_to_report_data, html_no_escape=['Linked Media File'])
+        data_headers = ('Timestamp','Thread ID','Current Participants', 'Author', 'Body', 'Missed','Duration', 'Linked Media File','Summary', 'Title', 'URL' )
+        report.write_artifact_data_table(data_headers, data_list, file_to_report_data, html_no_escape=['Current Participants', 'Linked Media File'])
         report.end_artifact_report()
         
         tsvname = f'Facebook Instagram - Unified Messaging'
