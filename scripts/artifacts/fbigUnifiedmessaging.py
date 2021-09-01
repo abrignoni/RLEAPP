@@ -19,7 +19,7 @@ def get_fbigUnifiedmessaging(files_found, report_folder, seeker, wrap_text):
         if filename.startswith('index.html'):
             file_to_report_data = file_found
             data_list = []
-            with open(file_found) as fp:
+            with open(file_found, encoding='utf-8') as fp:
                 soup = BeautifulSoup(fp, 'html.parser')
             #<div id="property-unified_messages" class="content-pane">
             uni = soup.find_all("div", {"id": "property-unified_messages"})
