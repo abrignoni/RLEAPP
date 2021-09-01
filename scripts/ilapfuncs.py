@@ -397,4 +397,80 @@ def media_to_html(media_path, files_found, report_folder):
                 thumb = f'<a href={source}> Link to {mimetype} </>'
                 
     return thumb
-        
+
+def usergen(report_folder, data_list_usernames):
+    report_folder = report_folder.rstrip('/')
+    report_folder = report_folder.rstrip('\\')
+    report_folder_base, tail = os.path.split(report_folder)
+    udb_report_folder = os.path.join(report_folder_base, '_Usernames DB')
+
+    if os.path.isdir(udb_report_folder):
+        usernames = os.path.join(udb_report_folder, '_usernames.db')
+        db = sqlite3.connect(usernames)
+        cursor = db.cursor()
+        cursor.execute('''PRAGMA synchronous = EXTRA''')
+        cursor.execute('''PRAGMA journal_mode = WAL''')
+        db.commit()
+    else:
+        os.makedirs(udb_report_folder)
+        usernames = os.path.join(udb_report_folder, '_usernames.db')
+        db = sqlite3.connect(usernames)
+        cursor = db.cursor()
+        cursor.execute(
+            """
+            CREATE TABLE data(username TEXT, appname TEXT, artifactname text, html_report text, data TEXT)
+            """
+        )
+        db.commit()
+
+    a = 0
+    length = (len(data_list_usernames))
+    while a < length:
+        user = data_list_usernames[a][0]
+        app = data_list_usernames[a][1]
+        artifact = data_list_usernames[a][2]
+        html_report = data_list_usernames[a][3]
+        data = data_list_usernames[a][4]
+        cursor.execute("INSERT INTO data VALUES(?,?,?,?,?)", (user, app, artifact, html_report, data))
+        a += 1
+    db.commit()
+    db.close()
+
+
+def ipgen(report_folder, data_list_ipaddress):
+    report_folder = report_folder.rstrip('/')
+    report_folder = report_folder.rstrip('\\')
+    report_folder_base, tail = os.path.split(report_folder)
+    udb_report_folder = os.path.join(report_folder_base, '_IPAddress DB')
+
+    if os.path.isdir(udb_report_folder):
+        ipaddress = os.path.join(udb_report_folder, '_ipaddresses.db')
+        db = sqlite3.connect(ipaddress)
+        cursor = db.cursor()
+        cursor.execute('''PRAGMA synchronous = EXTRA''')
+        cursor.execute('''PRAGMA journal_mode = WAL''')
+        db.commit()
+    else:
+        os.makedirs(udb_report_folder)
+        ipaddress = os.path.join(udb_report_folder, '_ipaddresses.db')
+        db = sqlite3.connect(ipaddress)
+        cursor = db.cursor()
+        cursor.execute(
+            """
+            CREATE TABLE data(ipaddress TEXT, appname TEXT, artifactname text, html_report text, data TEXT)
+            """
+        )
+        db.commit()
+
+    a = 0
+    length = (len(data_list_ipaddress))
+    while a < length:
+        ip_address = data_list_ipaddress[a][0]
+        app = data_list_ipaddress[a][1]
+        artifact = data_list_ipaddress[a][2]
+        html_report = data_list_ipaddress[a][3]
+        data = data_list_ipaddress[a][4]
+        cursor.execute("INSERT INTO data VALUES(?,?,?,?,?)", (ip_address, app, artifact, html_report, data))
+        a += 1
+    db.commit()
+    db.close()

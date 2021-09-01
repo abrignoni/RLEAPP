@@ -19,6 +19,7 @@ class ArtifactHtmlReport:
 
     def start_artifact_report(self, report_folder, artifact_file_name, artifact_description=''):
         '''Creates the report HTML file and writes the artifact name as a heading'''
+        self.report_file_path = os.path.join(os.path.split(report_folder.rstrip('\\'))[0], f'{artifact_file_name}.html')
         self.report_file = open(os.path.join(report_folder, f'{artifact_file_name}.temphtml'), 'w', encoding='utf8')
         self.report_file.write(page_header.format(f'RLEAPP - {self.artifact_name} report'))
         self.report_file.write(body_start.format(f'RLEAPP {rleapp_version}'))
@@ -29,6 +30,10 @@ class ArtifactHtmlReport:
         self.report_file.write(body_main_data_title.format(f'{self.artifact_name} report', artifact_description))
         self.report_file.write(body_spinner) # Spinner till data finishes loading
         #self.report_file.write(body_infinite_loading_bar) # Not working!
+
+    def get_report_file_path(self):
+        '''returns the html report name'''
+        return self.report_file_path
 
     def add_script(self, script=''):
         '''Adds a default script or the script supplied'''

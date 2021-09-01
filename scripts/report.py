@@ -40,6 +40,14 @@ def get_icon_name(category, artifact):
     elif category == 'KIK RETURNS':       
         if artifact == 'KIK - PROFILE PIC': icon = 'image'
         else:                               icon = 'file-text'
+    elif category == 'NETFLIX RETURNS':
+        if artifact == 'NETFLIX - BILLING HISTORY':    icon = 'credit-card'
+        elif artifact == 'NETFLIX - PROFILES':         icon = 'users'
+        elif artifact == 'NETFLIX - IP ADDRESS LOGIN': icon = 'log-in'
+        elif artifact == 'NETFLIX - ACCOUNT DETAILS':  icon = 'users'
+        elif artifact == 'NETFLIX - MESSAGES SENT BY NETFLIX':  icon = 'mail'
+        elif artifact == 'NETFLIX - SEARCH HISTORY':   icon = 'search'
+        else:                                          icon = 'tv'
     elif category == 'CONTACTS':            icon = 'user'
     elif category == 'FACEBOOK - INSTAGRAM RETURNS':            icon = 'facebook'
     elif category == 'INSTAGRAM ARCHIVE':  
