@@ -40,7 +40,7 @@ def get_icon_name(category, artifact):
     elif category == 'KIK RETURNS':       
         if artifact == 'KIK - PROFILE PIC': icon = 'image'
         else:                               icon = 'file-text'
-    elif category == 'NETFLIX RETURNS':
+    elif category == 'NETFLIX ARCHIVE':
         if artifact == 'NETFLIX - BILLING HISTORY':    icon = 'credit-card'
         elif artifact == 'NETFLIX - PROFILES':         icon = 'users'
         elif artifact == 'NETFLIX - IP ADDRESS LOGIN': icon = 'log-in'

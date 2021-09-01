@@ -8,7 +8,7 @@ import magic
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, usergen, ipgen
 
-def get_netflixReturns(files_found, report_folder, seeker, wrap_text):
+def get_netflixArchive(files_found, report_folder, seeker, wrap_text):
     
     for file_found in files_found:
         file_found = str(file_found)
