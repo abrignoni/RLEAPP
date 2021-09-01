@@ -50,6 +50,7 @@ from scripts.artifacts.instagramSearches import get_instagramSearches
 from scripts.artifacts.instagramStories import get_instagramStories
 from scripts.artifacts.instagramVideoswatched import get_instagramVideoswatched
 from scripts.artifacts.instagramSuggestedviewed import get_instagramSuggestedviewed
+from scripts.artifacts.netflixArchive import get_netflixArchive
 from scripts.artifacts.playStoreDevices import get_playStoreDevices
 from scripts.artifacts.playStoreInstalls import get_playStoreInstalls
 from scripts.artifacts.playStoreLibrary import get_playStoreLibrary
@@ -113,6 +114,7 @@ tosearch = {
     'instagramStories':('Instagram Archive', ('*/content/stories.json', '*/media/stories/*')),
     'instagramSuggestedviewed':('Instagram Archive', ('*/ads_and_content/suggested_accounts_viewed.json')),
     'instagramVideoswatched':('Instagram Archive', ('*/ads_and_content/videos_watched.json')),
+    'netflixArchive':('Netflix Archive', ('**/Profiles.csv', '**/BillingHistory.csv', '**/IpAddressesLogin.csv', '**/IpAddressesStreaming.csv', '**/Devices.csv', '**/ViewingActivity.csv', '**/SearchHistory.csv', '**/AccountDetails.csv', '**/MessagesSentByNetflix.csv')),
     'playStoreDevices':('Google Takeout Archive', ('*/Google Play Store/Devices.json')),
     'playStoreInstalls':('Google Takeout Archive', ('*/Google Play Store/Installs.json')),
     'playStoreLibrary':('Google Takeout Archive', ('*/Google Play Store/Library.json')),
