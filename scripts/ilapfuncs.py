@@ -373,19 +373,21 @@ def utf8_in_extended_ascii(input_string, *, raise_on_unexpected=False):
     return mis_encoded_utf8_present, "".join(output)
 
 def media_to_html(media_path, files_found, report_folder):
+    thumb = media_path
     for match in files_found:
         if media_path in match:
             dirs = os.path.dirname(report_folder)
             dirs = os.path.dirname(dirs)
-            if f'{dirs}/temp' in match:
+            env_path = os.path.join(dirs, 'temp')
+            if env_path in match:
                 source = match
             else:
                 dirs = os.path.dirname(match)
                 filename = os.path.basename(match)
-                locationfiles = f'{report_folder}{dirs}'
+                locationfiles = Path(f'{report_folder}/{dirs}')
                 Path(f'{locationfiles}').mkdir(parents=True, exist_ok=True)
                 shutil.copy2(match, locationfiles)
-                source = f'{locationfiles}/{filename}'
+                source = Path(f'{locationfiles}/{filename}')
                 
             mimetype = magic.from_file(match, mime = True)
             
