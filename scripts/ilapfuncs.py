@@ -373,6 +373,12 @@ def utf8_in_extended_ascii(input_string, *, raise_on_unexpected=False):
     return mis_encoded_utf8_present, "".join(output)
 
 def media_to_html(media_path, files_found, report_folder):
+    platform = is_platform_windows()
+    sep = '/'
+    if platform:
+        media_path = media_path.replace('/', '\\')
+        sep = '\\'
+        
     thumb = media_path
     for match in files_found:
         if media_path in match:
@@ -382,12 +388,14 @@ def media_to_html(media_path, files_found, report_folder):
             if env_path in match:
                 source = match
             else:
-                dirs = os.path.dirname(match)
-                filename = os.path.basename(match)
-                locationfiles = Path(f'{report_folder}/{dirs}')
+                path = os.path.dirname(match)
+                dirname = os.path.basename(path)
+                filename = Path(match)
+                filename = filename.name
+                locationfiles = Path(report_folder).joinpath(dirname)
                 Path(f'{locationfiles}').mkdir(parents=True, exist_ok=True)
                 shutil.copy2(match, locationfiles)
-                source = Path(f'{locationfiles}/{filename}')
+                source = Path(locationfiles, filename)
                 
             mimetype = magic.from_file(match, mime = True)
             
@@ -397,7 +405,6 @@ def media_to_html(media_path, files_found, report_folder):
                 thumb = f'<img src="{source}"width="300"></img>'
             else:
                 thumb = f'<a href={source}> Link to {mimetype} </>'
-                
     return thumb
 
 def usergen(report_folder, data_list_usernames):
@@ -476,3 +483,4 @@ def ipgen(report_folder, data_list_ipaddress):
         a += 1
     db.commit()
     db.close()
+    
