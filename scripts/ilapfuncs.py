@@ -374,10 +374,8 @@ def utf8_in_extended_ascii(input_string, *, raise_on_unexpected=False):
 
 def media_to_html(media_path, files_found, report_folder):
     platform = is_platform_windows()
-    sep = '/'
     if platform:
         media_path = media_path.replace('/', '\\')
-        sep = '\\'
         
     thumb = media_path
     for match in files_found:

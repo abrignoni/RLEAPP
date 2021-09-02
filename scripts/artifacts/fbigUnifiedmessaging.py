@@ -16,7 +16,8 @@ def get_fbigUnifiedmessaging(files_found, report_folder, seeker, wrap_text):
         
         filename = os.path.basename(file_found)
         
-        if filename.startswith('index.html'):
+        if filename.startswith('index.html') or filename.startswith('preservation-1.html'):
+            rfilename = filename
             file_to_report_data = file_found
             data_list = []
             with open(file_found, encoding='utf-8') as fp:
@@ -132,21 +133,21 @@ def get_fbigUnifiedmessaging(files_found, report_folder, seeker, wrap_text):
                         itemsdict['currentpart'] = ag.strip()
                         data_list.append((itemsdict.get('sent', ''),itemsdict.get('threadid', ''),itemsdict.get('currentpart', ''), itemsdict.get('author', ''), itemsdict.get('body', ''),  itemsdict.get('missed', ''), itemsdict.get('duration', ''), agregator, itemsdict.get('summary', ''), itemsdict.get('title', ''), itemsdict.get('url', '') ))
                 
-    if data_list:
-        report = ArtifactHtmlReport('Facebook & Instagram - Unified Messaging')
-        report.start_artifact_report(report_folder, 'Facebook Instagram - Unified Messaging')
-        report.add_script()
-        data_headers = ('Timestamp','Thread ID','Current Participants', 'Author', 'Body', 'Missed','Duration', 'Linked Media File','Summary', 'Title', 'URL' )
-        report.write_artifact_data_table(data_headers, data_list, file_to_report_data, html_no_escape=['Current Participants', 'Linked Media File'])
-        report.end_artifact_report()
-        
-        tsvname = f'Facebook Instagram - Unified Messaging'
-        tsv(report_folder, data_headers, data_list, tsvname)
-        
-        tlactivity = f'Facebook Instagram - Unified Messaging'
-        timeline(report_folder, tlactivity, data_list, data_headers)
-
-    else:
-        logfunc('No Facebook Instagram - Unified Messaging')
+        if data_list:
+            report = ArtifactHtmlReport(f'Facebook & Instagram - Unified Messaging - {rfilename}')
+            report.start_artifact_report(report_folder, f'Facebook Instagram - Unified Messaging - {rfilename}')
+            report.add_script()
+            data_headers = ('Timestamp','Thread ID','Current Participants', 'Author', 'Body', 'Missed','Duration', 'Linked Media File','Summary', 'Title', 'URL' )
+            report.write_artifact_data_table(data_headers, data_list, file_to_report_data, html_no_escape=['Current Participants', 'Linked Media File'])
+            report.end_artifact_report()
+            
+            tsvname = f'Facebook Instagram - Unified Messaging - {rfilename}'
+            tsv(report_folder, data_headers, data_list, tsvname)
+            
+            tlactivity = f'Facebook Instagram - Unified Messaging - {rfilename}'
+            timeline(report_folder, tlactivity, data_list, data_headers)
+    
+        else:
+            logfunc(f'No Facebook Instagram - Unified Messaging - {rfilename}')
                 
         

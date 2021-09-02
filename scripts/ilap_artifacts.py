@@ -72,7 +72,7 @@ tosearch = {
     'chromeHistory':('Google Takeout Archive', ('*/Chrome/BrowserHistory.json')),
     'kikReturns':('Kik Returns', ('*/logs/*.txt','*/logs/*','*/content/*')),
     'kikProfilepic':('Kik Returns', ('*profile-pic.jpg')),
-    'fbigUnifiedmessaging':('Facebook - Instagram Returns', ('*/index.html', '*/linked_media/*')),
+    'fbigUnifiedmessaging':('Facebook - Instagram Returns', ('*/index.html', '*/preservation-1.html', '*/linked_media/*')),
     'icloudReturnsAcc':('iCloud Returns', ('*/Account/*_AccountDetails.xlsx')),
     'icloudMsgsInCloud':('iCloud Returns', ('*/Messagesinicloud/*MessagesInICloud.*')),
     'icloudMsgsInCloud':('iCloud Returns', ('*/Messagesinicloud/*MessagesInICloud*', '*/Messages/MessagesInICloud*')),
