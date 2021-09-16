@@ -13,6 +13,7 @@ from scripts.artifacts.fbigUnifiedmessaging import get_fbigUnifiedmessaging
 from scripts.artifacts.icloudReturnsAcc import get_icloudReturnsAcc
 from scripts.artifacts.icloudMsgsInCloud import get_icloudMsgsInCloud
 from scripts.artifacts.icloudReturnsLogs import get_icloudReturnsLogs
+from scripts.artifacts.icloudReturnsphotolibrary import get_icloudReturnsphotolibrary
 from scripts.artifacts.icloudQueryLogs import get_icloudQueryLogs
 from scripts.artifacts.icloudBookmarks import get_icloudBookmarks
 from scripts.artifacts.icloudFMFFollowers import get_icloudFMFFollowers
@@ -81,6 +82,7 @@ tosearch = {
     'icloudBookmarks':('iCloud Returns', ('*/Bookmarks/*_iCloud_Bookmarks.xlsx')),
     'icloudFMFFollowers':('iCloud Returns', ('*/fmf/*_Followers.xlsx')),
     'icloudFMFFollowing':('iCloud Returns', ('*/fmf/*_Following.xlsx')),
+    'icloudReturnsphotolibrary':('iCloud Returns', ('*/*/cloudphotolibrary/Metadata.txt')),
     'instagramAccinfo':('Instagram Archive', ('*/account_information/account_information.json')),
     'instagramAdsclicked':('Instagram Archive', ('*/ads_and_content/ads_clicked.json')),
     'instagramAdsviewed':('Instagram Archive', ('*/ads_and_content/ads_viewed.json')),
