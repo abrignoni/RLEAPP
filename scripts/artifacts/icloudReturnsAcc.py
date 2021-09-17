@@ -53,7 +53,7 @@ def get_icloudReturnsAcc(files_found, report_folder, seeker, wrap_text):
         else:
             logfunc('No iCloud - Account Details data available')
             
-        #Second worsheet
+        #Second worksheet
         dth = []
         list = []
         data_headers = []
