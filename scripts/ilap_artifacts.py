@@ -82,7 +82,7 @@ tosearch = {
     'icloudBookmarks':('iCloud Returns', ('*/Bookmarks/*_iCloud_Bookmarks.xlsx')),
     'icloudFMFFollowers':('iCloud Returns', ('*/fmf/*_Followers.xlsx')),
     'icloudFMFFollowing':('iCloud Returns', ('*/fmf/*_Following.xlsx')),
-    'icloudReturnsphotolibrary':('iCloud Returns', ('*/*/cloudphotolibrary/Metadata.txt')),
+    'icloudReturnsphotolibrary':('iCloud Returns', ('*/*/cloudphotolibrary/*')),
     'instagramAccinfo':('Instagram Archive', ('*/account_information/account_information.json')),
     'instagramAdsclicked':('Instagram Archive', ('*/ads_and_content/ads_clicked.json')),
     'instagramAdsviewed':('Instagram Archive', ('*/ads_and_content/ads_viewed.json')),

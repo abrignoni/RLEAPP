@@ -402,7 +402,7 @@ def media_to_html(media_path, files_found, report_folder):
             elif 'image' in mimetype:
                 thumb = f'<img src="{source}"width="300"></img>'
             else:
-                thumb = f'<a href={source}> Link to {mimetype} </>'
+                thumb = f'<a href="{source}"> Link to {mimetype} </>'
     return thumb
 
 def usergen(report_folder, data_list_usernames):
