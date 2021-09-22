@@ -8,7 +8,7 @@ import base64
 from pathlib import Path	
 
 from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, kmlgen, is_platform_windows
+from scripts.ilapfuncs import logfunc, tsv, timeline, kmlgen, is_platform_windows, media_to_html
 
 def get_icloudReturnsphotolibrary(files_found, report_folder, seeker, wrap_text):
     
@@ -26,6 +26,7 @@ def get_icloudReturnsphotolibrary(files_found, report_folder, seeker, wrap_text)
         filename = os.path.basename(file_found)
     
         if filename.startswith('Metadata.txt'):
+            #print(file_found)
             data_list =[]
             with open(file_found, "rb") as fp:
                 data = json.load(fp)
@@ -39,15 +40,17 @@ def get_icloudReturnsphotolibrary(files_found, report_folder, seeker, wrap_text)
                 if filenameEnc != 'Negative':
                     filenamedec = (base64.b64decode(filenameEnc).decode('ascii'))
                     originalcreationdatedec = (datetime.datetime.fromtimestamp(int(originalcreationdate)/1000).strftime('%Y-%m-%d %H:%M:%S'))
-                    data_list.append((originalcreationdatedec, filenamedec, filenameEnc, isdeleted, isexpunged))
+                    thumb = media_to_html(filenamedec, files_found, report_folder)
+                    
+                    data_list.append((originalcreationdatedec, thumb, filenamedec, filenameEnc, isdeleted, isexpunged))
                     
                 
             if data_list:
                 report = ArtifactHtmlReport(f'iCloud Returns - Photo Library - {account}')
                 report.start_artifact_report(report_folder, f'iCloud Returns - Photo Library - {account}')
                 report.add_script()
-                data_headers = ('Timestamp', 'Filename', 'Filename base64', 'Is Deleted', 'Is Expunged')
-                report.write_artifact_data_table(data_headers, data_list, file_found)
+                data_headers = ('Timestamp', 'Media', 'Filename', 'Filename base64', 'Is Deleted', 'Is Expunged')
+                report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Media'])
                 report.end_artifact_report()
                 
                 tsvname = f'iCloud Returns - Photo Library - {account}'
