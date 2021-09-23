@@ -36,22 +36,22 @@ def get_takeoutLocationHistory(files_found, report_folder, seeker, wrap_text):
 
         num_entries = len(data_list)
         if num_entries > 0:
-            report = ArtifactHtmlReport('Google Takeout Location History')
-            report.start_artifact_report(report_folder, 'Google Takeout Location History')
+            report = ArtifactHtmlReport('Google Location History')
+            report.start_artifact_report(report_folder, 'Google Location History')
             report.add_script()
             data_headers = ('Timestamp','Latitude','Longitude','Accuracy','Velocity','Heading (Degrees)','Altitude','Vertical Accuracy','Source','Device Tag','Activity')
 
             report.write_artifact_data_table(data_headers, data_list, file_found)
             report.end_artifact_report()
             
-            tsvname = f'Google Takeout Location History'
+            tsvname = f'Google Location History'
             tsv(report_folder, data_headers, data_list, tsvname)
             
-            tlactivity = f'Google Takeout Location History'
+            tlactivity = f'Google Location History'
             timeline(report_folder, tlactivity, data_list, data_headers)
             
-            kmlactivity = 'Google Takeout Location History'
+            kmlactivity = 'Google Location History'
             kmlgen(report_folder, kmlactivity, data_list, data_headers)            
             
         else:
-            logfunc('No Google Takeout Location History data available')
+            logfunc('No Google Location History data available')
