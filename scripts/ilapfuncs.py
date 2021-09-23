@@ -373,9 +373,22 @@ def utf8_in_extended_ascii(input_string, *, raise_on_unexpected=False):
     return mis_encoded_utf8_present, "".join(output)
 
 def media_to_html(media_path, files_found, report_folder):
+    
+    def relative_paths(source, splitter):
+        splitted_a = source.split(splitter)
+        for x in splitted_a:
+            if 'LEAPP_Reports_' in x:
+                report_folder = x
+                
+        splitted_b = source.split(report_folder)
+        return '.'+ splitted_b[1]
+    
     platform = is_platform_windows()
     if platform:
         media_path = media_path.replace('/', '\\')
+        splitter = '\\'
+    else:
+        splitter = '/'
         
     thumb = media_path
     for match in files_found:
@@ -385,6 +398,8 @@ def media_to_html(media_path, files_found, report_folder):
             env_path = os.path.join(dirs, 'temp')
             if env_path in match:
                 source = match
+                source = relative_paths(source, splitter)
+                logfunc(str(source))
             else:
                 path = os.path.dirname(match)
                 dirname = os.path.basename(path)
@@ -394,6 +409,8 @@ def media_to_html(media_path, files_found, report_folder):
                 Path(f'{locationfiles}').mkdir(parents=True, exist_ok=True)
                 shutil.copy2(match, locationfiles)
                 source = Path(locationfiles, filename)
+                source = relative_paths(source, splitter)
+                logfunc(str(source))
                 
             mimetype = magic.from_file(match, mime = True)
             

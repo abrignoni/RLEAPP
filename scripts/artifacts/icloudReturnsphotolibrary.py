@@ -24,7 +24,7 @@ def get_icloudReturnsphotolibrary(files_found, report_folder, seeker, wrap_text)
         account = (split_path[-3])
         
         filename = os.path.basename(file_found)
-    
+        
         if filename.startswith('Metadata.txt'):
             #print(file_found)
             data_list =[]
