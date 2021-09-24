@@ -19,29 +19,27 @@ def get_takeoutAccessLogActivity(files_found, report_folder, seeker, wrap_text):
             has_header = True
             with open(file_found, 'r', encoding='utf-8') as f:
                 delimited = csv.reader(f, delimiter=',')
+                next(delimited)
                 for item in delimited:
-                    if has_header:
-                        has_header = False
-                    else:
-                        gaia_id = item[0]
-                        timestamp = item[1]
-                        ip_address = item[2]
-                        proxied_host_ip = item[3]
-                        is_nonroutable = item[4]
-                        activity_country = item[5]
-                        activity_region = item[6]
-                        activity_city = item[7]
-                        user_agent_str = item[8]
-                        product = item[9]
-                        sub_product = item[10]
-                        referer_product = item[11]
-                        referer_sub_product = item[12]
-                        activity_type = item[13]
-                        gmail_access_channel = item[14]
-                        android_webview_package = item[15]
-                        data_list.append((timestamp,gaia_id,ip_address,proxied_host_ip,is_nonroutable,activity_country,activity_region,activity_city,user_agent_str,product,sub_product,referer_product,referer_sub_product,activity_type,gmail_access_channel,android_webview_package))
-                        if ip_address != None:
-                            ipaddress_list.append((ip_address, 'Google Access Log Activities', 'Takeout_Ipaddress_logins', html_report, None))
+                    gaia_id = item[0]
+                    timestamp = item[1]
+                    ip_address = item[2]
+                    proxied_host_ip = item[3]
+                    is_nonroutable = item[4]
+                    activity_country = item[5]
+                    activity_region = item[6]
+                    activity_city = item[7]
+                    user_agent_str = item[8]
+                    product = item[9]
+                    sub_product = item[10]
+                    referer_product = item[11]
+                    referer_sub_product = item[12]
+                    activity_type = item[13]
+                    gmail_access_channel = item[14]
+                    android_webview_package = item[15]
+                    data_list.append((timestamp,gaia_id,ip_address,proxied_host_ip,is_nonroutable,activity_country,activity_region,activity_city,user_agent_str,product,sub_product,referer_product,referer_sub_product,activity_type,gmail_access_channel,android_webview_package))
+                    if ip_address != None:
+                        ipaddress_list.append((ip_address, 'Google Access Log Activities', 'Takeout_Ipaddress_logins', html_report, None))
             
             if data_list:
                 description = 'A list of Google services accessed by your devices (for example every time your phone synchronizes with your Gmail)'
@@ -70,21 +68,19 @@ def get_takeoutAccessLogActivity(files_found, report_folder, seeker, wrap_text):
             has_header = True
             with open(file_found, 'r', encoding='utf-8') as f:
                 delimited = csv.reader(f, delimiter=',')
+                next(delimited)
                 for item in delimited:
-                    if has_header:
-                        has_header = False
-                    else:
-                        gaia_id = item[0]
-                        device_type = item[1]
-                        brand_name = item[2]
-                        device_model = item[3]
-                        device_os = item[4]
-                        device_last_country = item[5]
-                        device_last_location_ts = item[6]
-                        device_first_activity_ts = item[7]
-                        device_last_activity_ts = item[8]
+                    gaia_id = item[0]
+                    device_type = item[1]
+                    brand_name = item[2]
+                    device_model = item[3]
+                    device_os = item[4]
+                    device_last_country = item[5]
+                    device_last_location_ts = item[6]
+                    device_first_activity_ts = item[7]
+                    device_last_activity_ts = item[8]
 
-                        data_list.append((device_first_activity_ts,device_last_activity_ts,gaia_id,device_type,brand_name,device_model,device_os,device_last_country,device_last_location_ts))
+                    data_list.append((device_first_activity_ts,device_last_activity_ts,gaia_id,device_type,brand_name,device_model,device_os,device_last_country,device_last_location_ts))
             
             if data_list:
                 description = 'A list of devices (i.e. Nest, Pixel, iPhone, Galaxy, etc) which have accessed your Google account over the last 30 days'

@@ -61,6 +61,7 @@ from scripts.artifacts.playStoreSubscriptions import get_playStoreSubscriptions
 from scripts.artifacts.takeoutAccessLogActivity import get_takeoutAccessLogActivity
 from scripts.artifacts.takeoutGoogleFit import get_takeoutGoogleFit
 from scripts.artifacts.takeoutLocationHistory import get_takeoutLocationHistory
+from scripts.artifacts.youtubeSubscriptions import get_youtubeSubscriptions
 
 from scripts.ilapfuncs import *
 
@@ -129,6 +130,7 @@ tosearch = {
     'takeoutAccessLogActivity':('Google Takeout Archive', ('*/Access Log Activity/*.csv')),
     'takeoutGoogleFit':('Google Takeout Archive', ('*/Fit/Daily activity metrics/Daily activity metrics.csv')),
     'takeoutLocationHistory':('Google Takeout Archive', ('*/Location History/Location History.json')),
+    'youtubeSubscriptions':('Google Takeout Archive', ('*/YouTube and YouTube Music/subscriptions/subscriptions.csv')),
 }
 slash = '\\' if is_platform_windows() else '/'
 
