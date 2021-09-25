@@ -29,6 +29,11 @@ def get_icon_name(category, artifact):
     elif category == 'GOOGLE TAKEOUT ARCHIVE':
         if artifact.find('CHROME WEB HISTORY') >=0: icon = 'chrome'
         elif artifact.find('CHROME EXTENSIONS') >=0: icon = 'tool'
+        elif artifact == 'GOOGLE ACCESS LOG ACTIVITIES': icon = 'activity'
+        elif artifact == 'GOOGLE ACCESS LOG DEVICES': icon = 'smartphone'
+        elif artifact == 'GOOGLE FIT - DAILY ACTIVITY METRICS': icon = 'trending-up'
+        elif artifact == 'GOOGLE LOCATION HISTORY': icon = 'map-pin'
+        elif artifact == 'GOOGLE PAY TRANSACTIONS': icon = 'credit-card'
         elif artifact == 'GOOGLE PLAY STORE DEVICES': icon = 'smartphone'
         elif artifact == 'GOOGLE PLAY STORE INSTALLS': icon = 'box'
         elif artifact == 'GOOGLE PLAY STORE LIBRARY': icon = 'grid'
@@ -36,6 +41,7 @@ def get_icon_name(category, artifact):
         elif artifact == 'GOOGLE PLAY STORE PURCHASE HISTORY': icon = 'shopping-cart'
         elif artifact == 'GOOGLE PLAY STORE REVIEWS': icon = 'edit-3'
         elif artifact == 'GOOGLE PLAY STORE SUBSCRIPTIONS': icon = 'refresh-cw'
+        elif artifact == 'YOUTUBE SUBSCRIPTIONS': icon = 'youtube'
         else:                               icon = 'user'
     elif category == 'KIK RETURNS':       
         if artifact == 'KIK - PROFILE PIC': icon = 'image'

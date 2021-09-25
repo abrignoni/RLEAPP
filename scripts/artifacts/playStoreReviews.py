@@ -29,8 +29,9 @@ def get_playStoreReviews(files_found, report_folder, seeker, wrap_text):
     
         num_entries = len(data_list)
         if num_entries > 0:
+            description = 'Details about your Google Play reviews.'
             report = ArtifactHtmlReport('Google Play Store Reviews')
-            report.start_artifact_report(report_folder, 'Google Play Store Reviews')
+            report.start_artifact_report(report_folder, 'Google Play Store Reviews', description)
             report.add_script()
             data_headers = ('Creation Timestamp','Title','Comment','Review Title','Star Rating','Type')
 
