@@ -2,18 +2,21 @@ import os
 import openpyxl
 
 from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
+from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html
 
-def get_tikTokipdata(files_found, report_folder, seeker, wrap_text):
-    
+def get_tikTokvideometa(files_found, report_folder, seeker, wrap_text):
+
     for file_found in files_found:
         file_found = str(file_found)
         
         filename = os.path.basename(file_found)
         
+        
         if filename.startswith('~'):
             continue
         if filename.startswith('.'):
+            continue
+        if not filename.endswith('.xlsx'):
             continue
         
         dth = []
@@ -35,16 +38,21 @@ def get_tikTokipdata(files_found, report_folder, seeker, wrap_text):
                 cell_obj = sheet_obj.cell(row = j, column = i)
                 value = (cell_obj.value)
                 listtemp.append(value)
-            data_list.append((listtemp))
+            videoid = listtemp[0]
+            uploadtime = listtemp[1]
+            videocaption = listtemp[2]
+            media = media_to_html(videoid, files_found, report_folder)
+            data_list.append((media, uploadtime, videoid, videocaption ))
             listtemp = []
             
         if data_list:
             data_list.pop(0) #eliminate headers from excel file
-            report = ArtifactHtmlReport(f'TikTok - IP Data [{subscriber[0]}] ')
-            report.start_artifact_report(report_folder, f'TikTok - IP Data [{subscriber[0]}] ')
+            report = ArtifactHtmlReport(f'TikTok - Video Metadata [{subscriber[0]}] ')
+            report.start_artifact_report(report_folder, f'TikTok - Video Metadata [{subscriber[0]}]')
             report.add_script()
-            data_headers = ('Timestamp', 'Active Start Time', 'IP', 'IP Country' )
-            report.write_artifact_data_table(data_headers, data_list, file_found)
+            data_headers = ('Media', 'Timestamp Upload', 'Media ID', 'Media Caption' )
+            report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Media'])
             report.end_artifact_report()
+            
         else:
-            logfunc(f'No TikTok - IP Data [{subscriber[0]}]  available')
+            logfunc(f'No TikTok - Video Metadata [{subscriber[0]}] available')

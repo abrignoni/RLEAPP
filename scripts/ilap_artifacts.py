@@ -59,6 +59,8 @@ from scripts.artifacts.playStorePurchaseHistory import get_playStorePurchaseHist
 from scripts.artifacts.playStoreReviews import get_playStoreReviews
 from scripts.artifacts.playStoreSubscriptions import get_playStoreSubscriptions
 from scripts.artifacts.tikTokipdata import get_tikTokipdata
+from scripts.artifacts.tikTokvideometa import get_tikTokvideometa
+from scripts.artifacts.tikToksubsinfo import get_tikToksubsinfo
 
 from scripts.ilapfuncs import *
 
@@ -125,6 +127,8 @@ tosearch = {
     'playStoreReviews':('Google Takeout Archive', ('*/Google Play Store/Reviews.json')),
     'playStoreSubscriptions':('Google Takeout Archive', ('*/Google Play Store/Subscriptions.json')),
     'tikTokipdata':('TikTok Returns', ('*/*/*- IP Data.xlsx')),
+    'tikToksubsinfo':('TikTok Returns', ('*/*/*(Subscriber information).pdf')),
+    'tikTokvideometa':('TikTok Returns', ('*/*/*- video metadata.xlsx', '*/*/*/Video Content/*')),
 }
 slash = '\\' if is_platform_windows() else '/'
 
