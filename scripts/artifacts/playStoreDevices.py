@@ -35,8 +35,9 @@ def get_playStoreDevices(files_found, report_folder, seeker, wrap_text):
         
         num_entries = len(data_list)
         if num_entries > 0:
+            description = 'Metadata about your devices that have accessed the Google Play Store.'
             report = ArtifactHtmlReport('Google Play Store Devices')
-            report.start_artifact_report(report_folder, 'Google Play Store Devices')
+            report.start_artifact_report(report_folder, 'Google Play Store Devices',description)
             report.add_script()
             data_headers = ('Device Registration Timestamp','User Added Timestamp','Last Device Active Timestamp','Device Manufacturer','Device Model','Device RAM (GBs)','Carrier','Device IP Country','Device Name','SDK Version  ')
 

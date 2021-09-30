@@ -32,8 +32,9 @@ def get_playStoreInstalls(files_found, report_folder, seeker, wrap_text):
     
         num_entries = len(data_list)
         if num_entries > 0:
+            description = 'List of your Google Play app installs.'
             report = ArtifactHtmlReport('Google Play Store Installs')
-            report.start_artifact_report(report_folder, 'Google Play Store Installs')
+            report.start_artifact_report(report_folder, 'Google Play Store Installs',description)
             report.add_script()
             data_headers = ('First Install Timestamp','Last Update Timestamp','Title','Type','Device Manufacturer','Device Model','Carrier','Device Display Name')
 

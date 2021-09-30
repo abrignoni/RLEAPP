@@ -30,8 +30,9 @@ def get_playStorePurchaseHistory(files_found, report_folder, seeker, wrap_text):
 
         num_entries = len(data_list)
         if num_entries > 0:
+            description = 'List of your Google Play purchases.'
             report = ArtifactHtmlReport('Google Play Store Purchase History')
-            report.start_artifact_report(report_folder, 'Google Play Store Purchase History')
+            report.start_artifact_report(report_folder, 'Google Play Store Purchase History', description)
             report.add_script()
             data_headers = ('Purchase Timestamp','Item Title','Document Type','Price','Payment Method','User Country') 
 
