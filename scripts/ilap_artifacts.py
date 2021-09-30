@@ -59,11 +59,15 @@ from scripts.artifacts.playStoreLibrary import get_playStoreLibrary
 from scripts.artifacts.playStorePurchaseHistory import get_playStorePurchaseHistory
 from scripts.artifacts.playStoreReviews import get_playStoreReviews
 from scripts.artifacts.playStoreSubscriptions import get_playStoreSubscriptions
+from scripts.artifacts.tikTokipdata import get_tikTokipdata
+from scripts.artifacts.tikTokvideometa import get_tikTokvideometa
+from scripts.artifacts.tikToksubsinfo import get_tikToksubsinfo
 from scripts.artifacts.takeoutAccessLogActivity import get_takeoutAccessLogActivity
 from scripts.artifacts.takeoutGoogleFit import get_takeoutGoogleFit
 from scripts.artifacts.takeoutLocationHistory import get_takeoutLocationHistory
 from scripts.artifacts.takeoutSavedLinks import get_takeoutSavedLinks
 from scripts.artifacts.youtubeSubscriptions import get_youtubeSubscriptions
+
 
 from scripts.ilapfuncs import *
 
@@ -130,6 +134,9 @@ tosearch = {
     'playStorePurchaseHistory':('Google Takeout Archive', ('*/Google Play Store/Purchase History.json')),
     'playStoreReviews':('Google Takeout Archive', ('*/Google Play Store/Reviews.json')),
     'playStoreSubscriptions':('Google Takeout Archive', ('*/Google Play Store/Subscriptions.json')),
+    'tikTokipdata':('TikTok Returns', ('*/*/*- IP Data.xlsx')),
+    'tikToksubsinfo':('TikTok Returns', ('*/*/*(Subscriber information).pdf')),
+    'tikTokvideometa':('TikTok Returns', ('*/*/*- video metadata.xlsx', '*/*/*/Video Content/*')),
     'takeoutAccessLogActivity':('Google Takeout Archive', ('*/Access Log Activity/*.csv')),
     'takeoutGoogleFit':('Google Takeout Archive', ('*/Fit/Daily activity metrics/Daily activity metrics.csv')),
     'takeoutLocationHistory':('Google Takeout Archive', ('*/Location History/Location History.json')),

@@ -392,14 +392,20 @@ def media_to_html(media_path, files_found, report_folder):
         
     thumb = media_path
     for match in files_found:
+        filename = os.path.basename(match)
+        if filename.startswith('~'):
+            continue
+        if filename.startswith('._'):
+            continue
+        
         if media_path in match:
+            
             dirs = os.path.dirname(report_folder)
             dirs = os.path.dirname(dirs)
             env_path = os.path.join(dirs, 'temp')
             if env_path in match:
                 source = match
                 source = relative_paths(source, splitter)
-                logfunc(str(source))
             else:
                 path = os.path.dirname(match)
                 dirname = os.path.basename(path)
@@ -410,7 +416,6 @@ def media_to_html(media_path, files_found, report_folder):
                 shutil.copy2(match, locationfiles)
                 source = Path(locationfiles, filename)
                 source = relative_paths(source, splitter)
-                logfunc(str(source))
                 
             mimetype = magic.from_file(match, mime = True)
             
