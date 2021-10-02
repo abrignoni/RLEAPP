@@ -60,6 +60,7 @@ def get_icon_name(category, artifact):
         else:                                          icon = 'tv'
     elif category == 'CONTACTS':            icon = 'user'
     elif category == 'TIKTOK RETURNS':            icon = 'film'
+    elif category == 'SNAPCHAT RETURNS':            icon = 'camera'
     elif category == 'FACEBOOK - INSTAGRAM RETURNS':            icon = 'facebook'
     elif category == 'INSTAGRAM ARCHIVE':  
         if artifact == 'INSTAGRAM ARCHIVE - ACCOUNT INFO': icon = 'user'

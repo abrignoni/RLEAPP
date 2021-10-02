@@ -59,6 +59,7 @@ from scripts.artifacts.playStoreLibrary import get_playStoreLibrary
 from scripts.artifacts.playStorePurchaseHistory import get_playStorePurchaseHistory
 from scripts.artifacts.playStoreReviews import get_playStoreReviews
 from scripts.artifacts.playStoreSubscriptions import get_playStoreSubscriptions
+from scripts.artifacts.snapChatsubsinfo import get_snapChatsubsinfo
 from scripts.artifacts.tikTokipdata import get_tikTokipdata
 from scripts.artifacts.tikTokvideometa import get_tikTokvideometa
 from scripts.artifacts.tikToksubsinfo import get_tikToksubsinfo
@@ -134,6 +135,7 @@ tosearch = {
     'playStorePurchaseHistory':('Google Takeout Archive', ('*/Google Play Store/Purchase History.json')),
     'playStoreReviews':('Google Takeout Archive', ('*/Google Play Store/Reviews.json')),
     'playStoreSubscriptions':('Google Takeout Archive', ('*/Google Play Store/Subscriptions.json')),
+    'snapChatsubsinfo':('Snapchat Returns', ('*/subscriber_information.csv')),
     'tikTokipdata':('TikTok Returns', ('*/*/*- IP Data.xlsx')),
     'tikToksubsinfo':('TikTok Returns', ('*/*/*(Subscriber information).pdf')),
     'tikTokvideometa':('TikTok Returns', ('*/*/*- video metadata.xlsx', '*/*/*/Video Content/*')),
@@ -142,6 +144,7 @@ tosearch = {
     'takeoutLocationHistory':('Google Takeout Archive', ('*/Location History/Location History.json')),
     'takeoutSavedLinks':('Google Takeout Archive', ('*/Saved/*.csv')),
     'youtubeSubscriptions':('Google Takeout Archive', ('*/YouTube and YouTube Music/subscriptions/subscriptions.csv')),
+    
 }
 slash = '\\' if is_platform_windows() else '/'
 
