@@ -415,7 +415,7 @@ def media_to_html(media_path, files_found, report_folder):
                 Path(f'{locationfiles}').mkdir(parents=True, exist_ok=True)
                 shutil.copy2(match, locationfiles)
                 source = Path(locationfiles, filename)
-                source = relative_paths(source, splitter)
+                source = relative_paths(str(source), splitter)
                 
             mimetype = magic.from_file(match, mime = True)
             
