@@ -174,7 +174,7 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
                     timestamp = f'{timestamp[0]}-{timestamp[1]}-{timestamp[2]} {timestamp[3]}:{timestamp[4]}:{mod_string}'
                     usernamefile = metadata[3]
                     media = media_to_html(file_found, files_found, report_folder)
-                    
+                    file_found_dir = os.path.dirname(file_found)
                     data_list_media.append((timestamp,media,filename,usernamefile,typeoffile,))
                     
         if data_list_media:
@@ -182,7 +182,7 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
             report.start_artifact_report(report_folder, f'Snapchat - Memories - {name}')
             report.add_script()
             data_headers = ('Timestamp','Media','Filename','User','File Type')
-            report.write_artifact_data_table(data_headers, data_list_media, file_found, html_no_escape=['Media'])
+            report.write_artifact_data_table(data_headers, data_list_media, file_found_dir, html_no_escape=['Media'])
             report.end_artifact_report()
             
             tsvname = f'Snapchat - Memories - {name}'
