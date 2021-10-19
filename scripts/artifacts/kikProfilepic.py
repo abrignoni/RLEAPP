@@ -6,7 +6,7 @@ import shutil
 import magic
 
 from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
+from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html
 
 def get_kikProfilepic(files_found, report_folder, seeker, wrap_text):
     
@@ -18,8 +18,7 @@ def get_kikProfilepic(files_found, report_folder, seeker, wrap_text):
         if filename.startswith('profile-pic.jpg'):
             
             data_list =[]
-            shutil.copy2(file_found, report_folder)
-            thumb = f'<img src="{report_folder}profile-pic.jpg" width="300"></img>'
+            thumb = media_to_html(filename, files_found, report_folder)
             data_list.append((thumb, ))
                     
             if data_list:

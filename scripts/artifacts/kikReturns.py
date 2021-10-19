@@ -6,7 +6,7 @@ import shutil
 import magic
 
 from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
+from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html
 
 def get_kikReturns(files_found, report_folder, seeker, wrap_text):
     
@@ -57,18 +57,8 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                     info = item[5]
                     timestamp = item[6]
                     thumb = ''
-                    for match in files_found:
-                        if contentID in match:
-                            shutil.copy2(match, report_folder)
-                            mimetype = magic.from_file(match, mime = True)
-                            
-                            if mimetype == 'video/mp4':
-                                thumb = f'<video width="320" height="240" controls="controls"><source src="{report_folder}{contentID}" type="video/mp4">Your browser does not support the video tag.</video>'
-                            else:
-                                thumb = f'<img src="{report_folder}{contentID}" width="300"></img>'
-                            
-                            data_list.append((utctimestamp, timestamp, user, user_other, app, info, contentID, thumb))
-                            break
+                    thumb = media_to_html(contentID, files_found, report_folder)
+                    data_list.append((utctimestamp, timestamp, user, user_other, app, info, contentID, thumb))
                             
 
             if data_list:
@@ -100,18 +90,9 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                     info = item[5]
                     timestamp = item[6]
                     thumb = ''
-                    for match in files_found:
-                        if contentID in match:
-                            shutil.copy2(match, report_folder)
-                            mimetype = magic.from_file(match, mime = True)
-                            
-                            if mimetype == 'video/mp4':
-                                thumb = f'<video width="320" height="240" controls="controls"><source src="{report_folder}{contentID}" type="video/mp4">Your browser does not support the video tag.</video>'
-                            else:
-                                thumb = f'<img src="{report_folder}{contentID}" width="300"></img>'
-                                
-                            data_list.append((utctimestamp, timestamp, user, user_other, app, info, contentID, thumb))
-                            break
+                    thumb = media_to_html(contentID, files_found, report_folder)
+                    data_list.append((utctimestamp, timestamp, user, user_other, app, info, contentID, thumb))
+                        
                         
                         
             if data_list:
@@ -146,18 +127,7 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                     data_list.append((utctimestamp, timestamp, user, user_other, info_one, info_two))
                     #info_two says REDACTED in my data set. Might be some data in other returns. Leaving code for content available in case sample data comes up. If so if REDACTED else content.
                     '''
-                    for match in files_found:
-                        if contentID in match:
-                            shutil.copy2(match, report_folder)
-                            mimetype = magic.from_file(match, mime = True)
-                            
-                            if mimetype == 'video/mp4':
-                                thumb = f'<video width="320" height="240" controls="controls"><source src="{report_folder}{contentID}" type="video/mp4">Your browser does not support the video tag.</video>'
-                            else:
-                                thumb = f'<img src="{report_folder}{contentID}" width="300"></img>'
-                                
-                            data_list.append((utctimestamp, timestamp, user, user_other, app, info, contentID, thumb))
-                            break
+                    thumb = media_to_html(contentID, files_found, report_folder)
                     '''    
                         
             if data_list:
@@ -284,18 +254,9 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                     info = item[6]
                     timestamp = item[7]
                     thumb = ''
-                    for match in files_found:
-                        if contentID in match:
-                            shutil.copy2(match, report_folder)
-                            mimetype = magic.from_file(match, mime = True)
-                            
-                            if mimetype == 'video/mp4':
-                                thumb = f'<video width="320" height="240" controls="controls"><source src="{report_folder}{contentID}" type="video/mp4">Your browser does not support the video tag.</video>'
-                            else:
-                                thumb = f'<img src="{report_folder}{contentID}" width="300"></img>'
-                                
-                            data_list.append((utctimestamp, timestamp, user, field, user_other, appid, info, contentID, thumb))
-                            break
+                    thumb = media_to_html(contentID, files_found, report_folder)
+                    data_list.append((utctimestamp, timestamp, user, field, user_other, appid, info, contentID, thumb))
+                    
             if data_list:
                 report = ArtifactHtmlReport('Kik - Group Receive Msg Platform')
                 report.start_artifact_report(report_folder, 'Kik  - Group Receive Msg Platform')
@@ -359,18 +320,9 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                     info = item[6]
                     timestamp = item[7]
                     thumb = ''
-                    for match in files_found:
-                        if contentID in match:
-                            shutil.copy2(match, report_folder)
-                            mimetype = magic.from_file(match, mime = True)
-                            
-                            if mimetype == 'video/mp4':
-                                thumb = f'<video width="320" height="240" controls="controls"><source src="{report_folder}{contentID}" type="video/mp4">Your browser does not support the video tag.</video>'
-                            else:
-                                thumb = f'<img src="{report_folder}{contentID}" width="300"></img>'
-                                
-                            data_list.append((utctimestamp, timestamp, user, field, user_other, appid, info, contentID, thumb))
-                            break
+                    thumb = media_to_html(contentID, files_found, report_folder)
+                    data_list.append((utctimestamp, timestamp, user, field, user_other, appid, info, contentID, thumb))
+                    
             if data_list:
                 report = ArtifactHtmlReport('Kik - Group Send Msg Platform')
                 report.start_artifact_report(report_folder, 'Kik - Group Send Msg Platform')
