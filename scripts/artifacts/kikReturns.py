@@ -20,19 +20,18 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
             with open(file_found, 'r') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
-                    utctimestamp = (datetime.datetime.fromtimestamp(int(item[0])/1000).strftime('%Y-%m-%d %H:%M:%S'))
                     user = item[1]
                     ip = item[2]
                     port = item [3]
                     timestamp = item[4]
                     info = item[5]
-                    data_list.append((utctimestamp, timestamp, user, ip, port, info))
+                    data_list.append((timestamp, user, ip, port, info))
                 
             if data_list:
                 report = ArtifactHtmlReport('Kik - Bind')
                 report.start_artifact_report(report_folder, 'Kik - Bind.txt')
                 report.add_script()
-                data_headers = ('Timestamp UTC', 'Timestamp', 'User', 'IP', 'Port', 'Info')
+                data_headers = ('Timestamp', 'User', 'IP', 'Port', 'Info')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
                 
@@ -49,7 +48,6 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
             with open(file_found, 'r') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
-                    utctimestamp = (datetime.datetime.fromtimestamp(int(item[0])/1000).strftime('%Y-%m-%d %H:%M:%S'))
                     user = item[1]
                     user_other = item[2]
                     app = item[3]
@@ -58,14 +56,14 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                     timestamp = item[6]
                     thumb = ''
                     thumb = media_to_html(contentID, files_found, report_folder)
-                    data_list.append((utctimestamp, timestamp, user, user_other, app, info, contentID, thumb))
+                    data_list.append((timestamp, user, user_other, app, info, contentID, thumb))
                             
 
             if data_list:
                 report = ArtifactHtmlReport('Kik - Chat Platform Sent Received')
                 report.start_artifact_report(report_folder, 'Kik - Chat Platform Sent Received')
                 report.add_script()
-                data_headers = ('Timestamp UTC', 'Timestamp', 'User', 'User', 'App', 'Info', 'Content ID', 'Content')
+                data_headers = ('Timestamp', 'User', 'User', 'App', 'Info', 'Content ID', 'Content')
                 report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
                 report.end_artifact_report()
                 
@@ -82,7 +80,6 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
             with open(file_found, 'r') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
-                    utctimestamp = (datetime.datetime.fromtimestamp(int(item[0])/1000).strftime('%Y-%m-%d %H:%M:%S'))
                     user = item[1]
                     user_other = item[2]
                     app = item[3]
@@ -91,7 +88,7 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                     timestamp = item[6]
                     thumb = ''
                     thumb = media_to_html(contentID, files_found, report_folder)
-                    data_list.append((utctimestamp, timestamp, user, user_other, app, info, contentID, thumb))
+                    data_list.append((timestamp, user, user_other, app, info, contentID, thumb))
                         
                         
                         
@@ -99,7 +96,7 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                 report = ArtifactHtmlReport('Kik - Chat Platform Sent')
                 report.start_artifact_report(report_folder, 'Kik  - Chat Platform Sent')
                 report.add_script()
-                data_headers = ('Timestamp UTC', 'Timestamp', 'User', 'User', 'App', 'IP', 'Content ID', 'Content')
+                data_headers = ('Timestamp', 'User', 'User', 'App', 'IP', 'Content ID', 'Content')
                 report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
                 report.end_artifact_report()
                 
@@ -116,7 +113,6 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
             with open(file_found, 'r') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
-                    utctimestamp = (datetime.datetime.fromtimestamp(int(item[0])/1000).strftime('%Y-%m-%d %H:%M:%S'))
                     user = item[1]
                     user_other = item[2]
                     info_one = item[3]
@@ -124,7 +120,7 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                     timestamp = item[5]
                     thumb = ''
                     
-                    data_list.append((utctimestamp, timestamp, user, user_other, info_one, info_two))
+                    data_list.append((timestamp, user, user_other, info_one, info_two))
                     #info_two says REDACTED in my data set. Might be some data in other returns. Leaving code for content available in case sample data comes up. If so if REDACTED else content.
                     '''
                     thumb = media_to_html(contentID, files_found, report_folder)
@@ -134,7 +130,7 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                 report = ArtifactHtmlReport('Kik - Chat Sent Received')
                 report.start_artifact_report(report_folder, 'Kik - Chat Sent Received')
                 report.add_script()
-                data_headers = ('Timestamp UTC', 'Timestamp', 'User', 'User', 'Info', 'Info')
+                data_headers = ('Timestamp', 'User', 'User', 'Info', 'Info')
                 report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
                 report.end_artifact_report()
                 
@@ -151,7 +147,6 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
             with open(file_found, 'r') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
-                    utctimestamp = (datetime.datetime.fromtimestamp(int(item[0])/1000).strftime('%Y-%m-%d %H:%M:%S'))
                     user = item[1]
                     user_other = item[2]
                     info_one = item[3]
@@ -159,13 +154,13 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                     timestamp = item[5]
                     thumb = ''
                     
-                    data_list.append((utctimestamp, timestamp, user, user_other, info_one, info_two))
+                    data_list.append((timestamp, user, user_other, info_one, info_two))
                                         
             if data_list:
                 report = ArtifactHtmlReport('Kik - Chat Sent')
                 report.start_artifact_report(report_folder, 'Kik - Chat Sent')
                 report.add_script()
-                data_headers = ('Timestamp UTC', 'Timestamp', 'User', 'User', 'Info', 'IP')
+                data_headers = ('Timestamp', 'User', 'User', 'Info', 'IP')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
                 
@@ -217,18 +212,17 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
             with open(file_found, 'r') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
-                    utctimestamp = (datetime.datetime.fromtimestamp(int(item[0])/1000).strftime('%Y-%m-%d %H:%M:%S'))
                     user = item[1]
                     user_other = item[2]
                     timestamp = item[3]
                     
-                    data_list.append((utctimestamp, timestamp, user, user_other))
+                    data_list.append((timestamp, user, user_other))
                     
             if data_list:
                 report = ArtifactHtmlReport('Kik - Friend Added')
                 report.start_artifact_report(report_folder, 'Kik - Friend Added')
                 report.add_script()
-                data_headers = ('Timestamp UTC', 'Timestamp', 'User', 'User')
+                data_headers = ('Timestamp', 'User', 'User')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
                 
@@ -245,7 +239,6 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
             with open(file_found, 'r') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
-                    utctimestamp = (datetime.datetime.fromtimestamp(int(item[0])/1000).strftime('%Y-%m-%d %H:%M:%S'))
                     user = item[1]
                     field = item[2]
                     user_other = item[3]
@@ -255,13 +248,13 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                     timestamp = item[7]
                     thumb = ''
                     thumb = media_to_html(contentID, files_found, report_folder)
-                    data_list.append((utctimestamp, timestamp, user, field, user_other, appid, info, contentID, thumb))
+                    data_list.append((timestamp, user, field, user_other, appid, info, contentID, thumb))
                     
             if data_list:
                 report = ArtifactHtmlReport('Kik - Group Receive Msg Platform')
                 report.start_artifact_report(report_folder, 'Kik  - Group Receive Msg Platform')
                 report.add_script()
-                data_headers = ('Timestamp UTC', 'Timestamp', 'User', 'Field', 'User', 'App', 'Info', 'Content ID', 'Content')
+                data_headers = ('Timestamp', 'User', 'Field', 'User', 'App', 'Info', 'Content ID', 'Content')
                 report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
                 report.end_artifact_report()
                 
@@ -278,7 +271,6 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
             with open(file_found, 'r') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
-                    utctimestamp = (datetime.datetime.fromtimestamp(int(item[0])/1000).strftime('%Y-%m-%d %H:%M:%S'))
                     user = item[1]
                     value = item[2]
                     user_other = item[3]
@@ -287,13 +279,13 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                     timestamp = item[6]
                     thumb = ''
                     
-                    data_list.append((utctimestamp, timestamp, user, value, user_other, info_one, info_two))
+                    data_list.append((timestamp, user, value, user_other, info_one, info_two))
                     
             if data_list:
                 report = ArtifactHtmlReport('Kik - Group Receive Msg')
                 report.start_artifact_report(report_folder, 'Kik - Group Receive Msg')
                 report.add_script()
-                data_headers = ('Timestamp UTC', 'Timestamp', 'User', 'Value', 'User', 'Info', 'Info')
+                data_headers = ('Timestamp', 'User', 'Value', 'User', 'Info', 'Info')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
                 
@@ -311,7 +303,6 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
             with open(file_found, 'r') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
-                    utctimestamp = (datetime.datetime.fromtimestamp(int(item[0])/1000).strftime('%Y-%m-%d %H:%M:%S'))
                     user = item[1]
                     field = item[2]
                     user_other = item[3]
@@ -321,13 +312,13 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                     timestamp = item[7]
                     thumb = ''
                     thumb = media_to_html(contentID, files_found, report_folder)
-                    data_list.append((utctimestamp, timestamp, user, field, user_other, appid, info, contentID, thumb))
+                    data_list.append((timestamp, user, field, user_other, appid, info, contentID, thumb))
                     
             if data_list:
                 report = ArtifactHtmlReport('Kik - Group Send Msg Platform')
                 report.start_artifact_report(report_folder, 'Kik - Group Send Msg Platform')
                 report.add_script()
-                data_headers = ('Timestamp UTC', 'Timestamp', 'User', 'Field', 'User', 'App', 'IP', 'Content ID', 'Content')
+                data_headers = ('Timestamp', 'User', 'Field', 'User', 'App', 'IP', 'Content ID', 'Content')
                 report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
                 report.end_artifact_report()
                 
@@ -345,7 +336,6 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
             with open(file_found, 'r') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
-                    utctimestamp = (datetime.datetime.fromtimestamp(int(item[0])/1000).strftime('%Y-%m-%d %H:%M:%S'))
                     user = item[1]
                     field = item[2]
                     user_other = item[3]
@@ -353,13 +343,13 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                     ip = item[6]
                     timestamp = item[6]
                     
-                    data_list.append((utctimestamp, timestamp, user, field, user_other,info_one, ip))
+                    data_list.append((timestamp, user, field, user_other,info_one, ip))
                             
             if data_list:
                 report = ArtifactHtmlReport('Kik - Group Send Msg')
                 report.start_artifact_report(report_folder, 'Kik - Group Send Msg')
                 report.add_script()
-                data_headers = ('Timestamp UTC', 'Timestamp', 'User', 'Field', 'User', 'Field', 'IP')
+                data_headers = ('Timestamp', 'User', 'Field', 'User', 'Field', 'IP')
                 report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
                 report.end_artifact_report()
                 
