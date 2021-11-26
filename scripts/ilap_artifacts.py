@@ -7,6 +7,7 @@ import traceback
 
 from scripts.artifacts.chromeExtensions import get_chromeExtensions
 from scripts.artifacts.chromeHistory import get_chromeHistory
+from scripts.artifacts.coinbaseArchive import get_coinbaseArchive
 from scripts.artifacts.googlePayTransactions import get_googlePayTransactions
 from scripts.artifacts.fbigUnifiedmessaging import get_fbigUnifiedmessaging
 from scripts.artifacts.icloudReturnsAcc import get_icloudReturnsAcc
@@ -83,6 +84,7 @@ from scripts.ilapfuncs import *
 tosearch = {
     'chromeExtensions':('Google Takeout Archive', ('*/Chrome/Extensions.json')),
     'chromeHistory':('Google Takeout Archive', ('*/Chrome/BrowserHistory.json')),
+    'coinbaseArchive':('Coinbase Archive', ('**/coinbase_data.json')),
     'googlePayTransactions':('Google Takeout Archive', ('*/Google Pay/Google transactions/transactions_*.csv')),
     'fbigUnifiedmessaging':('Facebook - Instagram Returns', ('*/index.html', '*/preservation-1.html', '*/linked_media/*')),
     'icloudReturnsAcc':('iCloud Returns', ('*/Account/*_AccountDetails.xlsx')),
