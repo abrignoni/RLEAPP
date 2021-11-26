@@ -21,7 +21,14 @@ def get_icon_name(category, artifact):
 
     if category.find('ACCOUNT') >=0:
         if artifact.find('AUTH') >=0:      icon = 'key'
-        else:                               icon = 'user'  
+        else:                              icon = 'user'
+    elif category == 'COINBASE ARCHIVE':
+        if '3RD' in artifact:              icon = 'log-in'
+        elif 'CARD' in artifact:           icon = 'credit-card'
+        elif 'PERSONAL' in artifact:       icon = 'user'
+        elif 'SITE' in artifact:           icon = 'activity'
+        elif 'TRANS' in artifact:          icon = 'archive'
+        else:                              icon = 'monitor'
     elif category == 'DEVICE HEALTH SERVICES':         
         if artifact.find('BLUETOOTH') >=0:  icon = 'bluetooth'
         elif artifact.find('BATTERY') >=0:  icon = 'battery-charging'
