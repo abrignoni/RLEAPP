@@ -268,3 +268,212 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
             timeline(report_folder, tlactivity, data_list_media, data_headers)
         else:
             logfunc(f'No Snapchat - Memories - {name}')
+            
+    for file_found in files_found:
+        file_found = str(file_found)
+        
+        filename = os.path.basename(file_found)
+        one = (os.path.split(file_found))
+        username = (os.path.basename(one[0]))
+        
+        if filename.startswith('ip_data.csv'):
+            data_list_ip =[]
+            with open(file_found, 'r') as f:
+                for i in range(4):
+                    next(f)
+                for line in f:
+                    delimited = csv.reader(f, delimiter=',')
+                    for item in delimited:
+                        ip = item[0]
+                        type = item[1]
+                        fecha = item[2]
+                        timestamp = fecha.split(' ')
+                        year = timestamp[5]
+                        day = timestamp[2]
+                        time = timestamp[3]
+                        month = monthletter(timestamp[1])
+                        timestampfinal = (f'{year}-{month}-{day} {time}')
+                        
+                        data_list_ip.append((timestampfinal, ip, type))
+                        
+            if data_list_ip:
+                report = ArtifactHtmlReport(f'Snapchat - IP Data')
+                report.start_artifact_report(report_folder, f'Snapchat - IP Data - {username}')
+                report.add_script()
+                data_headers = ('Timestamp','IP','Type')
+                report.write_artifact_data_table(data_headers, data_list_ip, file_found, html_no_escape=['Media'])
+                report.end_artifact_report()
+                
+                tsvname = f'Snapchat - IP Data  - {username}'
+                tsv(report_folder, data_headers, data_list_ip, tsvname)
+                
+                tlactivity = f'Snapchat - IP Data  - {username}'
+                timeline(report_folder, tlactivity, data_list_ip, data_headers)
+                
+            else:
+                logfunc(f'No Snapchat - IP Data  - {username}')
+
+    for file_found in files_found:
+        file_found = str(file_found)
+        
+        filename = os.path.basename(file_found)
+        one = (os.path.split(file_found))
+        username = (os.path.basename(one[0]))
+        
+        if filename.startswith('friends.csv'):
+            data_list_friendscsv =[]
+            with open(file_found, 'r') as f:
+                for i in range(10):
+                    next(f)
+                for line in f:
+                    delimited = csv.reader(f, delimiter=',')
+                    for item in delimited:
+                        idf = item[0]
+                        adder = item[1]
+                        added = item[2]
+                        types = item[3]
+                        modat = item[4]
+                        created = item[5]
+                        
+                        timestamp = created.split(' ')
+                        year = timestamp[5]
+                        day = timestamp[2]
+                        time = timestamp[3]
+                        month = monthletter(timestamp[1])
+                        timestampcreated = (f'{year}-{month}-{day} {time}')
+                        
+                        timestamp = modat.split(' ')
+                        year = timestamp[5]
+                        day = timestamp[2]
+                        time = timestamp[3]
+                        month = monthletter(timestamp[1])
+                        timestampmodat = (f'{year}-{month}-{day} {time}')
+                        
+                        
+                        data_list_friendscsv.append((timestampcreated,timestampmodat, adder,added, types, idf))
+                        
+            if data_list_ip:
+                report = ArtifactHtmlReport(f'Snapchat - Friends.csv')
+                report.start_artifact_report(report_folder, f'Snapchat - Friends.csv - {username}')
+                report.add_script()
+                data_headers = ('Timestamp Created','Timestamps Modified At','Adder','Added','Type','ID')
+                report.write_artifact_data_table(data_headers, data_list_friendscsv, file_found, html_no_escape=['Media'])
+                report.end_artifact_report()
+                
+                tsvname = f'Snapchat - Friends.csv - {username}'
+                tsv(report_folder, data_headers, data_list_friendscsv, tsvname)
+                
+                tlactivity = f'Snapchat - Friends.csv  - {username}'
+                timeline(report_folder, tlactivity, data_list_friendscsv, data_headers)
+                
+            else:
+                logfunc(f'No Snapchat - Friends.csv  - {username}')
+                
+    for file_found in files_found:
+        file_found = str(file_found)
+        
+        filename = os.path.basename(file_found)
+        one = (os.path.split(file_found))
+        username = (os.path.basename(one[0]))
+        
+        if filename.startswith('friends_list.csv'):
+            data_list_friendlist =[]
+            with open(file_found, 'r') as f:
+                for i in range(3):
+                    next(f)
+                for line in f:
+                    delimited = csv.reader(f, delimiter=',')
+                    for item in delimited:
+                        friend = item[0]
+                        
+                        
+                        data_list_friendlist.append((friend,))
+                        
+            if data_list_ip:
+                report = ArtifactHtmlReport(f'Snapchat - Friends_list.csv')
+                report.start_artifact_report(report_folder, f'Snapchat - Friends_list.csv - {username}')
+                report.add_script()
+                data_headers = ('Friend Username',)
+                report.write_artifact_data_table(data_headers, data_list_friendlist , file_found, html_no_escape=['Media'])
+                report.end_artifact_report()
+                
+                tsvname = f'Snapchat - Friends_list.csv - {username}'
+                tsv(report_folder, data_headers, data_list_friendlist , tsvname)
+                
+            else:
+                logfunc(f'No Snapchat - Friends_list.csv  - {username}')
+                
+    for file_found in files_found:
+        file_found = str(file_found)
+        
+        filename = os.path.basename(file_found)
+        one = (os.path.split(file_found))
+        username = (os.path.basename(one[0]))
+        
+        if filename.startswith('group-chat.csv'):
+            data_list_groupchats =[]
+            with open(file_found, 'r', errors='backslashreplace') as f:
+                for i in range(3):
+                    next(f)
+                for line in f:
+                    delimited = csv.reader(f, delimiter=',')
+                    for item in delimited:
+                        #print(item)
+                        #message_type,from,to_group_id,to_group_name,text,href,media_id,timestamp
+                        mtype = item[0]
+                        fromn = item[1]
+                        togroupid = item[2]
+                        togroupname = item[3]
+                        text = item[4]
+                        href = item[5]
+                        media = item[6]
+                        timestamp = item[7]
+                        if media == '':
+                            agregator = ' '
+                        else:
+                            if ';' in media:
+                                media = media.split(';')
+                                agregator = '<table>'
+                                counter = 0
+                                for x in media:
+                                    if counter == 0:
+                                        agregator = agregator + ('<tr>')
+                                    thumb = media_to_html(x, files_found, report_folder)        
+                                    
+                                    counter = counter + 1
+                                    agregator = agregator + f'<td>{thumb}</td>'
+                                    #hacer uno que no tenga html
+                                    if counter == 2:
+                                        counter = 0
+                                        agregator = agregator + ('</tr>')
+                                if counter == 1:
+                                    agregator = agregator + ('</tr>')
+                                agregator = agregator + ('</table><br>')
+                            else:
+                                agregator = media_to_html(media, files_found, report_folder)
+                                
+                        timestamp = timestamp.split(' ')
+                        year = timestamp[5]
+                        day = timestamp[2]
+                        time = timestamp[3]
+                        month = monthletter(timestamp[1])
+                        timestampfinal = (f'{year}-{month}-{day} {time}')
+                        data_list_groupchats.append((timestampfinal,fromn,togroupname,text,href,agregator,togroupid,mtype))
+                        
+                        
+            if data_list_groupchats:
+                report = ArtifactHtmlReport(f'Snapchat - Group-chat.csv')
+                report.start_artifact_report(report_folder, f'Snapchat - Group-chat.csv - {username}')
+                report.add_script()
+                data_headers = ('Timestamp','From','To Group Name','Text','HREF','Media','To Group ID','Type')
+                report.write_artifact_data_table(data_headers, data_list_groupchats, file_found, html_no_escape=['Media'])
+                report.end_artifact_report()
+                
+                tsvname = f'Snapchat - Group-chat.csv - {username}'
+                tsv(report_folder, data_headers, data_list_groupchats, tsvname)
+                
+                tlactivity = f'Snapchat - Group-chat.csv - {username}'
+                timeline(report_folder, tlactivity, data_list_groupchats, data_headers)
+            else:
+                logfunc(f'No Snapchat - Group-chat.csv - {username}')
+                
