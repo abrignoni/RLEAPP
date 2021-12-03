@@ -19,7 +19,7 @@ def get_snapChatsubsinfo(files_found, report_folder, seeker, wrap_text):
         
         filename = os.path.basename(file_found)
         one = (os.path.split(file_found))
-        username = (os.path.basename(one[0]).split('-')[0])
+        username = (os.path.basename(one[0]))
 
         if filename.startswith('subscriber_information.csv'):
             data_list_subs =[]
