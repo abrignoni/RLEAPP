@@ -152,9 +152,11 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
         one = (os.path.split(file_found))
         username = (os.path.basename(one[0]).split('-')[0])
         
-        if filename.startswith('chats.csv'):
+        
+        
+        if filename.startswith('chat.csv' or 'chats.csv'):
             data_list_chats =[]
-            with open(file_found, 'r') as f:
+            with open(file_found, 'r', errors='backslashreplace') as f:
                 #for i in range(1):
                 #    next(f)
                 for line in f:
@@ -162,14 +164,14 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
                     for item in delimited:
                         #print(item)
                         #chatsid,from,to,body,href,media_id,saved,timestamp
-                        chatsid = item[0]
-                        fromc = item[1]
-                        to = item[2]
-                        body = item[3]
-                        href = item[4]
-                        media = item[5]
-                        saved = item[6]
-                        timestamp = item[7]
+                        chatsid = item[1]
+                        fromc = item[2]
+                        to = item[3]
+                        body = item[4]
+                        href = item[5]
+                        media = item[6]
+                        saved = item[7]
+                        timestamp = item[8]
                         if media == '':
                             agregator = ' '
                         else:
@@ -195,7 +197,6 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
                                 agregator = media_to_html(media, files_found, report_folder)
             
                         timestamp = timestamp.split(' ')
-                        logfunc(str(timestamp))
                         year = timestamp[5]
                         day = timestamp[2]
                         time = timestamp[3]
