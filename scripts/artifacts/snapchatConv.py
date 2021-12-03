@@ -17,7 +17,7 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
         
         filename = os.path.basename(file_found)
         one = (os.path.split(file_found))
-        username = (os.path.basename(one[0]).split('-')[0])
+        username = (os.path.basename(one[0]))
         
         if filename.startswith('geo_locations.csv'):
             data_list_geo =[]
@@ -71,7 +71,7 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
     
         filename = os.path.basename(file_found)
         one = (os.path.split(file_found))
-        username = (os.path.basename(one[0]).split('-')[0])
+        username = (os.path.basename(one[0]))
                     
         if filename.startswith('conversations.csv'):
             data_list_conversations =[]
@@ -150,7 +150,7 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
         
         filename = os.path.basename(file_found)
         one = (os.path.split(file_found))
-        username = (os.path.basename(one[0]).split('-')[0])
+        username = (os.path.basename(one[0]))
         
         
         
@@ -228,7 +228,7 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
     
         filename = os.path.basename(file_found)
         one = (os.path.split(file_found))
-        username = (os.path.basename(one[0]).split('-')[0])
+        username = (os.path.basename(one[0]))
         if username not in userlist:
             userlist.append(username)
     
