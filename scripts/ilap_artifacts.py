@@ -8,6 +8,11 @@ import traceback
 from scripts.artifacts.chromeExtensions import get_chromeExtensions
 from scripts.artifacts.chromeHistory import get_chromeHistory
 from scripts.artifacts.coinbaseArchive import get_coinbaseArchive
+from scripts.artifacts.discordReturnsfriends import get_discordReturnsfriends
+from scripts.artifacts.discordReturnsdms import get_discordReturnsdms
+from scripts.artifacts.discordReturnsser import get_discordReturnsser
+from scripts.artifacts.discordReturnsserver import get_discordReturnsserver
+from scripts.artifacts.discordReturnsunkn import get_discordReturnsunkn
 from scripts.artifacts.googlePayTransactions import get_googlePayTransactions
 from scripts.artifacts.fbigUnifiedmessaging import get_fbigUnifiedmessaging
 from scripts.artifacts.icloudReturnsAcc import get_icloudReturnsAcc
@@ -85,6 +90,11 @@ tosearch = {
     'chromeExtensions':('Google Takeout Archive', ('*/Chrome/Extensions.json')),
     'chromeHistory':('Google Takeout Archive', ('*/Chrome/BrowserHistory.json')),
     'coinbaseArchive':('Coinbase Archive', ('**/coinbase_data.json')),
+    'discordReturnsfriends':('Discord Returns', ('*/relationships_*.csv')),
+    'discordReturnsdms':('Discord Returns', ('*/attachments/*.*', '*/messages/dms/*.csv')),
+    'discordReturnsser':('Discord Returns', ('*/servers/*.json')),
+    'discordReturnsserver':('Discord Returns', ('*/attachments/*.*', '*/messages/servers/*.csv')),
+    'discordReturnsunkn':('Discord Returns', ('*/attachments/*.*', '*/messages/unknown/*.csv')),
     'googlePayTransactions':('Google Takeout Archive', ('*/Google Pay/Google transactions/transactions_*.csv')),
     'fbigUnifiedmessaging':('Facebook - Instagram Returns', ('*/index.html', '*/preservation-1.html', '*/linked_media/*')),
     'icloudReturnsAcc':('iCloud Returns', ('*/Account/*_AccountDetails.xlsx')),
