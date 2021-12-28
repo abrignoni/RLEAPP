@@ -35,9 +35,6 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
                 
-                tsvname = f'Kik - bind'
-                tsv(report_folder, data_headers, data_list, tsvname)
-                
                 tlactivity = f'Kik - bind'
                 timeline(report_folder, tlactivity, data_list, data_headers)
             else:
