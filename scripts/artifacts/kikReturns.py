@@ -17,7 +17,7 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
         
         if filename.startswith('bind.txt'):
             data_list =[]
-            with open(file_found, 'r') as f:
+            with open(file_found, 'r', encoding='unicode_escape') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
                     user = item[1]
@@ -45,7 +45,7 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                 
         if filename.startswith('chat_platform_sent_received.txt'):
             data_list =[]
-            with open(file_found, 'r') as f:
+            with open(file_found, 'r', encoding='unicode_escape') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
                     user = item[1]
@@ -67,9 +67,6 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                 report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
                 report.end_artifact_report()
                 
-                tsvname = f'Kik - Chat Platform Sent Received'
-                tsv(report_folder, data_headers, data_list, tsvname)
-                
                 tlactivity = f'Kik - Chat Platform Sent Received'
                 timeline(report_folder, tlactivity, data_list, data_headers)
             else:
@@ -77,7 +74,7 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
         
         if filename.startswith('chat_platform_sent.txt'):
             data_list =[]
-            with open(file_found, 'r') as f:
+            with open(file_found, 'r', encoding='unicode_escape') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
                     user = item[1]
@@ -100,9 +97,6 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                 report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
                 report.end_artifact_report()
                 
-                tsvname = f'Kik - Chat Platform Sent'
-                tsv(report_folder, data_headers, data_list, tsvname)
-                
                 tlactivity = f'Kik - Chat Platform Sent'
                 timeline(report_folder, tlactivity, data_list, data_headers)
             else:
@@ -110,7 +104,7 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
         
         if filename.startswith('chat_sent_received.txt'):
             data_list =[]
-            with open(file_found, 'r') as f:
+            with open(file_found, 'r', encoding='unicode_escape') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
                     user = item[1]
@@ -134,9 +128,6 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                 report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
                 report.end_artifact_report()
                 
-                tsvname = f'Kik - Chat Sent Received'
-                tsv(report_folder, data_headers, data_list, tsvname)
-                
                 tlactivity = f'Kik - Chat Sent Received'
                 timeline(report_folder, tlactivity, data_list, data_headers)
             else:
@@ -144,7 +135,7 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                 
         if filename.startswith('chat_sent.txt'):
             data_list =[]
-            with open(file_found, 'r') as f:
+            with open(file_found, 'r', encoding='unicode_escape') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
                     user = item[1]
@@ -163,10 +154,7 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                 data_headers = ('Timestamp', 'User', 'User', 'Info', 'IP')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
-                
-                tsvname = f'Kik - Chat Sent'
-                tsv(report_folder, data_headers, data_list, tsvname)
-                
+        
                 tlactivity = f'Kik - Chat Sent'
                 timeline(report_folder, tlactivity, data_list, data_headers)
             else:
@@ -178,7 +166,7 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
             else:
                 data_list =[]
                 aggregator = ''
-                with open(file_found, 'r') as f:
+                with open(file_found, 'r', encoding='unicode_escape') as f:
                     for line in f:
                         if line.startswith('-------Report'):
                             if aggregator != '':
@@ -198,10 +186,7 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                     data_headers = ('Timestamp', 'Report From', 'Data')
                     report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Data'])
                     report.end_artifact_report()
-                    
-                    tsvname = f'Kik - Abuse Report'
-                    tsv(report_folder, data_headers, data_list, tsvname)
-                    
+
                     tlactivity = f'Kik - Abuse Report'
                     timeline(report_folder, tlactivity, data_list, data_headers)
                 else:
@@ -209,7 +194,7 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                     
         if filename.startswith('friend_added.txt'):
             data_list =[]
-            with open(file_found, 'r') as f:
+            with open(file_found, 'r', encoding='unicode_escape') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
                     user = item[1]
@@ -226,17 +211,15 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
                 
-                tsvname = f'Kik - Friend Added'
-                tsv(report_folder, data_headers, data_list, tsvname)
-                
                 tlactivity = f'Kik - Friend Added'
                 timeline(report_folder, tlactivity, data_list, data_headers)
+            
             else:
                 logfunc('No Kik Friend Added data available')
                 
         if filename.startswith('group_receive_msg_platform.txt'):
             data_list =[]
-            with open(file_found, 'r') as f:
+            with open(file_found, 'r', encoding='unicode_escape') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
                     user = item[1]
@@ -258,9 +241,6 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                 report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
                 report.end_artifact_report()
                 
-                tsvname = f'Kik - Group Receive Msg Platform'
-                tsv(report_folder, data_headers, data_list, tsvname)
-                
                 tlactivity = f'Kik - Group Receive Msg Platform'
                 timeline(report_folder, tlactivity, data_list, data_headers)
             else:
@@ -268,7 +248,7 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                 
         if filename.startswith('group_receive_msg.txt'):
             data_list =[]
-            with open(file_found, 'r') as f:
+            with open(file_found, 'r', encoding='unicode_escape') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
                     user = item[1]
@@ -289,9 +269,6 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
                 
-                tsvname = f'Kik - Group Receive Msg'
-                tsv(report_folder, data_headers, data_list, tsvname)
-                
                 tlactivity = f'Kik - Group Receive Msg'
                 timeline(report_folder, tlactivity, data_list, data_headers)
             else:
@@ -300,7 +277,7 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
         if filename.startswith('group_send_msg_platform.txt'):
             
             data_list =[]
-            with open(file_found, 'r') as f:
+            with open(file_found, 'r', encoding='unicode_escape') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
                     user = item[1]
@@ -322,9 +299,6 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                 report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
                 report.end_artifact_report()
                 
-                tsvname = f'Kik - Group Send Msg Platform'
-                tsv(report_folder, data_headers, data_list, tsvname)
-                
                 tlactivity = f'Kik - Group Send Msg Platform'
                 timeline(report_folder, tlactivity, data_list, data_headers)
             else:
@@ -333,7 +307,7 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
         if filename.startswith('group_send_msg.txt'):
             
             data_list =[]
-            with open(file_found, 'r') as f:
+            with open(file_found, 'r', encoding='unicode_escape') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
                     user = item[1]
@@ -352,9 +326,6 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                 data_headers = ('Timestamp', 'User', 'Field', 'User', 'Field', 'IP')
                 report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
                 report.end_artifact_report()
-                
-                tsvname = f'Kik - Group Send Msg'
-                tsv(report_folder, data_headers, data_list, tsvname)
                 
                 tlactivity = f'Kik - Group Send Msg'
                 timeline(report_folder, tlactivity, data_list, data_headers)
