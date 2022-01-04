@@ -423,6 +423,8 @@ def media_to_html(media_path, files_found, report_folder):
                 thumb = f'<video width="320" height="240" controls="controls" preload="none"><source src="{source}" type="video/mp4">Your browser does not support the video tag.</video>'
             elif 'image' in mimetype:
                 thumb = f'<img src="{source}"width="300"></img>'
+            elif 'audio' in mimetype:
+                thumb = f'<audio controls><source src="{source}" type="audio/ogg"><source src="{source}" type="audio/mpeg">Your browser does not support the audio element.</audio>'
             else:
                 thumb = f'<a href="{source}"> Link to {mimetype} </>'
     return thumb
