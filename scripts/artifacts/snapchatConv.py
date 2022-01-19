@@ -65,7 +65,6 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
                 logfunc(f'No Snapchat - Geolocations  - {username}')
     
     
-    
     for file_found in files_found:
         file_found = str(file_found)
     
