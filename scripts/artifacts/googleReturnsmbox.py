@@ -2,7 +2,6 @@ import os
 import datetime
 import csv
 import mailbox
-import filetype
 import magic
 import email
 
