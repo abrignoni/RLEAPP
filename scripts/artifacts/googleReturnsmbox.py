@@ -43,6 +43,7 @@ def get_googleReturnsmbox(files_found, report_folder, seeker, wrap_text):
             mfrom = message['from']
             mto = message['to']
             msubject = str(message['Subject'])
+            msentdate = message['date']
             msgtype = message.get_content_type()
             thebody = getbody(message)
             if thebody is None:
@@ -84,7 +85,7 @@ def get_googleReturnsmbox(files_found, report_folder, seeker, wrap_text):
                     attachments = attachments + '<table><tr><td>' + thumb + '</td></tr></table><p>'
             
         
-            data_list.append((mfrom,mto,msubject,thebody, attachments))
+            data_list.append((msentdate, mfrom, mto, msubject, thebody, attachments))
             
         if data_list:
             description = f'Google Returns - Mbox'
@@ -92,7 +93,7 @@ def get_googleReturnsmbox(files_found, report_folder, seeker, wrap_text):
             report.start_artifact_report(report_folder, f'Google Returns - Mbox - {a}', description)
             html_report = report.get_report_file_path()
             report.add_script()
-            data_headers = ('From','To','Subject','Body','Attachments')
+            data_headers = ('Date','From','To','Subject','Body','Attachments')
             report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Body','Attachments'])
             report.end_artifact_report()
             
