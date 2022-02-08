@@ -116,7 +116,8 @@ def get_twitterReturns(files_found, report_folder, seeker, wrap_text):
         if filename.endswith('-account.txt'):
             with open(file_found, 'r', encoding='utf-8') as f:
                 lines = f.readlines()
-            count = 0    
+            count = 0
+            account_id = created_at = updated_at = email = created_via = screen_name = creation_ip = time_zone = ''
             for line in lines:
                 count += 1
                 
@@ -147,6 +148,7 @@ def get_twitterReturns(files_found, report_folder, seeker, wrap_text):
                 if 'time_zone:' in line:
                     time_zone = line.split(': ')[1].replace(',', '').strip()
                     data_list_account.append((created_at, screen_name, account_id, updated_at, email, creation_ip, created_via, time_zone))
+                    account_id = created_at = updated_at = email = created_via = screen_name = creation_ip = time_zone = ''
         
         if filename.endswith('-followers.txt'):
             with open(file_found, 'r', encoding='utf-8') as f:
