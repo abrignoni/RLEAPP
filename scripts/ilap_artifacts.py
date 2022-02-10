@@ -59,6 +59,7 @@ from scripts.artifacts.instagramVideoswatched import get_instagramVideoswatched
 from scripts.artifacts.instagramSuggestedviewed import get_instagramSuggestedviewed
 from scripts.artifacts.kikReturns import get_kikReturns
 from scripts.artifacts.kikProfilepic import get_kikProfilepic
+from scripts.artifacts.msftheadReturn import get_msftheadReturn
 from scripts.artifacts.netflixArchive import get_netflixArchive
 from scripts.artifacts.playStoreDevices import get_playStoreDevices
 from scripts.artifacts.playStoreInstalls import get_playStoreInstalls
@@ -144,6 +145,7 @@ tosearch = {
     'instagramVideoswatched':('Instagram Archive', ('*/ads_and_content/videos_watched.json')),
     'kikReturns':('Kik Returns', ('*/logs/*.txt','*/logs/*','*/content/*')),
     'kikProfilepic':('Kik Returns', ('*profile-pic.jpg')),
+    'msftheadReturn':('Microsoft Returns', ('*.eml_hdr.eml')),
     'netflixArchive':('Netflix Archive', ('**/Profiles.csv', '**/BillingHistory.csv', '**/IpAddressesLogin.csv', '**/IpAddressesStreaming.csv', '**/Devices.csv', '**/ViewingActivity.csv', '**/SearchHistory.csv', '**/AccountDetails.csv', '**/MessagesSentByNetflix.csv')),
     'playStoreDevices':('Google Takeout Archive', ('*/Google Play Store/Devices.json')),
     'playStoreInstalls':('Google Takeout Archive', ('*/Google Play Store/Installs.json')),
