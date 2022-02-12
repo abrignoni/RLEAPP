@@ -37,7 +37,7 @@ def get_msftheadReturn(files_found, report_folder, seeker, wrap_text):
         writer = csv.writer(f)
         writerg = csv.writer(g)
         headers = ['Timestamp', 'X Originating IP', 'From', 'To', 'Received', 'Path']
-        headersg = ['Timestamp', 'X Originating IP', 'From', 'To', 'Received Last', 'Received Middle', 'Received First' 'Path']
+        headersg = ['Timestamp', 'X Originating IP', 'From', 'To', 'Received Last', 'Received Middle', 'Received First', 'Path']
         writer.writerow(headers)
         writerg.writerow(headersg)
         
