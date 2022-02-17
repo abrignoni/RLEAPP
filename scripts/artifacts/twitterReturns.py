@@ -163,7 +163,8 @@ def get_twitterReturns(files_found, report_folder, seeker, wrap_text):
                 if 'BEGIN PGP SIGNATURE' in line:
                     break
                 else:
-                    data_list_followers.append((line.strip(),))
+                    if len(line) > 1:
+                        data_list_followers.append((line.strip(),))
     
         if filename.endswith('-following.txt'):
             with open(file_found, 'r', encoding='utf-8') as f:
@@ -178,7 +179,8 @@ def get_twitterReturns(files_found, report_folder, seeker, wrap_text):
                 if 'BEGIN PGP SIGNATURE' in line:
                     break
                 else:
-                    data_list_following.append((line.strip(),))
+                    if len(line) > 1:
+                        data_list_following.append((line.strip(),))
         
         if filename.endswith('-lists_created.txt'):
             with open(file_found, 'r', encoding='utf-8') as f:
@@ -193,7 +195,8 @@ def get_twitterReturns(files_found, report_folder, seeker, wrap_text):
                 if 'BEGIN PGP SIGNATURE' in line:
                     break
                 else:
-                    data_list_lists_created.append((line.strip(),))
+                    if len(line) > 1:
+                        data_list_lists_created.append((line.strip(),))
     
         if filename.endswith('-profile-description.txt'):
             with open(file_found, 'r', encoding='utf-8') as f:
@@ -260,9 +263,10 @@ def get_twitterReturns(files_found, report_folder, seeker, wrap_text):
         
         if filename.endswith('-tweets.txt'):
             aggregator = ' '
+            dateds = timetochange = datetime_object = timestampeds = rtid = rttext = rtsource = rtcoor = ''
             with open(file_found, 'r', encoding='utf-8') as f:
                 lines = f.readlines()
-            count = 0    
+            count = 0
             for line in lines:
                 count += 1
                 
@@ -304,7 +308,8 @@ def get_twitterReturns(files_found, report_folder, seeker, wrap_text):
                     aggregator = aggregator + line.strip()
                     
                 if '-----BEGIN PGP SIGNATURE-----' in line:
-                    data_list_tweets.append((timestamped, wid, wtext, thumbs, wsource, wcoord, timestampeds, rtid, rttext, rtsource, rtcoor))
+                    if data_list_tweets:
+                        data_list_tweets.append((timestamped, wid, wtext, thumbs, wsource, wcoord, timestampeds, rtid, rttext, rtsource, rtcoor))
     
     if data_list_tweets:
         report = ArtifactHtmlReport('Twitter Returns - Tweets')
