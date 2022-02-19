@@ -307,6 +307,7 @@ def get_twitterReturns(files_found, report_folder, seeker, wrap_text):
                         pass
                     else:
                         data_list_devices.append((createdat, updatedat, typed, ipxcarry, phonen ))
+                        createdat = updatedat = typed = ipxcarry = phonen = ''
         
         if filename.endswith('-tweets.txt'):
             filenametweets = file_found
