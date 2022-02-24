@@ -334,9 +334,9 @@ def get_twitterReturns(files_found, report_folder, seeker, wrap_text):
                         timestamped = (datetime_object)
                         wid = (work['id'])
                         thumbs = media_to_html(str(wid), files_found, report_folder)
-                        wtext = (work['text'])
-                        wsource = (work['source'])
-                        wcoord = (work['coordinates'])
+                        wtext = work.get('text')
+                        wsource = work.get('source')
+                        wcoord = work.get('coordinates')
                         
                         checkval = work.get('retweeted_status', ' ')
                         if checkval != ' ':
@@ -345,9 +345,9 @@ def get_twitterReturns(files_found, report_folder, seeker, wrap_text):
                             datetime_object = datetime.strptime(timetochange, '%b %d %H:%M:%S %Y')
                             timestampeds = (datetime_object)
                             rtid = (work['retweeted_status']['id'])
-                            rttext = (work['retweeted_status']['text'])
-                            rtsource = (work['retweeted_status']['source'])
-                            rtcoor = (work['retweeted_status']['coordinates'])
+                            rttext = work['retweeted_status'].get('text')
+                            rtsource = work['retweeted_status'].get('source')
+                            rtcoor = work['retweeted_status'].get('coordinates')
                         else:
                             timestampeds = rtid = rttext = rtsource = rtcoor = ' '
                             
