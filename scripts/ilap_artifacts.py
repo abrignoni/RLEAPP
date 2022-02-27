@@ -75,6 +75,7 @@ from scripts.artifacts.tikToksubsinfo import get_tikToksubsinfo
 from scripts.artifacts.takeoutAccessLogActivity import get_takeoutAccessLogActivity
 from scripts.artifacts.takeoutGoogleFit import get_takeoutGoogleFit
 from scripts.artifacts.takeoutLocationHistory import get_takeoutLocationHistory
+from scripts.artifacts.takeoutRecords import get_takeoutRecords
 from scripts.artifacts.takeoutSavedLinks import get_takeoutSavedLinks
 from scripts.artifacts.twitterReturns import get_twitterReturns
 from scripts.artifacts.youtubeSubscriptions import get_youtubeSubscriptions
@@ -161,6 +162,7 @@ tosearch = {
     'takeoutAccessLogActivity':('Google Takeout Archive', ('*/Access Log Activity/*.csv')),
     'takeoutGoogleFit':('Google Takeout Archive', ('*/Fit/Daily activity metrics/Daily activity metrics.csv')),
     'takeoutLocationHistory':('Google Takeout Archive', ('*/Location History/Location History.json')),
+    'takeoutRecords':('Google Takeout Archive', ('*/Location History/Records.json')),
     'takeoutSavedLinks':('Google Takeout Archive', ('*/Saved/*.csv')),
     'twitterReturns':('Twitter Returns',('*/*/*','*/*.txt')),
     'youtubeSubscriptions':('Google Takeout Archive', ('*/YouTube and YouTube Music/subscriptions/subscriptions.csv')),
