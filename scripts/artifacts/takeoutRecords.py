@@ -1,6 +1,7 @@
 # Code edited from https://github.com/cheeky4n6monkey/4n6-scripts/blob/master/Google_Takeout_Records/gRecordsActivity_ijson_date.py
 #
 # Author: cheeky4n6monkey@gmail.com
+# License: https://www.gnu.org/licenses/gpl-3.0.en.html
 
 
 import datetime
