@@ -132,23 +132,23 @@ def get_takeoutRecords(files_found, report_folder, seeker, wrap_text):
         
     num_entries = len(data_list)
     if num_entries > 0:
-        report = ArtifactHtmlReport('Google Location History')
-        report.start_artifact_report(report_folder, 'Google Location History')
+        report = ArtifactHtmlReport('Google Location History - Records')
+        report.start_artifact_report(report_folder, 'Google Location History - Records')
         report.add_script()
         data_headers = ('Timestamp', 'Source', 'Device', 'Platform', 'Form Factor', 'Timestamp Server', 'Timestamp Device', 'Timestamp Element', 'Latitude', 'Longitude', 'Altitude', 'Heading', 'Velocity', 'Accuracy', 'Vertical Accuracy', 'Sub-activity Types', 'Timestamp Activity', 'Detected Activity')
 
         report.write_artifact_data_table(data_headers, data_list, file_found)
         report.end_artifact_report()
         
-        tsvname = f'Google Location History'
+        tsvname = f'Google Location History - Records'
         tsv(report_folder, data_headers, data_list, tsvname)
         
-        tlactivity = f'Google Location History'
+        tlactivity = f'Google Location History - Records'
         timeline(report_folder, tlactivity, data_list, data_headers)
         
-        kmlactivity = 'Google Location History'
+        kmlactivity = 'Google Location History - Records'
         kmlgen(report_folder, kmlactivity, data_list, data_headers)
         
     else:
-        logfunc('No Google Location History data available')
+        logfunc('No Google Location History - Records data available')
             
