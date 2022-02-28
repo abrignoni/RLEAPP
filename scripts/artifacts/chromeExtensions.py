@@ -1,3 +1,9 @@
+# Module Description: Parses Google Chrome Extensions from Takeout
+# Author: @KevinPagano3
+# Date: 2021-08-20
+# Artifact version: 0.0.1
+# Requirements: none
+
 import datetime
 import json
 import os
