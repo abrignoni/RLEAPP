@@ -38,6 +38,7 @@ def get_icon_name(category, artifact):
         elif artifact.find('CHROME EXTENSIONS') >=0: icon = 'tool'
         elif artifact == 'GOOGLE ACCESS LOG ACTIVITIES': icon = 'activity'
         elif artifact == 'GOOGLE ACCESS LOG DEVICES': icon = 'smartphone'
+        elif artifact == 'GOOGLE CHAT - MESSAGES': icon = 'message-square'
         elif artifact == 'GOOGLE FI - USER INFO RECORDS': icon = 'phone'
         elif artifact == 'GOOGLE FIT - DAILY ACTIVITY METRICS': icon = 'trending-up'
         elif artifact == 'GOOGLE LOCATION HISTORY': icon = 'map-pin'
