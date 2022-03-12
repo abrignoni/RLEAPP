@@ -80,6 +80,7 @@ from scripts.artifacts.takeoutLocationHistory import get_takeoutLocationHistory
 from scripts.artifacts.takeoutRecords import get_takeoutRecords
 from scripts.artifacts.takeoutSavedLinks import get_takeoutSavedLinks
 from scripts.artifacts.twitterReturns import get_twitterReturns
+from scripts.artifacts.whatsappExportedchats import get_whatsappExportedchats
 from scripts.artifacts.youtubeSubscriptions import get_youtubeSubscriptions
 
 
@@ -170,6 +171,8 @@ tosearch = {
     'takeoutSavedLinks':('Google Takeout Archive', ('*/Saved/*.csv')),
     'twitterReturns':('Twitter Returns',('*/*/*','*/*.txt')),
     'youtubeSubscriptions':('Google Takeout Archive', ('*/YouTube and YouTube Music/subscriptions/subscriptions.csv')),
+    'whatsappExportedchats':('Whatsapp Exported Chat', ('*/*.*')),
+    
     
 }
 slash = '\\' if is_platform_windows() else '/'
