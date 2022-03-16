@@ -5,6 +5,7 @@
 
 import traceback
 
+from scripts.artifacts.airdropEmails import get_airdropEmails
 from scripts.artifacts.airdropNumbers import get_airdropNumbers
 from scripts.artifacts.chromeExtensions import get_chromeExtensions
 from scripts.artifacts.chromeHistory import get_chromeHistory
@@ -95,6 +96,7 @@ from scripts.ilapfuncs import *
 # Don't forget to import the module above!!!!
 
 tosearch = {
+    'airdropEmails':('Airdrop Emails', ('*/airdrop.ndjson')),
     'airdropNumbers':('Airdrop Numbers', ('*/airdrop.ndjson')),
     'chromeExtensions':('Google Takeout Archive', ('*/Chrome/Extensions.json')),
     'chromeHistory':('Google Takeout Archive', ('*/Chrome/BrowserHistory.json')),
