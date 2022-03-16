@@ -68,6 +68,7 @@ def get_icon_name(category, artifact):
     elif category == 'CONTACTS':            icon = 'user'
     elif category == 'GOOGLE RETURNS MBOXES':            icon = 'mail'
     elif category == 'MICROSOFT RETURNS':            icon = 'target'
+    elif category == 'AIRDROP NUMBERS':            icon = 'smartphone'
     elif category == 'TWITTER RETURNS':            icon = 'twitter'
     elif category == 'DISCORD RETURNS':            icon = 'message-square'
     elif category == 'TIKTOK RETURNS':            icon = 'film'
