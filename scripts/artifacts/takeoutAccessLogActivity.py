@@ -1,3 +1,9 @@
+# Module Description: Parses Google services accessed by your device from Takeout
+# Author: @KevinPagano3
+# Date: 2021-09-25
+# Artifact version: 0.0.1
+# Requirements: none
+
 import os
 import datetime
 import csv

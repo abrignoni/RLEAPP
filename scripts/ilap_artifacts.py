@@ -14,6 +14,8 @@ from scripts.artifacts.discordReturnsdms import get_discordReturnsdms
 from scripts.artifacts.discordReturnsser import get_discordReturnsser
 from scripts.artifacts.discordReturnsserver import get_discordReturnsserver
 from scripts.artifacts.discordReturnsunkn import get_discordReturnsunkn
+from scripts.artifacts.googleChat import get_googleChat
+from scripts.artifacts.googleFi_UserInfoRecords import get_googleFi_UserInfoRecords
 from scripts.artifacts.googleReturnsmbox import get_googleReturnsmbox
 from scripts.artifacts.googlePayTransactions import get_googlePayTransactions
 from scripts.artifacts.fbigUnifiedmessaging import get_fbigUnifiedmessaging
@@ -102,6 +104,8 @@ tosearch = {
     'discordReturnsser':('Discord Returns', ('*/servers/*.json')),
     'discordReturnsserver':('Discord Returns', ('*/attachments/*.*', '*/messages/servers/*.csv')),
     'discordReturnsunkn':('Discord Returns', ('*/attachments/*.*', '*/messages/unknown/*.csv')),
+    'googleChat':('Google Takeout Archive', ('*/Google Chat/Groups/*/messages.json')),
+    'googleFi_UserInfoRecords':('Google Takeout Archive', ('*/Google Fi/User Info*/GoogleFi.UserInfo.Records.txt')),
     'googleReturnsmbox':('Google Returns MBOXes',('*/*.Mail.MessageContent_*/Mail/All mail Including Spam and Trash.mbox')),
     'googlePayTransactions':('Google Takeout Archive', ('*/Google Pay/Google transactions/transactions_*.csv')),
     'fbigUnifiedmessaging':('Facebook - Instagram Returns', ('*/index.html', '*/preservation-1.html', '*/linked_media/*')),
