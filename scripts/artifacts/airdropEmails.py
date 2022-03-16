@@ -63,7 +63,7 @@ def get_airdropEmails(files_found, report_folder, seeker, wrap_text):
         report = ArtifactHtmlReport(f'AirDrop - Email from Hash ')
         report.start_artifact_report(report_folder, f'AirDrop - Email from Hash')
         report.add_script()
-        data_headers = ('Timestamp','Target Phone','Event Message','Subsystem','Category','Trace ID')
+        data_headers = ('Timestamp','Email','Event Message','Subsystem','Category','Trace ID')
         report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Media'])
         report.end_artifact_report()
         
