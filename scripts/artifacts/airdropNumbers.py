@@ -1,3 +1,6 @@
+#Base code comes from:
+#https://github.com/043a7e/airdropmsisdn
+
 import os
 import datetime
 import hashlib
