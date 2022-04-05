@@ -20,12 +20,16 @@ page_header = \
         <link rel="stylesheet" href="_elements/MDB-Free_4.13.0/css/mdb.min.css">
         <!-- Your custom styles (optional) -->
         <link rel="stylesheet" href="_elements/dashboard.css">
+        <link rel="stylesheet" href="_elements/chats.css">
+        <link rel="stylesheet" href="_elements/custom.css"> <!-------Link to custom.css-------!>
         <!-- MDBootstrap Datatables  -->
         <link rel="stylesheet" href="_elements/MDB-Free_4.13.0/css/addons/datatables.min.css" rel="stylesheet">
 
         <!-- Icons -->
         <!--script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script-->
         <script src="_elements/feather.min.js"></script>
+        <script src="_elements/sidebar.js"></script> <!-------Link to sidebar.js-------!>
+        
     </head>
     <body>
 """
@@ -35,6 +39,9 @@ body_start = \
 """
     <!-- Start your project here-->
     <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+     <button type="button" class="toggle" id="toggle" onclick="sidebar_toggle()"> <!-------Added toggle button-------!>
+       <span></span>
+      </button>
         <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">{0}</a>
         <div class="custom-control custom-switch">
             <input type="checkbox" class="custom-control-input" id="darkSwitch" />
@@ -48,9 +55,10 @@ body_start = \
 """
 body_sidebar_setup = \
 """
-            <nav class="col-md-2 d-none d-md-block bg-light sidebar">
-                <div class="sidebar-sticky" id="sidebar_id">
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar" id="sidebar_id"> <!-------Added html ID tag sidebar_id-------!>
+                <div class="sidebar-sticky">
                     <ul class="nav flex-column">
+                   
 """
 # The 'active' class must be set only for the current page, it will highlight that entry in blue
 #   class="nav-link active"
@@ -119,7 +127,7 @@ body_sidebar_trailer = \
 
 body_main_header = \
 """
-            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4" id="main"> <!-------Added html ID tag main-------!>
 """
 # Variable {title}, {description}
 body_main_data_title = \
@@ -205,13 +213,13 @@ thank_you_note = \
                             </div>
                             <div class="col-md-8">
                             <div class="card-body">
-                                <h5 class="card-title">Thank you for using RLEAPP</h5>
+                                <h5 class="card-title">Thank you for using iLEAPP</h5>
                                 <p class="card-text">
                                     Support open source and report any bugs!
                                 </p>
                                 <!--Github-->
-                                <a class="btn-floating btn-git" type="button" role="button" href="https://github.com/abrignoni/rleapp" target="_blank"><i class="fab fa-github"></i> Project Home </a>
-                                <p class="card-text fadeIn"><small class="text-muted">RLEAPP Team</small></p>
+                                <a class="btn-floating btn-git" type="button" role="button" href="https://github.com/abrignoni/ileapp" target="_blank"><i class="fab fa-github"></i> Project Home </a>
+                                <p class="card-text fadeIn"><small class="text-muted">iLEAPP Team</small></p>
                             </div>
                             </div>
                         </div>
@@ -225,7 +233,7 @@ thank_you_note = \
 credits_block = \
 """
     <div class="alert alert-light mb-4 bg-white" style="border-style: none">
-        <h4 class="text-center">RLEAPP contributors</h4>
+        <h4 class="text-center">iLEAPP contributors</h4>
         <ul class="list-group" style="max-width: 500px; margin:auto">
             {}
         </ul>
@@ -274,6 +282,7 @@ body_end = \
         feather.replace()
     </script>
 """
+
 nav_bar_script = \
 """
     <script>
@@ -304,11 +313,12 @@ nav_bar_script_footer = \
         });
     </script>
 """
+
 default_responsive_table_script = \
 """
     <script>
         $(document).ready(function() {
-            $('#dtBasicExample').DataTable({
+            $('.table').DataTable({
                 //"scrollY": "60vh",
                 //"scrollX": "10%",
                 //"scrollCollapse": true,
@@ -319,6 +329,7 @@ default_responsive_table_script = \
             //$('#infiniteLoading').remove();
         });
     </script>
+    
 """
 
 page_footer = \
