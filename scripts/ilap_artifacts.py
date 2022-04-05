@@ -72,6 +72,7 @@ from scripts.artifacts.playStorePurchaseHistory import get_playStorePurchaseHist
 from scripts.artifacts.playStoreReviews import get_playStoreReviews
 from scripts.artifacts.playStoreSubscriptions import get_playStoreSubscriptions
 from scripts.artifacts.snapChatsubsinfo import get_snapChatsubsinfo
+from scripts.artifacts.snapChathistory import get_snapChathistory
 from scripts.artifacts.snapchatConv import get_snapchatConv
 from scripts.artifacts.tikTokipdata import get_tikTokipdata
 from scripts.artifacts.tikTokvideometa import get_tikTokvideometa
@@ -165,6 +166,7 @@ tosearch = {
     'playStoreSubscriptions':('Google Takeout Archive', ('*/Google Play Store/Subscriptions.json')),
     'snapchatConv':('Snapchat Returns', ('*/conversations.csv', '*/*.*')),
     'snapChatsubsinfo':('Snapchat Returns', ('*/subscriber_information.csv')),
+    'snapChathistory':('Snapchat Archive', ('*/chat_history.json')),
     'tikTokipdata':('TikTok Returns', ('*/*/*- IP Data.xlsx')),
     'tikToksubsinfo':('TikTok Returns', ('*/*/*(Subscriber information).pdf')),
     'tikTokvideometa':('TikTok Returns', ('*/*/*- video metadata.xlsx', '*/*/*/Video Content/*')),
