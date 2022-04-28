@@ -19,6 +19,7 @@ from scripts.artifacts.googleChat import get_googleChat
 from scripts.artifacts.googleFi_UserInfoRecords import get_googleFi_UserInfoRecords
 from scripts.artifacts.googleReturnsmbox import get_googleReturnsmbox
 from scripts.artifacts.googlePayTransactions import get_googlePayTransactions
+from scripts.artifacts.googleTasks import get_googleTasks
 from scripts.artifacts.fbigUnifiedmessaging import get_fbigUnifiedmessaging
 from scripts.artifacts.icloudReturnsAcc import get_icloudReturnsAcc
 from scripts.artifacts.icloudMsgsInCloud import get_icloudMsgsInCloud
@@ -111,6 +112,7 @@ tosearch = {
     'googleFi_UserInfoRecords':('Google Takeout Archive', ('*/Google Fi/User Info*/GoogleFi.UserInfo.Records.txt')),
     'googleReturnsmbox':('Google Returns MBOXes',('*/*.Mail.MessageContent_*/Mail/All mail Including Spam and Trash.mbox')),
     'googlePayTransactions':('Google Takeout Archive', ('*/Google Pay/Google transactions/transactions_*.csv')),
+    'googleTasks':('Google Takeout Archive', ('*/Tasks/Tasks.json')),
     'fbigUnifiedmessaging':('Facebook - Instagram Returns', ('*/index.html', '*/preservation-1.html', '*/linked_media/*')),
     'icloudReturnsAcc':('iCloud Returns', ('*/Account/*_AccountDetails.xlsx')),
     'icloudMsgsInCloud':('iCloud Returns', ('*/Messagesinicloud/*MessagesInICloud.*')),

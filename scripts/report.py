@@ -50,6 +50,7 @@ def get_icon_name(category, artifact):
         elif artifact == 'GOOGLE PLAY STORE PURCHASE HISTORY': icon = 'shopping-cart'
         elif artifact == 'GOOGLE PLAY STORE REVIEWS': icon = 'edit-3'
         elif artifact == 'GOOGLE PLAY STORE SUBSCRIPTIONS': icon = 'refresh-cw'
+        elif artifact == 'GOOGLE TASKS': icon = 'check-circle'
         elif artifact == 'SAVED LINKS - DEFAULT LIST': icon = 'list'
         elif artifact == 'SAVED LINKS - FAVORITE IMAGES': icon = 'image'
         elif artifact == 'SAVED LINKS - FAVORITE PAGES': icon = 'link-2'
