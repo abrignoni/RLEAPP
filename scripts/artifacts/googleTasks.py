@@ -58,7 +58,7 @@ def get_googleTasks(files_found, report_folder, seeker, wrap_text):
                 else: pass
                 
                 
-                data_list.append((task_created,task_updated,task_due,task_status,tasklist_title,task_parent_title,task_parent_id,task_title,task_id,task_notes,task_type))
+                data_list.append((task_created,task_updated,task_due,task_status,tasklist_title,task_parent_title,task_title,task_notes,task_type,task_parent_id,task_id))
         
         num_entries = len(data_list)
         if num_entries > 0:
@@ -66,7 +66,7 @@ def get_googleTasks(files_found, report_folder, seeker, wrap_text):
             report = ArtifactHtmlReport('Google Tasks')
             report.start_artifact_report(report_folder, 'Google Tasks', description)
             report.add_script()
-            data_headers = ('Task Created','Task Updated','Task Due','Task Status','Task List Name','Parent Task Name','Parent Task ID','Task Name','Task ID','Notes','Task Type')
+            data_headers = ('Task Created','Task Updated','Task Due','Task Status','Task List Name','Parent Task Name','Task Name','Notes','Task Type','Parent Task ID','Task ID')
 
             report.write_artifact_data_table(data_headers, data_list, file_found)
             report.end_artifact_report()
