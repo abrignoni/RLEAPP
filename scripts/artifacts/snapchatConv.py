@@ -75,8 +75,10 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
         if filename.startswith('conversations.csv'):
             data_list_conversations =[]
             with open(file_found, 'r', errors='backslashreplace') as f:
-                for i in range(20):
-                    next(f)
+                for line in f:
+                    if '=' in line:
+                        next(f)
+                        break
                 for line in f:
                     delimited = csv.reader(f, delimiter=',')
                     for item in delimited:
