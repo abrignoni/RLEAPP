@@ -73,6 +73,7 @@ from scripts.artifacts.playStorePurchaseHistory import get_playStorePurchaseHist
 from scripts.artifacts.playStoreReviews import get_playStoreReviews
 from scripts.artifacts.playStoreSubscriptions import get_playStoreSubscriptions
 from scripts.artifacts.snapChatsubsinfo import get_snapChatsubsinfo
+from scripts.artifacts.snapchatMemimg import get_snapchatMemimg
 from scripts.artifacts.snapChathistory import get_snapChathistory
 from scripts.artifacts.snapchatConv import get_snapchatConv
 from scripts.artifacts.tikTokipdata import get_tikTokipdata
@@ -169,6 +170,7 @@ tosearch = {
     'snapchatConv':('Snapchat Returns', ('*/conversations.csv', '*/*.*')),
     'snapChatsubsinfo':('Snapchat Returns', ('*/subscriber_information.csv')),
     'snapChathistory':('Snapchat Archive', ('*/chat_history.json')),
+    'snapchatMemimg':('Snapchat Returns', ('*/memories*.jpg','*/memories*.mp4')),
     'tikTokipdata':('TikTok Returns', ('*/*/*- IP Data.xlsx')),
     'tikToksubsinfo':('TikTok Returns', ('*/*/*(Subscriber information).pdf')),
     'tikTokvideometa':('TikTok Returns', ('*/*/*- video metadata.xlsx', '*/*/*/Video Content/*')),

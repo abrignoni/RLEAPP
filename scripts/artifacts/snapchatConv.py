@@ -21,9 +21,10 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
         
         if filename.startswith('geo_locations.csv'):
             data_list_geo =[]
-            with open(file_found, 'r') as f:
-                for i in range(4):
-                    next(f)
+            with open(file_found, 'r', errors='backslashreplace') as f:
+                for line in f:
+                    if '=' in line:
+                        break
                 for line in f:
                     delimited = csv.reader(f, delimiter=',')
                     for item in delimited:
@@ -79,55 +80,54 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
                     if '=' in line:
                         next(f)
                         break
-                for line in f:
-                    delimited = csv.reader(f, delimiter=',')
-                    for item in delimited:
-                        #print(item)
-                        content_type = item[0]
-                        message_type = item[1]
-                        conversation_id = item[2]
-                        message_id = item[3]
-                        reply_to_message_id = item[4]
-                        conversation_title = item[5]
-                        sender_username = item[6]
-                        sender_user_id = item[7]
-                        recipient_username = item[8]
-                        recipient_user_id = item[9]
-                        text = item[10]
-                        media = item[11]
-                        if media == '':
-                            agregator = ' '
-                        else:
-                            if ';' in media:
-                                media = media.split(';')
-                                agregator = '<table>'
-                                counter = 0
-                                for x in media:
-                                    if counter == 0:
-                                        agregator = agregator + ('<tr>')
-                                    thumb = media_to_html(x, files_found, report_folder)        
-                                
-                                    counter = counter + 1
-                                    agregator = agregator + f'<td>{thumb}</td>'
-                                    #hacer uno que no tenga html
-                                    if counter == 2:
-                                        counter = 0
-                                        agregator = agregator + ('</tr>')
-                                if counter == 1:
+                delimited = csv.reader(f, delimiter=',')
+                for item in delimited:
+                    #print(item)
+                    content_type = item[0]
+                    message_type = item[1]
+                    conversation_id = item[2]
+                    message_id = item[3]
+                    reply_to_message_id = item[4]
+                    conversation_title = item[5]
+                    sender_username = item[6]
+                    sender_user_id = item[7]
+                    recipient_username = item[8]
+                    recipient_user_id = item[9]
+                    text = item[10]
+                    media = item[11]
+                    if media == '':
+                        agregator = ' '
+                    else:
+                        if ';' in media:
+                            media = media.split(';')
+                            agregator = '<table>'
+                            counter = 0
+                            for x in media:
+                                if counter == 0:
+                                    agregator = agregator + ('<tr>')
+                                thumb = media_to_html(x, files_found, report_folder)        
+                            
+                                counter = counter + 1
+                                agregator = agregator + f'<td>{thumb}</td>'
+                                #hacer uno que no tenga html
+                                if counter == 2:
+                                    counter = 0
                                     agregator = agregator + ('</tr>')
-                                agregator = agregator + ('</table><br>')
-                            else:
-                                agregator = media_to_html(media, files_found, report_folder)
-                        is_saved = item[12]
-                        is_one_on_one = item[13] 
-                        timestamp = item[14]
-                        timestamp = timestamp.split(' ')
-                        year = timestamp[5]
-                        day = timestamp[2]
-                        time = timestamp[3]
-                        month = monthletter(timestamp[1])
-                        timestampfinal = (f'{year}-{month}-{day} {time}')
-                        data_list_conversations.append((timestampfinal,sender_username,recipient_username,text,is_saved,content_type,message_type,agregator,is_one_on_one,conversation_title,message_id,reply_to_message_id,sender_user_id,recipient_user_id))
+                            if counter == 1:
+                                agregator = agregator + ('</tr>')
+                            agregator = agregator + ('</table><br>')
+                        else:
+                            agregator = media_to_html(media, files_found, report_folder)
+                    is_saved = item[12]
+                    is_one_on_one = item[13] 
+                    timestamp = item[14]
+                    timestamp = timestamp.split(' ')
+                    year = timestamp[5]
+                    day = timestamp[2]
+                    time = timestamp[3]
+                    month = monthletter(timestamp[1])
+                    timestampfinal = (f'{year}-{month}-{day} {time}')
+                    data_list_conversations.append((timestampfinal,sender_username,recipient_username,text,is_saved,content_type,message_type,agregator,is_one_on_one,conversation_title,message_id,reply_to_message_id,sender_user_id,recipient_user_id))
                         
         
             if data_list_conversations:
@@ -222,53 +222,7 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc(f'No Snapchat - Chats - {username}')
             
-    userlist = []
-    start_terms = ('memories','custom_sticker')
-    for file_found in files_found:
-        file_found = str(file_found)
     
-        filename = os.path.basename(file_found)
-        one = (os.path.split(file_found))
-        username = (os.path.basename(one[0]))
-        if username not in userlist:
-            userlist.append(username)
-    
-
-    for name in userlist:
-        data_list_media = []
-        for file_found in files_found:
-            file_found = str(file_found)
-            filename = os.path.basename(file_found)
-            
-            if filename.startswith(start_terms):
-                metadata = filename.split('~')
-                if name == metadata[3]:
-                    typeoffile = metadata[0]
-                    timestamp = metadata[2]
-                    timestamp = timestamp.split('-')
-                    org_string = timestamp[5]
-                    mod_string = org_string[:-3]
-                    timestamp = f'{timestamp[0]}-{timestamp[1]}-{timestamp[2]} {timestamp[3]}:{timestamp[4]}:{mod_string}'
-                    usernamefile = metadata[3]
-                    media = media_to_html(file_found, files_found, report_folder)
-                    file_found_dir = os.path.dirname(file_found)
-                    data_list_media.append((timestamp,media,filename,usernamefile,typeoffile,))
-                    
-        if data_list_media:
-            report = ArtifactHtmlReport(f'Snapchat - Memories')
-            report.start_artifact_report(report_folder, f'Snapchat - Memories - {name}')
-            report.add_script()
-            data_headers = ('Timestamp','Media','Filename','User','File Type')
-            report.write_artifact_data_table(data_headers, data_list_media, file_found_dir, html_no_escape=['Media'])
-            report.end_artifact_report()
-            
-            tsvname = f'Snapchat - Memories - {name}'
-            tsv(report_folder, data_headers, data_list_media, tsvname)
-            
-            tlactivity = f'Snapchat - Memories- {name}'
-            timeline(report_folder, tlactivity, data_list_media, data_headers)
-        else:
-            logfunc(f'No Snapchat - Memories - {name}')
             
     for file_found in files_found:
         file_found = str(file_found)
@@ -279,11 +233,30 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
         
         if filename.startswith('ip_data.csv'):
             data_list_ip =[]
-            with open(file_found, 'r') as f:
-                for i in range(4):
-                    next(f)
+            with open(file_found, 'r', errors='backslashreplace') as f:
                 for line in f:
-                    delimited = csv.reader(f, delimiter=',')
+                    if '=' in line:
+                        header = f.readline()
+                        numberofcolumns = header.count(',')+1
+                        break
+                delimited = csv.reader(f, delimiter=',')
+                if numberofcolumns == 6:
+                    for item in delimited:
+                        ip = item[0]
+                        type = item[1]
+                        fecha = item[2]
+                        useragent = item[3]
+                        status = item[4]
+                        vermethod = item[5]
+                        timestamp = fecha.split(' ')
+                        year = timestamp[5]
+                        day = timestamp[2]
+                        time = timestamp[3]
+                        month = monthletter(timestamp[1])
+                        timestampfinal = (f'{year}-{month}-{day} {time}')
+                        
+                        data_list_ip.append((timestampfinal, ip, type, useragent, status, vermethod))
+                else:
                     for item in delimited:
                         ip = item[0]
                         type = item[1]
@@ -301,7 +274,10 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
                 report = ArtifactHtmlReport(f'Snapchat - IP Data')
                 report.start_artifact_report(report_folder, f'Snapchat - IP Data - {username}')
                 report.add_script()
-                data_headers = ('Timestamp','IP','Type')
+                if numberofcolumns == 6:
+                    data_headers = ('Timestamp','IP','Type','User Agent','Status','Verification Method')
+                else:
+                    data_headers = ('Timestamp','IP','Type')
                 report.write_artifact_data_table(data_headers, data_list_ip, file_found, html_no_escape=['Media'])
                 report.end_artifact_report()
                 
