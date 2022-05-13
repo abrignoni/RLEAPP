@@ -22,7 +22,7 @@ def get_snapchatMemimg(files_found, report_folder, seeker, wrap_text):
         username = (os.path.basename(one[0]).split('-')[0])
         if username not in userlist:
             userlist.append(username)
-            print(userlist)
+            #print(userlist)
             
     for name in userlist:
         data_list_media = []
