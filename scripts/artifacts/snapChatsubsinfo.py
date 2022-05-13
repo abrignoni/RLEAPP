@@ -22,14 +22,26 @@ def get_snapChatsubsinfo(files_found, report_folder, seeker, wrap_text):
         username = (os.path.basename(one[0]))
 
         if filename.startswith('subscriber_information.csv'):
+            
             data_list_subs =[]
             data_list_change =[]
+            sectionstarts = []
             with open(file_found, 'r') as f:
-                delimited = csv.reader(f, delimiter=',')
-                for iteration, item in enumerate(delimited):
-                    if iteration not in [0,1,2,3,5,6,7,8]:
-                        if iteration == 4:
-                            #subscriber info
+                for index, line in enumerate(f):
+                    #print(f'linea: {line}')
+                    if '==' in line:
+                        sectionstarts.append(index)
+                        
+            with open(file_found, 'r') as f:
+                for index, line in enumerate(f):
+                    #Account info section
+                    if index == sectionstarts[0] + 1:
+                        data_head = line.strip().split(',')
+                        lenheadersub = (len(data_head))
+                    if index == sectionstarts[0] + 2:
+                        item = line.strip().split(',')
+                        if lenheadersub == 7:
+                            #print('old format')
                             fecha = item[2]
                             timestamp = fecha.split(' ')
                             year = timestamp[5]
@@ -38,9 +50,30 @@ def get_snapChatsubsinfo(files_found, report_folder, seeker, wrap_text):
                             month = monthletter(timestamp[1])
                             timestampfinal = (f'{year}-{month}-{day} {time}')
                             data_list_subs.append((timestampfinal, item[0], item[1], item[3], item[4], item[5], item[6]))
+                            data_headers_sub = ('Timestamp UTC', 'Username', 'Email', 'Creation IP', 'Phone Number', 'Display Name', 'Status')
+                        if lenheadersub == 10:
+                            #print('new format')
+                            fecha = item[4]
+                            timestamp = fecha.split(' ')
+                            year = timestamp[5]
+                            day = timestamp[2]
+                            time = timestamp[3]
+                            month = monthletter(timestamp[1])
+                            timestampfinal = (f'{year}-{month}-{day} {time}')
+                            data_list_subs.append((timestampfinal, item[0], item[1], item[2], item[3], item[5], item[6], item[7], item[8], item[9]))
                             
-                        else:
-                            #subscriber info
+                            data_headers_sub = ('Timestamp', 'Username', 'User ID', 'Email Address', 'Email Status', 'Creation IP', 'Phone Number', 'Phone Status', 'Display Name', 'Status')
+                            #print(data_headers_sub)
+                            #print(data_list_subs)
+                            
+                        #Account change section
+                    if index == sectionstarts[1] + 1:
+                        data_header = line.strip().split(',')
+                        lendataheader = (len(data_header))
+                        
+                    if index > sectionstarts[1] +1:
+                        if lendataheader == 5:
+                            item = line.strip().split(',')
                             fecha = item[0]
                             timestamp = fecha.split(' ')
                             year = timestamp[5]
@@ -49,12 +82,13 @@ def get_snapChatsubsinfo(files_found, report_folder, seeker, wrap_text):
                             month = monthletter(timestamp[1])
                             timestampfinal = (f'{year}-{month}-{day} {time}')
                             data_list_change.append((timestampfinal, item[1], item[2], item[3], item[4]))
+                            #print(timestampfinal, item[1], item[2], item[3], item[4])
                             
         if data_list_subs:
             report = ArtifactHtmlReport(f'Snapchat - Subscriber Info')
             report.start_artifact_report(report_folder, f'Snapchat - Subscriber Info - {username}')
             report.add_script()
-            data_headers_sub = ('Timestamp UTC', 'Username', 'Email', 'Creation IP', 'Phone Number', 'Display Name', 'Status')
+            #data_headers_sub = ('Timestamp UTC', 'Username', 'Email', 'Creation IP', 'Phone Number', 'Display Name', 'Status') #Defined previously
             report.write_artifact_data_table(data_headers_sub, data_list_subs, file_found)
             report.end_artifact_report()
             
