@@ -51,18 +51,18 @@ def get_googleReturnsmbox(files_found, report_folder, seeker, wrap_text):
             
             attachmentnumber = 0
             attachments = ''
+            filename = None
             if message.is_multipart():
                 for part in message.walk():
                     if part.get_content_maintype() == 'multipart': continue
                     if part.get('Content-Disposition') is None: continue
                     if part.get_content_disposition() == 'attachment':
                         filename = part.get_filename()
-                        if filename is None:
-                            attachmentnumber = attachmentnumber + 1
-                            filename = str(attachmentnumber)
+                    if filename is None:
+                        attachmentnumber = attachmentnumber + 1
+                        filename = str(attachmentnumber)
                             
                     foldernumber = str(i)
-                    
                     
                         #join(report_folder, basename(file_found))
                     pathfile = f'{report_folder}{mailboxid}_attachments{splitter}{foldernumber}{splitter}{filename}'
@@ -94,7 +94,7 @@ def get_googleReturnsmbox(files_found, report_folder, seeker, wrap_text):
             html_report = report.get_report_file_path()
             report.add_script()
             data_headers = ('Date','From','To','Subject','Body','Attachments')
-            report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Body','Attachments'])
+            report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Attachments'])
             report.end_artifact_report()
             
             tsvname = f'Google Returns - Mbox - {a}'
