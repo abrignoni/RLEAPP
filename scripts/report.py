@@ -69,6 +69,9 @@ def get_icon_name(category, artifact):
         elif artifact == 'NETFLIX - SEARCH HISTORY':   icon = 'search'
         else:                                          icon = 'tv'
     elif category == 'CONTACTS':            icon = 'user'
+    elif category == 'GOOGLE RETURNS':
+        if artifact == 'GOOGLE RETURNS - ACTIVITIES':    icon = 'activity'
+        else:                                           icon = 'chrome'
     elif category == 'GOOGLE RETURNS MBOXES':            icon = 'mail'
     elif category == 'MICROSOFT RETURNS':            icon = 'target'
     elif category == 'AIRDROP NUMBERS':            icon = 'smartphone'
