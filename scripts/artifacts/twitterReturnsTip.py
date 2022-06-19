@@ -24,6 +24,11 @@ def monthletter(month):
 
 def get_twitterReturnsTip(files_found, report_folder, seeker, wrap_text):
     
+    if is_platform_windows():
+        separator = '\\'
+    else:
+        separator = '/'
+    
     for file_found in files_found:
         file_found = str(file_found)
         
@@ -63,9 +68,9 @@ def get_twitterReturnsTip(files_found, report_folder, seeker, wrap_text):
                                 extraline = next(f)
                                 mediaurl = extraline.replace('"','').strip()
                                 if 'ton' in mediaurl:
-                                    mediaident = mediaurl.split('/')[-1]
+                                    mediaident = mediaurl.split(separator)[-1]
                                 elif 'video' in mediaurl:
-                                    mediaident = mediaurl.split('/')[-1].split('?')[0]
+                                    mediaident = mediaurl.split(separator)[-1].split('?')[0]
                                 thumb = media_to_html(mediaident, files_found, report_folder)
                                 
                         elif '"reactions" :' in line:
@@ -518,22 +523,22 @@ def get_twitterReturnsTip(files_found, report_folder, seeker, wrap_text):
                                 mediaurl = ''
                             elif mediabase == 1:
                                 mediaurl = line.split(': ')[1].replace(',','').replace('"', '').strip()
-                                mediaurl = mediaurl.split('/')[-1].split('.')[0]
+                                mediaurl = mediaurl.split(separator)[-1].split('.')[0]
                                 
                                 mediaurl = media_to_html(mediaurl, files_found, report_folder)
                                 mediaagg = mediaurl
                                 mediabase = 2
                             elif mediabase == 2:
                                 mediaurl = line.split(': ')[1].replace(',','').replace('"', '').strip()
-                                mediaurl = mediaurl.split('/')[-1].split('.')[0]
+                                mediaurl = mediaurl.split(separator)[-1].split('.')[0]
                                 mediaurl = media_to_html(mediaurl, files_found, report_folder)
                                 mediaagg = mediaagg + '<br><br>' + mediaurl
                         elif '"bitrate" : "2176000"' in line:
                             extraline = next(f)
                             extraline = next(f)
-                            videomedia = extraline.split('/')[-1].split('?')[0]
+                            videomedia = extraline.split(separator)[-1].split('?')[0]
                             videomedia = videomedia.replace('"','').strip()
-                            videomediaident = videomedia.split('/')[-1].split('?')[0]
+                            videomediaident = videomedia.split(separator)[-1].split('?')[0]
                             videomediaident = media_to_html(videomediaident, files_found, report_folder)
                         
                         
