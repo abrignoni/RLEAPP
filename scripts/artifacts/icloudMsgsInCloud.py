@@ -23,7 +23,7 @@ def get_icloudMsgsInCloud(files_found, report_folder, seeker, wrap_text):
         list = []
         data_headers = []
         data_list =[]
-        
+        counter = 0
         #First worksheet
         
         wb = xlrd.open_workbook(loc)
@@ -38,20 +38,32 @@ def get_icloudMsgsInCloud(files_found, report_folder, seeker, wrap_text):
                 if i >= 7:
                     list.append(sheet.cell_value(i, j))
             if i >= 7:
-                data_list.append(list) 
+                data_list.append(list)
+            
+                if len(data_list) == 10000:
+                    description = f'Sheet name: {sheetnames[0]} - {dsid}'
+                    report = ArtifactHtmlReport('iCloud - Messages in Cloud')
+                    report.start_artifact_report(report_folder, f'iCloud - Messages in Cloud[{iteration}][{str(counter).zfill(2)}]', description)
+                    report.add_script()
+                    data_headers = (dth)
+                    report.write_artifact_data_table(data_headers, data_list, file_found)
+                    report.end_artifact_report()
+                
+                    counter = counter + 1
+                    data_list = []
+                    
+                    
             list =[]
         
-        
-        if data_list:
+        if len(data_list) > 0:
             description = f'Sheet name: {sheetnames[0]} - {dsid}'
             report = ArtifactHtmlReport('iCloud - Messages in Cloud')
-            report.start_artifact_report(report_folder, f'iCloud - Messages in Cloud[{iteration}]', description)
+            report.start_artifact_report(report_folder, f'iCloud - Messages in Cloud[{iteration}][{str(counter).zfill(2)}]', description)
             report.add_script()
             data_headers = (dth)
             report.write_artifact_data_table(data_headers, data_list, file_found)
             report.end_artifact_report()
-            
-        else:
-            logfunc('No iCloud - Messages in Cloud data available')
+                    #else:
+            #logfunc('No iCloud - Messages in Cloud data available')
             
     
