@@ -74,7 +74,7 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
         username = (os.path.basename(one[0]))
                     
         if filename.startswith('conversations.csv'):
-            data_list_conversations =[]
+            data_list_conversations = []
             with open(file_found, 'r', errors='backslashreplace') as f:
                 for line in f:
                     if '=' in line:
@@ -105,7 +105,7 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
                             for x in media:
                                 if counter == 0:
                                     agregator = agregator + ('<tr>')
-                                thumb = media_to_html(x, files_found, report_folder)        
+                                thumb = media_to_html(x, files_found, report_folder)
                             
                                 counter = counter + 1
                                 agregator = agregator + f'<td>{thumb}</td>'
@@ -300,8 +300,10 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
         if filename.startswith('friends.csv'):
             data_list_friendscsv =[]
             with open(file_found, 'r') as f:
-                for i in range(10):
-                    next(f)
+                for line in f:
+                    if '=' in line:
+                        next(f)
+                        break
                 for line in f:
                     delimited = csv.reader(f, delimiter=',')
                     for item in delimited:
