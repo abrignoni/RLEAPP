@@ -1,7 +1,8 @@
 # Module Description: Parses Google Chat messages from Takeout
-# Author: @KevinPagano3
+# Author: @KevinPagano3 & John Hyla {jfhyla@gmail.com}
 # Date: 2022-03-08
-# Artifact version: 0.0.1
+# Updated: 2022-08-01 (Added Group Members to data)
+# Artifact version: 0.0.2
 # Requirements: none
 
 import datetime
@@ -36,6 +37,17 @@ def get_googleChat(files_found, report_folder, seeker, wrap_text):
 
         with open(file_found, encoding = 'utf-8', mode = 'r') as f:
             data = json.loads(f.read())
+        
+        group_info_file = os.path.dirname(file_found) + os.path.sep + 'group_info.json'
+        with open(group_info_file, encoding = 'utf-8', mode = 'r') as fg:
+            group_data = json.loads(fg.read())
+        
+        members = []
+        for member in group_data["members"]:
+            members.append(member.get('name', '') + ' - ' + member.get('email',''))
+            
+        members_html = '<br>'.join(members)
+        members_tsv = '\n'.join(members)
         
         for chat_message in data['messages']:
             month = ''
@@ -100,18 +112,18 @@ def get_googleChat(files_found, report_folder, seeker, wrap_text):
             else: 
                 attachments = ''   
                
-            data_list.append((datetime_stamp,sender_name,sender_email,sender_user_type,message_text,attachments))
+            data_list.append((datetime_stamp,sender_name,sender_email,sender_user_type,members_html,message_text,attachments))
             
-            data_list_tsv.append((datetime_stamp,sender_name,sender_email,sender_user_type,message_text_tsv,attachments))
+            data_list_tsv.append((datetime_stamp,sender_name,sender_email,sender_user_type,members_tsv,message_text_tsv,attachments,))
 
     num_entries = len(data_list)
     if num_entries > 0:
         report = ArtifactHtmlReport('Google Chat - Messages')
         report.start_artifact_report(report_folder, 'Google Chat - Messages')
         report.add_script()
-        data_headers = ('Created Timestamp','Sender Name','Sender Email','Sender Type','Message','Attachment Name')
+        data_headers = ('Created Timestamp','Sender Name','Sender Email','Sender Type','Group Members','Message','Attachment Name')
 
-        report.write_artifact_data_table(data_headers, data_list, file_found)
+        report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Group Members'])
         report.end_artifact_report()
         
         tsvname = f'Google Chat - Messages'
