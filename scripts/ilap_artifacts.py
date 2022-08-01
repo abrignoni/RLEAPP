@@ -113,7 +113,7 @@ tosearch = {
     'discordReturnsser':('Discord Returns', ('*/servers/*.json')),
     'discordReturnsserver':('Discord Returns', ('*/attachments/*.*', '*/messages/servers/*.csv')),
     'discordReturnsunkn':('Discord Returns', ('*/attachments/*.*', '*/messages/unknown/*.csv')),
-    'googleChat':('Google Takeout Archive', ('*/Google Chat/Groups/*/messages.json')),
+    'googleChat':('Google Takeout Archive', ('*/Google Chat/Groups/*/messages.json', '*/Google Chat/Groups/*/group_info.json')),
     'googleFi_UserInfoRecords':('Google Takeout Archive', ('*/Google Fi/User Info*/GoogleFi.UserInfo.Records.txt')),
     'gooReturnsact':('Google Returns', ('*/Access Log Activity/Activities*.csv')),
     'gooReturnsrec':('Google Returns', ('*/Location History/Records.json')),
