@@ -49,4 +49,9 @@ def get_instagramDevicescam(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc('No Instagram Archive - Camera Info data available')
                 
-        
+__artifacts__ = {
+        "instagramDevicescam": (
+            "Instagram Archive",
+            ('*/device_information/camera_information.json'),
+            get_instagramDevicescam)
+}

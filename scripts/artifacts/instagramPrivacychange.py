@@ -46,4 +46,9 @@ def get_instagramPrivacychange(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Instagram Archive - Privacy Change data available')
                 
-        
+__artifacts__ = {
+        "instagramPrivacychange": (
+            "Instagram Archive",
+            ('*/login_and_account_creation/account_privacy_changes.json'),
+            get_instagramPrivacychange)
+}

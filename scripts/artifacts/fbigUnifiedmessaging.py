@@ -150,4 +150,9 @@ def get_fbigUnifiedmessaging(files_found, report_folder, seeker, wrap_text):
         else:
             logfunc(f'No Facebook Instagram - Unified Messaging - {rfilename}')
                 
-        
+__artifacts__ = {
+        "fbigUnifiedmessaging": (
+            "Facebook - Instagram Returns",
+            ('*/index.html', '*/preservation-1.html', '*/linked_media/*'),
+            get_fbigUnifiedmessaging)
+}

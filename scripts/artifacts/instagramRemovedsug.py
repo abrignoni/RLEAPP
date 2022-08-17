@@ -47,4 +47,9 @@ def get_instagramRemovedsug(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Instagram Archive - Removed Suggestions')
                 
-        
+__artifacts__ = {
+        "instagramRemovedsug": (
+            "Instagram Archive",
+            ('*/followers_and_following/removed_suggestions.json'),
+            get_instagramRemovedsug)
+}

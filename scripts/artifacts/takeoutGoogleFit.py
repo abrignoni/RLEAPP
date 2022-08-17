@@ -60,4 +60,10 @@ def get_takeoutGoogleFit(files_found, report_folder, seeker, wrap_text):
                 timeline(report_folder, tlactivity, data_list, data_headers)
             else:
                 logfunc('No Google Fit - Daily Activity Metrics data available')
-                
+
+__artifacts__ = {
+        "takeoutGoogleFit": (
+            "Google Takeout Archive",
+            ('*/Fit/Daily activity metrics/Daily activity metrics.csv'),
+            get_takeoutGoogleFit)
+}

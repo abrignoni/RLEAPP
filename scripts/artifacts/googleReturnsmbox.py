@@ -105,3 +105,9 @@ def get_googleReturnsmbox(files_found, report_folder, seeker, wrap_text):
         else:
             logfunc(f'No Google Returns - Mbox - {a} data available')
                 
+__artifacts__ = {
+        "googleReturnsmbox": (
+            "Google Returns MBOXes",
+            ('*/*.Mail.MessageContent_*/Mail/All mail Including Spam and Trash.mbox'),
+            get_googleReturnsmbox)
+}

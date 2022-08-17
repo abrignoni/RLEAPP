@@ -47,4 +47,9 @@ def get_instagramPending(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Instagram Archive - Pending Follow Req')
                 
-        
+__artifacts__ = {
+        "instagramPending": (
+            "Instagram Archive",
+            ('*/followers_and_following/pending_follow_requests.json'),
+            get_instagramPending)
+}

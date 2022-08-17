@@ -77,4 +77,9 @@ def get_discordReturnsunkn(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc(f'Discord - Unknown Messages - {csvname}')
                 
-            
+__artifacts__ = {
+        "discordReturnsunkn": (
+            "Discord Returns",
+            ('*/attachments/*.*', '*/messages/unknown/*.csv'),
+            get_discordReturnsunkn)
+}

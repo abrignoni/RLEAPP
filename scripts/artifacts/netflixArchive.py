@@ -312,4 +312,9 @@ def get_netflixArchive(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc('No Netflix - Messages Sent By Netflix data available')
 
-
+__artifacts__ = {
+        "netflixArchive": (
+            "Netflix Archive",
+            ('**/Profiles.csv', '**/BillingHistory.csv', '**/IpAddressesLogin.csv', '**/IpAddressesStreaming.csv', '**/Devices.csv', '**/ViewingActivity.csv', '**/SearchHistory.csv', '**/AccountDetails.csv', '**/MessagesSentByNetflix.csv'),
+            get_netflixArchive)
+}

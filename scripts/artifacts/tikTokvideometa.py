@@ -56,3 +56,10 @@ def get_tikTokvideometa(files_found, report_folder, seeker, wrap_text):
             
         else:
             logfunc(f'No TikTok - Video Metadata [{subscriber[0]}] available')
+
+__artifacts__ = {
+        "tikTokvideometa": (
+            "TikTok Returns",
+            ('*/*/*- video metadata.xlsx', '*/*/*/Video Content/*'),
+            get_tikTokvideometa)
+}

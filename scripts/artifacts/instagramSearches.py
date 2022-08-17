@@ -46,4 +46,9 @@ def get_instagramSearches(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Instagram Archive - Searches data available')
                 
-        
+__artifacts__ = {
+        "instagramSearches": (
+            "Instagram Archive",
+            ('*/recent_searches/account_searches.json'),
+            get_instagramSearches)
+}

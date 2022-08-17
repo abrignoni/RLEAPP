@@ -54,3 +54,10 @@ def get_playStoreInstalls(files_found, report_folder, seeker, wrap_text):
             timeline(report_folder, tlactivity, data_list, data_headers)
         else:
             logfunc('No Google Play Store Installs data available')
+
+__artifacts__ = {
+        "playStoreInstalls": (
+            "Google Takeout Archive",
+            ('*/Google Play Store/Installs.json'),
+            get_playStoreInstalls)
+}

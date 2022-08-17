@@ -46,4 +46,9 @@ def get_instagramPolls(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Instagram Archive - Polls')
                 
-        
+__artifacts__ = {
+        "instagramPolls": (
+            "Instagram Archive",
+            ('*/story_sticker_interactions/polls.json'),
+            get_instagramPolls)
+}

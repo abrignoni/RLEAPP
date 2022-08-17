@@ -41,4 +41,9 @@ def get_instagramInterests(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Instagram Archive - Interests')
                 
-        
+__artifacts__ = {
+        "instagramInterests": (
+            "Instagram Archive",
+            ('*/information_about_you/ads_interests.json'),
+            get_instagramInterests)
+}

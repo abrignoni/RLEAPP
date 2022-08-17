@@ -48,3 +48,10 @@ def get_playStoreLibrary(files_found, report_folder, seeker, wrap_text):
             timeline(report_folder, tlactivity, data_list, data_headers)
         else:
             logfunc('No Google Play Store Library data available')
+
+__artifacts__ = {
+        "playStoreLibrary": (
+            "Google Takeout Archive",
+            ('*/Google Play Store/Library.json'),
+            get_playStoreLibrary)
+}

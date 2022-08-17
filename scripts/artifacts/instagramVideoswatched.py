@@ -46,4 +46,9 @@ def get_instagramVideoswatched(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Instagram Archive - Videos Watched')
                 
-        
+__artifacts__ = {
+        "instagramVideoswatched": (
+            "Instagram Archive",
+            ('*/ads_and_content/videos_watched.json'),
+            get_instagramVideoswatched)
+}

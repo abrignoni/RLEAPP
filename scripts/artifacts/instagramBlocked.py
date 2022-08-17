@@ -47,4 +47,9 @@ def get_instagramBlocked(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Instagram Archive - Blocked')
                 
-        
+__artifacts__ = {
+        "instagramBlocked": (
+            "Instagram Archive",
+            ('*/followers_and_following/blocked_accounts.json'),
+            get_instagramBlocked)
+}    

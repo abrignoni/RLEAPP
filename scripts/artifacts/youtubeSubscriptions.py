@@ -53,4 +53,10 @@ def get_youtubeSubscriptions(files_found, report_folder, seeker, wrap_text):
                 timeline(report_folder, tlactivity, data_list, data_headers)
             else:
                 logfunc('No YouTube Subscriptions data available')
-                
+
+__artifacts__ = {
+        "youtubeSubscriptions": (
+            "Google Takeout Archive",
+            ('*/YouTube and YouTube Music/subscriptions/subscriptions.csv'),
+            get_youtubeSubscriptions)
+}

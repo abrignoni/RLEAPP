@@ -74,4 +74,10 @@ def get_airdropEmails(files_found, report_folder, seeker, wrap_text):
         timeline(report_folder, tlactivity, data_list, data_headers)
     else:
         logfunc(f'No AirDrop - Email from Hash')
-            
+
+__artifacts__ = {
+        "airdropEmails": (
+            "Airdrop Emails",
+            ('*/airdrop.ndjson'),
+            get_airdropEmails)
+}

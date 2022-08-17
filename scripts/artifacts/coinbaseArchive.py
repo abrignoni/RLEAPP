@@ -262,3 +262,9 @@ def get_coinbaseArchive(files_found, report_folder, seeker, wrap_text):
                         else:
                             logfunc('No Coinbase Personal data available')
 
+__artifacts__ = {
+        "coinbaseArchive": (
+            "Coinbase Archive",
+            ('**/coinbase_data.json'),
+            get_coinbaseArchive)
+}

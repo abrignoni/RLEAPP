@@ -43,3 +43,10 @@ def get_gooReturnsact(files_found, report_folder, seeker, wrap_text):
         timeline(report_folder, tlactivity, data_list, data_headers)
     else:
         logfunc('No Google Returns - Activities data available')
+
+__artifacts__ = {
+        "gooReturnsact": (
+            "Google Returns",
+            ('*/Access Log Activity/Activities*.csv'),
+            get_gooReturnsact)
+}

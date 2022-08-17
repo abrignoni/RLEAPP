@@ -53,4 +53,9 @@ def get_icloudReturnsLogs(files_found, report_folder, seeker, wrap_text):
         else:
             logfunc('No iCloud - No Log data available')
             
-        
+__artifacts__ = {
+        "icloudReturnsLogs": (
+            "iCloud Returns",
+            ('*/LOG/*_iCloudLogs.xlsx'),
+            get_icloudReturnsLogs)
+}

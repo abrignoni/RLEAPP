@@ -46,4 +46,9 @@ def get_instagramNointerest(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Instagram Archive - Accounts No Interest')
                 
-        
+__artifacts__ = {
+        "instagramNointerest": (
+            "Instagram Archive",
+            ('*/ads_and_content/*re_not_interested_in.json'),
+            get_instagramNointerest)
+}

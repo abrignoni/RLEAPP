@@ -47,4 +47,9 @@ def get_instagramSavedposts(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Instagram Archive - Saved Posts data available')
                 
-        
+__artifacts__ = {
+        "instagramSavedposts": (
+            "Instagram Archive",
+            ('*/saved/saved_posts.json'),
+            get_instagramSavedposts)
+}

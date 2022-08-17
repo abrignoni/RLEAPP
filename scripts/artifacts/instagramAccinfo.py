@@ -52,4 +52,9 @@ def get_instagramAccinfo(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc('No Instagram Archive - Account Info data available')
                 
-        
+__artifacts__ = {
+        "instagramAccinfo": (
+            "Instagram Archive",
+            ('*/account_information/account_information.json'),
+            get_instagramAccinfo)
+}

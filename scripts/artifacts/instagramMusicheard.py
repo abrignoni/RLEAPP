@@ -47,4 +47,9 @@ def get_instagramMusicheard(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Instagram Archive - Ads Music Heard')
                 
-        
+__artifacts__ = {
+        "instagramMusicheard": (
+            "Instagram Archive",
+            ('*/ads_and_content/music_heard_in_stories.json'),
+            get_instagramMusicheard)
+}

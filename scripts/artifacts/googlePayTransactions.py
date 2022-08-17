@@ -58,3 +58,9 @@ def get_googlePayTransactions(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc('No Google Pay Transactions data available')
                 
+__artifacts__ = {
+        "googlePayTransactions": (
+            "Google Takeout Archive",
+            ('*/Google Pay/Google transactions/transactions_*.csv'),
+            get_googlePayTransactions)
+}

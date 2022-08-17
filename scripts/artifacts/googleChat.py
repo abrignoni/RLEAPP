@@ -133,3 +133,10 @@ def get_googleChat(files_found, report_folder, seeker, wrap_text):
         timeline(report_folder, tlactivity, data_list, data_headers)
     else:
         logfunc('No Google Chat - Messages data available')
+
+__artifacts__ = {
+        "googleChat": (
+            "Google Takeout Archive",
+            ('*/Google Chat/Groups/*/messages.json', '*/Google Chat/Groups/*/group_info.json'),
+            get_googleChat)
+}

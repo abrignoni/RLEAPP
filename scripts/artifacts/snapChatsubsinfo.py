@@ -116,4 +116,9 @@ def get_snapChatsubsinfo(files_found, report_folder, seeker, wrap_text):
         else:
             logfunc(f'Snapchat - Account Change History - {username}')
                 
-        
+__artifacts__ = {
+        "snapChatsubsinfo": (
+            "Snapchat Returns",
+            ('*/subscriber_information.csv'),
+            get_snapChatsubsinfo)
+}

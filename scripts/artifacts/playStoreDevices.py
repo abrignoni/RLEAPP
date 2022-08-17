@@ -57,3 +57,10 @@ def get_playStoreDevices(files_found, report_folder, seeker, wrap_text):
             timeline(report_folder, tlactivity, data_list, data_headers)
         else:
             logfunc('No Google Play Store Devices data available')
+
+__artifacts__ = {
+        "playStoreDevices": (
+            "Google Takeout Archive",
+            ('*/Google Play Store/Devices.json'),
+            get_playStoreDevices)
+}

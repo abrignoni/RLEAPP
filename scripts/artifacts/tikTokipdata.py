@@ -48,3 +48,10 @@ def get_tikTokipdata(files_found, report_folder, seeker, wrap_text):
             report.end_artifact_report()
         else:
             logfunc(f'No TikTok - IP Data [{subscriber[0]}]  available')
+
+__artifacts__ = {
+        "tikTokipdata": (
+            "TikTok Returns",
+            ('*/*/*- IP Data.xlsx'),
+            get_tikTokipdata)
+}

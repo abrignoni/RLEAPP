@@ -46,4 +46,9 @@ def get_instagramSuggestedviewed(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Instagram Archive - Suggested Accounts Viewed')
                 
-        
+__artifacts__ = {
+        "instagramSuggestedviewed": (
+            "Instagram Archive",
+            ('*/ads_and_content/suggested_accounts_viewed.json'),
+            get_instagramSuggestedviewed)
+}

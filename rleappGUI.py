@@ -1,18 +1,21 @@
+import json
+import pathlib
+import typing
 import rleapp
-import os
 import PySimpleGUI as sg
-import sys
 import webbrowser
-
+import plugin_loader
 from scripts.ilapfuncs import *
 from scripts.version_info import rleapp_version
 from time import process_time, gmtime, strftime
-from scripts.ilap_artifacts import *
 from scripts.search_files import *
+
+MODULE_START_INDEX = 1000
+
 
 def ValidateInput(values, window):
     '''Returns tuple (success, extraction_type)'''
-    global indx
+    global module_end_index
 
     i_path = values[0] # input file/folder
     o_path = values[1] # output folder
@@ -39,7 +42,7 @@ def ValidateInput(values, window):
         return False, ext_type
 
     one_element_is_selected = False
-    for x in range(1000, indx):
+    for x in range(1000, module_end_index):
         if window.FindElement(x).Get():
             one_element_is_selected = True
             break
@@ -58,28 +61,27 @@ def CheckList(mtxt, lkey, mdstring, disable=False):
     return [sg.CBox(mtxt, default=dstate, key=lkey, metadata=mdstring, disabled=disable)]
 
 def pickModules():
-    global indx
+    global module_end_index
     global mlist
-    
-    script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts', 'artifacts')
+    global loader
 
-    # Create sorted dict from 'tosearch' dictionary based on plugin category
-    sorted_tosearch = {k: v for k, v in sorted(tosearch.items(), key=lambda item: item[1][0].upper())}
+    loader = plugin_loader.PluginLoader()
 
-    indx = 1000     # arbitrary number to not interfere with other controls
-    for key, val in sorted_tosearch.items():
-        disabled = False if key != 'usagestatsVersion' else True # usagestatsVersion is REQUIRED
-        mlist.append( CheckList(val[0] + f' [{key}]', indx, key, disabled) )
-        indx = indx + 1
+    module_end_index = MODULE_START_INDEX     # arbitrary number to not interfere with other controls
+    for plugin in sorted(loader.plugins, key=lambda p: p.category.upper()):
+        disabled = plugin.module_name == 'usagestatsVersion'
+        mlist.append(CheckList(f'{plugin.category} [{plugin.name} - {plugin.module_name}.py]', module_end_index, plugin.name, disabled))
+        module_end_index = module_end_index + 1
         
 sg.theme('DarkTeal7')   # Add a touch of color
 # All the stuff inside your window.
 
 normal_font = ("Helvetica", 12)
+loader: typing.Optional[plugin_loader.PluginLoader] = None
 mlist = []
 # go through list of available modules and confirm they exist on the disk
 pickModules()
-GuiWindow.progress_bar_total = len(rleapp.tosearch)
+GuiWindow.progress_bar_total = len(loader)
 
 
 layout = [  [sg.Text('Returns, Logs, Events, And Properties Parser', font=("Helvetica", 22))],
@@ -96,15 +98,23 @@ layout = [  [sg.Text('Returns, Logs, Events, And Properties Parser', font=("Helv
                 ], 
                     title='Select Output Folder:')],
             [sg.Text('Available Modules')],
-            [sg.Button('SELECT ALL'), sg.Button('DESELECT ALL')], 
+            [sg.Button('Select All', key='SELECT ALL'), sg.Button('Deselect All', key='DESELECT ALL'),
+             sg.Button('Load Profile', key='LOAD PROFILE'), sg.Button('Save Profile', key='SAVE PROFILE')
+             # sg.FileBrowse(
+             #     button_text='Load Profile', key='LOADPROFILE', enable_events=True, target='LOADPROFILE',
+             #     file_types=(('ALEAPP Profile (*.alprofile)', '*.alprofile'), ('All Files', '*'))),
+             # sg.FileSaveAs(
+             #     button_text='Save Profile', key='SAVEPROFILE', enable_events=True, target='SAVEPROFILE',
+             #     file_types=(('ALEAPP Profile (*.alprofile)', '*.alprofile'), ('All Files', '*')),
+             #     default_extension='.alprofile')
+             ],
             [sg.Column(mlist, size=(300,310), scrollable=True),  sg.Output(size=(85,20))] ,
-            [sg.ProgressBar(max_value=GuiWindow.progress_bar_total, orientation='h', size=(86, 7), key='PROGRESSBAR', bar_color=('Red', 'White'))],
-            [sg.Submit('Process',font=normal_font), sg.Button('Close', font=normal_font)] ]
+            [sg.ProgressBar(max_value=GuiWindow.progress_bar_total, orientation='h', size=(86, 7), key='PROGRESSBAR', bar_color=('DarkGreen', 'White'))],
+            [sg.Submit('Process', font=normal_font), sg.Button('Close', font=normal_font)] ]
             
 # Create the Window
 window = sg.Window(f'RLEAPP version {rleapp_version}', layout)
 GuiWindow.progress_bar_handle = window['PROGRESSBAR']
-
 
 # Event Loop to process "events" and get the "values" of the inputs
 while True:
@@ -114,13 +124,62 @@ while True:
 
     if event == "SELECT ALL":  
         # mark all modules
-        for x in range(1000,indx):
+        for x in range(MODULE_START_INDEX, module_end_index):
             window[x].Update(True)
     if event == "DESELECT ALL":  
          # none modules
-        for x in range(1000,indx):
-            #window[x].Update(True)  # usagestatsVersion.py is REQUIRED
-            window[x].Update(False if window[x].metadata != 'usagestatsVersion' else True)  # usagestatsVersion.py 
+        for x in range(MODULE_START_INDEX, module_end_index):
+            window[x].Update(False if window[x].metadata != 'airdropEmails' else True)  # airdropEmails.py is REQUIRED 
+    if event == "SAVE PROFILE":
+        destination_path = sg.popup_get_file(
+            "Save a profile", save_as=True,
+            file_types=(('ALEAPP Profile (*.alprofile)', '*.alprofile'),),
+            default_extension='.alprofile', no_window=True)
+
+        if destination_path:
+            ticked = []
+            for x in range(MODULE_START_INDEX, module_end_index):
+                if window.FindElement(x).Get():
+                    key = window[x].metadata
+                    ticked.append(key)
+            with open(destination_path, "wt", encoding="utf-8") as profile_out:
+                json.dump({"leapp": "aleapp", "format_version": 1, "plugins": ticked}, profile_out)
+            sg.Popup(f"Profile saved: {destination_path}")
+
+    if event == "LOAD PROFILE":
+        destination_path = sg.popup_get_file(
+            "Load a profile", save_as=False,
+            file_types=(('ALEAPP Profile (*.alprofile)', '*.alprofile'), ('All Files', '*')),
+            default_extension='.alprofile', no_window=True)
+
+        if destination_path and os.path.exists(destination_path):
+            profile_load_error = None
+            with open(destination_path, "rt", encoding="utf-8") as profile_in:
+                try:
+                    profile = json.load(profile_in)
+                except json.JSONDecodeError as json_ex:
+                    profile_load_error = f"File was not a valid profile file: {json_ex}"
+
+            if not profile_load_error:
+                if isinstance(profile, dict):
+                    if profile.get("leapp") != "aleapp" or profile.get("format_version") != 1:
+                        profile_load_error = "File was not a valid profile file: incorrect LEAPP or version"
+                    else:
+                        ticked = set(profile.get("plugins", []))
+                        ticked.add("usagestatsVersion")  # always
+                        for x in range(MODULE_START_INDEX, module_end_index):
+                            if window[x].metadata in ticked:
+                                window[x].update(True)
+                            else:
+                                window[x].update(False)
+                else:
+                    profile_load_error = "File was not a valid profile file: invalid format"
+
+            if profile_load_error:
+                sg.popup(profile_load_error)
+            else:
+                sg.popup(f"Loaded profile: {destination_path}")
+
     if event == 'Process':
         #check is selections made properly; if not we will return to input form without exiting app altogether
         is_valid, extracttype = ValidateInput(values, window)
@@ -136,17 +195,19 @@ while True:
                 if output_folder[1] == ':': output_folder = '\\\\?\\' + output_folder.replace('/', '\\')
             
             # re-create modules list based on user selection
-            search_list = {} # hardcode usagestatsVersion as first item
+            #search_list = { 'usagestatsVersion' : tosearch['usagestatsVersion'] } # hardcode usagestatsVersion as first item
+            search_list = [loader['airdropEmails']]  # hardcode usagestatsVersion as first item
+
             s_items = 0
-            for x in range(1000,indx):
+            for x in range(MODULE_START_INDEX, module_end_index):
                 if window.FindElement(x).Get():
                     key = window[x].metadata
-                    if (key in tosearch): #and (key != 'usagestatsVersion'):
-                        search_list[key] = tosearch[key]
+                    if key in loader and key != 'usagestatsVersion':
+                        search_list.append(loader[key])
                     s_items = s_items + 1 # for progress bar
                 
                 # no more selections allowed
-                window[x].Update(disabled = True)
+                window[x].Update(disabled=True)
                 
             window['SELECT ALL'].update(disabled=True)
             window['DESELECT ALL'].update(disabled=True)
@@ -154,7 +215,8 @@ while True:
             GuiWindow.window_handle = window
             out_params = OutputParameters(output_folder)
             wrap_text = True
-            crunch_successful = rleapp.crunch_artifacts(search_list, extracttype, input_path, out_params, len(rleapp.tosearch)/s_items, wrap_text)
+            crunch_successful = rleapp.crunch_artifacts(
+                search_list, extracttype, input_path, out_params, len(loader)/s_items, wrap_text)
             if crunch_successful:
                 report_path = os.path.join(out_params.report_folder_base, 'index.html')
                     

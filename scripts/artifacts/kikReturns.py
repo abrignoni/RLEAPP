@@ -328,3 +328,10 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                 timeline(report_folder, tlactivity, data_list, data_headers)
             else:
                 logfunc('No Kik Group Send Msg data available')
+
+__artifacts__ = {
+        "kikReturns": (
+            "Kik Returns",
+            ('*/logs/*.txt','*/logs/*','*/content/*'),
+            get_kikReturns)
+}

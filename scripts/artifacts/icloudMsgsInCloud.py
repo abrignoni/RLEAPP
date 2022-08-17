@@ -66,4 +66,9 @@ def get_icloudMsgsInCloud(files_found, report_folder, seeker, wrap_text):
                     #else:
             #logfunc('No iCloud - Messages in Cloud data available')
             
-    
+__artifacts__ = {
+        "icloudMsgsInCloud": (
+            "iCloud Returns",
+            ('*/Messagesinicloud/*MessagesInICloud*', '*/Messages/MessagesInICloud*'),
+            get_icloudMsgsInCloud)
+}

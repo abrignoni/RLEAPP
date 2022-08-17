@@ -455,4 +455,10 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
                 timeline(report_folder, tlactivity, data_list_groupchats, data_headers)
             else:
                 logfunc(f'No Snapchat - Group-chat.csv - {username}')
-                
+
+__artifacts__ = {
+        "snapchatConv": (
+            "Snapchat Returns",
+            ('*/conversations.csv', '*/*.*'),
+            get_snapchatConv)
+}

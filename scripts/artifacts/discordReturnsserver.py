@@ -77,4 +77,9 @@ def get_discordReturnsserver(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc(f'Discord - Messages Server - {csvname}')
                 
-            
+__artifacts__ = {
+        "discordReturnsserver": (
+            "Discord Returns",
+            ('*/attachments/*.*', '*/messages/servers/*.csv'),
+            get_discordReturnsserver)
+}

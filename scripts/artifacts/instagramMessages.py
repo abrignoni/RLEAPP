@@ -150,4 +150,9 @@ def get_instagramMessages(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Instagram Archive - Messages data available')
                 
-        
+__artifacts__ = {
+        "instagramMessages": (
+            "Instagram Archive",
+            ('*/messages/inbox/*'),
+            get_instagramMessages)
+}
