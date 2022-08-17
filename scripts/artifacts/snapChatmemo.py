@@ -76,5 +76,9 @@ def get_snapChatmemo(files_found, report_folder, seeker, wrap_text):
         else:
             logfunc(f'Snapchat - Memories Metadata - {username}')
             
-        
-        
+__artifacts__ = {
+        "snapChatmemo": (
+            "Snapchat Returns",
+            ('*/memories.csv','*/memories*.jpg','*/memories*.mp4'),
+            get_snapChatmemo)
+}     

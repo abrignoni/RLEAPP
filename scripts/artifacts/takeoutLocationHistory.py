@@ -133,3 +133,10 @@ def get_takeoutLocationHistory(files_found, report_folder, seeker, wrap_text):
         
     else:
         logfunc('No Google Location History - Location History data available')
+
+__artifacts__ = {
+        "takeoutLocationHistory": (
+            "Google Takeout Archive",
+            ('*/Location History/Location History.json'),
+            get_takeoutLocationHistory)
+}

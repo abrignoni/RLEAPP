@@ -42,4 +42,9 @@ def get_discordReturnsfriends(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc(f'Discord - Friendships - {csvname}')
                 
-            
+__artifacts__ = {
+        "discordReturnsfriends": (
+            "Discord Returns",
+            ('*/relationships_*.csv'),
+            get_discordReturnsfriends)
+}

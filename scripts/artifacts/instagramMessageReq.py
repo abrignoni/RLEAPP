@@ -158,4 +158,9 @@ def get_instagramMessageReq(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Instagram Archive - Message Request data available')
                 
-        
+__artifacts__ = {
+        "instagramMessageReq": (
+            "Instagram Archive",
+            ('*/messages/message_requests/*'),
+            get_instagramMessageReq)
+}

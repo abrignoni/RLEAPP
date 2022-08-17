@@ -52,3 +52,10 @@ def get_playStorePurchaseHistory(files_found, report_folder, seeker, wrap_text):
             timeline(report_folder, tlactivity, data_list, data_headers)
         else:
             logfunc('No Google Play Store Purchase History data available')
+
+__artifacts__ = {
+        "playStorePurchaseHistory": (
+            "Google Takeout Archive",
+            ('*/Google Play Store/Purchase History.json'),
+            get_playStorePurchaseHistory)
+}

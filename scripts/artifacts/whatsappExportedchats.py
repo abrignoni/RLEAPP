@@ -67,5 +67,9 @@ def get_whatsappExportedchats(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc(f'No Whatsapp Exported Chat')
     
-    
-                
+__artifacts__ = {
+        "whatsappExportedchats": (
+            "Whatsapp Exported Chat",
+            ('*/*.*'),
+            get_whatsappExportedchats)
+}

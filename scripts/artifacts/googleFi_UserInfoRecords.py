@@ -61,3 +61,10 @@ def get_googleFi_UserInfoRecords(files_found, report_folder, seeker, wrap_text):
             timeline(report_folder, tlactivity, data_list, data_headers)
         else:
             logfunc('No Google Fi - User Info Records data available')
+
+__artifacts__ = {
+        "googleFi_UserInfoRecords": (
+            "Google Takeout Archive",
+            ('*/Google Fi/User Info*/GoogleFi.UserInfo.Records.txt'),
+            get_googleFi_UserInfoRecords)
+}

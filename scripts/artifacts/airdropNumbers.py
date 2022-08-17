@@ -89,3 +89,9 @@ def get_airdropNumbers(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc(f'No AirDrop - Phone Number from Hash')
             
+__artifacts__ = {
+        "airdropNumbers": (
+            "Airdrop Numbers",
+            ('*/airdrop.ndjson'),
+            get_airdropNumbers)
+}

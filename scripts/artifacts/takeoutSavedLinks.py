@@ -159,3 +159,10 @@ def get_takeoutSavedLinks(files_found, report_folder, seeker, wrap_text):
                 timeline(report_folder, tlactivity, data_list, data_headers)
             else:
                 logfunc('No Saved Links - Want To Go data available')
+
+__artifacts__ = {
+        "takeoutSavedLinks": (
+            "Google Takeout Archive",
+            ('*/Saved/*.csv'),
+            get_takeoutSavedLinks)
+}

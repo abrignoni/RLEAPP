@@ -74,3 +74,9 @@ def get_icloudBookmarks(files_found, report_folder, seeker, wrap_text):
             if i >= 6:
                 data_list.append(list) 
         
+__artifacts__ = {
+        "icloudBookmarks": (
+            "iCloud Returns",
+            ('*/Bookmarks/*_iCloud_Bookmarks.xlsx'),
+            get_icloudBookmarks)
+}

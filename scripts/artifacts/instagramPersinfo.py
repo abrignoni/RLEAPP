@@ -93,4 +93,9 @@ def get_instagramPersinfo(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc('No Instagram Archive - Personal Info data available')
                 
-        
+__artifacts__ = {
+        "instagramPersinfo": (
+            "Instagram Archive",
+            ('*/account_information/personal_information.json', '*/media/other/*.jpg'),
+            get_instagramPersinfo)
+}

@@ -62,4 +62,9 @@ def get_icloudReturnsphotolibrary(files_found, report_folder, seeker, wrap_text)
             else:
                 logfunc(f'No iCloud Returns - Photo Library - {account} data available')
                 
-        
+__artifacts__ = {
+        "icloudReturnsphotolibrary": (
+            "iCloud Returns",
+            ('*/*/cloudphotolibrary/*'),
+            get_icloudReturnsphotolibrary)
+}

@@ -48,4 +48,9 @@ def get_instagramStories(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Instagram Archive - Stories')
                 
-        
+__artifacts__ = {
+        "instagramStories": (
+            "Instagram Archive",
+            ('*/content/stories.json', '*/media/stories/*'),
+            get_instagramStories)
+}

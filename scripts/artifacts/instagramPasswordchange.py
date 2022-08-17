@@ -45,4 +45,9 @@ def get_instagramPasswordchange(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Instagram Archive - Password Change data available')
                 
-        
+__artifacts__ = {
+        "instagramPasswordchange": (
+            "Instagram Archive",
+            ('*/login_and_account_creation/password_change_activity.json'),
+            get_instagramPasswordchange)
+}

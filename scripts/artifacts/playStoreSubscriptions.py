@@ -54,3 +54,10 @@ def get_playStoreSubscriptions(files_found, report_folder, seeker, wrap_text):
             timeline(report_folder, tlactivity, data_list, data_headers)
         else:
             logfunc('No Google Play Store Subscriptions data available')
+
+__artifacts__ = {
+        "playStoreSubscriptions": (
+            "Google Takeout Archive",
+            ('*/Google Play Store/Subscriptions.json'),
+            get_playStoreSubscriptions)
+}

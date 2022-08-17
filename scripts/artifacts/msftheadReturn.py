@@ -95,11 +95,12 @@ def get_msftheadReturn(files_found, report_folder, seeker, wrap_text):
         
         tlactivity = f'Microsoft Returns - Headers'
         timeline(report_folder, tlactivity, data_list, data_headers)
-        
-    
-        
-        
     else:
         logfunc('No Microsoft Returns - Headers data available')
-                
-        
+    
+__artifacts__ = {
+        "msftheadReturn": (
+            "Microsoft Returns",
+            ('*.eml_hdr.eml'),
+            get_msftheadReturn)
+}    

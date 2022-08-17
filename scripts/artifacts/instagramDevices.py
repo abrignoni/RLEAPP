@@ -48,4 +48,9 @@ def get_instagramDevices(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc('No Instagram Archive - Devices data available')
                 
-        
+__artifacts__ = {
+        "instagramDevices": (
+            "Instagram Archive",
+            ('*/device_information/devices.json'),
+            get_instagramDevices)
+}

@@ -51,4 +51,9 @@ def get_discordReturnsser(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc(f'Discord - Server Metadata - {csvname}')
                 
-            
+__artifacts__ = {
+        "discordReturnsser": (
+            "Discord Returns",
+            ('*/servers/*.json'),
+            get_discordReturnsser)
+}

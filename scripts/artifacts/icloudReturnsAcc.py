@@ -88,3 +88,9 @@ def get_icloudReturnsAcc(files_found, report_folder, seeker, wrap_text):
         else:
             logfunc('No iCloud - Account Features data available')
             
+__artifacts__ = {
+        "icloudReturnsAcc": (
+            "iCloud Returns",
+            ('*/Account/*_AccountDetails.xlsx'),
+            get_icloudReturnsAcc)
+}

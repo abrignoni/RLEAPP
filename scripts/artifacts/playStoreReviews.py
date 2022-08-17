@@ -51,3 +51,10 @@ def get_playStoreReviews(files_found, report_folder, seeker, wrap_text):
             timeline(report_folder, tlactivity, data_list, data_headers)
         else:
             logfunc('No Google Play Store Reviews data available')
+
+__artifacts__ = {
+        "playStoreReviews": (
+            "Google Takeout Archive",
+            ('*/Google Play Store/Reviews.json'),
+            get_playStoreReviews)
+}

@@ -52,4 +52,9 @@ def get_instagramLogout(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc('No Instagram Archive - Logout Activity data available')
                 
-        
+__artifacts__ = {
+        "instagramLogout": (
+            "Instagram Archive",
+            ('*/login_and_account_creation/logout_activity.json'),
+            get_instagramLogout)
+}

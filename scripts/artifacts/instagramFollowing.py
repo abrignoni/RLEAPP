@@ -47,4 +47,9 @@ def get_instagramFollowing(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Instagram Archive - Following')
                 
-        
+__artifacts__ = {
+        "instagramFollowing": (
+            "Instagram Archive",
+            ('*/followers_and_following/following.json'),
+            get_instagramFollowing)
+}

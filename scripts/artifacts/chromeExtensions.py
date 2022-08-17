@@ -57,3 +57,10 @@ def get_chromeExtensions(files_found, report_folder, seeker, wrap_text):
             timeline(report_folder, tlactivity, data_list, data_headers)
         else:
             logfunc('No Chrome Extensions data available')
+
+__artifacts__ = {
+        "chromeExtensions": (
+            "Google Takeout Archive",
+            ('*/Chrome/Extensions.json'),
+            get_chromeExtensions)
+}

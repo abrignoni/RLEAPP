@@ -558,4 +558,10 @@ def get_twitterReturnsTip(files_found, report_folder, seeker, wrap_text):
                 
             else:
                 logfunc(f'No Twitter Returns - {filenamenoext}')
-                
+
+__artifacts__ = {
+        "twitterReturnsTip": (
+            "Twitter Returns",
+            ('*/*.jpg','*/*.mp4','*/*.txt'),
+            get_twitterReturnsTip)
+}

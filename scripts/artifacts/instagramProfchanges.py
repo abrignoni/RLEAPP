@@ -67,4 +67,9 @@ def get_instagramProfchanges(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc('No Instagram Archive - Profile Changes data available')
                 
-        
+__artifacts__ = {
+        "instagramProfchanges": (
+            "Instagram Archive",
+            ('*/account_information/profile_changes.json'),
+            get_instagramProfchanges)
+}

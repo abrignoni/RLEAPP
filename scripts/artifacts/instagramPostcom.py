@@ -48,4 +48,9 @@ def get_instagramPostcom(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc('No Instagram Archive - Post Comments data available')
                 
-        
+__artifacts__ = {
+        "instagramPostcom": (
+            "Instagram Archive",
+            ('*/comments/post_comments.json'),
+            get_instagramPostcom)
+}

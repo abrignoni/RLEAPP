@@ -152,3 +152,9 @@ def get_gooReturnsrec(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Google Location History - Records data available')
             
+__artifacts__ = {
+        "gooReturnsrec": (
+            "Google Returns",
+            ('*/Location History/Records.json'),
+            get_gooReturnsrec)
+}

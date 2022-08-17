@@ -524,4 +524,10 @@ def get_twitterReturns(files_found, report_folder, seeker, wrap_text):
         timeline(report_folder, tlactivity, data_list_devices, data_headers)
     else:
         logfunc('No Twitter Returns - Devices')
-        
+
+__artifacts__ = {
+        "twitterReturns": (
+            "Twitter Returns",
+            ('*/*/*','*/*.txt'),
+            get_twitterReturns)
+}

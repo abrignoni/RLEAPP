@@ -59,3 +59,10 @@ def get_snapchatMemimg(files_found, report_folder, seeker, wrap_text):
             timeline(report_folder, tlactivity, data_list_media, data_headers)
         else:
             logfunc(f'No Snapchat - Memories - {name}')
+
+__artifacts__ = {
+        "snapchatMemimg": (
+            "Snapchat Returns",
+            ('*/memories*.jpg','*/memories*.mp4'),
+            get_snapchatMemimg)
+}

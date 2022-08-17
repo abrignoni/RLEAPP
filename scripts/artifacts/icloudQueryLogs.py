@@ -77,4 +77,9 @@ def get_icloudQueryLogs(files_found, report_folder, seeker, wrap_text):
         else:
             logfunc('No iCloud - No Query Log data available')
             
-        
+__artifacts__ = {
+        "icloudQueryLogs": (
+            "iCloud Returns",
+            ('*/LOG/*_IDS_QueryLogs.xlsx'),
+            get_icloudQueryLogs)
+}

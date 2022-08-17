@@ -78,3 +78,10 @@ def get_googleTasks(files_found, report_folder, seeker, wrap_text):
             timeline(report_folder, tlactivity, data_list, data_headers)
         else:
             logfunc('No Google Tasks data available')
+
+__artifacts__ = {
+        "googleTasks": (
+            "Google Takeout Archive",
+            ('*/Tasks/Tasks.json'),
+            get_googleTasks)
+}

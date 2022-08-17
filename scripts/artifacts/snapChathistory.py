@@ -52,5 +52,9 @@ def get_snapChathistory(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc(f'Snapchat - Chat History')
     
-    
-    
+__artifacts__ = {
+        "snapChathistory": (
+            "Snapchat Archive",
+            ('*/chat_history.json'),
+            get_snapChathistory)
+}

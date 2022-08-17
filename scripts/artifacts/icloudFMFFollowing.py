@@ -54,4 +54,9 @@ def get_icloudFMFFollowing(files_found, report_folder, seeker, wrap_text):
         else:
             logfunc('No iCloud - FMF Following data available')
             
-    
+__artifacts__ = {
+        "icloudFMFFollowing": (
+            "iCloud Returns",
+            ('*/fmf/*_Following.xlsx'),
+            get_icloudFMFFollowing)
+}

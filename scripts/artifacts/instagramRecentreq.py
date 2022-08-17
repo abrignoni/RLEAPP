@@ -47,4 +47,9 @@ def get_instagramRecentreq(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Instagram Archive - Recent Follow Req')
                 
-        
+__artifacts__ = {
+        "instagramRecentreq": (
+            "Instagram Archive",
+            ('*/followers_and_following/recent_follow_requests.json'),
+            get_instagramRecentreq)
+}

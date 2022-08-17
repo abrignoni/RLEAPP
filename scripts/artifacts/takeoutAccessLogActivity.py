@@ -106,3 +106,10 @@ def get_takeoutAccessLogActivity(files_found, report_folder, seeker, wrap_text):
                 timeline(report_folder, tlactivity, data_list, data_headers)
             else:
                 logfunc('No Google Access Log Devices data available')
+
+__artifacts__ = {
+        "takeoutAccessLogActivity": (
+            "Google Takeout Archive",
+            ('*/Access Log Activity/*.csv'),
+            get_takeoutAccessLogActivity)
+}

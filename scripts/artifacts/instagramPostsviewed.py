@@ -46,4 +46,9 @@ def get_instagramPostsviewed(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Instagram Archive - Posts Viewed')
                 
-        
+__artifacts__ = {
+        "instagramPostsviewed": (
+            "Instagram Archive",
+            ('*/ads_and_content/posts_viewed.json'),
+            get_instagramPostsviewed)
+}

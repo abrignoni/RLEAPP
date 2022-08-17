@@ -77,7 +77,7 @@ def get_airdropEmails(files_found, report_folder, seeker, wrap_text):
 
 __artifacts__ = {
         "airdropEmails": (
-                "Airdrop Emails",
-                ('*/airdrop.ndjson'),
-                get_airdropEmails)
+            "Airdrop Emails",
+            ('*/airdrop.ndjson'),
+            get_airdropEmails)
 }

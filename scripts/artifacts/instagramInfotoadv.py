@@ -44,4 +44,9 @@ def get_instagramInfotoadv(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc('No Instagram Archive - Info Submitted to Adv data available')
                 
-        
+__artifacts__ = {
+        "instagramInfotoadv": (
+            "Instagram Archive",
+            ("*/ads_and_businesses/information_you've_submitted_to_advertisers.json"),
+            get_instagramInfotoadv)
+}

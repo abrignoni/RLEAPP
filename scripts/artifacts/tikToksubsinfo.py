@@ -61,3 +61,10 @@ def get_tikToksubsinfo(files_found, report_folder, seeker, wrap_text):
             files = files + 1
         else:
             logfunc(f'No TikTok - Subscriber [{subscriber[0]}] available')
+
+__artifacts__ = {
+        "tikToksubsinfo": (
+            "TikTok Returns",
+            ('*/*/*(Subscriber information).pdf'),
+            get_tikToksubsinfo)
+}

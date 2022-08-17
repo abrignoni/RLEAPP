@@ -49,4 +49,9 @@ def get_instagramLikedcomm(files_found, report_folder, seeker, wrap_text):
     else:
         logfunc('No Instagram Archive - Liked Comments data available')
                 
-        
+__artifacts__ = {
+        "instagramLikedcomm": (
+            "Instagram Archive",
+            ('*/likes/liked_comments.json'),
+            get_instagramLikedcomm)
+}

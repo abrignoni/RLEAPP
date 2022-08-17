@@ -31,3 +31,10 @@ def get_kikProfilepic(files_found, report_folder, seeker, wrap_text):
                 
             else:
                 logfunc('No Kik Profile Pic data available')
+
+__artifacts__ = {
+        "kikProfilepic": (
+            "Kik Returns",
+            ('*profile-pic.jpg'),
+            get_kikProfilepic)
+}
