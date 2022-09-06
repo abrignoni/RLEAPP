@@ -64,8 +64,7 @@ def get_airdropNumbers(files_found, report_folder, seeker, wrap_text):
         print('Searching area code ' + str(areacode) + ' for target...')
         for i in range(MIN_LEN, MAX_LEN):
             for line in range(10 ** i):
-
-                targetphone = COUNTRY_CODE + str(areacode) + str(line).zfill(7)
+                targetphone = COUNTRY_CODE + str(areacode) + str(line).zfill(i)
                 targettest = hashlib.sha256(targetphone.encode())
                 starthashcheck = targettest.hexdigest()[0:5]
                 endhashcheck = targettest.hexdigest()[-5:]
