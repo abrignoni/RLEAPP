@@ -69,9 +69,12 @@ def get_twitterReturnsTip(files_found, report_folder, seeker, wrap_text):
                                 mediaurl = extraline.replace('"','').strip()
                                 if 'ton' in mediaurl:
                                     mediaident = mediaurl.split(separator)[-1]
+                                    thumb = media_to_html(mediaident, files_found, report_folder)
                                 elif 'video' in mediaurl:
                                     mediaident = mediaurl.split(separator)[-1].split('?')[0]
-                                thumb = media_to_html(mediaident, files_found, report_folder)
+                                    thumb = media_to_html(mediaident, files_found, report_folder)
+                                else:
+                                    thumb = ''
                                 
                         elif '"reactions" :' in line:
                             line = line.strip()
@@ -89,9 +92,11 @@ def get_twitterReturnsTip(files_found, report_folder, seeker, wrap_text):
                                 reventid = extraline.split(' : ')[1].replace('"','').replace(',','').strip()
                                 #print(reventid)
                                 extraline = next(f)
+                                if rtimestamp == '':
+                                    pass
+                                else:
+                                    rtimestamp = timestamps(extraline)
                                 
-                                rtimestamp = timestamps(extraline)
-                                #print(rtimestamp)
                         elif  '"urls" :' in line:
                             line = line.strip()
                             if line.endswith(']'):
@@ -106,7 +111,10 @@ def get_twitterReturnsTip(files_found, report_folder, seeker, wrap_text):
                                 expanded = extraline.split(': ')[1].replace('"','').replace(',','').strip()
                                 #print(expanded)
                                 extraline = next(f)
-                                display = extraline.split(': ')[1].replace('"','').replace(',','').strip()
+                                if extraline == '':
+                                    pass
+                                else:
+                                    display = extraline.split(': ')[1].replace('"','').replace(',','').strip()
                                 #print(display)
                                 
                             data_list.append((timestamp, convoid, sid, rid, text, thumb, mediaurl, url, expanded, display, rtimestamp, rsenderid, reactkey, reventid, idc ))
@@ -193,22 +201,22 @@ def get_twitterReturnsTip(files_found, report_folder, seeker, wrap_text):
             filenamedms = file_found
             filenamenoext = (filename.split('-', 1)[1].replace('.txt','').strip())
             with open(file_found, 'r', encoding='utf-8') as f:	
-                
-                    for line in f:
-                        if '"createdAt"' in line:
-                            timestamp = timestamps(line)
-                        elif '"accountId"' in line:
-                            accountid = line.split(': ')[1].replace('"', '').replace(',', '').strip()
-                        elif '"email" :' in line:
-                            email = line.split(': ')[1].replace('"', '').replace(',', '').strip()
-                        elif '"createdVia"' in line:
-                            cvia = line.split(': ')[1].replace('"', '').replace(',', '').strip()
-                        elif '"username"' in line:
-                            usern = line.split(': ')[1].replace('"', '').replace(',', '').strip()
-                        elif '"accountDisplayName"' in line:
-                            accdn = line.split(': ')[1].replace('"', '').strip()
-                            
-                            data_list.append((timestamp, accountid, email, cvia, usern, accdn))
+                email = timestamp = accountid = cvia = usern = accdn = ''
+                for line in f:
+                    if '"createdAt"' in line:
+                        timestamp = timestamps(line)
+                    elif '"accountId"' in line:
+                        accountid = line.split(': ')[1].replace('"', '').replace(',', '').strip()
+                    elif '"email" :' in line:
+                        email = line.split(': ')[1].replace('"', '').replace(',', '').strip()
+                    elif '"createdVia"' in line:
+                        cvia = line.split(': ')[1].replace('"', '').replace(',', '').strip()
+                    elif '"username"' in line:
+                        usern = line.split(': ')[1].replace('"', '').replace(',', '').strip()
+                    elif '"accountDisplayName"' in line:
+                        accdn = line.split(': ')[1].replace('"', '').strip()
+                    
+                data_list.append((timestamp, accountid, email, cvia, usern, accdn))
                             
             if data_list:
                 report = ArtifactHtmlReport(f'Twitter Returns - {filenamenoext}')
