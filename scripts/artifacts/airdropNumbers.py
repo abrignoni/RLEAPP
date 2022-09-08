@@ -1,83 +1,112 @@
 # Base code comes from:
 # https://github.com/043a7e/airdropmsisdn
 
-import os
-import datetime
 import hashlib
 import json
+import time
+from enum import Enum
 from pathlib import Path
 
+from scripts import ilapfuncs
 from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html, kmlgen
+from scripts.ilapfuncs import logfunc, tsv, timeline, logdevinfo
+
+
+class COUNTRY(Enum):
+    US = "us"
+    DE = "de"
+
+
+COUNTRY_CODE = {COUNTRY.US: '1', COUNTRY.DE: '49'}
+MIN_LEN = {COUNTRY.US: 7, COUNTRY.DE: 7}
+MAX_LEN = {COUNTRY.US: 7, COUNTRY.DE: 10}
+AREACODE_FILE = {COUNTRY.US: 'areacodes_us.txt', COUNTRY.DE: 'areacodes_de.txt'}
+
+
+def _count_generator(reader):
+    b = reader(1024 * 1024)
+    while b:
+        yield b
+        b = reader(1024 * 1024)
+
+
+def _get_line_count(file):
+    with open(file, 'rb') as fp:
+        return sum(buffer.count(b'\n') for buffer in _count_generator(fp.raw.read))
 
 
 def get_airdropNumbers(files_found, report_folder, seeker, wrap_text):
     # log show ./system_logs.logarchive --style ndjson --predicate 'category = "AirDrop"' > airdrop.ndjson
-    COUNTRY_CODE = '1'
-    MIN_LEN = 7
-    MAX_LEN = 10
-
+    selected_country = COUNTRY.DE
     areacodelist = []
     data_list = []
 
     p = Path(__file__).parents[1]
     my_path = Path(p).joinpath('areacodes')
-    areacodes = Path(my_path).joinpath('areacodes.txt')
+    areacodes = Path(my_path).joinpath(AREACODE_FILE[selected_country])
 
     with open(areacodes, 'r') as data:
         for x in data:
             areacodelist.append(x)
-
     target_hashes = {}
     for file_found in files_found:
         file_found = str(file_found)
 
-        filename = os.path.basename(file_found)
-
         if file_found.endswith('airdrop.ndjson'):
+            factor = 100 / _get_line_count(file_found)
             with open(file_found, 'r') as data:
-                for x in data:
-                    deserialized = json.loads(x)
-                    endofdata = deserialized.get('finished', '')
-                    if endofdata == 1:
-                        break
-                    else:
+                for i, x in enumerate(data):
+                    ilapfuncs.GuiWindow.SetProgressBar(int(factor * i))
+                    if 'Phone=[' in x or ():
+                        deserialized = json.loads(x)
                         eventmessage = deserialized.get('eventMessage', '')
-                        if 'Phone=[' in eventmessage:
-                            phonehash = eventmessage.split(',')[1].strip()
-                            if len(phonehash) >= 21:
-                                targetstart = phonehash[7:12]
-                                targetend = phonehash[15:20]
-                                eventtimestamp = deserialized.get('timestamp', '')[0:25]
-                                subsystem = deserialized.get('subsystem', '')
-                                category = deserialized.get('category', '')
-                                traceid = deserialized.get('traceID', '')
+                        phonehash = eventmessage.split(',')[1].strip()
+                        if len(phonehash) >= 21:
+                            targetstart = phonehash[7:12]
+                            targetend = phonehash[15:20]
+                            eventtimestamp = deserialized.get('timestamp', '')[0:25]
+                            subsystem = deserialized.get('subsystem', '')
+                            category = deserialized.get('category', '')
+                            traceid = deserialized.get('traceID', '')
 
-                                # We assume same hash equals same phone
-                                if (targetstart, targetend) not in target_hashes:
-                                    logfunc(f"Add {targetstart}...{targetend} to target list")
-                                    target_hashes[(targetstart, targetend)] = (eventtimestamp, None, eventmessage, subsystem, category, traceid)
+                            # We assume same hash equals same phone
+                            if (targetstart, targetend) not in target_hashes:
+                                logfunc(f"Add {targetstart}...{targetend} to target list")
+                                target_hashes[(targetstart, targetend)] = [eventtimestamp, None, eventmessage, subsystem, category, traceid]
 
-    for areacode in areacodelist:
-        areacode = areacode.strip()
-        line = '0'
-        print('Searching area code ' + str(areacode) + ' for target...')
-        for i in range(MIN_LEN, MAX_LEN):
-            for line in range(10 ** i):
-                targetphone = COUNTRY_CODE + str(areacode) + str(line).zfill(i)
+
+    for i in range(MIN_LEN[selected_country], MAX_LEN[selected_country]):
+        logfunc(f"Searching for len {i}")
+        factor = 100 / 10 ** i
+        for areacode in areacodelist:
+            areacode = areacode.strip()
+            logfunc('Searching area code ' + str(areacode) + ' for target...')
+            start_time = time.time()
+            for line in range(7760470, 10 ** i):
+
+                # Performance measuring
+                if 1.0 < (time.time() - start_time) < 1.2:
+                    logfunc(f"{line-7760470}/s")
+
+                ilapfuncs.GuiWindow.SetProgressBar(int(factor * line))
+                targetphone = COUNTRY_CODE[selected_country] + str(areacode) + str(line).zfill(i)
                 targettest = hashlib.sha256(targetphone.encode())
                 starthashcheck = targettest.hexdigest()[0:5]
                 endhashcheck = targettest.hexdigest()[-5:]
                 if (starthashcheck, endhashcheck) in target_hashes:
                     logfunc(f"Found phone {targetphone} for hash {starthashcheck}....{endhashcheck}")
-                    target_hashes[(starthashcheck, endhashcheck)][1] = targetphone
-                    data_list.append(target_hashes[(starthashcheck, endhashcheck)][1])
+                    phone_hash = target_hashes.pop((starthashcheck, endhashcheck))
+                    phone_hash[1] = targetphone
+                    data_list.append(phone_hash)
+                if not target_hashes:
+                    logfunc("No target hashes left")
+                    break
 
     if data_list:
         report = ArtifactHtmlReport(f'AirDrop - Phone Number from Hash ')
         report.start_artifact_report(report_folder, f'AirDrop - Phone Number from Hash')
         report.add_script()
-        data_headers = ('Timestamp', 'Target Phone', 'Event Message', 'Subsystem', 'Category', 'Trace ID')
+        data_headers = ['Timestamp', 'Target Phone', 'Event Message', 'Subsystem', 'Category', 'Trace ID']
         report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Media'])
         report.end_artifact_report()
 
