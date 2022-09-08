@@ -40,7 +40,7 @@ def _get_line_count(file):
 
 def get_airdropNumbers(files_found, report_folder, seeker, wrap_text):
     # log show ./system_logs.logarchive --style ndjson --predicate 'category = "AirDrop"' > airdrop.ndjson
-    selected_country = COUNTRY.DE
+    selected_country = COUNTRY.US
     areacodelist = []
     data_list = []
 
