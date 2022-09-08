@@ -6,6 +6,9 @@ import json
 import time
 from enum import Enum
 from pathlib import Path
+import locale
+
+locale.setlocale(locale.LC_ALL, '')  # Use '' for auto, or force e.g. to 'en_US.UTF-8'
 
 from scripts import ilapfuncs
 from scripts.artifact_report import ArtifactHtmlReport
@@ -48,6 +51,7 @@ def get_airdropNumbers(files_found, report_folder, seeker, wrap_text):
     with open(areacodes, 'r') as data:
         for x in data:
             areacodelist.append(x)
+
     target_hashes = {}
     for file_found in files_found:
         file_found = str(file_found)
@@ -72,22 +76,23 @@ def get_airdropNumbers(files_found, report_folder, seeker, wrap_text):
                             # We assume same hash equals same phone
                             if (targetstart, targetend) not in target_hashes:
                                 logfunc(f"Add {targetstart}...{targetend} to target list")
-                                target_hashes[(targetstart, targetend)] = [eventtimestamp, None, eventmessage, subsystem, category, traceid]
-
+                                target_hashes[(targetstart, targetend)] = [eventtimestamp, None, eventmessage,
+                                                                           subsystem, category, traceid]
 
     for i in range(MIN_LEN[selected_country], MAX_LEN[selected_country]):
         logfunc(f"Searching for len {i}")
-        factor = 10 ** i / 100
+        factor = int(10 ** i / 100)
         for areacode in areacodelist:
             areacode = areacode.strip()
             logfunc('Searching area code ' + str(areacode) + ' for target...')
-            start_time = time.time()
+            ilapfuncs.GuiWindow.SetProgressBar(0)
             off = 0
+            start_time = time.time()
             for line in range(10 ** i):
 
                 # Performance measuring
-                if 10.0 < (time.time() - start_time) < 10.2:
-                    logfunc(f"{(line-off)/10}/s")
+                if 60.0 < (time.time() - start_time) < 60.2:
+                    logfunc(f"Current Speed: {(line - off) / 60}nr/s")
                     off = line
                     start_time = time.time()
 
