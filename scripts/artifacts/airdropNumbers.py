@@ -77,18 +77,23 @@ def get_airdropNumbers(files_found, report_folder, seeker, wrap_text):
 
     for i in range(MIN_LEN[selected_country], MAX_LEN[selected_country]):
         logfunc(f"Searching for len {i}")
-        factor = 100 / 10 ** i
+        factor = 10 ** i / 100
         for areacode in areacodelist:
             areacode = areacode.strip()
             logfunc('Searching area code ' + str(areacode) + ' for target...')
             start_time = time.time()
-            for line in range(7760470, 10 ** i):
+            off = 0
+            for line in range(10 ** i):
 
                 # Performance measuring
-                if 1.0 < (time.time() - start_time) < 1.2:
-                    logfunc(f"{line-7760470}/s")
+                if 10.0 < (time.time() - start_time) < 10.2:
+                    logfunc(f"{(line-off)/10}/s")
+                    off = line
+                    start_time = time.time()
 
-                ilapfuncs.GuiWindow.SetProgressBar(int(factor * line))
+                if line % factor == 0:
+                    ilapfuncs.GuiWindow.SetProgressBar(int(line / factor))
+
                 targetphone = COUNTRY_CODE[selected_country] + str(areacode) + str(line).zfill(i)
                 targettest = hashlib.sha256(targetphone.encode())
                 starthashcheck = targettest.hexdigest()[0:5]
