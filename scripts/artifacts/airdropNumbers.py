@@ -41,7 +41,7 @@ def _get_line_count(file):
 
 def get_airdropNumbers(files_found, report_folder, seeker, wrap_text):
     # log show ./system_logs.logarchive --style ndjson --predicate 'category = "AirDrop"' > airdrop.ndjson
-    selected_country = COUNTRY.US
+    selected_country = COUNTRY.DE
     areacodelist = []
     data_list = []
 
@@ -103,9 +103,9 @@ def get_airdropNumbers(files_found, report_folder, seeker, wrap_text):
                     ilapfuncs.GuiWindow.SetProgressBar(int(line / factor))
 
                 targetphone = COUNTRY_CODE[selected_country] + str(areacode) + str(line).zfill(i)
-                targettest = hashlib.sha256(targetphone.encode())
-                starthashcheck = targettest.hexdigest()[0:5]
-                endhashcheck = targettest.hexdigest()[-5:]
+                targettest = hashlib.sha256(targetphone.encode()).hexdigest()
+                starthashcheck = targettest[:5]
+                endhashcheck = targettest[-5:]
                 if (starthashcheck, endhashcheck) in target_hashes:
                     logfunc(f"Found phone {targetphone} for hash {starthashcheck}....{endhashcheck}")
                     phone_hash = target_hashes.pop((starthashcheck, endhashcheck))
