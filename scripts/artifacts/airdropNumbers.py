@@ -3,6 +3,7 @@
 
 import hashlib
 import json
+import re
 import time
 from enum import Enum
 from pathlib import Path
@@ -53,33 +54,35 @@ def get_airdropNumbers(files_found, report_folder, seeker, wrap_text):
             areacodelist.append(x)
 
     target_hashes = {}
+    regex = re.compile(r"Phone=\[(?P<start>\w{5})\.{3}(?P<end>\w{5})]")
     for file_found in files_found:
         file_found = str(file_found)
 
         if file_found.endswith('airdrop.ndjson'):
-            factor = 100 / _get_line_count(file_found)
+            factor = int(_get_line_count(file_found) / 100 )
             with open(file_found, 'r') as data:
                 for i, x in enumerate(data):
-                    ilapfuncs.GuiWindow.SetProgressBar(int(factor * i))
-                    if 'Phone=[' in x or ():
+                    if i % factor == 0:
+                        ilapfuncs.GuiWindow.SetProgressBar(int(i / factor))
+
+                    result = regex.search(x)
+                    if result:
                         deserialized = json.loads(x)
                         eventmessage = deserialized.get('eventMessage', '')
-                        phonehash = eventmessage.split(',')[1].strip()
-                        if len(phonehash) >= 21:
-                            targetstart = phonehash[7:12]
-                            targetend = phonehash[15:20]
-                            eventtimestamp = deserialized.get('timestamp', '')[0:25]
-                            subsystem = deserialized.get('subsystem', '')
-                            category = deserialized.get('category', '')
-                            traceid = deserialized.get('traceID', '')
+                        targetstart = result.group('start')
+                        targetend = result.group('end')
+                        eventtimestamp = deserialized.get('timestamp', '')[0:25]
+                        subsystem = deserialized.get('subsystem', '')
+                        category = deserialized.get('category', '')
+                        traceid = deserialized.get('traceID', '')
 
-                            # We assume same hash equals same phone
-                            if (targetstart, targetend) not in target_hashes:
-                                logfunc(f"Add {targetstart}...{targetend} to target list")
-                                target_hashes[(targetstart, targetend)] = [eventtimestamp, None, eventmessage,
-                                                                           subsystem, category, traceid]
+                        # We assume same hash equals same phone
+                        if (targetstart, targetend) not in target_hashes:
+                            logfunc(f"Add {targetstart}...{targetend} to target list")
+                            target_hashes[(targetstart, targetend)] = [eventtimestamp, None, eventmessage,
+                                                                       subsystem, category, traceid]
 
-    for i in range(MIN_LEN[selected_country], MAX_LEN[selected_country]):
+    for i in range(MIN_LEN[selected_country], MAX_LEN[selected_country]+1):
         logfunc(f"Searching for len {i}")
         factor = int(10 ** i / 100)
         for areacode in areacodelist:
