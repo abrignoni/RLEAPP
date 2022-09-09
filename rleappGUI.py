@@ -129,7 +129,7 @@ while True:
     if event == "DESELECT ALL":  
          # none modules
         for x in range(MODULE_START_INDEX, module_end_index):
-            window[x].Update(False if window[x].metadata != 'airdropEmails' else True)  # airdropEmails.py is REQUIRED 
+            window[x].Update(False if window[x].metadata != '' else True)  # airdropEmails.py is REQUIRED 
     if event == "SAVE PROFILE":
         destination_path = sg.popup_get_file(
             "Save a profile", save_as=True,
