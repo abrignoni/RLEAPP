@@ -47,8 +47,9 @@ def get_airdropEmails(files_found, report_folder, seeker, wrap_text):
 
                             if (targetstart, targetend) not in target_hashes:
                                 logfunc(f"Add {targetstart}...{targetend} to target list")
-                                target_hashes[(targetstart, targetend)] = (
-                                eventtimestamp, None, eventmessage, subsystem, category, traceid)
+                                target_hashes[(targetstart, targetend)] = (eventtimestamp, None, eventmessage, subsystem, category, traceid)
+                                
+                                
 
         for email in emailslist:
             emailcheck = email.strip()
@@ -59,8 +60,11 @@ def get_airdropEmails(files_found, report_folder, seeker, wrap_text):
             endhashcheck = targettest.hexdigest()[-5:]
 
             if (starthashcheck.lower(), endhashcheck.lower()) in target_hashes:
-                target_hashes[(starthashcheck, endhashcheck)][1] = emailcheck
-                data_list.append(target_hashes[(starthashcheck, endhashcheck)][1])
+                
+                toappend = list(target_hashes[(starthashcheck, endhashcheck)])
+                toappend[1] = emailcheck
+                data_list.append(toappend)
+                
                 logfunc(emailcheck + ' matches hash fragments on ' + target_hashes[(starthashcheck, endhashcheck)][0])
 
     if data_list:
