@@ -109,7 +109,7 @@ def get_airdropNumbers(files_found, report_folder, seeker, wrap_text):
                 if line % factor == 0:
                     ilapfuncs.GuiWindow.SetProgressBar(int(line / factor))
 
-                targetphone = COUNTRY_CODE[selected_country] + str(areacode) + str(line).zfill(i)
+                targetphone = f"{COUNTRY_CODE[selected_country]}{areacode}{line:0{i}d}"
                 targettest = hashlib.sha256(targetphone.encode()).hexdigest()
                 starthashcheck = targettest[:5]
                 endhashcheck = targettest[-5:]
