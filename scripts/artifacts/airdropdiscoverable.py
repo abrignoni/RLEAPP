@@ -41,6 +41,7 @@ def get_airdropdiscoverable(files_found, report_folder, seeker, wrap_text):
                                 
                                 if '<NSOrderedCollectionDifference' in x:
                                     updatedp = x.split('(')[1]
+                                    updatedp = updatedp.replace('<','')
                                 elif 'Updated people' in x:
                                     updatedp = x.split(': ')[1]
                                 elif 'realName' in x:
@@ -57,7 +58,7 @@ def get_airdropdiscoverable(files_found, report_folder, seeker, wrap_text):
                                     israpport = x.split(': ')[1]
                                 elif 'uwbCapable' in x:
                                     uwbcapable = x.split(': ')[1]
-                                    
+                                    uwbcapable = uwbcapable.strip('>','')
                             data_list.append((eventtimestamp, traceid, updatedp, realname, displayname, secondaryname, isme, isknown, israpport, uwbcapable))
                         
     if data_list:
