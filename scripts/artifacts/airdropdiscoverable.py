@@ -58,7 +58,7 @@ def get_airdropdiscoverable(files_found, report_folder, seeker, wrap_text):
                                     israpport = x.split(': ')[1]
                                 elif 'uwbCapable' in x:
                                     uwbcapable = x.split(': ')[1]
-                                    uwbcapable = uwbcapable.strip('>','')
+                                    uwbcapable = uwbcapable.replace('>','')
                             data_list.append((eventtimestamp, traceid, updatedp, realname, displayname, secondaryname, isme, isknown, israpport, uwbcapable))
                         
     if data_list:
