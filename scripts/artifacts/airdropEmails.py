@@ -23,7 +23,7 @@ def get_airdropEmails(files_found, report_folder, seeker, wrap_text):
         for x in data:
             emailslist.append(x)
 
-    regex = re.compile(r"Email=\[((?P<start>\w{5})\.{3}(?P<end>\w{5})(, )?)+\]")
+    regex = re.compile(r"Email=\[((\w{5}\.{3}\w{5}(, )?)+)\]")
     target_hashes = {}
     for file_found in files_found:
         file_found = str(file_found)
@@ -33,7 +33,7 @@ def get_airdropEmails(files_found, report_folder, seeker, wrap_text):
 
         for email in emailslist:
             emailcheck = email.strip()
-            logfunc('Testing email' + str(emailcheck) + ' for target...')
+            logfunc('Testing email ' + str(emailcheck) + ' for target...')
 
             targettest = hashlib.sha256(emailcheck.encode()).hexdigest()
             starthashcheck = targettest[0:5]

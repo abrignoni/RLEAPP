@@ -41,7 +41,7 @@ def get_airdropNumbers(files_found, report_folder, seeker, wrap_text):
         for x in data:
             areacodelist.append(x)
 
-    regex = re.compile(r"Phone=\[(?P<start>\w{5})\.{3}(?P<end>\w{5})]")
+    regex = re.compile(r"Phone=\[((\w{5}\.{3}\w{5}(, )?)+)\]")
     target_hashes = {}
     for file_found in files_found:
         file_found = str(file_found)
