@@ -26,17 +26,6 @@ MAX_LEN = {COUNTRY.US: 7, COUNTRY.DE: 10}
 AREACODE_FILE = {COUNTRY.US: 'areacodes_us.txt', COUNTRY.DE: 'areacodes_de.txt'}
 
 
-def _count_generator(reader):
-    b = reader(1024 * 1024)
-    while b:
-        yield b
-        b = reader(1024 * 1024)
-
-
-def _get_line_count(file):
-    with open(file, 'rb') as fp:
-        return sum(buffer.count(b'\n') for buffer in _count_generator(fp.raw.read))
-
 
 def get_airdropNumbers(files_found, report_folder, seeker, wrap_text):
     # log show ./system_logs.logarchive --style ndjson --predicate 'category = "AirDrop"' > airdrop.ndjson

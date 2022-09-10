@@ -15,8 +15,6 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 from functools import lru_cache
 
-from scripts.artifacts.airdropNumbers import _get_line_count
-
 os.path.basename = lru_cache(maxsize=None)(os.path.basename)
 
 class OutputParameters:
@@ -512,6 +510,19 @@ def ipgen(report_folder, data_list_ipaddress):
     db.close()
 
 
+def _count_generator(reader):
+    b = reader(1024 * 1024)
+    while b:
+        yield b
+        b = reader(1024 * 1024)
+
+
+def _get_line_count(file):
+    with open(file, 'rb') as fp:
+        return sum(buffer.count(b'\n') for buffer in _count_generator(fp.raw.read))
+
+
+
 def gather_hashes_in_file(file_found, regex):
     target_hashes = {}
 
@@ -519,7 +530,7 @@ def gather_hashes_in_file(file_found, regex):
     with open(file_found, 'r') as data:
         for i, x in enumerate(data):
             if i % factor == 0:
-                ilapfuncs.GuiWindow.SetProgressBar(int(i / factor))
+                GuiWindow.SetProgressBar(int(i / factor))
 
             result = regex.search(x)
             if result:
