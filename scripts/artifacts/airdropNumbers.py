@@ -2,7 +2,6 @@
 # https://github.com/043a7e/airdropmsisdn
 
 import hashlib
-import json
 import re
 import time
 from enum import Enum
@@ -13,7 +12,7 @@ locale.setlocale(locale.LC_ALL, '')  # Use '' for auto, or force e.g. to 'en_US.
 
 from scripts import ilapfuncs
 from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, logdevinfo
+from scripts.ilapfuncs import logfunc, tsv, timeline, gather_hashes_in_file
 
 
 class COUNTRY(Enum):
@@ -26,45 +25,6 @@ MIN_LEN = {COUNTRY.US: 7, COUNTRY.DE: 7}
 MAX_LEN = {COUNTRY.US: 7, COUNTRY.DE: 10}
 AREACODE_FILE = {COUNTRY.US: 'areacodes_us.txt', COUNTRY.DE: 'areacodes_de.txt'}
 
-
-def _count_generator(reader):
-    b = reader(1024 * 1024)
-    while b:
-        yield b
-        b = reader(1024 * 1024)
-
-
-def _get_line_count(file):
-    with open(file, 'rb') as fp:
-        return sum(buffer.count(b'\n') for buffer in _count_generator(fp.raw.read))
-
-
-def gather_hashes_in_file(file_found, regex):
-    target_hashes = {}
-
-    factor = int(_get_line_count(file_found) / 100)
-    with open(file_found, 'r') as data:
-        for i, x in enumerate(data):
-            if i % factor == 0:
-                ilapfuncs.GuiWindow.SetProgressBar(int(i / factor))
-
-            result = regex.search(x)
-            if result:
-                deserialized = json.loads(x)
-                eventmessage = deserialized.get('eventMessage', '')
-                targetstart = result.group('start')
-                targetend = result.group('end')
-                eventtimestamp = deserialized.get('timestamp', '')[0:25]
-                subsystem = deserialized.get('subsystem', '')
-                category = deserialized.get('category', '')
-                traceid = deserialized.get('traceID', '')
-
-                # We assume same hash equals same phone
-                if (targetstart, targetend) not in target_hashes:
-                    logfunc(f"Add {targetstart}...{targetend} to target list")
-                    target_hashes[(targetstart, targetend)] = [eventtimestamp, None, eventmessage,
-                                                               subsystem, category, traceid]
-    return target_hashes
 
 
 def get_airdropNumbers(files_found, report_folder, seeker, wrap_text):

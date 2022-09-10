@@ -6,8 +6,7 @@ import re
 from pathlib import Path
 
 from scripts.artifact_report import ArtifactHtmlReport
-from scripts.artifacts.airdropNumbers import gather_hashes_in_file
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html, kmlgen
+from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html, kmlgen, gather_hashes_in_file
 
 
 def get_airdropEmails(files_found, report_folder, seeker, wrap_text):
@@ -24,7 +23,7 @@ def get_airdropEmails(files_found, report_folder, seeker, wrap_text):
         for x in data:
             emailslist.append(x)
 
-    regex = re.compile(r"Email=\[(?P<start>\w{5})\.{3}(?P<end>\w{5})]")
+    regex = re.compile(r"Email=\[((?P<start>\w{5})\.{3}(?P<end>\w{5})(, )?)+\]")
     target_hashes = {}
     for file_found in files_found:
         file_found = str(file_found)
