@@ -3,6 +3,7 @@
 
 import hashlib
 import json
+import re
 import time
 from enum import Enum
 from pathlib import Path
@@ -38,6 +39,34 @@ def _get_line_count(file):
         return sum(buffer.count(b'\n') for buffer in _count_generator(fp.raw.read))
 
 
+def gather_hashes_in_file(file_found, regex):
+    target_hashes = {}
+
+    factor = int(_get_line_count(file_found) / 100)
+    with open(file_found, 'r') as data:
+        for i, x in enumerate(data):
+            if i % factor == 0:
+                ilapfuncs.GuiWindow.SetProgressBar(int(i / factor))
+
+            result = regex.search(x)
+            if result:
+                deserialized = json.loads(x)
+                eventmessage = deserialized.get('eventMessage', '')
+                targetstart = result.group('start')
+                targetend = result.group('end')
+                eventtimestamp = deserialized.get('timestamp', '')[0:25]
+                subsystem = deserialized.get('subsystem', '')
+                category = deserialized.get('category', '')
+                traceid = deserialized.get('traceID', '')
+
+                # We assume same hash equals same phone
+                if (targetstart, targetend) not in target_hashes:
+                    logfunc(f"Add {targetstart}...{targetend} to target list")
+                    target_hashes[(targetstart, targetend)] = [eventtimestamp, None, eventmessage,
+                                                               subsystem, category, traceid]
+    return target_hashes
+
+
 def get_airdropNumbers(files_found, report_folder, seeker, wrap_text):
     # log show ./system_logs.logarchive --style ndjson --predicate 'category = "AirDrop"' > airdrop.ndjson
     selected_country = COUNTRY.US
@@ -52,34 +81,15 @@ def get_airdropNumbers(files_found, report_folder, seeker, wrap_text):
         for x in data:
             areacodelist.append(x)
 
+    regex = re.compile(r"Phone=\[(?P<start>\w{5})\.{3}(?P<end>\w{5})]")
     target_hashes = {}
     for file_found in files_found:
         file_found = str(file_found)
 
         if file_found.endswith('airdrop.ndjson'):
-            factor = 100 / _get_line_count(file_found)
-            with open(file_found, 'r') as data:
-                for i, x in enumerate(data):
-                    ilapfuncs.GuiWindow.SetProgressBar(int(factor * i))
-                    if 'Phone=[' in x or ():
-                        deserialized = json.loads(x)
-                        eventmessage = deserialized.get('eventMessage', '')
-                        phonehash = eventmessage.split(',')[1].strip()
-                        if len(phonehash) >= 21:
-                            targetstart = phonehash[7:12]
-                            targetend = phonehash[15:20]
-                            eventtimestamp = deserialized.get('timestamp', '')[0:25]
-                            subsystem = deserialized.get('subsystem', '')
-                            category = deserialized.get('category', '')
-                            traceid = deserialized.get('traceID', '')
+            target_hashes.update(gather_hashes_in_file(file_found, regex))
 
-                            # We assume same hash equals same phone
-                            if (targetstart, targetend) not in target_hashes:
-                                logfunc(f"Add {targetstart}...{targetend} to target list")
-                                target_hashes[(targetstart, targetend)] = [eventtimestamp, None, eventmessage,
-                                                                           subsystem, category, traceid]
-
-    for i in range(MIN_LEN[selected_country], MAX_LEN[selected_country]):
+    for i in range(MIN_LEN[selected_country], MAX_LEN[selected_country] + 1):
         logfunc(f"Searching for len {i}")
         factor = int(10 ** i / 100)
         for areacode in areacodelist:
@@ -99,10 +109,10 @@ def get_airdropNumbers(files_found, report_folder, seeker, wrap_text):
                 if line % factor == 0:
                     ilapfuncs.GuiWindow.SetProgressBar(int(line / factor))
 
-                targetphone = COUNTRY_CODE[selected_country] + str(areacode) + str(line).zfill(i)
-                targettest = hashlib.sha256(targetphone.encode())
-                starthashcheck = targettest.hexdigest()[0:5]
-                endhashcheck = targettest.hexdigest()[-5:]
+                targetphone = f"{COUNTRY_CODE[selected_country]}{areacode}{line:0{i}d}"
+                targettest = hashlib.sha256(targetphone.encode()).hexdigest()
+                starthashcheck = targettest[:5]
+                endhashcheck = targettest[-5:]
                 if (starthashcheck, endhashcheck) in target_hashes:
                     logfunc(f"Found phone {targetphone} for hash {starthashcheck}....{endhashcheck}")
                     phone_hash = target_hashes.pop((starthashcheck, endhashcheck))
@@ -117,7 +127,7 @@ def get_airdropNumbers(files_found, report_folder, seeker, wrap_text):
         report.start_artifact_report(report_folder, f'AirDrop - Phone Number from Hash')
         report.add_script()
         data_headers = ['Timestamp', 'Target Phone', 'Event Message', 'Subsystem', 'Category', 'Trace ID']
-        report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Media'])
+        report.write_artifact_data_table(data_headers, data_list, files_found[0], html_no_escape=['Media'])
         report.end_artifact_report()
 
         tsvname = f'AirDrop - Phone Number from Hash'

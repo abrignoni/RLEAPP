@@ -2,9 +2,11 @@ import os
 import datetime
 import hashlib
 import json
+import re
 from pathlib import Path
 
 from scripts.artifact_report import ArtifactHtmlReport
+from scripts.artifacts.airdropNumbers import gather_hashes_in_file
 from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html, kmlgen
 
 
@@ -22,50 +24,27 @@ def get_airdropEmails(files_found, report_folder, seeker, wrap_text):
         for x in data:
             emailslist.append(x)
 
+    regex = re.compile(r"Email=\[(?P<start>\w{5})\.{3}(?P<end>\w{5})]")
     target_hashes = {}
     for file_found in files_found:
         file_found = str(file_found)
 
-        filename = os.path.basename(file_found)
-
         if file_found.endswith('airdrop.ndjson'):
-            with open(file_found, 'r') as data:
-                for x in data:
-                    deserialized = json.loads(x)
-                    endofdata = deserialized.get('finished', '')
-                    if endofdata == 1:
-                        break
-                    else:
-                        eventmessage = deserialized.get('eventMessage', '')
-                        if 'Email=[' in eventmessage:
-                            targetstart = (eventmessage.split('[')[1].split(',')[0][0:5]).lower()
-                            targetend = (eventmessage.split('[')[1].split(',')[0][8:13]).lower()
-                            eventtimestamp = deserialized.get('timestamp', '')[0:25]
-                            subsystem = deserialized.get('subsystem', '')
-                            category = deserialized.get('category', '')
-                            traceid = deserialized.get('traceID', '')
-
-                            if (targetstart, targetend) not in target_hashes:
-                                logfunc(f"Add {targetstart}...{targetend} to target list")
-                                target_hashes[(targetstart, targetend)] = (eventtimestamp, None, eventmessage, subsystem, category, traceid)
-                                
-                                
+            target_hashes.update(gather_hashes_in_file(file_found, regex))
 
         for email in emailslist:
             emailcheck = email.strip()
-            print('Testing email' + str(emailcheck) + ' for target...')
+            logfunc('Testing email' + str(emailcheck) + ' for target...')
 
-            targettest = hashlib.sha256(emailcheck.encode())
-            starthashcheck = targettest.hexdigest()[0:5]
-            endhashcheck = targettest.hexdigest()[-5:]
+            targettest = hashlib.sha256(emailcheck.encode()).hexdigest()
+            starthashcheck = targettest[0:5]
+            endhashcheck = targettest[-5:]
 
             if (starthashcheck.lower(), endhashcheck.lower()) in target_hashes:
-                
-                toappend = list(target_hashes[(starthashcheck, endhashcheck)])
-                toappend[1] = emailcheck
-                data_list.append(toappend)
-                
-                logfunc(emailcheck + ' matches hash fragments on ' + target_hashes[(starthashcheck, endhashcheck)][0])
+                mail_hash = target_hashes.pop((starthashcheck, endhashcheck))
+                mail_hash[1] = emailcheck
+                data_list.append(mail_hash)
+                logfunc(emailcheck + ' matches hash fragments on ' + mail_hash[0])
 
     if data_list:
         report = ArtifactHtmlReport(f'AirDrop - Email from Hash ')
