@@ -1,6 +1,7 @@
 import codecs
 import csv
 import datetime
+import json
 import os
 import pathlib
 import re
@@ -13,6 +14,8 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup
 from functools import lru_cache
+
+from scripts.artifacts.airdropNumbers import _get_line_count
 
 os.path.basename = lru_cache(maxsize=None)(os.path.basename)
 
@@ -507,4 +510,31 @@ def ipgen(report_folder, data_list_ipaddress):
         a += 1
     db.commit()
     db.close()
-    
+
+
+def gather_hashes_in_file(file_found, regex):
+    target_hashes = {}
+
+    factor = int(_get_line_count(file_found) / 100)
+    with open(file_found, 'r') as data:
+        for i, x in enumerate(data):
+            if i % factor == 0:
+                ilapfuncs.GuiWindow.SetProgressBar(int(i / factor))
+
+            result = regex.search(x)
+            if result:
+                deserialized = json.loads(x)
+                eventmessage = deserialized.get('eventMessage', '')
+                targetstart = result.group('start')
+                targetend = result.group('end')
+                eventtimestamp = deserialized.get('timestamp', '')[0:25]
+                subsystem = deserialized.get('subsystem', '')
+                category = deserialized.get('category', '')
+                traceid = deserialized.get('traceID', '')
+
+                # We assume same hash equals same phone
+                if (targetstart, targetend) not in target_hashes:
+                    logfunc(f"Add {targetstart}...{targetend} to target list")
+                    target_hashes[(targetstart, targetend)] = [eventtimestamp, None, eventmessage,
+                                                               subsystem, category, traceid]
+    return target_hashes
