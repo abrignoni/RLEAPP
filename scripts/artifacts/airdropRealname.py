@@ -64,7 +64,7 @@ def get_airdropRealnames(files_found, report_folder, seeker, wrap_text):
 
 __artifacts__ = {
     "airdropRealname": (
-        "Airdrop Realnames",
+        "Airdrop Real Names",
         ('*/airdrop.ndjson'),
         get_airdropRealnames)
 }

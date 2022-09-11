@@ -77,6 +77,7 @@ def get_icon_name(category, artifact):
     elif category == 'AIRDROP NUMBERS':            icon = 'smartphone'
     elif category == 'AIRDROP EMAILS':            icon = 'send'
     elif category == 'AIRDROP DISCOVERABLE':            icon = 'search'
+    elif category == 'AIRDROP REAL NAMES':            icon = 'user'
     elif category == 'TWITTER RETURNS':            icon = 'twitter'
     elif category == 'DISCORD RETURNS':            icon = 'message-square'
     elif category == 'TIKTOK RETURNS':            icon = 'film'
