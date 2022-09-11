@@ -23,7 +23,7 @@ def get_airdropRealnames(files_found, report_folder, seeker, wrap_text):
         for x in data:
             namelist.append(x)
 
-    regex = re.compile(r"realname=\[((\w{5}\.{3}\w{5}(, )?)+)\]")
+    regex = re.compile(r"realName: (\w{10})")
     target_hashes = {}
     for file_found in files_found:
         file_found = str(file_found)
