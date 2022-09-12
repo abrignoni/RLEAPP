@@ -55,9 +55,14 @@ def get_takeoutLocationHistory(files_found, report_folder, seeker, wrap_text):
             element_velocity = "NOT_SPECIFIED"
             if "velocity" in element: # velocity not always specified
                 element_velocity = element["velocity"]
-
-            element_source = element["source"]
-            element_device = str(element["deviceTag"])
+            
+            element_source = "NOT_SPECIFIED"
+            if "source" in element:
+                element_source = element["source"]
+                
+            element_device = "NOT_SPECIFIED"
+            if "deviceTag" in element:
+                element_device = str(element["deviceTag"])
 
             element_platform = "NOT_SPECIFIED"
             if "platformType" in element: # platformType not always specified
