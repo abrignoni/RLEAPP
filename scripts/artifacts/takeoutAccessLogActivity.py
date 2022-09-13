@@ -1,7 +1,7 @@
 # Module Description: Parses Google services accessed by your device from Takeout
 # Author: @KevinPagano3
 # Date: 2021-09-25
-# Artifact version: 0.0.1
+# Artifact version: 0.0.2
 # Requirements: none
 
 import os
@@ -18,11 +18,16 @@ def get_takeoutAccessLogActivity(files_found, report_folder, seeker, wrap_text):
         
         filename = os.path.basename(file_found)
         
-        if filename.startswith('Activities - '):
+        if filename.startswith('Activities - A list of Google services accessed by.csv'):
             data_list = []
             ipaddress_list = []
-            
+            description = 'A list of Google services accessed by your devices (for example every time your phone synchronizes with your Gmail)'
+            report = ArtifactHtmlReport('Google Access Log Activities')
+            report.start_artifact_report(report_folder, 'Google Access Log Activities', description)
+            html_report = report.get_report_file_path()
+            report.add_script()
             has_header = True
+            
             with open(file_found, 'r', encoding='utf-8') as f:
                 delimited = csv.reader(f, delimiter=',')
                 next(delimited)
@@ -48,11 +53,6 @@ def get_takeoutAccessLogActivity(files_found, report_folder, seeker, wrap_text):
                         ipaddress_list.append((ip_address, 'Google Access Log Activities', 'Takeout_Ipaddress_logins', html_report, None))
             
             if data_list:
-                description = 'A list of Google services accessed by your devices (for example every time your phone synchronizes with your Gmail)'
-                report = ArtifactHtmlReport('Google Access Log Activities')
-                report.start_artifact_report(report_folder, 'Google Access Log Activities', description)
-                html_report = report.get_report_file_path()
-                report.add_script()
                 
                 data_headers = ('Timestamp','GAIA ID','IP Address','Proxied Host IP Address','Is Non-routable IP Address','Activity Country','Activity Region','Activity City','User Agent String','Product Name','Sub-Product Name','Referer Product Name','Referer Sub-Product Name','Activity Type','Gmail Access Channel','Android Webview Package Name')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
@@ -68,7 +68,7 @@ def get_takeoutAccessLogActivity(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc('No Google Access Log Activities data available')
                 
-        if filename.startswith('Devices - '):
+        if filename.startswith('Devices - A list of devices (i.e. Nest, Pixel, iPh.csv'):
             data_list = []
             
             has_header = True
