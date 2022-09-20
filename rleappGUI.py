@@ -69,7 +69,7 @@ def pickModules():
 
     module_end_index = MODULE_START_INDEX     # arbitrary number to not interfere with other controls
     for plugin in sorted(loader.plugins, key=lambda p: p.category.upper()):
-        disabled = plugin.module_name == 'usagestatsVersion'
+        disabled = plugin.module_name == ''
         mlist.append(CheckList(f'{plugin.category} [{plugin.name} - {plugin.module_name}.py]', module_end_index, plugin.name, disabled))
         module_end_index = module_end_index + 1
         
