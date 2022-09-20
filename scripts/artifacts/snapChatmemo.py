@@ -21,6 +21,8 @@ def get_snapChatmemo(files_found, report_folder, seeker, wrap_text):
         one = (os.path.split(file_found))
         username = (os.path.basename(one[0]))
         
+        data_list = [] 
+        
         if filename.startswith('memories.csv'):
             pathforreport = file_found
             
@@ -31,7 +33,7 @@ def get_snapChatmemo(files_found, report_folder, seeker, wrap_text):
                         limit = index + 1
                         break
                     
-            data_list = []        
+                   
             with open(file_found, 'r') as f:
                 for index, line in enumerate(f):
                     #print(f'linea: {line}')
@@ -55,9 +57,7 @@ def get_snapChatmemo(files_found, report_folder, seeker, wrap_text):
                         
                         data_list.append((timestampfinal, memories[0], memories[1], thumb, memories[2], memories[3], memories[4], memories[5], memories[6]))
                         
-                        
-                            
-        if data_list:
+        if len(data_list) > 0 :
             report = ArtifactHtmlReport(f'Snapchat - Memories Metadata')
             report.start_artifact_report(report_folder, f'Snapchat - Memories Metadata - {username}')
             report.add_script()
@@ -73,8 +73,9 @@ def get_snapChatmemo(files_found, report_folder, seeker, wrap_text):
             
             kmlactivity = f'Snapchat - Memories Metadata  - {username}'
             kmlgen(report_folder, kmlactivity, data_list, data_headers)
-        else:
-            logfunc(f'Snapchat - Memories Metadata - {username}')
+            
+    if len(data_list) < 1:
+        logfunc(f'No Snapchat - Memories Metadata - {username}')
             
 __artifacts__ = {
         "snapChatmemo": (

@@ -235,8 +235,8 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
             data_list_ip =[]
             with open(file_found, 'r', errors='backslashreplace') as f:
                 for line in f:
-                    if '=' in line:
-                        header = f.readline()
+                    if 'ip,action,timestamp,user_agent,status,verification_method' in line:
+                        header = line #f.readline()
                         numberofcolumns = header.count(',')+1
                         break
                 delimited = csv.reader(f, delimiter=',')
@@ -257,7 +257,9 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
                         
                         data_list_ip.append((timestampfinal, ip, type, useragent, status, vermethod))
                 else:
+                    print(delimited)
                     for item in delimited:
+                        print(item)
                         ip = item[0]
                         type = item[1]
                         fecha = item[2]
