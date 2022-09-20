@@ -142,6 +142,6 @@ def get_takeoutLocationHistory(files_found, report_folder, seeker, wrap_text):
 __artifacts__ = {
         "takeoutLocationHistory": (
             "Google Takeout Archive",
-            ('*/Location History/Location History.json'),
+            ('*/Location History/Location History.json','*/Location History.json'),
             get_takeoutLocationHistory)
 }
