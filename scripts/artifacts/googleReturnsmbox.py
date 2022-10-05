@@ -65,7 +65,7 @@ def get_googleReturnsmbox(files_found, report_folder, seeker, wrap_text):
                     foldernumber = str(i)
                     
                         #join(report_folder, basename(file_found))
-                    pathfile = f'{report_folder}{mailboxid}_attachments{splitter}{foldernumber}{splitter}{filename}'
+                    pathfile = f'{report_folder}{mailboxid}_attachments_data{splitter}{foldernumber}{splitter}{filename}'
                     os.makedirs(os.path.dirname(pathfile), exist_ok=True)
                     
                     with open(pathfile, "wb") as f:
@@ -81,7 +81,7 @@ def get_googleReturnsmbox(files_found, report_folder, seeker, wrap_text):
                     
                     tolink = []
                     tolink.append(renamed)
-                    thumb = media_to_html(renamed, tolink, f'{report_folder}{mailboxid}_attachments{splitter}')
+                    thumb = media_to_html(renamed, tolink, f'{report_folder}{mailboxid}_attachments_report{splitter}')
                     attachments = attachments + '<table><tr><td>' + thumb + '</td></tr></table><p>'
             
         
@@ -108,6 +108,6 @@ def get_googleReturnsmbox(files_found, report_folder, seeker, wrap_text):
 __artifacts__ = {
         "googleReturnsmbox": (
             "Google Returns MBOXes",
-            ('*/*.Mail.MessageContent_*/Mail/All mail Including Spam and Trash.mbox'),
+            ('*/*.Mail.MessageContent_*/Mail/All mail Including Spam and Trash.mbox','*/Mail/All mail Including Spam and Trash.mbox'),
             get_googleReturnsmbox)
 }
