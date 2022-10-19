@@ -3,14 +3,14 @@
 block_cipher = None
 
 a = Analysis(['rleapp.py'],
-             pathex=[],
+             pathex=['.\\scripts\\artifacts'],
              binaries=[],
             datas=[('.\\scripts\\logo.jpg', '.\\scripts'),
                     ('.\\scripts\\dashboard.css', '.\\scripts'),
                     ('.\\scripts\\dark-mode.css', '.\\scripts'),
                     ('.\\scripts\\dark-mode-switch.js', '.\\scripts'),
-                    ('.\\scripts\\feather.min.js', '.\\scripts'),
-                    ('.\\scripts\\MDB-Free_4.13.0', '.\\scripts\\MDB-Free_4.13.0')],
+                    ('.\\scripts\\MDB-Free_4.13.0', '.\\scripts\\MDB-Free_4.13.0'),
+                    ('.\\scripts\\artifacts', '\\scripts\\artifacts')],
              hiddenimports=['simplekml'],
              hookspath=['.\\'],
              runtime_hooks=[],
