@@ -1,7 +1,7 @@
-# Module Description: Parses Google Play Store profile information from Takeout
+# Module Description: Parses Google profile information from Takeout
 # Author: @KevinPagano3
 # Date: 2021-08-23
-# Artifact version: 0.0.1
+# Artifact version: 0.0.2
 # Requirements: none
 
 import datetime
@@ -10,9 +10,9 @@ import os
 import shutil
 
 from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
+from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html
 
-def get_playStoreProfile(files_found, report_folder, seeker, wrap_text):
+def get_googleProfile(files_found, report_folder, seeker, wrap_text):
     
     for file_found in files_found:
         file_found = str(file_found)
@@ -43,24 +43,32 @@ def get_playStoreProfile(files_found, report_folder, seeker, wrap_text):
     for match in files_found:
         if ProfilePhoto in match:
             shutil.copy2(match, report_folder)
-            thumb = f'<img src="{report_folder}/{ProfilePhoto}" width="300"></img>'
+            thumb = media_to_html(match, files_found, report_folder)
+            #thumb = f'<img src="{report_folder}/{ProfilePhoto}" width="300"></img>'
     
     data_list.append((formattedName, displayName, addresses, birthday, gender, thumb))
 
     num_entries = len(data_list)
     if num_entries > 0:
-        report = ArtifactHtmlReport('Google Play Store Profile')
-        report.start_artifact_report(report_folder, 'Google Play Store Profile')
+        report = ArtifactHtmlReport('Google Profile')
+        report.start_artifact_report(report_folder, 'Google Profile')
         report.add_script()
         data_headers = ('Name','Display Name','Email Address(s)','Birthday','Gender','Profile Pic')
 
         report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Profile Pic'])
         report.end_artifact_report()
         
-        tsvname = f'Google Play Store Profile'
+        tsvname = f'Google Profile'
         tsv(report_folder, data_headers, data_list, tsvname)
         
-        tlactivity = f'Google Play Store Profile'
+        tlactivity = f'Google Profile'
         timeline(report_folder, tlactivity, data_list, data_headers)
     else:
-        logfunc('No Google Play Store Profile data available')
+        logfunc('No Google Profile data available')
+ 
+__artifacts__ = {
+        "googleProfile": (
+            "Google Takeout Archive",
+            (('*/Profile/Profile.json','*/Profile/ProfilePhoto.jpg')),
+            get_googleProfile)
+}

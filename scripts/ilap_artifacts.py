@@ -21,6 +21,7 @@ from scripts.artifacts.gooReturnsact import get_gooReturnsact
 from scripts.artifacts.gooReturnsrec import get_gooReturnsrec
 from scripts.artifacts.googleReturnsmbox import get_googleReturnsmbox
 from scripts.artifacts.googlePayTransactions import get_googlePayTransactions
+from scripts.artifacts.googleProfile import get_googleProfile
 from scripts.artifacts.googleTasks import get_googleTasks
 from scripts.artifacts.fbigUnifiedmessaging import get_fbigUnifiedmessaging
 from scripts.artifacts.icloudReturnsAcc import get_icloudReturnsAcc
@@ -119,6 +120,7 @@ tosearch = {
     'gooReturnsrec':('Google Returns', ('*/Location History/Records.json')),
     'googleReturnsmbox':('Google Returns MBOXes',('*/*.Mail.MessageContent_*/Mail/All mail Including Spam and Trash.mbox')),
     'googlePayTransactions':('Google Takeout Archive', ('*/Google Pay/Google transactions/transactions_*.csv')),
+    'googleProfile':('Google Takeout Archive', ('*/Profile/Profile.json','*/Profile/ProfilePhoto.jpg')),
     'googleTasks':('Google Takeout Archive', ('*/Tasks/Tasks.json')),
     'fbigUnifiedmessaging':('Facebook - Instagram Returns', ('*/index.html', '*/preservation-1.html', '*/linked_media/*')),
     'icloudReturnsAcc':('iCloud Returns', ('*/Account/*_AccountDetails.xlsx')),
