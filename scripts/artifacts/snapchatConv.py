@@ -161,9 +161,13 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
                 #for i in range(1):
                 #    next(f)
                 for line in f:
+                    if "Target username " in line:
+                        next(f)
+                    if 'message_type,id,from,' in line:
+                        next(f)
                     delimited = csv.reader(f, delimiter=',')
                     for item in delimited:
-                        #print(item)
+                        print(item)
                         #chatsid,from,to,body,href,media_id,saved,timestamp
                         chatsid = item[1]
                         fromc = item[2]
