@@ -83,6 +83,7 @@ def get_icon_name(category, artifact):
     elif category == 'TWITTER RETURNS':            icon = 'twitter'
     elif category == 'DISCORD RETURNS':            icon = 'message-square'
     elif category == 'TIKTOK RETURNS':            icon = 'film'
+    elif category == 'CHASE RETURNS':            icon = 'paperclip'
     elif category == 'SNAPCHAT RETURNS':            icon = 'camera'
     elif category == 'SNAPCHAT ARCHIVE':            icon = 'camera'
     elif category == 'WHATSAPP EXPORTED CHAT':            icon = 'message-circle'
