@@ -9,6 +9,7 @@ xmltodict
 xlrd==1.2.0
 PyMuPDF
 openpyxl
+PyPDF2
 ijson
 python-magic==0.4.24; platform_system == "Linux"
 python-magic-bin==0.4.14; platform_system == "Windows"
