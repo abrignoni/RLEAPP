@@ -71,6 +71,7 @@ def get_icon_name(category, artifact):
         elif artifact == 'NETFLIX - SEARCH HISTORY':   icon = 'search'
         else:                                          icon = 'tv'
     elif category == 'CONTACTS':            icon = 'user'
+    elif category == 'APPLE NOTES':            icon = 'book-open'
     elif category == 'OFFLINE PAGES':       icon = 'cloud-off'
     elif category == 'GOOGLE RETURNS':
         if artifact == 'GOOGLE RETURNS - ACTIVITIES':    icon = 'activity'
