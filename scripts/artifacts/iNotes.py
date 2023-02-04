@@ -10,14 +10,17 @@ def get_iNotes(files_found, report_folder, seeker, wrap_text):
 
     for file_found in files_found:
         file_found = str(file_found)
-    
+        
         filename = os.path.basename(file_found)
+        
+        if file_found.endswith('DS_Store'):
+            continue
         
         if file_found.endswith('Metadata.txt'):
             with open(file_found, 'r') as f:
                 data = json.load(f)
                 for x in data:
-                    
+                
                     recordname = (x['recordName'])
                     
                     created = (x['created'])
@@ -33,35 +36,51 @@ def get_iNotes(files_found, report_folder, seeker, wrap_text):
                     deleted = (x['deleted'])
                     participants = (x['participants'])
                     datas = ''
+                    agregator = ''
+                    notapath = ''
                     for match in files_found:
+                        if match.endswith('.DS_Store'):
+                            continue
                         if recordname in match:
-                            with open(match, 'r') as g:
-                                datas = g.read()
-                                datas = datas.replace('\n','<br>')
-                    data_list.append((created, modified, datas, recordname, deleted, participants, match))
+                            if os.path.isfile(match):
+                                if 'content' not in match:
+                                    with open(match, 'r') as g:
+                                        datas = g.read()
+                                        datas = datas.replace('\n','<br>')
+                                        thumb = media_to_html(match, files_found, report_folder)
+                                        agregator = agregator + thumb + '<br><br>'
+                                        notapath = match
+                                if 'content' in match:
+                                    thumb = media_to_html(match, files_found, report_folder)
+                                    agregator = agregator + thumb + '<br><br>'
+                                    notapath = match
+                                
+                                
+                    data_list.append((created, modified, datas, recordname, agregator,deleted, participants, notapath))
+                    
                         
         
     if data_list:
         note = 'Path for each note in the report. Timestamps possibly in Pacific Time'
-        description = 'iOS Notes - Only Notes in text format'
-        report = ArtifactHtmlReport(f'Notes - Text')
-        report.start_artifact_report(report_folder, f'Notes - Text')
+        description = 'iOS Notes with attachments.'
+        report = ArtifactHtmlReport(f'iOS Notes')
+        report.start_artifact_report(report_folder, f'iOS Notes')
         report.add_script()
-        data_headers = ('Timestamp Created','Timestamp Modified','Note','Record Name','Deleted?','Participants')
-        report.write_artifact_data_table(data_headers, data_list, note, html_no_escape=['Note'])
+        data_headers = ('Timestamp Created','Timestamp Modified','Note','Record Name','Attachments', 'Deleted?','Participants','Source')
+        report.write_artifact_data_table(data_headers, data_list, note, html_escape=False)
         report.end_artifact_report()
         
-        tsvname = f'Notes - Text'
+        tsvname = f'iOS Notes'
         tsv(report_folder, data_headers, data_list, tsvname)
         
-        tlactivity = f'Notes - Text'
+        tlactivity = f'iOS Notes'
         timeline(report_folder, tlactivity, data_list, data_headers)
     else:
-        logfunc(f'No Notes - Text data available')
+        logfunc(f'No iOS Notes data available')
                 
 __artifacts__ = {
-        "notesText": (
+        "iOSnotes": (
             "Apple Notes",
-            ('*/Notes/Metadata.txt', '*/Notes/*/*.txt'),
+            ('*/Notes/Metadata.txt', '*/Notes/*/**'),
             get_iNotes)
 }
