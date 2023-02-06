@@ -129,11 +129,6 @@ def get_takeoutGoogleMail(files_found, report_folder, seeker, wrap_text):
         
             data_list.append((msentdate_formatted, mfrom, mto, msubject, thebody, attachments))
         
-        if '.Mail.MessageContent_' in file_found:
-            title_name = 'Google Returns - Mbox'
-        else:
-            title_name = 'Google Takeout - MBOX'
-        
         if data_list:
             description = f'Google Takeout - MBOX'
             report = ArtifactHtmlReport(f'Google Takeout - MBOX - {a}')
