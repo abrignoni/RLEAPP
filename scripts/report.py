@@ -53,6 +53,7 @@ def get_icon_name(category, artifact):
         elif artifact == 'GOOGLE SEMANTIC LOCATION HISTORY - PLACE VISITS': icon = 'map-pin'
         elif artifact == 'GOOGLE SEMANTIC LOCATION HISTORY - ACTIVITY SEGMENTS': icon = 'activity'
         elif artifact == 'GOOGLE TASKS': icon = 'check-circle'
+        elif artifact.find('MBOX') >=0: icon = 'mail'
         elif artifact == 'SAVED LINKS - DEFAULT LIST': icon = 'list'
         elif artifact == 'SAVED LINKS - FAVORITE IMAGES': icon = 'image'
         elif artifact == 'SAVED LINKS - FAVORITE PAGES': icon = 'link-2'
