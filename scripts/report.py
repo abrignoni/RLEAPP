@@ -101,7 +101,7 @@ def get_icon_name(category, artifact):
     
     '''
     '''
-def generate_report(reportfolderbase, time_in_secs, time_HMS, extraction_type, image_input_path):
+def generate_report(reportfolderbase, time_in_secs, time_HMS, extraction_type, image_input_path, casedata):
 
     control = None
     side_heading = \
@@ -171,7 +171,7 @@ def generate_report(reportfolderbase, time_in_secs, time_HMS, extraction_type, i
                 pass # Perhaps it was not empty!
 
     # Create index.html's page content
-    create_index_html(reportfolderbase, time_in_secs, time_HMS, extraction_type, image_input_path, nav_list_data)
+    create_index_html(reportfolderbase, time_in_secs, time_HMS, extraction_type, image_input_path, nav_list_data, casedata)
     elements_folder = os.path.join(reportfolderbase, '_elements')
     os.mkdir(elements_folder)
     __location__ = os.path.dirname(os.path.abspath(__file__))
@@ -189,7 +189,7 @@ def get_file_content(path):
     f.close()
     return data
 
-def create_index_html(reportfolderbase, time_in_secs, time_HMS, extraction_type, image_input_path, nav_list_data):
+def create_index_html(reportfolderbase, time_in_secs, time_HMS, extraction_type, image_input_path, nav_list_data, casedata):
     '''Write out the index.html page to the report folder'''
     content = '<br />'
     content += """
@@ -201,7 +201,11 @@ def create_index_html(reportfolderbase, time_in_secs, time_HMS, extraction_type,
                     ['Extraction type', extraction_type],
                     ['Report directory', reportfolderbase],
                     ['Processing time', f'{time_HMS} (Total {time_in_secs} seconds)']  ]
-
+    
+    if len(casedata) > 0:
+        for key, value in casedata.items():
+            case_list.append([key, value])
+            
     tab1_content = generate_key_val_table_without_headings('', case_list) + \
     """         <p class="note note-primary mb-4">
                     All dates and times are in UTC unless noted otherwise!
