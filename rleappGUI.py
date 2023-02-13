@@ -99,7 +99,9 @@ layout = [  [sg.Text('Returns, Logs, Events, And Properties Parser', font=("Helv
                     title='Select Output Folder:')],
             [sg.Text('Available Modules')],
             [sg.Button('Select All', key='SELECT ALL'), sg.Button('Deselect All', key='DESELECT ALL'),
-             sg.Button('Load Profile', key='LOAD PROFILE'), sg.Button('Save Profile', key='SAVE PROFILE')
+             sg.Button('Load Profile', key='LOAD PROFILE'), sg.Button('Save Profile', key='SAVE PROFILE'),
+            sg.Text('  |', font=("Helvetica", 14)),
+            sg.Button('Load Case Data', key='LOAD CASE DATA')
              # sg.FileBrowse(
              #     button_text='Load Profile', key='LOADPROFILE', enable_events=True, target='LOADPROFILE',
              #     file_types=(('ALEAPP Profile (*.alprofile)', '*.alprofile'), ('All Files', '*'))),
@@ -179,7 +181,32 @@ while True:
                 sg.popup(profile_load_error)
             else:
                 sg.popup(f"Loaded profile: {destination_path}")
-
+    
+    if event == 'LOAD CASE DATA':
+        destination_path = sg.popup_get_file(
+            "Load a case data", save_as=False,
+            file_types=(('ALEAPP Profile (*.alprofile)', '*.alprofile'), ('All Files', '*')),
+            default_extension='.alprofile', no_window=True)
+        
+        if destination_path and os.path.exists(destination_path):
+            profile_load_error = None
+            with open(destination_path, "rt", encoding="utf-8") as profile_in:
+                try:
+                    profile = json.load(profile_in)
+                except json.JSONDecodeError as json_ex:
+                    profile_load_error = f"File was not a valid profile file: {json_ex}"
+                    
+            if not profile_load_error:
+                if isinstance(profile, dict):
+                    casedata = profile
+                else:
+                    profile_load_error = "File was not a valid profile file: invalid format"
+                    
+            if profile_load_error:
+                sg.popup(profile_load_error)
+            else:
+                sg.popup(f"Loaded Case Data: {destination_path}")
+    
     if event == 'Process':
         #check is selections made properly; if not we will return to input form without exiting app altogether
         is_valid, extracttype = ValidateInput(values, window)
@@ -216,7 +243,7 @@ while True:
             out_params = OutputParameters(output_folder)
             wrap_text = True
             crunch_successful = rleapp.crunch_artifacts(
-                search_list, extracttype, input_path, out_params, len(loader)/s_items, wrap_text)
+                search_list, extracttype, input_path, out_params, len(loader)/s_items, wrap_text, casedata)
             if crunch_successful:
                 report_path = os.path.join(out_params.report_folder_base, 'index.html')
                     
