@@ -22,7 +22,7 @@ def getbody(message): #getting plain text 'email body'
         body = message.get_payload(decode=True).decode('Latin_1')
     return body
     
-def get_googleReturnsmbox(files_found, report_folder, seeker, wrap_text):
+def get_takeoutGoogleMail(files_found, report_folder, seeker, wrap_text):
     
     platform = is_platform_windows()
     if platform:
@@ -43,7 +43,50 @@ def get_googleReturnsmbox(files_found, report_folder, seeker, wrap_text):
             mfrom = message['from']
             mto = message['to']
             msubject = str(message['Subject'])
+            
             msentdate = message['date']
+            msentdate = msentdate.replace('Sun, ','').replace('Mon, ','').replace('Tue, ','').replace('Wed, ','').replace('Thu, ','').replace('Fri, ','').replace('Sat, ','')
+            msentdate_split = msentdate.split(' ')
+            
+            day = msentdate_split[0]
+            if len(day) < 2:
+                day = "0" + day
+            
+            month = msentdate_split[1]
+            year = msentdate_split[2]
+            time = msentdate_split[3]
+            
+            offset = msentdate_split[4]
+            if offset == 'GMT':
+                offset = '+0000'
+
+            if month == 'Jan':
+                month = '01'
+            elif month == 'Feb':
+                month = '02'
+            elif month == 'Mar':
+                month = '03'
+            elif month == 'Apr':
+                month = '04'
+            elif month == 'May':
+                month = '05'
+            elif month == 'Jun':
+                month = '06'
+            elif month == 'Jul':
+                month = '07'
+            elif month == 'Aug':
+                month = '08'
+            elif month == 'Sep':
+                month = '09'
+            elif month == 'Oct':
+                month = '10'
+            elif month == 'Nov':
+                month = '11'
+            elif month == 'Dec':
+                month = '12'
+                
+            msentdate_formatted = year + "-" + month + "-" + day + " " + time + " " + offset
+            
             msgtype = message.get_content_type()
             thebody = getbody(message)
             if thebody is None:
@@ -83,32 +126,28 @@ def get_googleReturnsmbox(files_found, report_folder, seeker, wrap_text):
                     tolink.append(renamed)
                     thumb = media_to_html(renamed, tolink, f'{report_folder}{mailboxid}_attachments_report{splitter}')
                     attachments = attachments + '<table><tr><td>' + thumb + '</td></tr></table><p>'
-            
         
-            data_list.append((msentdate, mfrom, mto, msubject, thebody, attachments))
-            
+            data_list.append((msentdate_formatted, mfrom, mto, msubject, thebody, attachments))
+        
         if data_list:
-            description = f'Google Returns - Mbox'
-            report = ArtifactHtmlReport(f'Google Returns - Mbox - {a}')
-            report.start_artifact_report(report_folder, f'Google Returns - Mbox - {a}', description)
+            description = f'Google Takeout - MBOX'
+            report = ArtifactHtmlReport(f'Google Takeout - MBOX - {a}')
+            report.start_artifact_report(report_folder, f'Google Takeout - MBOX - {a}', description)
             html_report = report.get_report_file_path()
             report.add_script()
             data_headers = ('Date','From','To','Subject','Body','Attachments')
             report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Attachments'])
             report.end_artifact_report()
             
-            tsvname = f'Google Returns - Mbox - {a}'
+            tsvname = f'Google Takeout - MBOX - {a}'
             tsv(report_folder, data_headers, data_list, tsvname)
-            
-            tlactivity = f'Google Returns - Mbox'
-            timeline(report_folder, tlactivity, data_list, data_headers)
-
+    
         else:
-            logfunc(f'No Google Returns - Mbox - {a} data available')
+            logfunc(f'No Google Takeout - MBOX - {a} data available')
                 
 __artifacts__ = {
-        "googleReturnsmbox": (
-            "Google Returns MBOXes",
-            ('*/*.Mail.MessageContent_*/Mail/All mail Including Spam and Trash.mbox','*/Mail/All mail Including Spam and Trash.mbox'),
-            get_googleReturnsmbox)
+        "takeoutGoogleMail": (
+            "Google Takeout Archive",
+            ('*/Mail/All mail Including Spam and Trash.mbox'),
+            get_takeoutGoogleMail)
 }
