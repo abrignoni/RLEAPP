@@ -4,6 +4,8 @@ import json
 import magic
 import shutil
 import base64
+from PIL import Image
+from pillow_heif import register_heif_opener
 
 from pathlib import Path	
 
@@ -48,7 +50,21 @@ def get_icloudReturnsphotolibrary(files_found, report_folder, seeker, wrap_text)
                         originalcreationdate = originalcreationdate['value']
                         
                     originalcreationdatedec = (datetime.datetime.fromtimestamp(int(originalcreationdate)/1000).strftime('%Y-%m-%d %H:%M:%S'))
-                    thumb = media_to_html(filenamedec, files_found, report_folder)
+                    
+                    if filenamedec.endswith('HEIC'):
+                        register_heif_opener()
+                        
+                        for search in files_found:
+                            if filenamedec in search:
+                                image = Image.open(search)
+                                convertedfilepath = os.path.join(report_folder, f'{filenamedec}.jpg')
+                                image.save(convertedfilepath)
+                                convertedlist = []
+                                convertedlist.append(convertedfilepath)
+                                thumb = media_to_html(f'{filenamedec}.jpg', convertedlist, report_folder)
+                                convertedlist = []
+                    else:
+                        thumb = media_to_html(filenamedec, files_found, report_folder)
                     
                     data_list.append((originalcreationdatedec, thumb, filenamedec, filenameEnc, isdeleted, isexpunged))
                     
