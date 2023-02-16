@@ -37,8 +37,16 @@ def get_icloudReturnsphotolibrary(files_found, report_folder, seeker, wrap_text)
                 isexpunged = deserialized['fields'].get('isExpunged')
                 originalcreationdate = deserialized['fields'].get('originalCreationDate')
         
-                if filenameEnc != 'Negative':
+                
+                if (filenameEnc != 'Negative') and (filenameEnc is not None):
+                    if isinstance(filenameEnc, dict):
+                        filenameEnc = filenameEnc['value']
+                    
                     filenamedec = (base64.b64decode(filenameEnc).decode('ascii'))
+                    
+                    if isinstance(originalcreationdate, dict):
+                        originalcreationdate = originalcreationdate['value']
+                        
                     originalcreationdatedec = (datetime.datetime.fromtimestamp(int(originalcreationdate)/1000).strftime('%Y-%m-%d %H:%M:%S'))
                     thumb = media_to_html(filenamedec, files_found, report_folder)
                     
