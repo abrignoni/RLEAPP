@@ -115,11 +115,11 @@ def get_googleChat(files_found, report_folder, seeker, wrap_text):
                     attachments = media_to_html(attachments, files_found, report_folder)
             else: 
                 attachments = ''
-            
-            
             data_list.append((datetime_stamp,sender_name,sender_email,sender_user_type,members_html,message_text,attachments))
             data_list_tsv.append((datetime_stamp,sender_name,sender_email,sender_user_type,members_tsv,message_text_tsv,attachments,))
-
+    
+    
+    directory = os.path.dirname(file_found)
     num_entries = len(data_list)
     if num_entries > 0:
         report = ArtifactHtmlReport('Google Chat - Messages')
@@ -127,7 +127,7 @@ def get_googleChat(files_found, report_folder, seeker, wrap_text):
         report.add_script()
         data_headers = ('Created Timestamp','Sender Name','Sender Email','Sender Type','Group Members','Message','Attachment')
 
-        report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Group Members','Attachment'])
+        report.write_artifact_data_table(data_headers, data_list, directory, html_no_escape=['Group Members','Attachment'])
         report.end_artifact_report()
         
         tsvname = f'Google Chat - Messages'
