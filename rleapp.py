@@ -11,7 +11,7 @@ from scripts.version_info import rleapp_version
 from time import process_time, gmtime, strftime
 
 def main():
-    parser = argparse.ArgumentParser(description='ALEAPP: Android Logs, Events, and Protobuf Parser.')
+    parser = argparse.ArgumentParser(description='RLEAPP: Returns, Logs, Events, and Protobuf Parser.')
     parser.add_argument('-t', choices=['fs', 'tar', 'zip', 'gz'], required=False, type=str.lower, action="store",
                         help="Input type (fs = extracted to file system folder)")
     parser.add_argument('-o', '--output_path', required=False, action="store", help='Output folder path')
