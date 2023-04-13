@@ -148,6 +148,6 @@ def get_takeoutGoogleMail(files_found, report_folder, seeker, wrap_text):
 __artifacts__ = {
         "takeoutGoogleMail": (
             "Google Takeout Archive",
-            ('*/Mail/All mail Including Spam and Trash.mbox'),
+            ('*/Mail/All mail Including Spam and Trash.mbox','*/Deleted.mbox'),
             get_takeoutGoogleMail)
 }
