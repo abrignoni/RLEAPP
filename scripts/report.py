@@ -79,6 +79,7 @@ def get_icon_name(category, artifact):
         if artifact == 'GOOGLE RETURNS - ACTIVITIES':    icon = 'activity'
         else:                                           icon = 'chrome'
     elif category == 'GOOGLE RETURNS MBOXES':            icon = 'mail'
+    elif category == 'REDDIT RETURNS':            icon = 'chevrons-up'
     elif category == 'MICROSOFT RETURNS':            icon = 'target'
     elif category == 'AIRDROP NUMBERS':            icon = 'smartphone'
     elif category == 'AIRDROP EMAILS':            icon = 'send'
