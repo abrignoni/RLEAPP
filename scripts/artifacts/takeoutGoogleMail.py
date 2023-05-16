@@ -120,8 +120,10 @@ def get_takeoutGoogleMail(files_found, report_folder, seeker, wrap_text):
                         extension = 'txt'
                         
                     renamed = f'{pathfile}.{extension}'
-                    os.rename(pathfile, renamed)
-                    
+                    try:
+                        os.rename(pathfile, renamed)
+                    except:
+                        pass
                     tolink = []
                     tolink.append(renamed)
                     thumb = media_to_html(renamed, tolink, f'{report_folder}{mailboxid}_attachments_report{splitter}')

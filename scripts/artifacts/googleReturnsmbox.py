@@ -77,7 +77,10 @@ def get_googleReturnsmbox(files_found, report_folder, seeker, wrap_text):
                         extension = 'txt'
                         
                     renamed = f'{pathfile}.{extension}'
-                    os.rename(pathfile, renamed)
+                    try:
+                        os.rename(pathfile, renamed)
+                    except:
+                        pass
                     
                     tolink = []
                     tolink.append(renamed)
