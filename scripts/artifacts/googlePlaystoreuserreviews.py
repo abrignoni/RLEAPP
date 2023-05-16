@@ -37,7 +37,7 @@ def get_googlePlaystoreuserreviews(files_found, report_folder, seeker, wrap_text
         num_entries = len(data_list)
         if num_entries > 0:
             report = ArtifactHtmlReport(f'{reportname}')
-            report.start_artifact_report(report_folder, f'Report {reportcount}')
+            report.start_artifact_report(report_folder, f'Play Store User Reviews Report {reportcount}')
             report.add_script()
             #data_headers = ('HTML File',)
     
