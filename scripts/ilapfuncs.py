@@ -426,33 +426,33 @@ def media_to_html(media_path, files_found, report_folder):
         if filename.startswith('~') or filename.startswith('._'):
             continue
 
-        dirs = os.path.dirname(report_folder)
-        dirs = os.path.dirname(dirs)
-        env_path = os.path.join(dirs, 'temp')
-        if env_path in match:
-            source = match
-            source = relative_paths(source, splitter)
-        else:
-            path = os.path.dirname(match)
-            dirname = os.path.basename(path)
-            filename = Path(match)
-            filename = filename.name
-            locationfiles = Path(report_folder).joinpath(dirname)
-            Path(f'{locationfiles}').mkdir(parents=True, exist_ok=True)
-            shutil.copy2(match, locationfiles)
-            source = Path(locationfiles, filename)
-            source = relative_paths(str(source), splitter)
+    dirs = os.path.dirname(report_folder)
+    dirs = os.path.dirname(dirs)
+    env_path = os.path.join(dirs, 'temp')
+    if env_path in match:
+        source = match
+        source = relative_paths(source, splitter)
+    else:
+        path = os.path.dirname(match)
+        dirname = os.path.basename(path)
+        filename = Path(match)
+        filename = filename.name
+        locationfiles = Path(report_folder).joinpath(dirname)
+        Path(f'{locationfiles}').mkdir(parents=True, exist_ok=True)
+        shutil.copy2(match, locationfiles)
+        source = Path(locationfiles, filename)
+        source = relative_paths(str(source), splitter)
 
-        mimetype = magic.from_file(match, mime=True)
+    mimetype = magic.from_file(match, mime=True)
 
-        if 'video' in mimetype:
-            thumb = f'<video width="320" height="240" controls="controls"><source src="{source}" type="video/mp4">Your browser does not support the video tag.</video>'
-        elif 'image' in mimetype:
-            thumb = f'<a href="{source}" target="_blank"><img src="{source}"width="300"></img></a>'
-        elif 'audio' in mimetype:
-            thumb = f'<audio controls><source src="{source}" type="audio/ogg"><source src="{source}" type="audio/mpeg">Your browser does not support the audio element.</audio>'
-        else:
-            thumb = f'<a href="{source}" target="_blank"> Link to {mimetype} </>'
+    if 'video' in mimetype:
+        thumb = f'<video width="320" height="240" controls="controls"><source src="{source}" type="video/mp4">Your browser does not support the video tag.</video>'
+    elif 'image' in mimetype:
+        thumb = f'<a href="{source}" target="_blank"><img src="{source}"width="300"></img></a>'
+    elif 'audio' in mimetype:
+        thumb = f'<audio controls><source src="{source}" type="audio/ogg"><source src="{source}" type="audio/mpeg">Your browser does not support the audio element.</audio>'
+    else:
+        thumb = f'<a href="{source}" target="_blank"> Link to {mimetype} </>'
     return thumb
 
 
