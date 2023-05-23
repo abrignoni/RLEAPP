@@ -153,8 +153,6 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
         one = (os.path.split(file_found))
         username = (os.path.basename(one[0]))
         
-        
-        
         if filename.startswith('chat.csv' or 'chats.csv'):
             data_list_chats =[]
             with open(file_found, 'r', errors='backslashreplace') as f:
@@ -226,8 +224,6 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc(f'No Snapchat - Chats - {username}')
             
-    
-            
     for file_found in files_found:
         file_found = str(file_found)
         
@@ -237,53 +233,157 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
         
         if filename.startswith('ip_data.csv'):
             data_list_ip =[]
+            stop = 'no'
+            with open(file_found, 'r', errors='backslashreplace') as f:
+                for line in f:
+                    if 'ip,timestamp,user_agent,sender_name,action_type,recipient_name' in line:
+                        header = line #f.readline()
+                        numberofcolumns = header.count(',')+1
+                        
+                        delimited = csv.reader(f, delimiter=',')
+
+                        for item in delimited:
+                            if item[0] == '---------------------------':
+                                stop = 'yes'
+                            if stop == 'no':
+                                ip = item[0]
+                                fecha = item[1]
+                                useragent = item[2]
+                                sendername= item[3]
+                                actiontype = item[4]
+                                recipient = item[5]
+                                timestamp = fecha.split(' ')
+                                year = timestamp[5]
+                                day = timestamp[2]
+                                time = timestamp[3]
+                                month = monthletter(timestamp[1])
+                                timestampfinal = (f'{year}-{month}-{day} {time}')
+        
+                                data_list_ip.append((timestampfinal, ip, useragent, sendername, actiontype, recipient))
+                        data_headers = ('Timestamp','IP','User Agent','Sender Name','Action Type','Recipient Name')
+                stop == 'no'
+                        
+            if len(data_list_ip) > 0:
+                report = ArtifactHtmlReport(f'Snapchat - IP from Friend Events')
+                report.start_artifact_report(report_folder, f'Snapchat - IP from Friend Events - {username}')
+                report.add_script()
+                #data_headers are in the upper sections
+                report.write_artifact_data_table(data_headers, data_list_ip, file_found, html_no_escape=['Media'])
+                report.end_artifact_report()
+                
+                tsvname = f'Snapchat - IP from Friend Events - {username}'
+                tsv(report_folder, data_headers, data_list_ip, tsvname)
+                
+                tlactivity = f'Snapchat - IP from Friend Events - {username}'
+                timeline(report_folder, tlactivity, data_list_ip, data_headers)
+                
+            else:
+                logfunc(f'No Snapchat - IP from Friend Events - {username}')
+                    
+    for file_found in files_found:
+        file_found = str(file_found)
+        
+        filename = os.path.basename(file_found)
+        one = (os.path.split(file_found))
+        username = (os.path.basename(one[0]))
+        
+        if filename.startswith('ip_data.csv'):
+            data_list_ip =[]
+            stop = 'no'
             with open(file_found, 'r', errors='backslashreplace') as f:
                 for line in f:
                     if 'ip,action,timestamp,user_agent,status,verification_method' in line:
                         header = line #f.readline()
                         numberofcolumns = header.count(',')+1
-                        break
-                delimited = csv.reader(f, delimiter=',')
-                if numberofcolumns == 6:
-                    for item in delimited:
-                        ip = item[0]
-                        type = item[1]
-                        fecha = item[2]
-                        useragent = item[3]
-                        status = item[4]
-                        vermethod = item[5]
-                        timestamp = fecha.split(' ')
-                        year = timestamp[5]
-                        day = timestamp[2]
-                        time = timestamp[3]
-                        month = monthletter(timestamp[1])
-                        timestampfinal = (f'{year}-{month}-{day} {time}')
                         
-                        data_list_ip.append((timestampfinal, ip, type, useragent, status, vermethod))
+                        delimited = csv.reader(f, delimiter=',')
+                        
+                        for item in delimited:
+                            if item[0] == '---------------------------':
+                                stop = 'yes'
+                            if stop == 'no':
+                                ip = item[0]
+                                action = item[1]
+                                fecha = item[2]
+                                useragent = item[3]
+                                status = item[4]
+                                verificationmethod = item[5]
+                                timestamp = fecha.split(' ')
+                                year = timestamp[5]
+                                day = timestamp[2]
+                                time = timestamp[3]
+                                month = monthletter(timestamp[1])
+                                timestampfinal = (f'{year}-{month}-{day} {time}')
+                                
+                                data_list_ip.append((timestampfinal, ip, action, useragent, status, verificationmethod))
+                        data_headers = ('Timestamp','IP','Action','User Agent','Status','Verification Method')
+                stop == 'no'
+                
+                if data_list_ip:
+                    report = ArtifactHtmlReport(f'Snapchat - IP & User Agent Data ')
+                    report.start_artifact_report(report_folder, f'Snapchat - IP & User Agent Data - {username}')
+                    report.add_script()
+                    #data_headers are in the upper sections
+                    report.write_artifact_data_table(data_headers, data_list_ip, file_found, html_no_escape=['Media'])
+                    report.end_artifact_report()
+                    
+                    tsvname = f'Snapchat - IP & User Agent Data - {username}'
+                    tsv(report_folder, data_headers, data_list_ip, tsvname)
+                    
+                    tlactivity = f'Snapchat - IP & User Agent Data - {username}'
+                    timeline(report_folder, tlactivity, data_list_ip, data_headers)
+                    
                 else:
-                    print(delimited)
-                    for item in delimited:
-                        print(item)
-                        ip = item[0]
-                        type = item[1]
-                        fecha = item[2]
-                        timestamp = fecha.split(' ')
-                        year = timestamp[5]
-                        day = timestamp[2]
-                        time = timestamp[3]
-                        month = monthletter(timestamp[1])
-                        timestampfinal = (f'{year}-{month}-{day} {time}')
+                    logfunc(f'No Snapchat - IP & User Agent Data - {username}')
+                                
+    for file_found in files_found:
+        file_found = str(file_found)
+        
+        filename = os.path.basename(file_found)
+        one = (os.path.split(file_found))
+        username = (os.path.basename(one[0]))
+        
+        if filename.startswith('ip_data.csv'):
+            data_list_ip =[]
+            stop = 'no'
+            with open(file_found, 'r', errors='backslashreplace') as f:
+                for line in f:
+                    if 'ip,first seen time,last seen time' in line:
+                        header = line #f.readline()
+                        numberofcolumns = header.count(',')+1
                         
-                        data_list_ip.append((timestampfinal, ip, type))
+                        delimited = csv.reader(f, delimiter=',')
+                        for item in delimited:
+                            if item[0] == '---------------------------':
+                                stop = 'yes'
+                            if stop == 'no':
+                                ip = item[0]
+                                firsttimeseen = item[1]
+                                lasttimeseen = item[2]
+                                
+                                timestamp = firsttimeseen.split(' ')
+                                year = timestamp[5]
+                                day = timestamp[2]
+                                time = timestamp[3]
+                                month = monthletter(timestamp[1])
+                                firsttimeseen = (f'{year}-{month}-{day} {time}')
+                                
+                                timestamp = lasttimeseen.split(' ')
+                                year = timestamp[5]
+                                day = timestamp[2]
+                                time = timestamp[3]
+                                month = monthletter(timestamp[1])
+                                lasttimeseen = (f'{year}-{month}-{day} {time}')
+                                
+                                data_list_ip.append((firsttimeseen, lasttimeseen, ip))
+                        data_headers = ('Timestamp First Seen','Timestamp Last Seen','IP')
+                        stop = 'no'
                         
             if data_list_ip:
                 report = ArtifactHtmlReport(f'Snapchat - IP Data')
                 report.start_artifact_report(report_folder, f'Snapchat - IP Data - {username}')
                 report.add_script()
-                if numberofcolumns == 6:
-                    data_headers = ('Timestamp','IP','Type','User Agent','Status','Verification Method')
-                else:
-                    data_headers = ('Timestamp','IP','Type')
+                #data_headers are in the upper sections
                 report.write_artifact_data_table(data_headers, data_list_ip, file_found, html_no_escape=['Media'])
                 report.end_artifact_report()
                 
@@ -295,7 +395,58 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
                 
             else:
                 logfunc(f'No Snapchat - IP Data  - {username}')
-
+    
+        
+    for file_found in files_found:
+        file_found = str(file_found)
+        
+        filename = os.path.basename(file_found)
+        one = (os.path.split(file_found))
+        username = (os.path.basename(one[0]))
+        
+        if filename.startswith('ip_data.csv'):
+            data_list_ip =[]
+            stop = 'no'
+            with open(file_found, 'r', errors='backslashreplace') as f:
+                for line in f:
+                    if 'ip,timestamp,user_agent' in line:
+                        delimited = csv.reader(f, delimiter=',')
+                        for item in delimited:
+                            if item[0] == '---------------------------':
+                                stop = 'yes'
+                            if stop == 'no':
+                                ip = item[0]
+                                type = item[2]
+                                fecha = item[1]
+                                timestamp = fecha.split(' ')
+                                year = timestamp[5]
+                                day = timestamp[2]
+                                time = timestamp[3]
+                                month = monthletter(timestamp[1])
+                                timestampfinal = (f'{year}-{month}-{day} {time}')
+                                
+                                data_list_ip.append((timestampfinal, ip, type))
+                        data_headers = ('Timestamp','IP','User Agent')
+                        stop = 'no'
+                        
+            if data_list_ip:
+                report = ArtifactHtmlReport(f'Snapchat - IP Data from Account Changes')
+                report.start_artifact_report(report_folder, f'Snapchat - IP Data from Account Changes - {username}')
+                report.add_script()
+                #data_headers are in the upper sections
+                report.write_artifact_data_table(data_headers, data_list_ip, file_found, html_no_escape=['Media'])
+                report.end_artifact_report()
+                
+                tsvname = f'Snapchat - IP Data from Account Changes - {username}'
+                tsv(report_folder, data_headers, data_list_ip, tsvname)
+                
+                tlactivity = f'Snapchat - IP Data from Account Changes - {username}'
+                timeline(report_folder, tlactivity, data_list_ip, data_headers)
+                
+            else:
+                logfunc(f'No Snapchat - IP Data from Account Changes - {username}')
+        
+    
     for file_found in files_found:
         file_found = str(file_found)
         
