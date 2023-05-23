@@ -127,14 +127,14 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text):
                     time = timestamp[3]
                     month = monthletter(timestamp[1])
                     timestampfinal = (f'{year}-{month}-{day} {time}')
-                    data_list_conversations.append((timestampfinal,sender_username,recipient_username,text,is_saved,content_type,message_type,agregator,is_one_on_one,conversation_title,message_id,reply_to_message_id,sender_user_id,recipient_user_id))
+                    data_list_conversations.append((timestampfinal,agregator,sender_username,recipient_username,text,is_saved,content_type,message_type,is_one_on_one,conversation_title,message_id,reply_to_message_id,sender_user_id,recipient_user_id))
                         
         
             if data_list_conversations:
                 report = ArtifactHtmlReport(f'Snapchat - Conversations')
                 report.start_artifact_report(report_folder, f'Snapchat - Conversations - {username}')
                 report.add_script()
-                data_headers = ('Timestamp','Sender Username','Recipient Username','Text','Is Saved','Content Type', 'Message Type','Media','Is One on One','Conversation Title','Message ID','Reply to Message ID','Sender User ID','Recipient User ID')
+                data_headers = ('Timestamp','Media','Sender Username','Recipient Username','Text','Is Saved','Content Type', 'Message Type','Is One on One','Conversation Title','Message ID','Reply to Message ID','Sender User ID','Recipient User ID')
                 report.write_artifact_data_table(data_headers, data_list_conversations, file_found, html_no_escape=['Media'])
                 report.end_artifact_report()
                 

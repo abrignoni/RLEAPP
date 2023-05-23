@@ -93,7 +93,7 @@ def main():
         except NameError:
             casedata = {}
             
-        crunch_artifacts(list(loader.plugins), extracttype, input_path, out_params, 1, wrap_text, loader, casedata)
+        crunch_artifacts(list(loader.plugins), extracttype, input_path, out_params, 1, wrap_text, casedata)
 
 def crunch_artifacts(
         plugins: typing.Sequence[plugin_loader.PluginSpec], extracttype, input_path, out_params, ratio, wrap_text, casedata):
