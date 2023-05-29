@@ -79,6 +79,7 @@ def get_icon_name(category, artifact):
         if artifact == 'GOOGLE RETURNS - ACTIVITIES':    icon = 'activity'
         else:                                           icon = 'chrome'
     elif category == 'GOOGLE RETURNS MBOXES':            icon = 'mail'
+    elif category == 'GOOGLE RETURNS SEMANTIC LOCATIONS BY MONTH':            icon = 'map-pin'
     elif category == 'GOOGLE RETURNS SUBSCRIBER INFO':            icon = 'user'
     elif category == 'GOOGLE RETURNS SUBSCRIBER INFO':            icon = 'user'
     elif category == 'GOOGLE RETURNS PLAY USER ACT':            icon = 'smartphone'
