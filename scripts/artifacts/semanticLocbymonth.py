@@ -36,9 +36,11 @@ def get_semanticLocbymonth(files_found, report_folder, seeker, wrap_text):
                             placeid = values['placeId']
                             address = values['address']
                             name = values.get('name','')
-                            devicetag = values['sourceInfo']['deviceTag']
-                            locconfidence = values['locationConfidence']
-                            calculatedprob = values['calibratedProbability']
+                            devicetag = values.get('sourceInfo',' ')
+                            if devicetag != ' ':
+                                devicetag = values['sourceInfo']['deviceTag']
+                            locconfidence = values.get('locationConfidence','')
+                            calculatedprob = values.get('calibratedProbability','')
                         elif key == 'otherCandidateLocations':
                             pass
                         elif key == 'duration':
