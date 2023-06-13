@@ -22,7 +22,7 @@ def get_semanticLocbymonth(files_found, report_folder, seeker, wrap_text):
         waypointrecord = 0
         agg = ''
         
-        with open(file_found, 'r') as f:
+        with open(file_found, 'r', encoding='utf-8') as f:
             data = json.load(f)
             
         for record in data['timelineObjects']:
