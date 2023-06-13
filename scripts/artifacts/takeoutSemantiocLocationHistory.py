@@ -24,7 +24,7 @@ def get_takeoutSemanticLocationHistory(files_found, report_folder, seeker, wrap_
         file_name = os.path.basename(file_found)
         
         if file_name.endswith('.json'):
-            with open(file_found, 'r') as f:
+            with open(file_found, 'r', encoding='utf-8') as f:
                 data = json.loads(f.read())
 
             for element in data['timelineObjects']:
