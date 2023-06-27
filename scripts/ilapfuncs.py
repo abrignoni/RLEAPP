@@ -401,58 +401,71 @@ def utf8_in_extended_ascii(input_string, *, raise_on_unexpected=False):
 
 
 def media_to_html(media_path, files_found, report_folder):
+    """
+    Show selected media files in the HTML report with proper relative pathing.
+
+    Provide the media file unique path or identifier, search for it in the list of paths for the artifact.
+    Place the responsive files in the folder for the artifact and generate realative paths for them in the report.
+
+    :param str media_path: Can be a path or a string that is unique to selected to be shown image.
+    :param list files_found: Paths that are a result of the regex executed when the artifact script is called.
+    :param str report_folder: Folder within the report stucture that is automatically named as the artifact.
+    :return: The relative path to the file in the report folder with proper HTML tags applied.
+    :rtype: str
+    """
+    
     def media_path_filter(name):
         return media_path in name
-
+    
     def relative_paths(source, splitter):
         splitted_a = source.split(splitter)
         for x in splitted_a:
             if 'LEAPP_Reports_' in x:
                 report_folder = x
-
+                
         splitted_b = source.split(report_folder)
         return '.' + splitted_b[1]
-
+    
     platform = is_platform_windows()
     if platform:
         media_path = media_path.replace('/', '\\')
         splitter = '\\'
     else:
         splitter = '/'
-
+        
     thumb = media_path
     for match in filter(media_path_filter, files_found):
         filename = os.path.basename(match)
         if filename.startswith('~') or filename.startswith('._'):
             continue
-
-    dirs = os.path.dirname(report_folder)
-    dirs = os.path.dirname(dirs)
-    env_path = os.path.join(dirs, 'temp')
-    if env_path in match:
-        source = match
-        source = relative_paths(source, splitter)
-    else:
-        path = os.path.dirname(match)
-        dirname = os.path.basename(path)
-        filename = Path(match)
-        filename = filename.name
-        locationfiles = Path(report_folder).joinpath(dirname)
-        Path(f'{locationfiles}').mkdir(parents=True, exist_ok=True)
-        shutil.copy2(match, locationfiles)
-        source = Path(locationfiles, filename)
-        source = relative_paths(str(source), splitter)
-
-    mimetype = magic.from_file(match, mime=True)
-
-    if 'video' in mimetype:
-        thumb = f'<video width="320" height="240" controls="controls"><source src="{source}" type="video/mp4">Your browser does not support the video tag.</video>'
-    elif 'image' in mimetype:
-        thumb = f'<a href="{source}" target="_blank"><img src="{source}"width="300"></img></a>'
-    elif 'audio' in mimetype:
-        thumb = f'<audio controls><source src="{source}" type="audio/ogg"><source src="{source}" type="audio/mpeg">Your browser does not support the audio element.</audio>'
-    else:
-        thumb = f'<a href="{source}" target="_blank"> Link to {mimetype} </>'
+        
+        dirs = os.path.dirname(report_folder)
+        dirs = os.path.dirname(dirs)
+        env_path = os.path.join(dirs, 'temp')
+        if env_path in match:
+            source = match
+            source = relative_paths(source, splitter)
+        else:
+            path = os.path.dirname(match)
+            dirname = os.path.basename(path)
+            filename = Path(match)
+            filename = filename.name
+            locationfiles = Path(report_folder).joinpath(dirname)
+            Path(f'{locationfiles}').mkdir(parents=True, exist_ok=True)
+            shutil.copy2(match, locationfiles)
+            source = Path(locationfiles, filename)
+            source = relative_paths(str(source), splitter)
+            
+        mimetype = magic.from_file(match, mime=True)
+        
+        if 'video' in mimetype:
+            thumb = f'<video width="320" height="240" controls="controls"><source src="{source}" type="video/mp4">Your browser does not support the video tag.</video>'
+        elif 'image' in mimetype:
+            thumb = f'<a href="{source}" target="_blank"><img src="{source}"width="300"></img></a>'
+        elif 'audio' in mimetype:
+            thumb = f'<audio controls><source src="{source}" type="audio/ogg"><source src="{source}" type="audio/mpeg">Your browser does not support the audio element.</audio>'
+        else:
+            thumb = f'<a href="{source}" target="_blank"> Link to {mimetype} </>'
     return thumb
 
 
