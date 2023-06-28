@@ -62,98 +62,102 @@ def get_icloudReturnsphotolibrary(files_found, report_folder, seeker, wrap_text)
             data_list =[]
             with open(file_found, "rb") as fp:
                 data = json.load(fp)
-                
+            
             for deserialized in data:
-                filenameEnc = deserialized['fields'].get('filenameEnc','Negative')
-                isdeleted = deserialized['fields'].get('isDeleted')
-                isexpunged = deserialized['fields'].get('isExpunged')
-                originalcreationdate = deserialized['fields'].get('originalCreationDate')
-        
-                
-                if (filenameEnc != 'Negative') and (filenameEnc is not None):
-                    if isinstance(filenameEnc, dict):
-                        filenameEnc = filenameEnc['value']
+                isfields = deserialized.get('fields','Negative')
+                if isfields == 'Negative':
+                    continue
+                else:
+                    filenameEnc = deserialized['fields'].get('filenameEnc','Negative')
+                    isdeleted = deserialized['fields'].get('isDeleted')
+                    isexpunged = deserialized['fields'].get('isExpunged')
+                    originalcreationdate = deserialized['fields'].get('originalCreationDate')
+            
                     
-                    filenamedec = (base64.b64decode(filenameEnc).decode('ascii'))
-                    
-                    if isinstance(originalcreationdate, dict):
-                        originalcreationdate = originalcreationdate['value']
+                    if (filenameEnc != 'Negative') and (filenameEnc is not None):
+                        if isinstance(filenameEnc, dict):
+                            filenameEnc = filenameEnc['value']
                         
-                    originalcreationdatedec = (datetime.datetime.fromtimestamp(int(originalcreationdate)/1000).strftime('%Y-%m-%d %H:%M:%S'))
-                    
-                    if filenamedec.endswith('HEIC'):
-                        register_heif_opener()
+                        filenamedec = (base64.b64decode(filenameEnc).decode('ascii'))
                         
-                        for search in files_found:
-                            searchbase = os.path.basename(search)
-                            if filenamedec == searchbase:
-                                image = Image.open(search)
-                                convertedfilepath = os.path.join(report_folder, f'{filenamedec}.jpg')
-                                image.save(convertedfilepath)
-                                convertedlist = []
-                                convertedlist.append(convertedfilepath)
-                                thumb = media_to_html(f'{filenamedec}.jpg', convertedlist, report_folder)
-                                convertedlist = []
-                                
-                                image_info = get_exif(search)
-                                results = get_geotagging(image_info)
-                                
-                                if results is None:
-                                    latitude = ''
-                                    longitude = ''
-                                else:
-                                    directionlat = results['GPSLatitudeRef']
-                                    latitude = results['GPSLatitude']
-                                    latitude = (latitude.replace('(','').replace(')','').split(', '))
-                                    latitude = (float(latitude[0]) + float(latitude[1])/60 + float(latitude[2])/(60*60)) * (-1 if directionlat in ['W', 'S'] else 1)
+                        if isinstance(originalcreationdate, dict):
+                            originalcreationdate = originalcreationdate['value']
+                            
+                        originalcreationdatedec = (datetime.datetime.fromtimestamp(int(originalcreationdate)/1000).strftime('%Y-%m-%d %H:%M:%S'))
+                        
+                        if filenamedec.endswith('HEIC'):
+                            register_heif_opener()
+                            
+                            for search in files_found:
+                                searchbase = os.path.basename(search)
+                                if filenamedec == searchbase:
+                                    image = Image.open(search)
+                                    convertedfilepath = os.path.join(report_folder, f'{filenamedec}.jpg')
+                                    image.save(convertedfilepath)
+                                    convertedlist = []
+                                    convertedlist.append(convertedfilepath)
+                                    thumb = media_to_html(f'{filenamedec}.jpg', convertedlist, report_folder)
+                                    convertedlist = []
                                     
+                                    image_info = get_exif(search)
+                                    results = get_geotagging(image_info)
                                     
-                                    directionlon = results['GPSLongitudeRef']
-                                    longitude = results['GPSLongitude']
-                                    longitude = (longitude.replace('(','').replace(')','').split(', '))
-                                    longitude = (float(longitude[0]) + float(longitude[1])/60 + float(longitude[2])/(60*60)) * (-1 if directionlon in ['W', 'S'] else 1)
-                                    
-                                    #datamap = []
-                                    #datamap.append((originalcreationdate,latitude,longitude))
-                                    #kmlactivity = f'{search}'
-                                    #data_headers = ('Timestamp','Latitude','Longitude')
-                                    #print(report_folder)
-                                    #kmlgen(report_folder, kmlactivity, datamap, data_headers)
-                                    
-                                exifall = get_all_exif(search)
-                                exifdata = ''
-                                
-                                for x, y in exifall.items():
-                                    if x == 271:
-                                        exifdata = exifdata + f'Manufacturer: {y}<br>'
-                                    elif x == 272:
-                                        exifdata = exifdata + f'Model: {y}<br>'
-                                    elif x == 305:
-                                        exifdata = exifdata + f'Software: {y}<br>'
-                                    elif x == 274:
-                                        exifdata = exifdata + f'Orientation: {y}<br>'
-                                    elif x == 306:
-                                        exifdata = exifdata + f'Creation/Changed: {y}<br>'
-                                    elif x == 282:
-                                        exifdata = exifdata + f'Resolution X: {y}<br>'
-                                    elif x == 283:
-                                        exifdata = exifdata + f'Resolution Y: {y}<br>'
-                                    elif x == 316:
-                                        exifdata = exifdata + f'Host device: {y}<br>'
+                                    if results is None:
+                                        latitude = ''
+                                        longitude = ''
                                     else:
-                                        exifdata = exifdata + f'{x}: {y}<br>'
-                        
-                        data_list.append((originalcreationdatedec, thumb, filenamedec, latitude, longitude, exifdata, filenameEnc, isdeleted, isexpunged))
-                    elif filenamedec.endswith('txt'):
-                        pass
-                    else:
-                        #print(filenamedec)
-                        thumb = media_to_html(filenamedec, files_found, report_folder)
-                        latitude = ''
-                        longitude = ''
-                        exifdata = ''
-                        
-                        data_list.append((originalcreationdatedec, thumb, filenamedec, latitude, longitude, exifdata, filenameEnc, isdeleted, isexpunged))
+                                        directionlat = results['GPSLatitudeRef']
+                                        latitude = results['GPSLatitude']
+                                        latitude = (latitude.replace('(','').replace(')','').split(', '))
+                                        latitude = (float(latitude[0]) + float(latitude[1])/60 + float(latitude[2])/(60*60)) * (-1 if directionlat in ['W', 'S'] else 1)
+                                        
+                                        
+                                        directionlon = results['GPSLongitudeRef']
+                                        longitude = results['GPSLongitude']
+                                        longitude = (longitude.replace('(','').replace(')','').split(', '))
+                                        longitude = (float(longitude[0]) + float(longitude[1])/60 + float(longitude[2])/(60*60)) * (-1 if directionlon in ['W', 'S'] else 1)
+                                        
+                                        #datamap = []
+                                        #datamap.append((originalcreationdate,latitude,longitude))
+                                        #kmlactivity = f'{search}'
+                                        #data_headers = ('Timestamp','Latitude','Longitude')
+                                        #print(report_folder)
+                                        #kmlgen(report_folder, kmlactivity, datamap, data_headers)
+                                        
+                                    exifall = get_all_exif(search)
+                                    exifdata = ''
+                                    
+                                    for x, y in exifall.items():
+                                        if x == 271:
+                                            exifdata = exifdata + f'Manufacturer: {y}<br>'
+                                        elif x == 272:
+                                            exifdata = exifdata + f'Model: {y}<br>'
+                                        elif x == 305:
+                                            exifdata = exifdata + f'Software: {y}<br>'
+                                        elif x == 274:
+                                            exifdata = exifdata + f'Orientation: {y}<br>'
+                                        elif x == 306:
+                                            exifdata = exifdata + f'Creation/Changed: {y}<br>'
+                                        elif x == 282:
+                                            exifdata = exifdata + f'Resolution X: {y}<br>'
+                                        elif x == 283:
+                                            exifdata = exifdata + f'Resolution Y: {y}<br>'
+                                        elif x == 316:
+                                            exifdata = exifdata + f'Host device: {y}<br>'
+                                        else:
+                                            exifdata = exifdata + f'{x}: {y}<br>'
+                            if thumb:
+                                data_list.append((originalcreationdatedec, thumb, filenamedec, latitude, longitude, exifdata, filenameEnc, isdeleted, isexpunged))
+                        elif filenamedec.endswith('txt'):
+                            pass
+                        else:
+                            #print(filenamedec)
+                            thumb = media_to_html(filenamedec, files_found, report_folder)
+                            latitude = ''
+                            longitude = ''
+                            exifdata = ''
+                            
+                            data_list.append((originalcreationdatedec, thumb, filenamedec, latitude, longitude, exifdata, filenameEnc, isdeleted, isexpunged))
                     
                 
             if data_list:
