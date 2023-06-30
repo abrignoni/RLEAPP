@@ -146,8 +146,8 @@ def get_icloudReturnsphotolibrary(files_found, report_folder, seeker, wrap_text)
                                             exifdata = exifdata + f'Host device: {y}<br>'
                                         else:
                                             exifdata = exifdata + f'{x}: {y}<br>'
-                            if thumb:
-                                data_list.append((originalcreationdatedec, thumb, filenamedec, latitude, longitude, exifdata, filenameEnc, isdeleted, isexpunged))
+                            
+                            data_list.append((originalcreationdatedec, thumb, filenamedec, latitude, longitude, exifdata, filenameEnc, isdeleted, isexpunged))
                         elif filenamedec.endswith('txt'):
                             pass
                         else:
