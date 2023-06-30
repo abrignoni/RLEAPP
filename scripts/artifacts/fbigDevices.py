@@ -9,7 +9,7 @@ from pathlib import Path
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, kmlgen, is_platform_windows, utf8_in_extended_ascii, media_to_html
 
-def get_fbigComments(files_found, report_folder, seeker, wrap_text):
+def get_fbigDevices(files_found, report_folder, seeker, wrap_text):
     data_list = []
     for file_found in files_found:
         file_found = str(file_found)
@@ -24,7 +24,7 @@ def get_fbigComments(files_found, report_folder, seeker, wrap_text):
                 soup = BeautifulSoup(fp, 'html.parser')
             #<div id="property-unified_messages" class="content-pane">
                 
-            uni = soup.find_all("div", {"id": "property-comments"})
+            uni = soup.find_all("div", {"id": "property-devices"})
             
             control = 0
             itemsdict = {}
@@ -36,52 +36,44 @@ def get_fbigComments(files_found, report_folder, seeker, wrap_text):
                     thvalue = (table.find('th').get_text())
                     tdvalue = (table.find('th').find_next_sibling("td").get_text())
                     
-                    if thvalue == 'Comments':
-                        dataagg = []
+                    if thvalue == 'Devices':
                         for subtable in table.find_all('table'):
                             thvalue = (subtable.find('th').get_text())
                             tdvalue = (subtable.find('th').find_next_sibling("td").get_text())
+                            print(thvalue, tdvalue)
                             
-                            if control < 5:
+                            if control < 4:
                                 control = control+1
+                                if thvalue == 'Type':
+                                    typeof = tdvalue
                                 if thvalue == 'Id':
-                                    id = tdvalue
-                                if thvalue == 'Date Created':
-                                    date = tdvalue
-                                if thvalue == 'Status':
-                                    status = tdvalue
-                                if thvalue == 'Text':
-                                    text = tdvalue
-                                if thvalue == 'Media Content Id':
-                                    mediacont = tdvalue
-                                if thvalue == 'Media Owner':
-                                    mediaown = tdvalue
+                                    idof = tdvalue
+                                if thvalue == 'Active':
+                                    active = tdvalue
+                                    data_list.append((typeof,idof,active,''))
                             else:
                                 control = 0
-                                if thvalue == 'Media Owner':
-                                    mediaown = tdvalue
-                                data_list.append((date,id,status,text,mediacont,mediaown))
+                            if thvalue == 'User':
+                                user = tdvalue
+                                data_list.append(('','','',user))
         
         if data_list:
-            report = ArtifactHtmlReport(f'Facebook & Instagram - Comments - {rfilename}')
-            report.start_artifact_report(report_folder, f'Facebook Instagram - Comments - {rfilename}')
+            report = ArtifactHtmlReport(f'Facebook & Instagram - Devices - {rfilename}')
+            report.start_artifact_report(report_folder, f'Facebook Instagram - Devices - {rfilename}')
             report.add_script()
-            data_headers = ('Timestamp','ID','Status', 'Text', 'Media Account ID', 'Media Owner' )
+            data_headers = ('Type','ID','Active', 'User' )
             report.write_artifact_data_table(data_headers, data_list, file_to_report_data, html_no_escape=['Current Participants', 'Linked Media File'])
             report.end_artifact_report()
             
-            tsvname = f'Facebook Instagram - Comments - {rfilename}'
+            tsvname = f'Facebook Instagram - Devices - {rfilename}'
             tsv(report_folder, data_headers, data_list, tsvname)
-            
-            tlactivity = f'Facebook Instagram - Comments- {rfilename}'
-            timeline(report_folder, tlactivity, data_list, data_headers)
         
         else:
-            logfunc(f'No Facebook Instagram - Comments - {rfilename}')
+            logfunc(f'No Facebook Instagram - Devices - {rfilename}')
                 
 __artifacts__ = {
-        "fbigComments": (
+        "fbigDevices": (
             "Facebook - Instagram Returns",
             ('*/index.html', '*/preservation-1.html'),
-            get_fbigComments)
+            get_fbigDevices)
 }
