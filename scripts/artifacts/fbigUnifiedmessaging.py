@@ -16,7 +16,7 @@ def get_fbigUnifiedmessaging(files_found, report_folder, seeker, wrap_text):
         
         filename = os.path.basename(file_found)
     
-        if filename.startswith('index.html') or filename.startswith('preservation-1.html'):
+        if filename.startswith('index.html') or filename.startswith('preservation'):
             rfilename = filename
             file_to_report_data = file_found
             data_list = []
@@ -134,7 +134,7 @@ def get_fbigUnifiedmessaging(files_found, report_folder, seeker, wrap_text):
                         itemsdict['currentpart'] = ag.strip()
                         data_list.append((itemsdict.get('sent', ''),itemsdict.get('threadid', ''),itemsdict.get('currentpart', ''), itemsdict.get('author', ''), itemsdict.get('body', ''),  itemsdict.get('missed', ''), itemsdict.get('duration', ''), agregator, itemsdict.get('summary', ''), itemsdict.get('title', ''), itemsdict.get('url', '') ))
         
-        if filename.startswith('index.html') or filename.startswith('preservation-1.html'):
+        if filename.startswith('index.html') or filename.startswith('preservation'):
             if data_list:
                 report = ArtifactHtmlReport(f'Facebook & Instagram - Unified Messaging - {rfilename}')
                 report.start_artifact_report(report_folder, f'Facebook Instagram - Unified Messaging - {rfilename}')
@@ -155,6 +155,6 @@ def get_fbigUnifiedmessaging(files_found, report_folder, seeker, wrap_text):
 __artifacts__ = {
         "fbigUnifiedmessaging": (
             "Facebook - Instagram Returns",
-            ('*/index.html', '*/preservation-1.html', '*/linked_media/*'),
+            ('*/index.html', '*/preservation*.html', '*/linked_media/*'),
             get_fbigUnifiedmessaging)
 }
