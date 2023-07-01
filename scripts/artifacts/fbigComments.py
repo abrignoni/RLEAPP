@@ -16,7 +16,7 @@ def get_fbigComments(files_found, report_folder, seeker, wrap_text):
         
         filename = os.path.basename(file_found)
     
-        if filename.startswith('index.html') or filename.startswith('preservation-1.html'):
+        if filename.startswith('index.html') or filename.startswith('preservation'):
             rfilename = filename
             file_to_report_data = file_found
             data_list = []
@@ -82,6 +82,6 @@ def get_fbigComments(files_found, report_folder, seeker, wrap_text):
 __artifacts__ = {
         "fbigComments": (
             "Facebook - Instagram Returns",
-            ('*/index.html', '*/preservation-1.html'),
+            ('*/index.html', '*/preservation*.html'),
             get_fbigComments)
 }
