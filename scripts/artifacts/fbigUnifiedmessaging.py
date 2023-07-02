@@ -155,6 +155,6 @@ def get_fbigUnifiedmessaging(files_found, report_folder, seeker, wrap_text):
 __artifacts__ = {
         "fbigUnifiedmessaging": (
             "Facebook - Instagram Returns",
-            ('*/index.html', '*/preservation*.html', '*/linked_media/*'),
+            ('*/index.html', '*/preservation*.html', '*/linked_media/unified_message_*'),
             get_fbigUnifiedmessaging)
 }
