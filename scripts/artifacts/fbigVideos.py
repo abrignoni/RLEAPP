@@ -28,6 +28,8 @@ def get_fbigVideos(files_found, report_folder, seeker, wrap_text):
             
             control = 0
             agg = ''
+            media = ''
+            thumb = ''
             
             for x in uni:
                 tables = x.find_all("table")
@@ -62,7 +64,10 @@ def get_fbigVideos(files_found, report_folder, seeker, wrap_text):
                             thumb = media_to_html(media,files_found, report_folder)
                     else:
                         agg = agg + f"<table>{table.find('th')} {tdvalue}</table>"
-                data_list.append((media,thumb,agg))
+                if media == '':
+                    pass
+                else:
+                    data_list.append((media,thumb,agg))
                 
         if data_list:
             report = ArtifactHtmlReport(f'Facebook & Instagram - Videos - {rfilename}')
