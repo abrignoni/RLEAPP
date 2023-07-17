@@ -107,6 +107,13 @@ def get_icon_name(category, artifact):
     elif category == 'SNAPCHAT ARCHIVE':            icon = 'camera'
     elif category == 'WHATSAPP EXPORTED CHAT':            icon = 'message-circle'
     elif category == 'FACEBOOK - INSTAGRAM RETURNS':            icon = 'facebook'
+    elif category == 'PINGER':
+        if artifact == 'PINGER - CDR':    icon = 'phone'
+        elif artifact == 'PINGER - DML':         icon = 'phone'
+        elif artifact == 'PINGER - IP': icon = 'monitor'
+        elif artifact == 'PINGER - MESSAGES':  icon = 'message-square'
+        elif artifact == 'PINGER - ACCOUNT':  icon = 'user'
+        else:                                          icon = 'phone'
     elif category == 'INSTAGRAM ARCHIVE':  
         if artifact == 'INSTAGRAM ARCHIVE - ACCOUNT INFO': icon = 'user'
         elif artifact == 'INSTAGRAM ARCHIVE - PERSONAL INFO': icon = 'user'
