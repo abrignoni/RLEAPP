@@ -21,20 +21,20 @@ def get_instagramSavedposts(files_found, report_folder, seeker, wrap_text):
                 deserialized = json.load(fp)
         
             for x in deserialized['saved_saved_media']:
-                by = x['string_map_data']['Shared By'].get('value', '')
-                href = x['string_map_data']['Shared By'].get('href', '')
-                timestamp = x['string_map_data']['Shared By'].get('timestamp', '')
+                title = x['title']
+                href = x['string_map_data']['Saved on'].get('href', '')
+                timestamp = x['string_map_data']['Saved on'].get('timestamp', '')
                 if timestamp > 0:
                     timestamp = (datetime.datetime.fromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S'))
                     
-                data_list.append((timestamp, by, href))
+                data_list.append((timestamp, title, href))
     
                 
     if data_list:
         report = ArtifactHtmlReport('Instagram Archive - Saved Posts')
         report.start_artifact_report(report_folder, 'Instagram Archive - Saved Posts')
         report.add_script()
-        data_headers = ('Timestamp', 'By', 'HREF')
+        data_headers = ('Timestamp', 'Title', 'HREF')
         report.write_artifact_data_table(data_headers, data_list, file_found)
         report.end_artifact_report()
         
