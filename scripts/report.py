@@ -36,6 +36,7 @@ def get_icon_name(category, artifact):
     elif category == 'GOOGLE TAKEOUT ARCHIVE':
         if artifact.find('CHROME WEB HISTORY') >=0: icon = 'chrome'
         elif artifact.find('CHROME EXTENSIONS') >=0: icon = 'tool'
+        elif artifact.find('CHROME SEARCH ENGINES') >=0: icon = 'search'
         elif artifact == 'GOOGLE ACCESS LOG ACTIVITIES': icon = 'activity'
         elif artifact == 'GOOGLE ACCESS LOG DEVICES': icon = 'smartphone'
         elif artifact == 'GOOGLE CHAT - MESSAGES': icon = 'message-square'
