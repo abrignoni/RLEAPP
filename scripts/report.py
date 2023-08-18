@@ -35,7 +35,10 @@ def get_icon_name(category, artifact):
         else:                               icon = 'bar-chart-2'
     elif category == 'GOOGLE TAKEOUT ARCHIVE':
         if artifact.find('CHROME WEB HISTORY') >=0: icon = 'chrome'
+        elif artifact.find('CHROME ARC PACKAGES') >=0: icon = 'package'
+        elif artifact.find('CHROME AUTOFILL') >=0: icon = 'edit-3'
         elif artifact.find('CHROME EXTENSIONS') >=0: icon = 'tool'
+        elif artifact.find('CHROME OS SETTINGS') >=0: icon = 'settings'
         elif artifact.find('CHROME SEARCH ENGINES') >=0: icon = 'search'
         elif artifact == 'GOOGLE ACCESS LOG ACTIVITIES': icon = 'activity'
         elif artifact == 'GOOGLE ACCESS LOG DEVICES': icon = 'smartphone'
