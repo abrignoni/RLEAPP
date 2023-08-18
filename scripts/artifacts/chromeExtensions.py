@@ -21,22 +21,15 @@ def get_chromeExtensions(files_found, report_folder, seeker, wrap_text):
         with open(file_found, encoding = 'utf-8', mode = 'r') as f:
             data = json.loads(f.read())
         data_list = []
-        
-        ext_name = ''
-        ext_version = ''
-        ext_ID = ''
-        ext_enabled = ''
-        incoginito_enabled = ''
-        remote_install = ''
 
         for site in data['Extensions']:
             
-            ext_name = site['name']
-            ext_version = site['version']
-            ext_ID = site['id']
-            ext_enabled = site['enabled']
-            incoginito_enabled = site['incognito_enabled']
-            remote_install = site['remote_install']
+            ext_name = site.get('name','')
+            ext_version = site.get('version','')
+            ext_ID = site.get('id','')
+            ext_enabled = site.get('enabled','')
+            incoginito_enabled = site.get('incognito_enabled','')
+            remote_install = site.get('remote_install','')
                
             data_list.append((ext_name, ext_version, ext_ID, ext_enabled, incoginito_enabled, remote_install))
 
