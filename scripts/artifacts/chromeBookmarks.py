@@ -12,7 +12,7 @@ import bs4
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
 
-def get_chromeBookmarks2(files_found, report_folder, seeker, wrap_text):
+def get_chromeBookmarks(files_found, report_folder, seeker, wrap_text):
 
     for file_found in files_found:
         file_found = str(file_found)
@@ -90,8 +90,8 @@ def get_chromeBookmarks2(files_found, report_folder, seeker, wrap_text):
             logfunc('No Chrome Bookmarks data available')
 
 __artifacts__ = {
-        "chromeBookmarks2": (
+        "chromeBookmarks": (
             "Google Takeout Archive",
             ('*/Chrome/Bookmarks.html'),
-            get_chromeBookmarks2)
+            get_chromeBookmarks)
 }
