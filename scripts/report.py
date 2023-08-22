@@ -37,6 +37,7 @@ def get_icon_name(category, artifact):
         if artifact.find('CHROME WEB HISTORY') >=0: icon = 'chrome'
         elif artifact.find('CHROME ARC PACKAGES') >=0: icon = 'package'
         elif artifact.find('CHROME AUTOFILL') >=0: icon = 'edit-3'
+        elif artifact.find('CHROME BOOKMARKS') >=0: icon = 'star'
         elif artifact.find('CHROME EXTENSIONS') >=0: icon = 'tool'
         elif artifact.find('CHROME OS SETTINGS') >=0: icon = 'settings'
         elif artifact.find('CHROME SEARCH ENGINES') >=0: icon = 'search'
