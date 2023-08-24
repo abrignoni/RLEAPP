@@ -40,7 +40,7 @@ def get_chromeOSSettings(files_found, report_folder, seeker, wrap_text):
             report = ArtifactHtmlReport('Chrome ARC Packages')
             report.start_artifact_report(report_folder, 'Chrome ARC Packages')
             report.add_script()
-            data_headers = ('Last Time Backed Up','Package Name','Package Version','Last Backup Android ID')
+            data_headers = ('Last Backed Up Timestamp','Package Name','Package Version','Last Backup Android ID')
 
             report.write_artifact_data_table(data_headers, data_list, file_found)
             report.end_artifact_report()
