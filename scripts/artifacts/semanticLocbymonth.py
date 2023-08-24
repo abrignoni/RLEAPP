@@ -167,7 +167,7 @@ def get_semanticLocbymonth(files_found, report_folder, seeker, wrap_text):
 
 __artifacts__ = {
         "semanticLocationsMonth": (
-            "Google Takeout Semantic Locations by Month",
+            "Google Takeout Archive",
             ('*/Location History/Semantic Location History/*/*_*.json'),
             get_semanticLocbymonth)
 }

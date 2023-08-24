@@ -40,15 +40,15 @@ def get_chromeBookmarks(files_found, report_folder, seeker, wrap_text):
                     add_date = ''
                 else:
                     if len(add_date) == 13:
-                        add_date = datetime.datetime.fromtimestamp(int(add_date)/1000).strftime('%Y-%m-%d %H:%M:%S')  
+                        add_date = datetime.datetime.utcfromtimestamp(int(add_date)/1000).strftime('%Y-%m-%d %H:%M:%S')  
                     else:
-                        add_date = datetime.datetime.fromtimestamp((int(add_date)/1000000)-11644473600).strftime('%Y-%m-%d %H:%M:%S')
+                        add_date = datetime.datetime.utcfromtimestamp((int(add_date)/1000000)-11644473600).strftime('%Y-%m-%d %H:%M:%S')
                 
                 last_modified = n.get('last_modified','')
                 if last_modified == '0' or len(last_modified) == 0:
                     last_modified = ''
                 else:    
-                    last_modified = datetime.datetime.fromtimestamp(int(last_modified)/1000).strftime('%Y-%m-%d %H:%M:%S')
+                    last_modified = datetime.datetime.utcfromtimestamp(int(last_modified)/1000).strftime('%Y-%m-%d %H:%M:%S')
                 
                 data_list.append((add_date,last_modified,title,'',''))
                 add_date = ''
@@ -60,14 +60,14 @@ def get_chromeBookmarks(files_found, report_folder, seeker, wrap_text):
                 title = n.text
                 add_date = n.get('add_date','')
                 if len(add_date) == 13:
-                    add_date = datetime.datetime.fromtimestamp(int(add_date)/1000).strftime('%Y-%m-%d %H:%M:%S')  
+                    add_date = datetime.datetime.utcfromtimestamp(int(add_date)/1000).strftime('%Y-%m-%d %H:%M:%S')  
                 else:
-                    add_date = datetime.datetime.fromtimestamp((int(add_date)/1000000)-11644473600).strftime('%Y-%m-%d %H:%M:%S')
+                    add_date = datetime.datetime.utcfromtimestamp((int(add_date)/1000000)-11644473600).strftime('%Y-%m-%d %H:%M:%S')
                 last_modified = n.get('last_modified','')
                 if last_modified == '0' or len(last_modified) == 0:
                     last_modified = ''
                 else:    
-                    last_modified = datetime.datetime.fromtimestamp(int(last_modified)/1000).strftime('%Y-%m-%d %H:%M:%S')  
+                    last_modified = datetime.datetime.utcfromtimestamp(int(last_modified)/1000).strftime('%Y-%m-%d %H:%M:%S')  
                 
                 data_list.append((add_date,last_modified,title,url,folder_name))
 
