@@ -56,27 +56,49 @@ def get_googleChat(files_found, report_folder, seeker, wrap_text):
         
         for chat_message in data['messages']:
             month = ''
+            #Possible to have deleted messages. created_date, creator doesn't exists for this messages.
+            #example: {"message_state": "DELETED", 
+            #          "deleted_date": "Wednesday, 4 January 2023 at 10:59:50 UTC", 
+            #          "topic_id": "0o-KXA8ap5g,
+            #          "deletion_metadata": {"deletion_type": "CREATOR"}
+            #         }
+            created_date = chat_message.get('created_date','')
+            deleted_date = chat_message.get('deleted_date','')
+            if created_date == '' and deleted_date == '':
+                continue
+
+            if created_date == '':
+                created_data = deleted_date;
+                chat_message['creator']={}
+                chat_message['creator']['name']='deleted'
+
             sender_name = chat_message['creator'].get('name','')
             sender_email = chat_message['creator'].get('email','')
             sender_user_type = chat_message['creator'].get('user_type','')
-            created_date = chat_message.get('created_date','')
             
             #checks for empty date field
-            if created_date == '':
-                continue
-            
             created_date_split = created_date.split(', ')
-            created_mmdd = created_date_split[1].split(' ')[0]
-            created_month = str(created_date_split[1].split(' ')[0])
-            created_day = created_date_split[1].split(' ')[1]
-            created_year = created_date_split[2].split(' ')[0]
-            created_time = created_date_split[2].split(' ')[2]
-            
+            if len(created_date_split)==3:
+                created_month = str(created_date_split[1].split(' ')[0])
+                created_day = created_date_split[1].split(' ')[1]
+                created_year = created_date_split[2].split(' ')[0]
+                created_time = created_date_split[2].split(' ')[2]
+                time_flag = str(created_date_split[2].split(' ')[3])
+            else: 
+                if (len (created_date_split))==2:
+                    #Example: Tuesday, 7 February 2021 at 17:13:43 UTC
+                    #Probably other formats are exposed by Google. Need to transform all dates,
+                    #in a standard format.
+                    created_date_split2 = created_date_split[1].split(' at ')
+                    created_month = str(created_date_split2[0].split(' ')[1])
+                    created_day = created_date_split2[0].split(' ')[0]
+                    created_year = created_date_split2[0].split(' ')[2]
+                    created_time = created_date_split2[1]
+                    time_flag = ""
+                    
             time_hour = created_time.split(':')[0]
             time_minute = created_time.split(':')[1]
             time_second = created_time.split(':')[2]
-            
-            time_flag = str(created_date_split[2].split(' ')[3])
             
             if time_flag == 'PM' and int(time_hour) < 12:
                 time_hour = str(int(time_hour) + 12)
