@@ -53,6 +53,9 @@ def get_chaseReturnsRTL(files_found, report_folder, seeker, wrap_text):
         filename = os.path.basename(file_found)
         
         pdffileobj = open(file_found,'rb')
+        pdfmagic = pdffileobj.read(4)
+        if (pdfmagic!='%PDF'):
+            return
         pdfreader=PyPDF2.PdfFileReader(pdffileobj)
         x=pdfreader.numPages
         
