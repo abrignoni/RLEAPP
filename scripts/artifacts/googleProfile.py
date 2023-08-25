@@ -24,18 +24,21 @@ def get_googleProfile(files_found, report_folder, seeker, wrap_text):
         data_list = []
         emails = []
         addresses = ''
-
+        gender=''
         formattedName = data['name'].get('formattedName','')
         displayName = data.get('displayName')
         birthday = data.get('birthday')
-        gender = data['gender'].get('type','')
+        _gender = data.get('gender')
+        if (_gender):
+            gender = _gender.get('type','')
 
-        for x in data['emails']:
-            emails.append((x['value']))
+        if (len(emails)>0):
+            for x in data['emails']:
+                emails.append((x['value']))
 
-        for y in emails:
-            addresses += str(y) + "; "
-        addresses = addresses[:-2]
+            for y in emails:
+                addresses += str(y) + "; "
+            addresses = addresses[:-2]
         
     thumb = ''
     ProfilePhoto = 'ProfilePhoto.jpg'
