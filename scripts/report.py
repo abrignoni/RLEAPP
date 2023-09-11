@@ -47,6 +47,7 @@ def get_icon_name(category, artifact):
         elif artifact.find('FITBIT ACCOUNT PROFILE') >=0: icon = 'user'
         elif artifact.find('FITBIT SLEEP') >=0: icon = 'moon'
         elif artifact.find('FITBIT STRESS') >=0: icon = 'activity'
+        elif artifact.find('FITBIT TRACKERS') >=0: icon = 'watch'
         elif artifact == 'GOOGLE ACCESS LOG ACTIVITIES': icon = 'activity'
         elif artifact == 'GOOGLE ACCESS LOG DEVICES': icon = 'smartphone'
         elif artifact == 'GOOGLE CHAT - MESSAGES': icon = 'message-square'

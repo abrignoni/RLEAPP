@@ -197,14 +197,93 @@ def get_fitbit(files_found, report_folder, seeker, wrap_text):
                 tsvname = f'Fitbit Account Profile'
                 tsv(report_folder, data_headers, data_list, tsvname)
 
-                tlactivity = f'Fitbit Account Profile'
-                timeline(report_folder, tlactivity, data_list, data_headers)
             else:
                 logfunc('No Fitbit Account Profile data available')
+                
+        
+        #FITBIT TRACKERS
+        if filename.startswith('Trackers.csv'):
+            data_list = []
+            
+            description = 'Trackers for a Fitbit account'
+            report = ArtifactHtmlReport('Fitbit Trackers')
+            report.start_artifact_report(report_folder, 'Fitbit Trackers', description)
+            html_report = report.get_report_file_path()
+            report.add_script()
+            has_header = True
+            
+            with open(file_found, 'r', encoding='utf-8') as f:
+                delimited = csv.reader(f, delimiter=',')
+                next(delimited)
+                for item in delimited:
+                    tracker_id = item[0]
+                    date_added = item[1]
+                    last_sync = item[2].replace('T',' ').replace('Z','')
+                    battery_level = item[3]
+                    tracker_name = item[12]
+                    device_name = item[13]
+                    dominant_hand = item[14]
+                    alarm_update = item[20].replace('T',' ').replace('Z','')
+                    heart_rate_update = item[23].replace('T',' ').replace('Z','')
+
+                    data_list.append((last_sync,device_name,tracker_name,tracker_id,battery_level,heart_rate_update,alarm_update,dominant_hand))
+
+            if len(data_list) > 0:
+                data_headers = ('Last Synced Timestamp','Device Name','Tracker Name','Tracker ID','Battery Level','Heart Rate Update Timestamp','Alarm Update Timestamp','On Dominant Hand')
+                report.write_artifact_data_table(data_headers, data_list, file_found)
+                report.end_artifact_report()
+                
+                tsvname = f'Fitbit Trackers'
+                tsv(report_folder, data_headers, data_list, tsvname)
+
+                tlactivity = f'Fitbit Trackers'
+                timeline(report_folder, tlactivity, data_list, data_headers)
+            else:
+                logfunc('No Fitbit Trackers data available')
+                
+        #FITBIT OXYGEN SATURATION
+        if filename.startswith('Daily Sp02 - '):
+            data_list = []
+            
+            description = 'Trackers for a Fitbit account'
+            report = ArtifactHtmlReport('Fitbit Trackers')
+            report.start_artifact_report(report_folder, 'Fitbit Trackers', description)
+            html_report = report.get_report_file_path()
+            report.add_script()
+            has_header = True
+            
+            with open(file_found, 'r', encoding='utf-8') as f:
+                delimited = csv.reader(f, delimiter=',')
+                next(delimited)
+                for item in delimited:
+                    tracker_id = item[0]
+                    date_added = item[1]
+                    last_sync = item[2].replace('T',' ').replace('Z','')
+                    battery_level = item[3]
+                    tracker_name = item[12]
+                    device_name = item[13]
+                    dominant_hand = item[14]
+                    alarm_update = item[20].replace('T',' ').replace('Z','')
+                    heart_rate_update = item[23].replace('T',' ').replace('Z','')
+
+                    data_list.append((last_sync,device_name,tracker_name,tracker_id,battery_level,heart_rate_update,alarm_update,dominant_hand))
+
+            if len(data_list) > 0:
+                data_headers = ('Last Synced Timestamp','Device Name','Tracker Name','Tracker ID','Battery Level','Heart Rate Update Timestamp','Alarm Update Timestamp','On Dominant Hand')
+                report.write_artifact_data_table(data_headers, data_list, file_found)
+                report.end_artifact_report()
+                
+                tsvname = f'Fitbit Trackers'
+                tsv(report_folder, data_headers, data_list, tsvname)
+
+                tlactivity = f'Fitbit Trackers'
+                timeline(report_folder, tlactivity, data_list, data_headers)
+            else:
+                logfunc('No Fitbit Trackers data available')
 
 __artifacts__ = {
         "fitbit": (
             "Google Takeout Archive",
-            ('*/Fitbit/Sleep/Sleep Profile.csv','*/Fitbit/Sleep Score/sleep_score.csv','*/Fitbit/Stress Score/Stress Score.csv','*/Fitbit/Your Profile/Profile.csv'),
+            ('*/Fitbit/Sleep/Sleep Profile.csv','*/Fitbit/Sleep Score/sleep_score.csv','*/Fitbit/Stress Score/Stress Score.csv','*/Fitbit/Your Profile/Profile.csv','*/Fitbit/Paired Devices/Trackers.csv','*/Fitbit/Oxygen Saturation (SpO2)/Daily Sp02 - *.csv'),
             get_fitbit)
 }
