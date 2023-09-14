@@ -1,6 +1,6 @@
 # Module Description: Parses Fitbit details from Google Takeout
 # Author: @KevinPagano3
-# Date: 2023-09-08
+# Date: 2023-09-14
 # Artifact version: 0.0.1
 # Requirements: none
 
@@ -18,7 +18,7 @@ def get_fitbit(files_found, report_folder, seeker, wrap_text):
         
         filename = os.path.basename(file_found)
         
-        #SLEEP PROFILE
+        #FITBIT SLEEP PROFILE
         if filename.startswith('Sleep Profile.csv'):
             data_list = []
             
@@ -68,7 +68,7 @@ def get_fitbit(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc('No Fitbit Sleep Profile data available')
                 
-        #SLEEP SCORES      
+        #FITBIT SLEEP SCORES      
         if filename.startswith('sleep_score.csv'):
             data_list = []
             
@@ -109,7 +109,7 @@ def get_fitbit(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc('No Fitbit Sleep Scores data available')
         
-        #STRESS SCORES
+        #FITBIT STRESS SCORES
         if filename.startswith('Stress Score.csv'):
             data_list = []
             
@@ -197,14 +197,93 @@ def get_fitbit(files_found, report_folder, seeker, wrap_text):
                 tsvname = f'Fitbit Account Profile'
                 tsv(report_folder, data_headers, data_list, tsvname)
 
-                tlactivity = f'Fitbit Account Profile'
-                timeline(report_folder, tlactivity, data_list, data_headers)
             else:
                 logfunc('No Fitbit Account Profile data available')
+        
+        #FITBIT TRACKERS
+        if filename.startswith('Trackers.csv'):
+            data_list = []
+            
+            description = 'Trackers for a Fitbit account'
+            report = ArtifactHtmlReport('Fitbit Trackers')
+            report.start_artifact_report(report_folder, 'Fitbit Trackers', description)
+            html_report = report.get_report_file_path()
+            report.add_script()
+            has_header = True
+            
+            with open(file_found, 'r', encoding='utf-8') as f:
+                delimited = csv.reader(f, delimiter=',')
+                next(delimited)
+                for item in delimited:
+                    tracker_id = item[0]
+                    date_added = item[1]
+                    last_sync = item[2].replace('T',' ').replace('Z','')
+                    battery_level = item[3]
+                    tracker_name = item[12]
+                    device_name = item[13]
+                    dominant_hand = item[14]
+                    alarm_update = item[20].replace('T',' ').replace('Z','')
+                    heart_rate_update = item[23].replace('T',' ').replace('Z','')
+
+                    data_list.append((last_sync,device_name,tracker_name,tracker_id,battery_level,heart_rate_update,alarm_update,dominant_hand))
+
+            if len(data_list) > 0:
+                data_headers = ('Last Synced Timestamp','Device Name','Tracker Name','Tracker ID','Battery Level','Heart Rate Update Timestamp','Alarm Update Timestamp','On Dominant Hand')
+                report.write_artifact_data_table(data_headers, data_list, file_found)
+                report.end_artifact_report()
+                
+                tsvname = f'Fitbit Trackers'
+                tsv(report_folder, data_headers, data_list, tsvname)
+
+                tlactivity = f'Fitbit Trackers'
+                timeline(report_folder, tlactivity, data_list, data_headers)
+            else:
+                logfunc('No Fitbit Trackers data available')
+                
+        #FITBIT ACTIVITY GOALS
+        if filename.startswith('Activity Goals.csv'):
+            data_list = []
+            
+            description = 'Activity goals for a Fitbit account'
+            report = ArtifactHtmlReport('Fitbit Activity Goals')
+            report.start_artifact_report(report_folder, 'Fitbit Activity Goals', description)
+            html_report = report.get_report_file_path()
+            report.add_script()
+            has_header = True
+            
+            with open(file_found, 'r', encoding='utf-8') as f:
+                delimited = csv.reader(f, delimiter=',')
+                next(delimited)
+                for item in delimited:
+                    goal_type = item[0]
+                    goal_frequency = item[1]
+                    goal_target = item[2]
+                    goal_result = item[3]
+                    goal_status = item[4]
+                    goal_primary = item[5]
+                    goal_start = item[6]
+                    goal_end = item[7]
+                    goal_created = item[8].replace('T',' ')
+                    goal_edited = item[9]
+
+                    data_list.append((goal_created,goal_start,goal_end,goal_type,goal_frequency,goal_target,goal_result,goal_status,goal_primary))
+
+            if len(data_list) > 0:
+                data_headers = ('Created Timestamp','Start Date','End Date','Type','Frequency','Target','Result','Status','Is Primary')
+                report.write_artifact_data_table(data_headers, data_list, file_found)
+                report.end_artifact_report()
+                
+                tsvname = f'Fitbit Activity Goals'
+                tsv(report_folder, data_headers, data_list, tsvname)
+
+                tlactivity = f'Fitbit Activity Goals'
+                timeline(report_folder, tlactivity, data_list, data_headers)
+            else:
+                logfunc('No Fitbit Activity Goals data available')
 
 __artifacts__ = {
         "fitbit": (
             "Google Takeout Archive",
-            ('*/Fitbit/Sleep/Sleep Profile.csv','*/Fitbit/Sleep Score/sleep_score.csv','*/Fitbit/Stress Score/Stress Score.csv','*/Fitbit/Your Profile/Profile.csv'),
+            ('*/Fitbit/Sleep/Sleep Profile.csv','*/Fitbit/Sleep Score/sleep_score.csv','*/Fitbit/Stress Score/Stress Score.csv','*/Fitbit/Your Profile/Profile.csv','*/Fitbit/Paired Devices/Trackers.csv','*/Fitbit/Activity Goals/Activity Goals.csv'),
             get_fitbit)
 }
