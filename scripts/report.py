@@ -88,6 +88,7 @@ def get_icon_name(category, artifact):
         else:                                          icon = 'tv'
     elif category == 'CONTACTS':            icon = 'user'
     elif category == 'ICLOUD DOCUMENTS FOLDERS':            icon = 'book-open'
+    elif category == 'TORRENT DATA':       icon = 'download'
     elif category == 'APPLE NOTES':            icon = 'book-open'
     elif category == 'OFFLINE PAGES':       icon = 'cloud-off'
     elif category == 'GOOGLE RETURNS':
