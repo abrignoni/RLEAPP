@@ -12,7 +12,6 @@ from scripts.search_files import *
 
 MODULE_START_INDEX = 1000
 
-
 def ValidateInput(values, window):
     '''Returns tuple (success, extraction_type)'''
     global module_end_index
@@ -54,7 +53,7 @@ def ValidateInput(values, window):
 
 # initialize CheckBox control with module name   
 def CheckList(mtxt, lkey, mdstring, disable=False):
-    if mdstring == 'test1' or mdstring == 'test2' : #items in the if are modules that take a long time to run. Deselects them by default.
+    if mdstring == 'photosMetadata' or mdstring == 'journalStrings' or mdstring == 'walStrings': #items in the if are modules that take a long time to run. Deselects them by default.
         dstate = False
     else:
         dstate = True
@@ -69,7 +68,7 @@ def pickModules():
 
     module_end_index = MODULE_START_INDEX     # arbitrary number to not interfere with other controls
     for plugin in sorted(loader.plugins, key=lambda p: p.category.upper()):
-        disabled = plugin.module_name == ''
+        disabled = plugin.module_name == 'usagestatsVersion'
         mlist.append(CheckList(f'{plugin.category} [{plugin.name} - {plugin.module_name}.py]', module_end_index, plugin.name, disabled))
         module_end_index = module_end_index + 1
         
@@ -84,7 +83,7 @@ pickModules()
 GuiWindow.progress_bar_total = len(loader)
 
 
-layout = [  [sg.Text('Returns, Logs, Events, And Properties Parser', font=("Helvetica", 22))],
+layout = [  [sg.Text('Returns, Logs, Events, And Protobuf Parser', font=("Helvetica", 22))],
             [sg.Text('https://github.com/abrignoni/RLEAPP', font=("Helvetica", 14))],
             [sg.Frame(layout=[
                     [sg.Input(size=(97,1)), 
@@ -92,7 +91,7 @@ layout = [  [sg.Text('Returns, Logs, Events, And Properties Parser', font=("Helv
                      sg.FolderBrowse(font=normal_font, button_text='Browse Folder', target=(sg.ThisRow, -2), key='INPUTFOLDERBROWSE')
                     ]
                 ],
-                title='Select a file (tar/zip/gz) or directory of the target service provider return for parsing:')],
+                title='Select the file (tar/zip/gz) or directory of the target iOS full file system extraction for parsing:')],
             [sg.Frame(layout=[
                     [sg.Input(size=(112,1)), sg.FolderBrowse(font=normal_font, button_text='Browse Folder')]
                 ], 
@@ -100,8 +99,6 @@ layout = [  [sg.Text('Returns, Logs, Events, And Properties Parser', font=("Helv
             [sg.Text('Available Modules')],
             [sg.Button('Select All', key='SELECT ALL'), sg.Button('Deselect All', key='DESELECT ALL'),
              sg.Button('Load Profile', key='LOAD PROFILE'), sg.Button('Save Profile', key='SAVE PROFILE'),
-            sg.Text('  |', font=("Helvetica", 14)),
-            sg.Button('Load Case Data', key='LOAD CASE DATA')
              # sg.FileBrowse(
              #     button_text='Load Profile', key='LOADPROFILE', enable_events=True, target='LOADPROFILE',
              #     file_types=(('ALEAPP Profile (*.alprofile)', '*.alprofile'), ('All Files', '*'))),
@@ -109,7 +106,9 @@ layout = [  [sg.Text('Returns, Logs, Events, And Properties Parser', font=("Helv
              #     button_text='Save Profile', key='SAVEPROFILE', enable_events=True, target='SAVEPROFILE',
              #     file_types=(('ALEAPP Profile (*.alprofile)', '*.alprofile'), ('All Files', '*')),
              #     default_extension='.alprofile')
-             ],
+            sg.Text('  |', font=("Helvetica", 14)),
+            sg.Button('Load Case Data', key='LOAD CASE DATA') 
+            ],
             [sg.Column(mlist, size=(300,310), scrollable=True),  sg.Output(size=(85,20))] ,
             [sg.ProgressBar(max_value=GuiWindow.progress_bar_total, orientation='h', size=(86, 7), key='PROGRESSBAR', bar_color=('DarkGreen', 'White'))],
             [sg.Submit('Process', font=normal_font), sg.Button('Close', font=normal_font)] ]
@@ -131,11 +130,11 @@ while True:
     if event == "DESELECT ALL":  
          # none modules
         for x in range(MODULE_START_INDEX, module_end_index):
-            window[x].Update(False if window[x].metadata != '' else True)  # airdropEmails.py is REQUIRED 
+            window[x].Update(False if window[x].metadata != 'usagestatsVersion' else True)  # usagestatsVersion.py is REQUIRED
     if event == "SAVE PROFILE":
         destination_path = sg.popup_get_file(
             "Save a profile", save_as=True,
-            file_types=(('ALEAPP Profile (*.alprofile)', '*.alprofile'),),
+            file_types=(('RLEAPP Profile (*.alprofile)', '*.alprofile'),),
             default_extension='.alprofile', no_window=True)
 
         if destination_path:
@@ -145,13 +144,13 @@ while True:
                     key = window[x].metadata
                     ticked.append(key)
             with open(destination_path, "wt", encoding="utf-8") as profile_out:
-                json.dump({"leapp": "aleapp", "format_version": 1, "plugins": ticked}, profile_out)
+                json.dump({"leapp": "rleapp", "format_version": 1, "plugins": ticked}, profile_out)
             sg.Popup(f"Profile saved: {destination_path}")
 
     if event == "LOAD PROFILE":
         destination_path = sg.popup_get_file(
             "Load a profile", save_as=False,
-            file_types=(('ALEAPP Profile (*.alprofile)', '*.alprofile'), ('All Files', '*')),
+            file_types=(('RLEAPP Profile (*.alprofile)', '*.alprofile'), ('All Files', '*')),
             default_extension='.alprofile', no_window=True)
 
         if destination_path and os.path.exists(destination_path):
@@ -164,7 +163,7 @@ while True:
 
             if not profile_load_error:
                 if isinstance(profile, dict):
-                    if profile.get("leapp") != "aleapp" or profile.get("format_version") != 1:
+                    if profile.get("leapp") != "rleapp" or profile.get("format_version") != 1:
                         profile_load_error = "File was not a valid profile file: incorrect LEAPP or version"
                     else:
                         ticked = set(profile.get("plugins", []))
@@ -185,7 +184,7 @@ while True:
     if event == 'LOAD CASE DATA':
         destination_path = sg.popup_get_file(
             "Load a case data", save_as=False,
-            file_types=(('ALEAPP Profile (*.alprofile)', '*.alprofile'), ('All Files', '*')),
+            file_types=(('RLEAPP Profile (*.alprofile)', '*.alprofile'), ('All Files', '*')),
             default_extension='.alprofile', no_window=True)
         
         if destination_path and os.path.exists(destination_path):
@@ -201,7 +200,7 @@ while True:
                     casedata = profile
                 else:
                     profile_load_error = "File was not a valid profile file: invalid format"
-                    
+            
             if profile_load_error:
                 sg.popup(profile_load_error)
             else:
@@ -215,15 +214,15 @@ while True:
             input_path = values[0]
             output_folder = values[1]
 
-            # File system extractions can contain paths > 260 char, which causes problems
+            # ios file system extractions contain paths > 260 char, which causes problems
             # This fixes the problem by prefixing \\?\ on each windows path.
             if is_platform_windows():
                 if input_path[1] == ':' and extracttype =='fs': input_path = '\\\\?\\' + input_path.replace('/', '\\')
                 if output_folder[1] == ':': output_folder = '\\\\?\\' + output_folder.replace('/', '\\')
-            
+
             # re-create modules list based on user selection
-            #search_list = { 'usagestatsVersion' : tosearch['usagestatsVersion'] } # hardcode usagestatsVersion as first item
-            search_list = [loader['airdropEmails']]  # hardcode usagestatsVersion as first item
+            # search_list = { 'lastBuild' : tosearch['lastBuild'] } # hardcode lastBuild as first item
+            search_list = [loader['airdropEmails']] # hardcode as first item
 
             s_items = 0
             for x in range(MODULE_START_INDEX, module_end_index):
@@ -235,10 +234,10 @@ while True:
                 
                 # no more selections allowed
                 window[x].Update(disabled=True)
-                
+
             window['SELECT ALL'].update(disabled=True)
             window['DESELECT ALL'].update(disabled=True)
-        
+
             GuiWindow.window_handle = window
             out_params = OutputParameters(output_folder)
             wrap_text = True
@@ -247,12 +246,12 @@ while True:
                 casedata
             except NameError:
                 casedata = {}
-                
+            
             crunch_successful = rleapp.crunch_artifacts(
-                search_list, extracttype, input_path, out_params, len(loader)/s_items, wrap_text, casedata)
+                search_list, extracttype, input_path, out_params, len(loader)/s_items, wrap_text, loader, casedata)
             if crunch_successful:
                 report_path = os.path.join(out_params.report_folder_base, 'index.html')
-                    
+                
                 if report_path.startswith('\\\\?\\'): # windows
                     report_path = report_path[4:]
                 if report_path.startswith('\\\\'): # UNC path
