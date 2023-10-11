@@ -13,7 +13,7 @@ def recdetail(val):
     cleandata = val.split('by')[0].split('from')[1].replace('\n', '').strip()
     return cleandata
 
-def get_msftheadReturn(files_found, report_folder, seeker, wrap_text):
+def get_msftheadReturn(files_found, report_folder, seeker, wrap_text, time_offset):
 
     data_list = []
     data_list_tsv = []

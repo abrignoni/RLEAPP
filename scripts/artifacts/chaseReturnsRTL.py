@@ -19,7 +19,7 @@ def pairs(keya,keyb,subtext):
         value = ' '
     return value
 
-def get_chaseReturnsRTL(files_found, report_folder, seeker, wrap_text):
+def get_chaseReturnsRTL(files_found, report_folder, seeker, wrap_text, time_offset):
     
     data_list = []
     
