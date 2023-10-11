@@ -11,7 +11,7 @@ import os
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, kmlgen
 
-def get_takeoutRecords(files_found, report_folder, seeker, wrap_text):
+def get_takeoutRecords(files_found, report_folder, seeker, wrap_text, time_offset):
     
     for file_found in files_found:
         file_found = str(file_found)

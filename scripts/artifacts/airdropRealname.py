@@ -9,7 +9,7 @@ from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, gather_hashes_in_file
 
 
-def get_airdropRealnames(files_found, report_folder, seeker, wrap_text):
+def get_airdropRealnames(files_found, report_folder, seeker, wrap_text, time_offset):
     # log show ./system_logs.logarchive --style ndjson --predicate 'category = "AirDrop"' > airdrop.ndjson
 
     namelist = []

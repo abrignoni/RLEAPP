@@ -11,7 +11,7 @@ import csv
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, ipgen
 
-def get_fitbit_CompTemp(files_found, report_folder, seeker, wrap_text):
+def get_fitbit_CompTemp(files_found, report_folder, seeker, wrap_text, time_offset):
 
     data_list = []
 

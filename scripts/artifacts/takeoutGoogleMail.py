@@ -22,7 +22,7 @@ def getbody(message): #getting plain text 'email body'
         body = message.get_payload(decode=True).decode('Latin_1')
     return body
     
-def get_takeoutGoogleMail(files_found, report_folder, seeker, wrap_text):
+def get_takeoutGoogleMail(files_found, report_folder, seeker, wrap_text, time_offset):
     
     platform = is_platform_windows()
     if platform:

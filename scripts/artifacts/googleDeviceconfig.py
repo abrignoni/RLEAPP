@@ -9,7 +9,7 @@ import os
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html
 
-def get_googleDeviceconfig(files_found, report_folder, seeker, wrap_text):
+def get_googleDeviceconfig(files_found, report_folder, seeker, wrap_text, time_offset):
     
     data_list = []
     reportcount = 0

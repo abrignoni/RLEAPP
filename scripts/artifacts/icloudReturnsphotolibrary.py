@@ -42,7 +42,7 @@ def get_all_exif(filename):
     image.verify()
     return image.getexif()
 
-def get_icloudReturnsphotolibrary(files_found, report_folder, seeker, wrap_text):
+def get_icloudReturnsphotolibrary(files_found, report_folder, seeker, wrap_text, time_offset):
     
     for file_found in files_found:
         file_found = str(file_found)
