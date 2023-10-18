@@ -1,21 +1,26 @@
+# common standard imports
 import codecs
 import csv
 import datetime
-import json
 import os
 import pathlib
 import re
+import shutil
 import sqlite3
 import sys
-from typing import Pattern
-
-import simplekml
-import magic
-import shutil
+from functools import lru_cache
 from pathlib import Path
 
+# common third party imports
+import magic
+import pytz
+import simplekml
 from bs4 import BeautifulSoup
-from functools import lru_cache
+
+# LEAPP version unique imports
+import json
+from typing import Pattern
+
 
 os.path.basename = lru_cache(maxsize=None)(os.path.basename)
 
@@ -52,13 +57,11 @@ def sanitize_file_path(filename, replacement_char='_'):
     '''
     return re.sub(r'[*?:"<>|\'\r\n]', replacement_char, filename)
 
-
 def sanitize_file_name(filename, replacement_char='_'):
     '''
     Removes illegal characters (for windows) from the string passed.
     '''
     return re.sub(r'[\\/*?:"<>|\'\r\n]', replacement_char, filename)
-
 
 def get_next_unused_name(path):
     '''Checks if path exists, if it does, finds an unused name by appending -xx
@@ -80,17 +83,16 @@ def get_next_unused_name(path):
         num += 1
     return os.path.join(folder, new_name)
 
-
 def open_sqlite_db_readonly(path):
     '''Opens an sqlite db in read-only mode, so original db (and -wal/journal are intact)'''
     if is_platform_windows():
-        if path.startswith('\\\\?\\UNC\\'):  # UNC long path
+        if path.startswith('\\\\?\\UNC\\'): # UNC long path
             path = "%5C%5C%3F%5C" + path[4:]
-        elif path.startswith('\\\\?\\'):  # normal long path
+        elif path.startswith('\\\\?\\'):    # normal long path
             path = "%5C%5C%3F%5C" + path[4:]
-        elif path.startswith('\\\\'):  # UNC path
+        elif path.startswith('\\\\'):       # UNC path
             path = "%5C%5C%3F%5C\\UNC" + path[1:]
-        else:  # normal path
+        else:                               # normal path
             path = "%5C%5C%3F%5C" + path
     return sqlite3.connect(f"file:{path}?mode=ro", uri=True)
 
@@ -99,7 +101,7 @@ def does_column_exist_in_db(db, table_name, col_name):
     '''Checks if a specific col exists'''
     col_name = col_name.lower()
     try:
-        db.row_factory = sqlite3.Row  # For fetching columns by name
+        db.row_factory = sqlite3.Row # For fetching columns by name
         query = f"pragma table_info('{table_name}');"
         cursor = db.cursor()
         cursor.execute(query)
@@ -111,7 +113,6 @@ def does_column_exist_in_db(db, table_name, col_name):
         print(f"Query error, query={query} Error={str(ex)}")
         pass
     return False
-
 
 def does_table_exist(db, table_name):
     '''Checks if a table with specified name exists in an sqlite db'''
@@ -136,7 +137,6 @@ class GuiWindow:
         if GuiWindow.progress_bar_handle:
             GuiWindow.progress_bar_handle.UpdateBar(n)
 
-
 def logfunc(message=""):
     with open(OutputParameters.screen_output_file_path, 'a', encoding='utf8') as a:
         print(message)
@@ -144,7 +144,6 @@ def logfunc(message=""):
 
     if GuiWindow.window_handle:
         GuiWindow.window_handle.refresh()
-
 
 def logdevinfo(message=""):
     with open(OutputParameters.screen_output_file_path_devinfo, 'a', encoding='utf8') as b:
@@ -252,35 +251,34 @@ def timeline(report_folder, tlactivity, data_list, data_headers):
         cursor = db.cursor()
         cursor.execute('''PRAGMA synchronous = EXTRA''')
         cursor.execute('''PRAGMA journal_mode = WAL''')
+        db.commit()
     else:
         os.makedirs(tl_report_folder)
         # create database
         tldb = os.path.join(tl_report_folder, 'tl.db')
-        db = sqlite3.connect(tldb, isolation_level='exclusive')
+        db = sqlite3.connect(tldb, isolation_level = 'exclusive')
         cursor = db.cursor()
         cursor.execute(
             """
-        CREATE TABLE data(key TEXT, activity TEXT, datalist TEXT)
-        """
+            CREATE TABLE data(key TEXT, activity TEXT, datalist TEXT)
+            """
         )
         db.commit()
-
+    
     a = 0
     length = (len(data_list))
-    while a < length:
-        modifiedList = list(map(lambda x, y: x + ': ' + str(y), data_headers, data_list[a]))
-        cursor.executemany("INSERT INTO data VALUES(?,?,?)", [(str(data_list[a][0]), tlactivity, str(modifiedList))])
+    while a < length: 
+        modifiedList = list(map(lambda x, y: x.upper() + ': ' +  str(y), data_headers, data_list[a]))
+        cursor.executemany("INSERT INTO data VALUES(?,?,?)", [(str(data_list[a][0]), tlactivity.upper(), str(modifiedList))])
         a += 1
     db.commit()
     db.close()
-
 
 def kmlgen(report_folder, kmlactivity, data_list, data_headers):
     report_folder = report_folder.rstrip('/')
     report_folder = report_folder.rstrip('\\')
     report_folder_base, tail = os.path.split(report_folder)
     kml_report_folder = os.path.join(report_folder_base, '_KML Exports')
-
     if os.path.isdir(kml_report_folder):
         latlongdb = os.path.join(kml_report_folder, '_latlong.db')
         db = sqlite3.connect(latlongdb)
@@ -294,14 +292,14 @@ def kmlgen(report_folder, kmlactivity, data_list, data_headers):
         db = sqlite3.connect(latlongdb)
         cursor = db.cursor()
         cursor.execute(
-            """
+        """
         CREATE TABLE data(key TEXT, latitude TEXT, longitude TEXT, activity TEXT)
         """
-        )
+            )
         db.commit()
-
+    
     kml = simplekml.Kml(open=1)
-
+    
     a = 0
     length = (len(data_list))
     while a < length:
@@ -416,29 +414,29 @@ def media_to_html(media_path, files_found, report_folder):
     
     def media_path_filter(name):
         return media_path in name
-    
+
     def relative_paths(source, splitter):
         splitted_a = source.split(splitter)
         for x in splitted_a:
             if 'LEAPP_Reports_' in x:
                 report_folder = x
-                
+
         splitted_b = source.split(report_folder)
         return '.' + splitted_b[1]
-    
+
     platform = is_platform_windows()
     if platform:
         media_path = media_path.replace('/', '\\')
         splitter = '\\'
     else:
         splitter = '/'
-        
+
     thumb = media_path
     for match in filter(media_path_filter, files_found):
         filename = os.path.basename(match)
-        if filename.startswith('~') or filename.startswith('._'):
+        if filename.startswith('~') or filename.startswith('._') or filename != media_path:
             continue
-        
+
         dirs = os.path.dirname(report_folder)
         dirs = os.path.dirname(dirs)
         env_path = os.path.join(dirs, 'temp')
@@ -455,17 +453,17 @@ def media_to_html(media_path, files_found, report_folder):
             shutil.copy2(match, locationfiles)
             source = Path(locationfiles, filename)
             source = relative_paths(str(source), splitter)
-            
+
         mimetype = magic.from_file(match, mime=True)
-        
+
         if 'video' in mimetype:
-            thumb = f'<video width="320" height="240" controls="controls" preload="none"><source src="{source}" type="video/mp4">Your browser does not support the video tag.</video>'
+            thumb = f'<video width="320" height="240" controls="controls"><source src="{source}" type="video/mp4" preload="none">Your browser does not support the video tag.</video>'
         elif 'image' in mimetype:
             thumb = f'<a href="{source}" target="_blank"><img src="{source}"width="300"></img></a>'
         elif 'audio' in mimetype:
             thumb = f'<audio controls><source src="{source}" type="audio/ogg"><source src="{source}" type="audio/mpeg">Your browser does not support the audio element.</audio>'
         else:
-            thumb = f'<a href="{source}" target="_blank"> Link to {mimetype} </>'
+            thumb = f'<a href="{source}" target="_blank"> Link to {filename} file</>'
     return thumb
 
 

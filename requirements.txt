@@ -1,19 +1,20 @@
 beautifulsoup4==4.8.2
+bencoding
 blackboxprotobuf
+ijson
+mammoth
+openpyxl
 packaging==20.1
+pillow-heif
 protobuf==3.10.0
 PyCryptodome
+PyMuPDF
+PyPDF2
 PySimpleGUI==4.16.0
+python-magic==0.4.24; platform_system == "Linux"
+python-magic-bin==0.4.14; platform_system == "Darwin"
+python-magic-bin==0.4.14; platform_system == "Windows"
 simplekml
 xmltodict
 xlrd==1.2.0
-PyMuPDF
-openpyxl
-PyPDF2
-ijson
-python-magic==0.4.24; platform_system == "Linux"
-python-magic-bin==0.4.14; platform_system == "Windows"
-python-magic-bin==0.4.14; platform_system == "Darwin"
-pillow-heif
-mammoth
-bencoding
+
