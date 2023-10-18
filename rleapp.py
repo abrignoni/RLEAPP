@@ -32,6 +32,7 @@ def validate_args(args):
         timezone = pytz.timezone(args.timezone)
     except pytz.UnknownTimeZoneError:
       raise argparse.ArgumentError(None, 'Unknown timezone! Run the program again.')
+        
 
 def main():
     parser = argparse.ArgumentParser(description='RLEAPP: Returns, Logs, Events, and Protobuf Parser.')
@@ -43,7 +44,7 @@ def main():
     parser.add_argument('-o', '--output_path', required=False, action="store",
                         help='Path to base output folder (this must exist)')
     parser.add_argument('-i', '--input_path', required=False, action="store", help='Path to input file/folder')
-    parser.add_argument('-tz', '--timezone', required=False, action="store", default='UTC', type=str, help="Timezone name (e.g., 'America/New_York')")  
+    parser.add_argument('-tz', '--timezone', required=False, action="store", default='UTC', type=str, help="Timezone name (e.g., 'America/New_York')")
     parser.add_argument('-w', '--wrap_text', required=False, action="store_false", default=True,
                         help='Do not wrap text for output of data files')
     parser.add_argument('-p', '--artifact_paths', required=False, action="store_true",
@@ -82,7 +83,7 @@ def main():
     wrap_text = args.wrap_text
     output_path = os.path.abspath(args.output_path)
     time_offset = args.timezone
-    
+
     # ios file system extractions contain paths > 260 char, which causes problems
     # This fixes the problem by prefixing \\?\ on each windows path.
     if is_platform_windows():
@@ -220,3 +221,4 @@ def crunch_artifacts(
 
 if __name__ == '__main__':
     main()
+    
