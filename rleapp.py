@@ -128,7 +128,7 @@ def main():
                         help='Do not wrap text for output of data files')
     parser.add_argument('-l', '--load_profile', required=False, action="store", help="Path to RLEAPP Profile file (.rlprofile).")
     parser.add_argument('-c', '--create_profile', required=False, action="store",
-                        help=("Generate an RLEAPP Profile file (.rlprofile) into the specified path. "
+                        help=("Generate a RLEAPP Profile file (.rlprofile) into the specified path. "
                               "This argument is meant to be used alone, without any other arguments."))
     parser.add_argument('-p', '--artifact_paths', required=False, action="store_true",
                         help=("Generate a text file list of artifact paths. "
