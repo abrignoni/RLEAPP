@@ -17,3 +17,4 @@ python-magic-bin==0.4.14; platform_system == "Darwin"
 pillow-heif
 mammoth
 bencoding
+pytz
