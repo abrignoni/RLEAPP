@@ -10,7 +10,7 @@ import sys
 from typing import Pattern
 
 import simplekml
-import magic
+from scripts.filetype import guess_mime
 import shutil
 from pathlib import Path
 
@@ -456,7 +456,9 @@ def media_to_html(media_path, files_found, report_folder):
             source = Path(locationfiles, filename)
             source = relative_paths(str(source), splitter)
             
-        mimetype = magic.from_file(match, mime=True)
+        mimetype = guess_mime(match)
+        if mimetype == None:
+            mimetype = ''
         
         if 'video' in mimetype:
             thumb = f'<video width="320" height="240" controls="controls" preload="none"><source src="{source}" type="video/mp4">Your browser does not support the video tag.</video>'

@@ -3,7 +3,6 @@ from datetime import datetime
 import csv
 import codecs
 import shutil
-import magic
 import json
 
 from scripts.artifact_report import ArtifactHtmlReport
