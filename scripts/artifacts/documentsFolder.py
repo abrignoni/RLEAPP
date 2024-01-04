@@ -6,8 +6,8 @@
 
 import os
 import datetime
-import magic
 
+from scripts.filetype import guess_mime, guess_extension
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html
 
@@ -25,8 +25,8 @@ def get_documentsFolder(files_found, report_folder, seeker, wrap_text, time_offs
         utc_modified_date = datetime.datetime.utcfromtimestamp(modified_time)
         
         if os.path.isfile(file_found):
-            mime = magic.from_file(file_found, mime=True)
-            ext = (mime.split('/')[1])
+            mime = guess_mime(file_found)
+            ext = guess_extension(file_found)
             
             linktofile = media_to_html(file_found, files_found, report_folder)
             if is_platform_windows:
