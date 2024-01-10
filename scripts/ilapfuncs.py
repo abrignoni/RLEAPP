@@ -41,9 +41,19 @@ class OutputParameters:
         os.makedirs(self.temp_folder)
 
 
+def is_platform_linux():
+    '''Returns True if running on Linux'''
+    return sys.platform == 'linux'
+
+
+def is_platform_macos():
+    '''Returns True if running on macOS'''
+    return sys.platform == 'darwin'
+
+
 def is_platform_windows():
     '''Returns True if running on Windows'''
-    return os.name == 'nt'
+    return sys.platform == 'win32'
 
 
 def sanitize_file_path(filename, replacement_char='_'):
