@@ -23,48 +23,89 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text, time_offset)
             data_list_geo =[]
             with open(file_found, 'r', errors='backslashreplace') as f:
                 for line in f:
+                    if 'Geo Data From Snapchat AI' in f:
+                        aigeo = 1
+                    else:
+                        aigeo = 0
                     if '=' in line:
                         break
-                for line in f:
-                    delimited = csv.reader(f, delimiter=',')
-                    for item in delimited:
-                        latitude = item[0].split(' ')
-                        latitudemeters = latitude[2]
-                        latitude = latitude[0]
-                        
-                        longitude = item[1].split(' ')
-                        longitudemeters = longitude[2]
-                        longitude = longitude[0]
-                        
-                        fecha = item[2]
-                        timestamp = fecha.split(' ')
-                        year = timestamp[5]
-                        day = timestamp[2]
-                        time = timestamp[3]
-                        month = monthletter(timestamp[1])
-                        timestampfinal = (f'{year}-{month}-{day} {time}')
-                        
-                        data_list_geo.append((timestampfinal, latitude, latitudemeters, longitude, longitudemeters))
+                if aigeo == 0:
+                    for line in f:
+                        delimited = csv.reader(f, delimiter=',')
+                        for item in delimited:
+                            latitude = item[0].split(' ')
+                            latitudemeters = latitude[2]
+                            latitude = latitude[0]
+                            
+                            longitude = item[1].split(' ')
+                            longitudemeters = longitude[2]
+                            longitude = longitude[0]
+                            
+                            fecha = item[2]
+                            timestamp = fecha.split(' ')
+                            year = timestamp[5]
+                            day = timestamp[2]
+                            time = timestamp[3]
+                            month = monthletter(timestamp[1])
+                            timestampfinal = (f'{year}-{month}-{day} {time}')
+                            
+                            data_list_geo.append((timestampfinal, latitude, latitudemeters, longitude, longitudemeters))
     
-            if data_list_geo:
-                report = ArtifactHtmlReport(f'Snapchat - Geolocations')
-                report.start_artifact_report(report_folder, f'Snapchat - Geolocations - {username}')
-                report.add_script()
-                data_headers = ('Timestamp','Latitude','Latitude +- Meters','Longitude','Longitude +- Meters')
-                report.write_artifact_data_table(data_headers, data_list_geo, file_found, html_no_escape=['Media'])
-                report.end_artifact_report()
+                        if data_list_geo:
+                            report = ArtifactHtmlReport(f'Snapchat - Geolocations')
+                            report.start_artifact_report(report_folder, f'Snapchat - Geolocations - {username}')
+                            report.add_script()
+                            data_headers = ('Timestamp','Latitude','Latitude +- Meters','Longitude','Longitude +- Meters')
+                            report.write_artifact_data_table(data_headers, data_list_geo, file_found, html_no_escape=['Media'])
+                            report.end_artifact_report()
+                            
+                            tsvname = f'Snapchat - Geolocations  - {username}'
+                            tsv(report_folder, data_headers, data_list_geo, tsvname)
+                            
+                            tlactivity = f'Snapchat - Geolocations  - {username}'
+                            timeline(report_folder, tlactivity, data_list_geo, data_headers)
+                            
+                            kmlactivity = f'Snapchat - Geolocations  - {username}'
+                            kmlgen(report_folder, kmlactivity, data_list_geo, data_headers)
+                        else:
+                            logfunc(f'No Snapchat - Geolocations  - {username}')
                 
-                tsvname = f'Snapchat - Geolocations  - {username}'
-                tsv(report_folder, data_headers, data_list_geo, tsvname)
-                
-                tlactivity = f'Snapchat - Geolocations  - {username}'
-                timeline(report_folder, tlactivity, data_list_geo, data_headers)
-                
-                kmlactivity = f'Snapchat - Geolocations  - {username}'
-                kmlgen(report_folder, kmlactivity, data_list_geo, data_headers)
-            else:
-                logfunc(f'No Snapchat - Geolocations  - {username}')
-    
+                if aigeo == 1:
+                    for line in f:
+                        delimited = csv.reader(f, delimiter=',')
+                        for item in delimited:
+                            country = item[0]
+                            region = item[1]
+                            city = item[2]
+                        
+                            fecha = item[3]
+                            timestamp = fecha.split(' ')
+                            year = timestamp[5]
+                            day = timestamp[2]
+                            time = timestamp[3]
+                            month = monthletter(timestamp[1])
+                            timestampfinal = (f'{year}-{month}-{day} {time}')
+                            
+                            data_list_geo.append((timestampfinal, country, region, city))
+                            
+                        if data_list_geo:
+                            report = ArtifactHtmlReport(f'Snapchat - Geolocations')
+                            report.start_artifact_report(report_folder, f'Snapchat - Geolocations - {username}')
+                            report.add_script()
+                            data_headers = ('Timestamp','Country','Region','City')
+                            report.write_artifact_data_table(data_headers, data_list_geo, file_found, html_no_escape=['Media'])
+                            report.end_artifact_report()
+                            
+                            tsvname = f'Snapchat - Geolocations  - {username}'
+                            tsv(report_folder, data_headers, data_list_geo, tsvname)
+                            
+                            tlactivity = f'Snapchat - Geolocations  - {username}'
+                            timeline(report_folder, tlactivity, data_list_geo, data_headers)
+                            
+                            kmlactivity = f'Snapchat - Geolocations  - {username}'
+                            kmlgen(report_folder, kmlactivity, data_list_geo, data_headers)
+                        else:
+                            logfunc(f'No Snapchat - Geolocations  - {username}')
     
     for file_found in files_found:
         file_found = str(file_found)
@@ -515,17 +556,20 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text, time_offset)
         if filename.startswith('friends_list.csv'):
             data_list_friendlist =[]
             with open(file_found, 'r') as f:
-                for i in range(3):
-                    next(f)
-                for line in f:
-                    delimited = csv.reader(f, delimiter=',')
-                    for item in delimited:
-                        friend = item[0]
-                        
-                        
-                        data_list_friendlist.append((friend,))
-                        
-            if data_list_ip:
+                try:
+                    for i in range(3):
+                        next(f)
+                    for line in f:
+                        delimited = csv.reader(f, delimiter=',')
+                        for item in delimited:
+                            friend = item[0]
+                            
+                            
+                            data_list_friendlist.append((friend,))
+                except Exception as e:
+                    logfunc(str(e))
+                    
+            if data_list_friendlist:
                 report = ArtifactHtmlReport(f'Snapchat - Friends_list.csv')
                 report.start_artifact_report(report_folder, f'Snapchat - Friends_list.csv - {username}')
                 report.add_script()
@@ -534,7 +578,7 @@ def get_snapchatConv(files_found, report_folder, seeker, wrap_text, time_offset)
                 report.end_artifact_report()
                 
                 tsvname = f'Snapchat - Friends_list.csv - {username}'
-                tsv(report_folder, data_headers, data_list_friendlist , tsvname)
+                tsv(report_folder, data_headers, data_list_friendlist, tsvname)
                 
             else:
                 logfunc(f'No Snapchat - Friends_list.csv  - {username}')
