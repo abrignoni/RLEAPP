@@ -91,6 +91,9 @@ def get_icon_name(category, artifact):
     elif category == 'TORRENT DATA':       icon = 'download'
     elif category == 'APPLE NOTES':            icon = 'book-open'
     elif category == 'OFFLINE PAGES':       icon = 'cloud-off'
+    elif category == 'GAB RETURNS':
+        if artifact == 'GAB - POSTS':    icon = 'message-square'
+        else:                                           icon = 'meh'
     elif category == 'GOOGLE RETURNS':
         if artifact == 'GOOGLE RETURNS - ACTIVITIES':    icon = 'activity'
         else:                                           icon = 'chrome'
