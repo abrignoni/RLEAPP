@@ -9,7 +9,7 @@ xmltodict
 xlrd==1.2.0
 PyMuPDF
 openpyxl
-PyPDF2
+pypdf
 ijson
 pillow-heif
 mammoth
