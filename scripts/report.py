@@ -93,6 +93,13 @@ def get_icon_name(category, artifact):
     elif category == 'OFFLINE PAGES':       icon = 'cloud-off'
     elif category == 'GAB RETURNS':
         if artifact == 'GAB - POSTS':    icon = 'message-square'
+        elif artifact == 'GAB - BLOCKS':         icon = 'x-octagon'
+        elif artifact == 'GAB - FOLLOWERS':         icon = 'user-plus'
+        elif artifact == 'GAB - FOLLOWING':         icon = 'user-check'
+        elif artifact == 'GAB - LIKES':         icon = 'thumbs-up'
+        elif artifact == 'GAB - MENTIONS':         icon = 'at-sign'
+        elif artifact == 'GAB - REPLIES':         icon = 'flag'
+        elif artifact == 'GAB - SESSION ACTIVATIONS':         icon = 'chevrons-right'
         else:                                           icon = 'meh'
     elif category == 'GOOGLE RETURNS':
         if artifact == 'GOOGLE RETURNS - ACTIVITIES':    icon = 'activity'
