@@ -147,6 +147,9 @@ def get_icon_name(category, artifact):
     elif category == 'ICLOUD RETURNS': 
         if artifact == 'ICLOUD - ACCOUNT FEATURES': icon = 'user'
         else:                                       icon = 'file-text'
+    elif category == 'SYSDIAGNOSE':
+        if artifact == 'SYSDIAGNOSE - SHUTDOWN LOG PROCESSES': icon = 'loader'
+        if artifact == 'SYSDIAGNOSE - SHUTDOWN LOG REBOOTS': icon = 'refresh-cw'
     return icon
     
     '''
