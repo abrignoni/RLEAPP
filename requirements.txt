@@ -1,6 +1,11 @@
 beautifulsoup4==4.8.2
+bencoding
 blackboxprotobuf
+ijson
+mammoth
+openpyxl
 packaging==20.1
+pillow-heif
 protobuf==3.10.0
 PyCryptodome
 PySimpleGUI

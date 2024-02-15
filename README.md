@@ -42,6 +42,7 @@ $ python rleappGUI.py
 ```
 $ python rleapp.py --help
 ```
+
 ## Contributing artifact plugins
 
 Each plugin is a Python source file which should be added to the `scripts/artifacts` folder which will be loaded dynamically each time RLEAPP is run.
@@ -63,30 +64,30 @@ For example:
 
 ```python
 __artifacts_v2__ = {
-"cool_artifact_1": {
-"name": "Cool Artifact 1",
-"description": "Extracts cool data from database files",
-"author": "@username",
-"version": "0.1",
-"date": "2022-10-25",
-"requirements": "none",
-"category": "Really cool artifacts",
-"notes": "",
-"paths": ('*/com.android.cooldata/databases/database*.db',),
-"function": "get_cool_data1"
-},
-"cool_artifact_2": {
-"name": "Cool Artifact 2",
-"description": "Extracts cool data from XML files",
-"author": "@username",
-"version": "0.1",
-"date": "2022-10-25",
-"requirements": "none",
-"category": "Really cool artifacts",
-"notes": "",
-"paths": ('*/com.android.cooldata/files/cool.xml',),
-"function": "get_cool_data2"
-}
+    "cool_artifact_1": {
+        "name": "Cool Artifact 1",
+        "description": "Extracts cool data from database files",
+        "author": "@username",
+        "version": "0.1",
+        "date": "2022-10-25",
+        "requirements": "none",
+        "category": "Really cool artifacts",
+        "notes": "",
+        "paths": ('*/com.android.cooldata/databases/database*.db',),
+        "function": "get_cool_data1"
+    },
+    "cool_artifact_2": {
+        "name": "Cool Artifact 2",
+        "description": "Extracts cool data from XML files",
+        "author": "@username",
+        "version": "0.1",
+        "date": "2022-10-25",
+        "requirements": "none",
+        "category": "Really cool artifacts",
+        "notes": "",
+        "paths": ('*/com.android.cooldata/files/cool.xml',),
+        "function": "get_cool_data2"
+    }
 }
 ```
 
@@ -101,7 +102,7 @@ For example:
 
 ```python
 def get_cool_data1(files_found, report_folder, seeker, wrap_text):
-pass  # do processing here
+    pass  # do processing here
 ```
 
 Plugins are generally expected to provide output in RLEAPP's HTML output format, TSV, and optionally submit records to 
@@ -110,18 +111,18 @@ At a high level, an example might resemble:
 
 ```python
 __artifacts_v2__ = {
-"cool_artifact_1": {
-"name": "Cool Artifact 1",
-"description": "Extracts cool data from database files",
-"author": "@username",  # Replace with the actual author's username or name
-"version": "0.1",  # Version number
-"date": "2022-10-25",  # Date of the latest version
-"requirements": "none",
-"category": "Really cool artifacts",
-"notes": "",
-"paths": ('*/com.android.cooldata/databases/database*.db',),
-"function": "get_cool_data1"
-}
+    "cool_artifact_1": {
+        "name": "Cool Artifact 1",
+        "description": "Extracts cool data from database files",
+        "author": "@username",  # Replace with the actual author's username or name
+        "version": "0.1",  # Version number
+        "date": "2022-10-25",  # Date of the latest version
+        "requirements": "none",
+        "category": "Really cool artifacts",
+        "notes": "",
+        "paths": ('*/com.android.cooldata/databases/database*.db',),
+        "function": "get_cool_data1"
+    }
 }
 
 import datetime
@@ -129,27 +130,27 @@ from scripts.artifact_report import ArtifactHtmlReport
 import scripts.ilapfuncs
 
 def get_cool_data1(files_found, report_folder, seeker, wrap_text):
-# let's pretend we actually got this data from somewhere:
-rows = [
-(datetime.datetime.now(), "Cool data col 1, value 1", "Cool data col 1, value 2", "Cool data col 1, value 3"),
-(datetime.datetime.now(), "Cool data col 2, value 1", "Cool data col 2, value 2", "Cool data col 2, value 3"),
-]
-
-headers = ["Timestamp", "Data 1", "Data 2", "Data 3"]
-
-# HTML output:
-report = ArtifactHtmlReport("Cool stuff")
-report_name = "Cool DFIR Data"
-report.start_artifact_report(report_folder, report_name)
-report.add_script()
-report.write_artifact_data_table(headers, rows, files_found[0])  # assuming only the first file was processed
-report.end_artifact_report()
-
-# TSV output:
-scripts.ilapfuncs.tsv(report_folder, headers, rows, report_name, files_found[0])  # assuming first file only
-
-# Timeline:
-scripts.ilapfuncs.timeline(report_folder, report_name, rows, headers)
+    # let's pretend we actually got this data from somewhere:
+    rows = [
+     (datetime.datetime.now(), "Cool data col 1, value 1", "Cool data col 1, value 2", "Cool data col 1, value 3"),
+     (datetime.datetime.now(), "Cool data col 2, value 1", "Cool data col 2, value 2", "Cool data col 2, value 3"),
+    ]
+    
+    headers = ["Timestamp", "Data 1", "Data 2", "Data 3"]
+    
+    # HTML output:
+    report = ArtifactHtmlReport("Cool stuff")
+    report_name = "Cool DFIR Data"
+    report.start_artifact_report(report_folder, report_name)
+    report.add_script()
+    report.write_artifact_data_table(headers, rows, files_found[0])  # assuming only the first file was processed
+    report.end_artifact_report()
+    
+    # TSV output:
+    scripts.ilapfuncs.tsv(report_folder, headers, rows, report_name, files_found[0])  # assuming first file only
+    
+    # Timeline:
+    scripts.ilapfuncs.timeline(report_folder, report_name, rows, headers)
 
 ```
 
