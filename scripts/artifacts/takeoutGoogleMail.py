@@ -2,9 +2,9 @@ import os
 import datetime
 import csv
 import mailbox
-import magic
 import email
 
+from scripts.filetype import guess_extension
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html
 
@@ -45,8 +45,9 @@ def get_takeoutGoogleMail(files_found, report_folder, seeker, wrap_text, time_of
             msubject = str(message['Subject'])
             
             msentdate = message['date']
-            msentdate = msentdate.replace('Sun, ','').replace('Mon, ','').replace('Tue, ','').replace('Wed, ','').replace('Thu, ','').replace('Fri, ','').replace('Sat, ','')
-            msentdate_split = msentdate.split(' ')
+            if msentdate:
+                msentdate = msentdate.replace('Sun, ','').replace('Mon, ','').replace('Tue, ','').replace('Wed, ','').replace('Thu, ','').replace('Fri, ','').replace('Sat, ','')
+                msentdate_split = msentdate.split(' ')
             
             day = msentdate_split[0]
             if len(day) < 2:
@@ -114,12 +115,9 @@ def get_takeoutGoogleMail(files_found, report_folder, seeker, wrap_text, time_of
                     with open(pathfile, "wb") as f:
                         f.write(part.get_payload(decode=True))
                         
-                    fileExtension = magic.from_file(pathfile, mime=True)
-                    extension = fileExtension.split("/")[1]
-                    if extension == 'plain':
-                        extension = 'txt'
+                    extension = guess_extension(pathfile)
                         
-                    renamed = f'{pathfile}.{extension}'
+                    renamed = f'{pathfile}.{extension}' if extension else pathfile
                     try:
                         os.rename(pathfile, renamed)
                     except:

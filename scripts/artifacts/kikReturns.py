@@ -3,7 +3,6 @@ import datetime
 import csv
 import codecs
 import shutil
-import magic
 
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html

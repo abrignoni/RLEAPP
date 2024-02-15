@@ -1,7 +1,6 @@
 import os
 import datetime
 import json
-import magic
 import shutil
 from pathlib import Path	
 

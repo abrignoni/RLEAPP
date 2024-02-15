@@ -1,4 +1,4 @@
-rleapp_version = '1.0.4'
+rleapp_version = '1.0.5'
 
 # Contributors List
 # Format = [ Name, Blog-url, Twitter-handle, Github-url]

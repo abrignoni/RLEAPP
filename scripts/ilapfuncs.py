@@ -1,7 +1,8 @@
 # common standard imports
 import codecs
 import csv
-import datetime
+from datetime import *
+import json
 import os
 import pathlib
 import re
@@ -10,17 +11,13 @@ import sqlite3
 import sys
 from functools import lru_cache
 from pathlib import Path
+from typing import Pattern
 
 # common third party imports
-import magic
 import pytz
 import simplekml
 from bs4 import BeautifulSoup
-
-# LEAPP version unique imports
-import json
-from typing import Pattern
-
+from scripts.filetype import guess_mime
 
 os.path.basename = lru_cache(maxsize=None)(os.path.basename)
 
@@ -32,10 +29,10 @@ class OutputParameters:
     screen_output_file_path = ''
 
     def __init__(self, output_folder):
-        now = datetime.datetime.now()
+        now = datetime.now()
         currenttime = str(now.strftime('%Y-%m-%d_%A_%H%M%S'))
         self.report_folder_base = os.path.join(output_folder,
-                                               'RLEAPP_Reports_' + currenttime)  # aleapp , aleappGUI, ileap_artifacts, report.py
+                                               'RLEAPP_Reports_' + currenttime)  # rleapp , rleappGUI, ileap_artifacts, report.py
         self.temp_folder = os.path.join(self.report_folder_base, 'temp')
         OutputParameters.screen_output_file_path = os.path.join(self.report_folder_base, 'Script Logs',
                                                                 'Screen Output.html')
@@ -45,11 +42,66 @@ class OutputParameters:
         os.makedirs(os.path.join(self.report_folder_base, 'Script Logs'))
         os.makedirs(self.temp_folder)
 
+def convert_time_obj_to_utc(ts):
+    timestamp = ts.replace(tzinfo=timezone.utc)
+    return timestamp
+
+def convert_utc_human_to_timezone(utc_time, time_offset): 
+    #fetch the timezone information
+    timezone = pytz.timezone(time_offset)
+    
+    #convert utc to timezone
+    timezone_time = utc_time.astimezone(timezone)
+    
+    #return the converted value
+    return timezone_time
+
+def convert_ts_int_to_timezone(time, time_offset):
+    #convert ts_int_to_utc_human
+    utc_time = convert_ts_int_to_utc(time)
+
+    #fetch the timezone information
+    timezone = pytz.timezone(time_offset)
+    
+    #convert utc to timezone
+    timezone_time = utc_time.astimezone(timezone)
+    
+    #return the converted value
+    return timezone_time
+
+def timestampsconv(webkittime):
+    unix_timestamp = webkittime + 978307200
+    finaltime = datetime.fromtimestamp(unix_timestamp, tz=timezone.utc)
+    return(finaltime)
+
+def convert_ts_human_to_utc(ts): #This is for timestamp in human form
+    if '.' in ts:
+        ts = ts.split('.')[0]
+        
+    dt = datetime.strptime(ts, '%Y-%m-%d %H:%M:%S') #Make it a datetime object
+    timestamp = dt.replace(tzinfo=timezone.utc) #Make it UTC
+    return timestamp
+
+def convert_ts_int_to_utc(ts): #This int timestamp to human format & utc
+    timestamp = datetime.fromtimestamp(ts, tz=timezone.utc)
+    return timestamp
+
+def get_birthdate(date):
+    ns_date = date + 978307200
+    utc_date = datetime.utcfromtimestamp(ns_date)
+    return utc_date.strftime('%d %B %Y') if utc_date.year != 1604 else utc_date.strftime('%d %B')
+
+def is_platform_linux():
+    '''Returns True if running on Linux'''
+    return sys.platform == 'linux'
+
+def is_platform_macos():
+    '''Returns True if running on macOS'''
+    return sys.platform == 'darwin'
 
 def is_platform_windows():
     '''Returns True if running on Windows'''
-    return os.name == 'nt'
-
+    return sys.platform == 'win32'
 
 def sanitize_file_path(filename, replacement_char='_'):
     '''
@@ -96,7 +148,6 @@ def open_sqlite_db_readonly(path):
             path = "%5C%5C%3F%5C" + path
     return sqlite3.connect(f"file:{path}?mode=ro", uri=True)
 
-
 def does_column_exist_in_db(db, table_name, col_name):
     '''Checks if a specific col exists'''
     col_name = col_name.lower()
@@ -121,10 +172,11 @@ def does_table_exist(db, table_name):
         cursor = db.execute(query)
         for row in cursor:
             return True
-    except sqlite3Error as ex:
+    #NOTE: I believe this was a mistake, sqlite3.Error was missing the .
+    #NOTE: I have not had a situation come up to hit this to know yet if this was an issue.
+    except sqlite3.Error as ex:
         logfunc(f"Query error, query={query} Error={str(ex)}")
     return False
-
 
 class GuiWindow:
     '''This only exists to hold window handle if script is run from GUI'''
@@ -149,7 +201,6 @@ def logdevinfo(message=""):
     with open(OutputParameters.screen_output_file_path_devinfo, 'a', encoding='utf8') as b:
         b.write(message + '<br>' + OutputParameters.nl)
 
-
 """ def deviceinfoin(ordes, kas, vas, sources): # unused function
     sources = str(sources)
     db = sqlite3.connect(reportfolderbase+'Device Info/di.db')
@@ -157,7 +208,6 @@ def logdevinfo(message=""):
     datainsert = (ordes, kas, vas, sources,)
     cursor.execute('INSERT INTO devinf (ord, ka, va, source)  VALUES(?,?,?,?)', datainsert)
     db.commit() """
-
 
 def html2csv(reportfolderbase):
     # List of items that take too long to convert or that shouldn't be converted
@@ -200,7 +250,6 @@ def html2csv(reportfolderbase):
                             writer = csv.writer(csvfile, quotechar='"', quoting=csv.QUOTE_ALL)
                             writer.writerows(output_rows)
 
-
 def tsv(report_folder, data_headers, data_list, tsvname, source_file=None):
     report_folder = report_folder.rstrip('/')
     report_folder = report_folder.rstrip('\\')
@@ -237,7 +286,6 @@ def tsv(report_folder, data_headers, data_list, tsvname, source_file=None):
                     row_data = list(i)
                     row_data.append(source_file)
                     tsv_writer.writerow(tuple(row_data))
-
 
 def timeline(report_folder, tlactivity, data_list, data_headers):
     report_folder = report_folder.rstrip('/')
@@ -338,7 +386,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-
 def utf8_in_extended_ascii(input_string, *, raise_on_unexpected=False):
     """Returns a tuple of bool (whether mis-encoded utf-8 is present) and str (the converted string)"""
     output = []  # individual characters, join at the end
@@ -397,7 +444,6 @@ def utf8_in_extended_ascii(input_string, *, raise_on_unexpected=False):
 
     return mis_encoded_utf8_present, "".join(output)
 
-
 def media_to_html(media_path, files_found, report_folder):
     """
     Show selected media files in the HTML report with proper relative pathing.
@@ -453,9 +499,11 @@ def media_to_html(media_path, files_found, report_folder):
             shutil.copy2(match, locationfiles)
             source = Path(locationfiles, filename)
             source = relative_paths(str(source), splitter)
-
-        mimetype = magic.from_file(match, mime=True)
-
+            
+        mimetype = guess_mime(match)
+        if mimetype == None:
+            mimetype = ''
+        
         if 'video' in mimetype:
             thumb = f'<video width="320" height="240" controls="controls"><source src="{source}" type="video/mp4" preload="none">Your browser does not support the video tag.</video>'
         elif 'image' in mimetype:
@@ -465,7 +513,6 @@ def media_to_html(media_path, files_found, report_folder):
         else:
             thumb = f'<a href="{source}" target="_blank"> Link to {filename} file</>'
     return thumb
-
 
 def usergen(report_folder, data_list_usernames):
     report_folder = report_folder.rstrip('/')
@@ -505,7 +552,6 @@ def usergen(report_folder, data_list_usernames):
     db.commit()
     db.close()
 
-
 def ipgen(report_folder, data_list_ipaddress):
     report_folder = report_folder.rstrip('/')
     report_folder = report_folder.rstrip('\\')
@@ -544,18 +590,15 @@ def ipgen(report_folder, data_list_ipaddress):
     db.commit()
     db.close()
 
-
 def _count_generator(reader):
     b = reader(1024 * 1024)
     while b:
         yield b
         b = reader(1024 * 1024)
 
-
 def _get_line_count(file):
     with open(file, 'rb') as fp:
         return sum(buffer.count(b'\n') for buffer in _count_generator(fp.raw.read))
-
 
 def gather_hashes_in_file(file_found: str, regex: Pattern):
     target_hashes = {}
