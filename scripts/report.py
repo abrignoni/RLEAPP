@@ -277,14 +277,14 @@ icon_mappings = \
     },
     'FITBIT': 'watch',
     'GAB RETURNS':{
-        'GAB - POSTS': 'message-square'
-        'GAB - BLOCKS': 'x-octagon'
-        'GAB - FOLLOWERS': 'user-plus'
-        'GAB - FOLLOWING': 'user-check'
-        'GAB - LIKES':'thumbs-up'
-        'GAB - MENTIONS': 'at-sign'
-        'GAB - REPLIES': 'flag'
-        'GAB - SESSION ACTIVATIONS': 'chevrons-right'
+        'GAB - POSTS': 'message-square',
+        'GAB - BLOCKS': 'x-octagon',
+        'GAB - FOLLOWERS': 'user-plus',
+        'GAB - FOLLOWING': 'user-check',
+        'GAB - LIKES':'thumbs-up',
+        'GAB - MENTIONS': 'at-sign',
+        'GAB - REPLIES': 'flag',
+        'GAB - SESSION ACTIVATIONS': 'chevrons-right',
         'default': 'meh',
     }
     'GALLERY TRASH': 'image',
