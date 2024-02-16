@@ -276,6 +276,17 @@ icon_mappings = \
         '_mode': 'search',
     },
     'FITBIT': 'watch',
+    'GAB RETURNS':{
+        'GAB - POSTS': 'message-square',
+        'GAB - BLOCKS': 'x-octagon',
+        'GAB - FOLLOWERS': 'user-plus',
+        'GAB - FOLLOWING': 'user-check',
+        'GAB - LIKES':'thumbs-up',
+        'GAB - MENTIONS': 'at-sign',
+        'GAB - REPLIES': 'flag',
+        'GAB - SESSION ACTIVATIONS': 'chevrons-right',
+        'default': 'meh',
+    }
     'GALLERY TRASH': 'image',
     'GARMIN': {
         'DEVICES': 'watch',
@@ -719,6 +730,10 @@ icon_mappings = \
     'SNAPCHAT RETURNS': 'camera',
     'SQLITE JOURNALING': 'book-open',
     'STRAVA': 'map',
+    'SYSDIAGNOSE': {
+        'SYSDIAGNOSE - SHUTDOWN LOG PROCESSES': 'loader',
+        'SYSDIAGNOSE - SHUTDOWN LOG REBOOTS': 'refresh-cw',
+    }
     'TEAMS': {  # TODO: align I & A artifacts since theres a 'microsoft teams' also
         'TEAMS MESSAGES': 'message-circle',
         'TEAMS USERS': 'users',
