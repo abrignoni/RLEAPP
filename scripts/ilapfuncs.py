@@ -262,7 +262,7 @@ def tsv(report_folder, data_headers, data_list, tsvname, source_file=None):
         os.makedirs(tsv_report_folder)
 
     if os.path.exists(os.path.join(tsv_report_folder, tsvname + '.tsv')):
-        with codecs.open(os.path.join(tsv_report_folder, tsvname + '.tsv'), 'a') as tsvfile:
+        with codecs.open(os.path.join(tsv_report_folder, tsvname + '.tsv'), 'a', 'utf-8-sig') as tsvfile:
             tsv_writer = csv.writer(tsvfile, delimiter='\t')
             for i in data_list:
                 if source_file == None:
