@@ -10,4 +10,6 @@ rleapp_contributors = [
     [ 'Kevin Pagano', 'https://stark4n6.com', '@KevinPagano3', 'https://github.com/stark4n6'],
     [ 'Upintheairsheep2','','','https://github.com/upintheairsheep2'],
     [ 'James Habben', 'https://4n6ir.com/','@JamesHabben','https://github.com/JamesHabben'],
+    ['Evangelos Dragonas', 'https://atropos4n6.com/','@theAtropos4n6','https://github.com/theAtropos4n6'],
+    ['Panos Nakoutis', '', '@4n6equals10','']
 ]
