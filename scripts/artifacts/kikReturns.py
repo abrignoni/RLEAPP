@@ -7,6 +7,65 @@ import shutil
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html
 
+def utf8_in_extended_ascii(input_string, *, raise_on_unexpected=False):
+    """Returns a tuple of bool (whether mis-encoded utf-8 is present) and str (the converted string)"""
+    output = []  # individual characters, join at the end
+    is_in_multibyte = False  # True if we're currently inside a utf-8 multibyte character
+    multibytes_expected = 0
+    multibyte_buffer = []
+    mis_encoded_utf8_present = False
+    
+    def handle_bad_data(index, character):
+        if not raise_on_unexpected: # not raising, so we dump the buffer into output and append this character
+            output.extend(multibyte_buffer)
+            multibyte_buffer.clear()
+            output.append(character)
+            nonlocal is_in_multibyte
+            is_in_multibyte = False
+            nonlocal multibytes_expected
+            multibytes_expected = 0
+        else:
+            raise ValueError(f"Expected multibyte continuation at index: {index}")
+            
+    for idx, c in enumerate(input_string):
+        code_point = ord(c)
+        if code_point <= 0x7f or code_point > 0xf4:  # ASCII Range data or higher than you get for mis-encoded utf-8:
+            if not is_in_multibyte:
+                output.append(c)  # not in a multibyte, valid ascii-range data, so we append
+            else:
+                handle_bad_data(idx, c)
+        else:  # potentially utf-8
+            if (code_point & 0xc0) == 0x80:  # continuation byte
+                if is_in_multibyte:
+                    multibyte_buffer.append(c)
+                else:
+                    handle_bad_data(idx, c)
+            else:  # start-byte
+                if not is_in_multibyte:
+                    assert multibytes_expected == 0
+                    assert len(multibyte_buffer) == 0
+                    while (code_point & 0x80) != 0:
+                        multibytes_expected += 1
+                        code_point <<= 1
+                    multibyte_buffer.append(c)
+                    is_in_multibyte = True
+                else:
+                    handle_bad_data(idx, c)
+                    
+        if is_in_multibyte and len(multibyte_buffer) == multibytes_expected:  # output utf-8 character if complete
+            utf_8_character = bytes(ord(x) for x in multibyte_buffer).decode("utf-8")
+            output.append(utf_8_character)
+            multibyte_buffer.clear()
+            is_in_multibyte = False
+            multibytes_expected = 0
+            mis_encoded_utf8_present = True
+        
+    if multibyte_buffer:  # if we have left-over data
+        handle_bad_data(len(input_string), "")
+    
+    return mis_encoded_utf8_present, "".join(output)
+
+
 def get_kikReturns(files_found, report_folder, seeker, wrap_text, time_offset):
     
     for file_found in files_found:
@@ -310,7 +369,7 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text, time_offset):
                     field = item[2]
                     user_other = item[3]
                     info_one = item[4]
-                    ip = item[6]
+                    ip = item[5]
                     timestamp = item[6]
                     
                     data_list.append((timestamp, user, field, user_other,info_one, ip))
@@ -327,10 +386,39 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text, time_offset):
                 timeline(report_folder, tlactivity, data_list, data_headers)
             else:
                 logfunc('No Kik Group Send Msg data available')
+                
+        if filename.endswith('.csv'):
+            
+            data_list =[]
+            with open(file_found, 'r', encoding='unicode_escape') as f:
+                delimited = csv.reader(f, delimiter=',')
+                for item in delimited:
+                    msgid = item[0]
+                    senderjid = item[1]
+                    receiverjid = item[2]
+                    chattype = item[3]
+                    msg = utf8_in_extended_ascii(item[4])[1]
+                    ip = item[5]
+                    port = item[6]
+                    sentat = item[7]
+                    data_list.append((sentat,senderjid,receiverjid,chattype,msg,ip,port,msgid))
+                    
+            if data_list:
+                report = ArtifactHtmlReport('Kik - Text Message Data')
+                report.start_artifact_report(report_folder, 'Kik - Text Message Data')
+                report.add_script()
+                data_headers = ('Timestamp', 'User', 'Field', 'User', 'Field', 'IP')
+                report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
+                report.end_artifact_report()
+                
+                tlactivity = f'Kik Text Message Data'
+                timeline(report_folder, tlactivity, data_list, data_headers)
+            else:
+                logfunc('No Kik Text Message Data available')
 
 __artifacts__ = {
         "kikReturns": (
             "Kik Returns",
-            ('*/logs/*.txt','*/logs/*','*/content/*'),
+            ('*/logs/*.txt','*/logs/*','*/content/*','*/content/text-msg-data/*.csv'),
             get_kikReturns)
 }
