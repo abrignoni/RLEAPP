@@ -26,7 +26,7 @@ import os
 from pathlib import Path
 from datetime import datetime
 from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, media_to_html#,timestampsconv, convert_utc_human_to_timezone,convert_ts_int_to_utc,is_platform_windows
+from scripts.ilapfuncs import logfunc, tsv, timeline, convert_utc_human_to_timezone,convert_ts_int_to_timezone,convert_ts_human_to_utc,is_platform_windows
 
 
 def get_chatgpt(files_found, report_folder, seeker, wrap_text, time_offset):
@@ -49,10 +49,8 @@ def get_chatgpt(files_found, report_folder, seeker, wrap_text, time_offset):
                 for conversations in data:
                     conversation_title = conversations.get("title","")
                     conversation_id = conversations.get("id","")
-                    c_dt_object = conversations.get("create_time","")
-                    create_time = datetime.utcfromtimestamp(int(c_dt_object))
-                    u_dt_object = conversations.get("update_time","")
-                    update_time = datetime.utcfromtimestamp(int(u_dt_object))
+                    create_time = convert_ts_int_to_timezone(int(conversations.get("create_time", 0)),time_offset)
+                    update_time = convert_ts_int_to_timezone(int(conversations.get("update_time", 0)),time_offset)
                     moderation_results = conversations.get("moderation_results","")
                     plugin_ids = conversations.get("plugin_ids","")
                     gizmo_id = conversations.get("gizmo_id","")
@@ -67,10 +65,8 @@ def get_chatgpt(files_found, report_folder, seeker, wrap_text, time_offset):
                                 author_role = msg_content.get("author", "").get("role", "")
                                 author_name = msg_content.get("author", "").get("name", "")
                                 author_metadata = msg_content.get("author", "").get("metadata", "")
-                                msg_c_dt_object = msg_content.get("create_time","")
-                                msg_create_time = datetime.utcfromtimestamp(int(msg_c_dt_object)) if msg_c_dt_object else ''
-                                msg_u_dt_object = msg_content.get("update_time","")
-                                msg_update_time = datetime.utcfromtimestamp(int(msg_c_dt_object)) if msg_u_dt_object else ''
+                                msg_create_time = convert_ts_int_to_timezone(int(msg_content.get("create_time", 0)),time_offset) if msg_content.get("create_time") is not None else ""
+                                msg_update_time = convert_ts_int_to_timezone(int(msg_content.get("update_time", 0)),time_offset) if msg_content.get("update_time") is not None else ""
                                 content_type = msg_content.get("content", "").get("content_type", "")
                                 content_language = msg_content.get("content", "").get("language", "")
                                 content_text = msg_content.get("content", "").get("text", "")
@@ -186,7 +182,8 @@ def get_chatgpt(files_found, report_folder, seeker, wrap_text, time_offset):
                     conv_id = feedback.get("conversation_id","")
                     user_id = feedback.get("user_id","")
                     rating = feedback.get("rating","")
-                    create_time = feedback.get("create_time","")
+                    formatted_timestamp = feedback.get("create_time","").split('T')[0] + ' ' + feedback.get("create_time","").split('T')[1].split('.')[0] #converts iso format to ilapp function's desired input
+                    create_time = convert_utc_human_to_timezone(convert_ts_human_to_utc(formatted_timestamp), time_offset)
                     workspace_id = feedback.get("workspace_id","")
                     content = feedback.get("content","")
                     storage_protocol = feedback.get("storage_protocol","")
