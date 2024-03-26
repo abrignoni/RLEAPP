@@ -1,23 +1,24 @@
 # common standard imports
 import codecs
 import csv
-from datetime import *
-import json
+import datetime
 import os
-import pathlib
 import re
 import shutil
 import sqlite3
 import sys
 from functools import lru_cache
 from pathlib import Path
-from typing import Pattern
 
 # common third party imports
 import pytz
 import simplekml
 from bs4 import BeautifulSoup
 from scripts.filetype import guess_mime
+
+# LEAPP version unique imports
+import json
+from typing import Pattern
 
 os.path.basename = lru_cache(maxsize=None)(os.path.basename)
 
@@ -29,7 +30,7 @@ class OutputParameters:
     screen_output_file_path = ''
 
     def __init__(self, output_folder):
-        now = datetime.now()
+        now = datetime.datetime.now()
         currenttime = str(now.strftime('%Y-%m-%d_%A_%H%M%S'))
         self.report_folder_base = os.path.join(output_folder,
                                                'RLEAPP_Reports_' + currenttime)  # rleapp , rleappGUI, ileap_artifacts, report.py
@@ -181,21 +182,26 @@ def does_table_exist(db, table_name):
 class GuiWindow:
     '''This only exists to hold window handle if script is run from GUI'''
     window_handle = None  # static variable
-    progress_bar_total = 0
-    progress_bar_handle = None
 
     @staticmethod
-    def SetProgressBar(n):
-        if GuiWindow.progress_bar_handle:
-            GuiWindow.progress_bar_handle.UpdateBar(n)
+    def SetProgressBar(n, total):
+        if GuiWindow.window_handle:
+            progress_bar = GuiWindow.window_handle.nametowidget('!progressbar')
+            progress_bar.config(value=n)
 
 def logfunc(message=""):
+    def redirect_logs(string):
+        log_text.insert('end', string)
+        log_text.see('end')
+        log_text.update()
+
+    if GuiWindow.window_handle:
+        log_text = GuiWindow.window_handle.nametowidget('logs_frame.log_text')
+        sys.stdout.write = redirect_logs
+
     with open(OutputParameters.screen_output_file_path, 'a', encoding='utf8') as a:
         print(message)
         a.write(message + '<br>' + OutputParameters.nl)
-
-    if GuiWindow.window_handle:
-        GuiWindow.window_handle.refresh()
 
 def logdevinfo(message=""):
     with open(OutputParameters.screen_output_file_path_devinfo, 'a', encoding='utf8') as b:

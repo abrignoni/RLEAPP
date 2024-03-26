@@ -8,7 +8,6 @@ packaging==20.1
 pillow-heif
 protobuf==3.10.0
 PyCryptodome
-PySimpleGUI
 simplekml
 xmltodict
 xlrd==1.2.0
