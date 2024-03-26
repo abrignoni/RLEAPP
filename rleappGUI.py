@@ -492,7 +492,7 @@ for plugin, enabled in mlist.items():
     cb = tk.Checkbutton(mlist_text, name=f'mcb_{plugin.name}', 
                         text=f'{plugin.category} [{plugin.name} - {plugin.module_name}.py]', 
                         variable=enabled, onvalue=True, offvalue=False, command=get_selected_modules)
-    cb.config(background=theme_bgcolor, fg=theme_fgcolor, selectcolor=theme_inputcolor, 
+    cb.config(background=theme_bgcolor, fg=theme_fgcolor, selectcolor=theme_bgcolor, 
               highlightthickness=0, activebackground=theme_bgcolor, activeforeground=theme_fgcolor)
     mlist_text.window_create('insert', window=cb)
     mlist_text.insert('end', '\n')
