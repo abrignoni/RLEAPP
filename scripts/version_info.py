@@ -1,4 +1,4 @@
-rleapp_version = '1.0.5'
+rleapp_version = '1.1.0'
 
 # Contributors List
 # Format = [ Name, Blog-url, Twitter-handle, Github-url]
@@ -11,5 +11,6 @@ rleapp_contributors = [
     [ 'Upintheairsheep2','','','https://github.com/upintheairsheep2'],
     [ 'James Habben', 'https://4n6ir.com/','@JamesHabben','https://github.com/JamesHabben'],
     ['Evangelos Dragonas', 'https://atropos4n6.com/','@theAtropos4n6','https://github.com/theAtropos4n6'],
-    ['Panos Nakoutis', '', '@4n6equals10','']
+    ['Panos Nakoutis', '', '@4n6equals10',''],
+    ['Johann Polewczyk', 'https://www.linkedin.com/in/johann-polewczyk-6a905425/', '@johannplw', 'https://github.com/Johann-PLW']
 ]
