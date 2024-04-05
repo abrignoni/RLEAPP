@@ -250,6 +250,7 @@ icon_mappings = \
     },
     'DISCORD CHATS': 'message-square',
     'DISCORD RETURNS': 'message-square',
+    'DISCORD RETURNS ONLINE': 'message-square', 
     'DOWNLOADS': 'download',
     'DRAFT NATIVE MESSAGES': 'message-circle',
     'DUCKDUCKGO': {

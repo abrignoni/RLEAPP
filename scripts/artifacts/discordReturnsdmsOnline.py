@@ -14,7 +14,7 @@ def get_discordReturnsdmsOnline(files_found, report_folder, seeker, wrap_text, t
     counter = 0
     for file_found in files_found:
         file_found = str(file_found)
-        logfunc(file_found)
+    
         filename = os.path.basename(file_found)
         csvname = filename
         
@@ -50,7 +50,7 @@ def get_discordReturnsdmsOnline(files_found, report_folder, seeker, wrap_text, t
                                 thumb = media_to_html(f'media{counter}', datalist_temp, report_folder)
                                 counter = counter + 1
                         
-                        if contents.startswith('https'):
+                        if ('cdn.discordapp.com' or 'media.discordapp.net') in contents and (contents.startswith('http')):
                             url = urllib.parse.unquote(contents)
                             dlpath = Path(report_folder, f'media{counter}')
                             response = requests.get(url, stream=True)
