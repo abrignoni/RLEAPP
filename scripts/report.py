@@ -250,6 +250,7 @@ icon_mappings = \
     },
     'DISCORD CHATS': 'message-square',
     'DISCORD RETURNS': 'message-square',
+    'DISCORD RETURNS ONLINE': 'message-square', 
     'DOWNLOADS': 'download',
     'DRAFT NATIVE MESSAGES': 'message-circle',
     'DUCKDUCKGO': {
@@ -956,6 +957,8 @@ def generate_report(reportfolderbase, time_in_secs, time_HMS, extraction_type, i
     for root, dirs, files in sorted(os.walk(reportfolderbase)):
         files = sorted(files)
         for file in files:
+            if file.startswith('._'):
+                continue
             if file.endswith(".temphtml"):
                 fullpath = (os.path.join(root, file))
                 head, tail = os.path.split(fullpath)
@@ -1016,7 +1019,7 @@ def generate_report(reportfolderbase, time_in_secs, time_HMS, extraction_type, i
     shutil.copytree(os.path.join(__location__,"MDB-Free_4.13.0"), os.path.join(elements_folder, 'MDB-Free_4.13.0'))
 
 def get_file_content(path):
-    f = open(path, 'r', encoding='utf8')
+    f = open(path, 'r', encoding='utf8', errors='ignore')
     data = f.read()
     f.close()
     return data
