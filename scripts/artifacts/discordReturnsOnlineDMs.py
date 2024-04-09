@@ -9,7 +9,7 @@ import urllib.parse
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html, kmlgen
 
-def get_discordReturnsdmsOnline(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_discordReturnsOnlineDMs(files_found, report_folder, seeker, wrap_text, time_offset):
 
     counter = 0
     for file_found in files_found:
@@ -88,8 +88,8 @@ def get_discordReturnsdmsOnline(files_found, report_folder, seeker, wrap_text, t
             logfunc(f'No Discord - Direct Messages in {csvname}')
                 
 __artifacts__ = {
-        "discordReturnsdmsOnline": (
+        "discordReturnsOnlineDMs": (
             "Discord Returns Online",
             ('*/messages/dms/*.csv'),
-            get_discordReturnsdmsOnline)
+            get_discordReturnsOnlineDMs)
 }
