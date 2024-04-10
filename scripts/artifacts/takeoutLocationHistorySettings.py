@@ -121,7 +121,7 @@ def get_takeoutLocationHistorySettings(files_found, report_folder, seeker, wrap_
 		# Extract the pertinent data from the JSON data
 		createdTime = data['createdTime'].replace('T', ' ').replace('Z', '') # Displays the time the Google account associated with the Location History data was created
 		modifiedTime = data['modifiedTime'].replace('T', ' ').replace('Z', '') # Displays the time the Google account associated with the Location History data was last modified to capture, or cease capturing, data collection
-				try:
+		try:
 			if 'historyEnabled' in data:
 				enabled_key = 'historyEnabled' # Reflects whether Location History was enabled or not enabled for the Google account, True for Enabled
 			elif 'timelineEnable' in data:
