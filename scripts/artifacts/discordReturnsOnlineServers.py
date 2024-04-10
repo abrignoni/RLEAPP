@@ -9,7 +9,7 @@ import urllib.parse
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html, kmlgen
 
-def get_discordReturnsdmsOnline(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_discordReturnsOnlineServers(files_found, report_folder, seeker, wrap_text, time_offset):
 
     counter = 0
     for file_found in files_found:
@@ -72,24 +72,24 @@ def get_discordReturnsdmsOnline(files_found, report_folder, seeker, wrap_text, t
                             
         
         if len(data_list_dm) > 0:
-            report = ArtifactHtmlReport(f'Discord - Direct Messages ')
-            report.start_artifact_report(report_folder, f'Discord - Direct Messages - {csvname}')
+            report = ArtifactHtmlReport(f'Discord - Servers ')
+            report.start_artifact_report(report_folder, f'Discord - Servers - {csvname}')
             report.add_script()
             data_headers = ('Timestamp','Username','Contents','Attachment','ID','Channel ID','Author ID')
             report.write_artifact_data_table(data_headers, data_list_dm, file_found, html_no_escape=['Attachment','Contents'])
             report.end_artifact_report()
             
-            tsvname = f'Discord - Direct Messages - {csvname}'
+            tsvname = f'Discord - Servers - {csvname}'
             tsv(report_folder, data_headers, data_list_dm, tsvname)
             
-            tlactivity = f'Discord -Direct Messages - {csvname}'
+            tlactivity = f'Discord - Servers - {csvname}'
             timeline(report_folder, tlactivity, data_list_dm, data_headers)
         else:
-            logfunc(f'No Discord - Direct Messages in {csvname}')
+            logfunc(f'No Discord - Servers in {csvname}')
                 
 __artifacts__ = {
-        "discordReturnsdmsOnline": (
+        "discordReturnsOnlineServers": (
             "Discord Returns Online",
-            ('*/messages/dms/*.csv'),
-            get_discordReturnsdmsOnline)
+            ('*/messages/servers/*.csv'),
+            get_discordReturnsOnlineServers)
 }
