@@ -1,6 +1,7 @@
 # Module Description: Parses Device Information from Google Takeout Location History Exports. Device Information is also parsed through free to use Google Location History Data Parser available at https://github.com/MetadataForensics/Google-Location-History-Data-Parser
 # Author: @MetadataForensics by @SQL_McGee
 # Date: 2024-03-21
+# Date Updated: 2024-04-09
 # Artifact version: 0.0.1
 # Requirements: none
 
@@ -120,11 +121,35 @@ def get_takeoutLocationHistorySettings(files_found, report_folder, seeker, wrap_
 		# Extract the pertinent data from the JSON data
 		createdTime = data['createdTime'].replace('T', ' ').replace('Z', '') # Displays the time the Google account associated with the Location History data was created
 		modifiedTime = data['modifiedTime'].replace('T', ' ').replace('Z', '') # Displays the time the Google account associated with the Location History data was last modified to capture, or cease capturing, data collection
-		historyEnabled = data['historyEnabled'] # Reflects whether Location History was enabled or not enabled for the Google account, True for Enabled
-		try:
-			historyDeletionTime = data['historyDeletionTime'].replace('T', ' ').replace('Z', '') # Displays the last deletion of Location History for the Google account, or setting changes within Location History
+				try:
+			if 'historyEnabled' in data:
+				enabled_key = 'historyEnabled' # Reflects whether Location History was enabled or not enabled for the Google account, True for Enabled
+			elif 'timelineEnable' in data:
+				enabled_key = 'timelineEnabled' # Renamed in newer exports
+			else:
+				enabled_key = None
+			
+			if enabled_key:
+				enabled = data[enabled_key]
+			else:
+				enabled = None
 		except KeyError:
-			historyDeletionTime = None
+			enabled = None
+
+		try:
+			if 'historyDeletionTime' in data:
+				deletion_time_key = 'historyDeletionTime'
+			elif 'timelineDeletionTime' in data:
+				deletion_time_key = 'timelineDeletionTime'
+			else:
+				deletion_time_key = None
+			
+			if deletion_time_key:
+				deletion_time = data[deletion_time_key].replace('T', ' ').replace('Z', '')
+			else:
+				deletion_time = None
+		except KeyError:
+			deletion_time = None
 		devices = data.get('deviceSettings', []) # One or more devices can be associated with the Google account, this will capture data for all devices associated when more than one devices are present
 		if len(data['deviceSettings']) > 1:
 			# Loop through each device and print its details
@@ -152,13 +177,39 @@ def get_takeoutLocationHistorySettings(files_found, report_folder, seeker, wrap_
 				if deviceSpec in iphone_models:
 					deviceSpec = iphone_models[deviceSpec]
 				try:
+					hasSavedTimelineData = device['deviceActiveness']['hasSavedTimelineData']
+				except KeyError:
+					hasSavedTimelineData = "New Data Supported in Recent Export Versions"
+				try:
+					observedPlaceVisitsFor30PercentOfTheLast7d = device['deviceActiveness']['observedPlaceVisitsFor30PercentOfTheLast7d']
+				except KeyError:
+					observedPlaceVisitsFor30PercentOfTheLast7d = "New Data Supported in Recent Export Versions"
+				historyEnabledModificationTime = None
+				try:
 					historyEnabledModificationTime = data['latestLocationHistorySettingChange']['historyEnabledModificationTime'].replace('T', ' ').replace('Z', '') # Displays the time Location History permissions were last modified for the Google account
 				except KeyError:
-					historyEnabledModificationTime = None
-				retentionWindowDays = data['retentionWindowDays'] # Displays the Location History data retention period for the Google account: "540" for the default value, 18 months; "90" for 3 months; "1080" for 36 months; and "2147483647" if no retention period was set
+					try:
+						historyEnabledModificationTime = data['latestTimelineSettingChange']['timelineEnabledModificationTime'].replace('T', ' ').replace('Z', '') # Key-pair name change
+					except KeyError:
+						historyEnabledModificationTime = None
+				try:
+					retentionWindowDays = data['retentionWindowDays'] # Displays the Location History data retention period for the Google account: "540" for the default value, 18 months; "90" for 3 months; "1080" for 36 months; and "2147483647" if no retention period was set
+				except KeyError:
+					try:
+						retentionWindowDays = data['retentionControl']['retentionWindowDays']
+					except KeyError:
+						retentionWindowDays = None 
+				try:
+					encrypted_backups_info = []
+					for device_key, device_data in data['encryptedBackupsControls'].items():
+						enabled = device_data['enabled']
+						encrypted_backups_info.append(f"Device Tag: {device_key}, Enabled: {enabled}")
+					encrypted_backups_info = '\n'.join(encrypted_backups_info)
+				except KeyError:
+					encrypted_backups_info = "New Data Supported in Recent Export Versions"
 				hasReportedLocations = data['hasReportedLocations'] # Reflects whether Location History data is present for the Google account, True for data present
 				hasSetRetention = data['hasSetRetention'] # Reflects if a rentention period was applied to the Google account, True for "Auto-delete activity older than XX months" or False for "Don't auto-delete activity"
-				data_list.append((createdTime, modifiedTime, historyEnabled, historyDeletionTime, deviceTag, reportingEnabled, legalCountryCode, devicePrettyName, platformType, deviceCreationTime, reportingEnabledModificationTime, OSVersion, deviceSpec, historyEnabledModificationTime, retentionWindowDays, hasReportedLocations, hasSetRetention))
+				data_list.append((createdTime, modifiedTime, enabled, deletion_time, deviceTag, reportingEnabled, legalCountryCode, devicePrettyName, platformType, deviceCreationTime, reportingEnabledModificationTime, OSVersion, deviceSpec, hasSavedTimelineData, observedPlaceVisitsFor30PercentOfTheLast7d, historyEnabledModificationTime, retentionWindowDays, encrypted_backups_info, hasReportedLocations, hasSetRetention))
 		else:
 			for device in data['deviceSettings']:
 				deviceTag = device['deviceTag'] # Displays the globally unique identifier for the device, as created by Google
@@ -181,14 +232,50 @@ def get_takeoutLocationHistorySettings(files_found, report_folder, seeker, wrap_
 				except KeyError:
 					androidOsLevel = None
 				deviceSpec = device['deviceSpec']['device'] # Displays the model type for the device
+				if deviceSpec in iphone_models:
+					deviceSpec = iphone_models[deviceSpec]
 				try:
 					historyEnabledModificationTime = data['latestLocationHistorySettingChange']['historyEnabledModificationTime'].replace('T', ' ').replace('Z', '') # Displays the time Location History permissions were last modified for the Google account
 				except KeyError:
 					historyEnabledModificationTime = None
-				retentionWindowDays = data['retentionWindowDays'] # Displays the Location History data retention period for the Google account: "540" for the default value, 18 months; "90" for 3 months; "1080" for 36 months; and "2147483647" if no retention period was set
+				deviceSpec = device['deviceSpec']['device'] # Displays the model type for the device
+				if deviceSpec in iphone_models:
+					deviceSpec = iphone_models[deviceSpec]
+				try:
+					hasSavedTimelineData = device['deviceActiveness']['hasSavedTimelineData']
+				except KeyError:
+					hasSavedTimelineData = "New Data Supported in Recent Export Versions"
+				try:
+					observedPlaceVisitsFor30PercentOfTheLast7d = device['deviceActiveness']['observedPlaceVisitsFor30PercentOfTheLast7d']
+				except KeyError:
+					observedPlaceVisitsFor30PercentOfTheLast7d = "New Data Supported in Recent Export Versions"
+				historyEnabledModificationTime = None  # Initialize historyEnabledModificationTime
+				try:
+					historyEnabledModificationTime = data['latestLocationHistorySettingChange']['historyEnabledModificationTime'].replace('T', ' ').replace('Z', '') # Displays the time Location History permissions were last modified for the Google account
+				except KeyError:
+					try:
+						historyEnabledModificationTime = data['latestTimelineSettingChange']['timelineEnabledModificationTime'].replace('T', ' ').replace('Z', '') # Key-pair name change
+					except KeyError:
+						historyEnabledModificationTime = None
+				try:
+					retentionWindowDays = data['retentionWindowDays'] # Displays the Location History data retention period for the Google account: "540" for the default value, 18 months; "90" for 3 months; "1080" for 36 months; and "2147483647" if no retention period was set
+				except KeyError:
+					try:
+						retentionWindowDays = data['retentionControl']['retentionWindowDays']
+					except KeyError:
+						retentionWindowDays = None
+				encrypted_backups_info = ""  # Initialize encrypted_backups_info
+				try:
+					encrypted_backups_info = []
+					for device_key, device_data in data['encryptedBackupsControls'].items():
+						enabled = device_data['enabled']
+						encrypted_backups_info.append(f"Device Tag: {device_key}, Enabled: {enabled}")
+					encrypted_backups_info = '\n'.join(encrypted_backups_info)
+				except KeyError:
+					encrypted_backups_info = "New Data Supported in Recent Export Versions"
 				hasReportedLocations = data['hasReportedLocations'] # Reflects whether Location History data is present for the Google account, True for data present
 				hasSetRetention = data['hasSetRetention'] # Reflects if a rentention period was applied to the Google account, True for "Auto-delete activity older than XX months" or False for "Don't auto-delete activity"
-				data_list.append((createdTime, modifiedTime, historyEnabled, historyDeletionTime, deviceTag, reportingEnabled, legalCountryCode, devicePrettyName, platformType, deviceCreationTime, reportingEnabledModificationTime, OSVersion, deviceSpec, historyEnabledModificationTime, retentionWindowDays, hasReportedLocations, hasSetRetention))
+				data_list.append((createdTime, modifiedTime, enabled, deletion_time, deviceTag, reportingEnabled, legalCountryCode, devicePrettyName, platformType, deviceCreationTime, reportingEnabledModificationTime, OSVersion, deviceSpec, hasSavedTimelineData, observedPlaceVisitsFor30PercentOfTheLast7d, historyEnabledModificationTime, retentionWindowDays, encrypted_backups_info, hasReportedLocations, hasSetRetention))
 	
 	num_entries = len(data_list)
 	if num_entries > 0:
@@ -196,7 +283,7 @@ def get_takeoutLocationHistorySettings(files_found, report_folder, seeker, wrap_
 		report = ArtifactHtmlReport('Google Location History - Settings')
 		report.start_artifact_report(report_folder, 'Google Location History - Settings', description)
 		report.add_script()
-		data_headers = ('Google Account Creation Time (UTC+0)','Location History Modified Time (UTC+0)', 'History Enabled', 'History Deletion Time (UTC+0)', 'Device Tag', 'Device Reporting Enabled', 'Device Country Code', 'Device Pretty Name', 'Device Platform Type', 'Device Creation Time (UTC+0)', 'Device Latest Location History Setting Change (UTC+0)', 'Device OS Version', 'Device Model', 'Google Account Latest Location History Setting Change (UTC+0)', 'Google Account Retention Window (in Days)', 'Has Reported Locations', 'Has Set Retention')
+		data_headers = ('Google Account Creation Time','Location History Modified Time', 'History Enabled', 'History/Timeline Deletion Time', 'Device Tag', 'Device Reporting Enabled', 'Device Country Code', 'Device Pretty Name', 'Device Platform Type', 'Device Creation Time', 'Device Latest Location History Setting Change', 'Device OS Version', 'Device Model', 'Has Saved Timeline Data', 'ObservedPlace Visits for 30% of the last 7 Days', 'Google Account Latest Location History Setting Change', 'Google Account Retention Window (in Days)', 'Encrypted Backups Controls', 'Has Reported Locations', 'Has Set Retention')
 		
 		report.write_artifact_data_table(data_headers, data_list, file_found)
 		report.end_artifact_report()
@@ -213,6 +300,6 @@ def get_takeoutLocationHistorySettings(files_found, report_folder, seeker, wrap_
 __artifacts__ = {
 		"takeoutLocationHistorySettings": (
 			"Google Takeout Archive",
-			('*/Location History/Settings.json'),
+			('*/Location History*/Settings.json'),
 			get_takeoutLocationHistorySettings)
 }
