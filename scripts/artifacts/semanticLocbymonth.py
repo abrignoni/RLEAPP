@@ -34,8 +34,14 @@ def get_semanticLocbymonth(files_found, report_folder, seeker, wrap_text, time_o
                             latitudel = values['latitudeE7']/1e7
                             longitudel = values['longitudeE7']/1e7
                             placeid = values['placeId']
-                            address = values['address']
-                            name = values.get('name','')
+                            try:
+                                address = values['address']
+                            except KeyError:
+                                address = None
+                            try:
+                                name = values.get('name','')
+                            except KeyError:
+                                name = None
                             devicetag = values.get('sourceInfo',' ')
                             if devicetag != ' ':
                                 devicetag = values['sourceInfo']['deviceTag']
@@ -168,6 +174,6 @@ def get_semanticLocbymonth(files_found, report_folder, seeker, wrap_text, time_o
 __artifacts__ = {
         "semanticLocationsMonth": (
             "Google Takeout Archive",
-            ('*/Location History/Semantic Location History/*/*_*.json'),
+            ('*/Location History*/Semantic Location History/*/*_*.json'),
             get_semanticLocbymonth)
 }
