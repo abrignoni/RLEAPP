@@ -55,7 +55,7 @@ def get_airdropNumbers(files_found, report_folder, seeker, wrap_text, time_offse
         for areacode in areacodelist:
             areacode = areacode.strip()
             logfunc('Searching area code ' + str(areacode) + ' for target...')
-            ilapfuncs.GuiWindow.SetProgressBar(0)
+            #ilapfuncs.GuiWindow.SetProgressBar(0)
             off = 0
             start_time = time.time()
             for line in range(10 ** i):
@@ -67,7 +67,8 @@ def get_airdropNumbers(files_found, report_folder, seeker, wrap_text, time_offse
                     start_time = time.time()
 
                 if line % factor == 0:
-                    ilapfuncs.GuiWindow.SetProgressBar(int(line / factor))
+                    pass
+                    #ilapfuncs.GuiWindow.SetProgressBar(int(line / factor))
 
                 targetphone = f"{COUNTRY_CODE[selected_country]}{areacode}{line:0{i}d}"
                 targettest = hashlib.sha256(targetphone.encode()).hexdigest()
