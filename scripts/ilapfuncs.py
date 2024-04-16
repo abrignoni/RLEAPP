@@ -620,9 +620,10 @@ def gather_hashes_in_file(file_found: str, regex: Pattern):
 
     factor = int(_get_line_count(file_found) / 100)
     with open(file_found, 'r') as data:
-        for i, x in enumerate(data):
+        for i, x in enumerate(data): 
             if i % factor == 0:
-                GuiWindow.SetProgressBar(int(i / factor))
+                pass
+                #GuiWindow.SetProgressBar(int(i / factor))
 
             result = regex.search(x)
             if not result:
