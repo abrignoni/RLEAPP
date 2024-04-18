@@ -76,9 +76,9 @@ def get_airdropNumbers(files_found, report_folder, seeker, wrap_text, time_offse
                 endhashcheck = targettest[-5:]
                 if (starthashcheck, endhashcheck) in target_hashes:
                     logfunc(f"Found phone {targetphone} for hash {starthashcheck}....{endhashcheck}")
-                    phone_hash = target_hashes.pop((starthashcheck, endhashcheck))
+                    phone_hash = target_hashes[(starthashcheck, endhashcheck)]
                     phone_hash[1] = targetphone
-                    data_list.append(phone_hash)
+                    data_list.append(phone_hash.copy())
                 if not target_hashes:
                     logfunc("No target hashes left")
                     break
