@@ -14,7 +14,7 @@ def get_fbigUnifiedmessaging(files_found, report_folder, seeker, wrap_text, time
         file_found = str(file_found)
         
         filename = os.path.basename(file_found)
-    
+        rfilename = filename
         if filename.startswith('index.html') or filename.startswith('preservation'):
             rfilename = filename
             file_to_report_data = file_found

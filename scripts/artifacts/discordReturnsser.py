@@ -27,8 +27,11 @@ def get_discordReturnsser(files_found, report_folder, seeker, wrap_text, time_of
             threads = data.get('threads','')
             channels = data.get('channels','')
             agregator = '<table>'
-            for key, value in channels.items():
-                agregator = f'{agregator}<tr><td>{key}</td><td>{value}</td></tr>'
+            if channels == '':
+                pass
+            else:
+                for key, value in channels.items():
+                    agregator = f'{agregator}<tr><td>{key}</td><td>{value}</td></tr>'
             agregator = f'{agregator} </table>'
             description = data.get('description','')
             icon = data.get('icon','')
@@ -37,7 +40,7 @@ def get_discordReturnsser(files_found, report_folder, seeker, wrap_text, time_of
             
                         
         
-            if data_list_dm:
+            if len(data_list_dm) > 1:
                 report = ArtifactHtmlReport(f'Discord - Server Metadata ')
                 report.start_artifact_report(report_folder, f'Discord - Server Metadata - {csvname}')
                 report.add_script()
@@ -49,7 +52,7 @@ def get_discordReturnsser(files_found, report_folder, seeker, wrap_text, time_of
                 tsv(report_folder, data_headers, data_list_dm, tsvname)
                 
             else:
-                logfunc(f'Discord - Server Metadata - {csvname}')
+                logfunc(f'No data in Discord - Server Metadata - {csvname}')
                 
 __artifacts__ = {
         "discordReturnsser": (
