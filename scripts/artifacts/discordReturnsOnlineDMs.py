@@ -156,7 +156,7 @@ def get_discordReturnsdmsOnline(files_found, report_folder, seeker, wrap_text, t
             logfunc(f'No Discord - Direct Messages in {csvname}')
             
 __artifacts__ = {
-        "discordReturnsdmsOnline": (
+        "discordReturnsOnlineDMs": (
             "Discord Returns Online",
             ('*/messages/*/*.csv'),
             get_discordReturnsdmsOnline)

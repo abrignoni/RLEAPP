@@ -155,6 +155,6 @@ def get_gooReturnsrec(files_found, report_folder, seeker, wrap_text, time_offset
 __artifacts__ = {
         "gooReturnsrec": (
             "Google Returns",
-            ('*/Location History/Records.json'),
+            ('*/Location History*/Records.json'),
             get_gooReturnsrec)
 }
