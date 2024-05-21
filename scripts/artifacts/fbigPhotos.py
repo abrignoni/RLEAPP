@@ -14,7 +14,7 @@ def get_fbigPhotos(files_found, report_folder, seeker, wrap_text, time_offset):
         file_found = str(file_found)
         
         filename = os.path.basename(file_found)
-    
+        
         if filename.startswith('index.html') or filename.startswith('preservation'):
             rfilename = filename
             file_to_report_data = file_found
