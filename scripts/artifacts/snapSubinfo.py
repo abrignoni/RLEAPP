@@ -102,16 +102,21 @@ def get_snapSubinfo(files_found, report_folder, seeker, wrap_text, time_offset):
                     header2[11]='Status'
                     data_list2 = data_list
                     for x in data_list2:
-                        timestamp = x[5].split(' ')
-                        year = timestamp[5]
-                        day = timestamp[2]
-                        time = timestamp[3]
-                        month = monthletter(timestamp[1])
-                        timestampfinal = (f'{year}-{month}-{day} {time}')
-                        x[5] = timestampfinal
-                        username = x[0]
-                        x[0] = x[5]
-                        x[5] = username
+                        if x[5] == '':
+                            username = x[0]
+                            x[0] = x[5]
+                            x[5] = username
+                        else:
+                            timestamp = x[5].split(' ')
+                            year = timestamp[5]
+                            day = timestamp[2]
+                            time = timestamp[3]
+                            month = monthletter(timestamp[1])
+                            timestampfinal = (f'{year}-{month}-{day} {time}')
+                            x[5] = timestampfinal
+                            username = x[0]
+                            x[0] = x[5]
+                            x[5] = username
                     
                 elif header.startswith('date,action,old_value,new_value,reason'): #Done
                     header = header.strip().split(',')
