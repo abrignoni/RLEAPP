@@ -32,6 +32,7 @@ def get_snapMemN(files_found, report_folder, seeker, wrap_text, time_offset):
         one = (os.path.split(file_found))
         username = (os.path.basename(one[0]))
         
+        data_list_f = []
         
         if filename.startswith('memories.csv'):
             csv_rows = read_multiline_csv(file_found)
@@ -115,6 +116,8 @@ def get_snapMemN(files_found, report_folder, seeker, wrap_text, time_offset):
                 
             else:
                 logfunc(f'No Snapchat - Memories - {username}')
+                
+            data_list_f = []
         
         
 __artifacts__ = {

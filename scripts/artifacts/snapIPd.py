@@ -47,6 +47,8 @@ def get_snapIPd(files_found, report_folder, seeker, wrap_text, time_offset):
         one = (os.path.split(file_found))
         username = (os.path.basename(one[0]))
         
+        data_list2 = []
+        
         if filename.startswith('ip_data.csv'):
             with open(file_found) as f:
                 input_data = f.read() 
@@ -116,6 +118,8 @@ def get_snapIPd(files_found, report_folder, seeker, wrap_text, time_offset):
             
         else:
             logfunc(f'No Snapchat - IP Data - {username}')
+        
+        data_list2 = []
     
 __artifacts__ = {
         "snapIPd": (

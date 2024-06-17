@@ -32,6 +32,7 @@ def get_snapStoryN(files_found, report_folder, seeker, wrap_text, time_offset):
         one = (os.path.split(file_found))
         username = (os.path.basename(one[0]))
         
+        data_list_f = []
         
         if filename.startswith('story.csv'):
             csv_rows = read_multiline_csv(file_found)
@@ -108,13 +109,11 @@ def get_snapStoryN(files_found, report_folder, seeker, wrap_text, time_offset):
                 
                 tlactivity = f'Snapchat - Story - {username}'
                 timeline(report_folder, tlactivity, data_list_f, data_headers)
-                
-                
-                
-                
+
             else:
                 logfunc(f'No Snapchat - Story - {username}')
-        
+            
+            data_list_f = []
         
 __artifacts__ = {
         "snapStoryN": (

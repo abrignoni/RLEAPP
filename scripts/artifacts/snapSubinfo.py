@@ -50,6 +50,13 @@ def get_snapSubinfo(files_found, report_folder, seeker, wrap_text, time_offset):
         filename = os.path.basename(file_found)
         one = (os.path.split(file_found))
         username = (os.path.basename(one[0]))
+        
+        data_list2 = []
+        data_list3 = []
+        data_list4 = []
+        data_list5 = []
+        data_list6 = []
+        data_list7 = []
 
         if filename.startswith('subscriber_info.csv'):
             with open(file_found) as f:
@@ -197,6 +204,8 @@ def get_snapSubinfo(files_found, report_folder, seeker, wrap_text, time_offset):
         else:
             logfunc(f'Snapchat - Account Information - {username}')    
             
+        data_list2 = []
+        
         if len(data_list3) > 0:
             report = ArtifactHtmlReport(f'Snapchat - Account Change History')
             report.start_artifact_report(report_folder, f'Snapchat - Account Change History - {username}')
@@ -211,6 +220,8 @@ def get_snapSubinfo(files_found, report_folder, seeker, wrap_text, time_offset):
             timeline(report_folder, tlactivity, data_list3, header3)
         else:
             logfunc(f'Snapchat - Account Change History - {username}')
+        
+        data_list3 = []
             
         if len(data_list4) > 0:
             report = ArtifactHtmlReport(f'Snapchat - Username History')
@@ -227,6 +238,8 @@ def get_snapSubinfo(files_found, report_folder, seeker, wrap_text, time_offset):
         else:
             logfunc(f'Snapchat - Account Username History - {username}')
         
+        data_list4 = []
+        
         if len(data_list5) > 0:
             report = ArtifactHtmlReport(f'Snapchat - Account Data')
             report.start_artifact_report(report_folder, f'Snapchat - Account Data - {username}')
@@ -242,6 +255,8 @@ def get_snapSubinfo(files_found, report_folder, seeker, wrap_text, time_offset):
         else:
             logfunc(f'Snapchat - Account Data - {username}')
         
+        data_list5 = []
+        
         if len(data_list6) > 0:
             report = ArtifactHtmlReport(f'Snapchat - Privacy')
             report.start_artifact_report(report_folder, f'Snapchat - Privacy - {username}')
@@ -256,8 +271,10 @@ def get_snapSubinfo(files_found, report_folder, seeker, wrap_text, time_offset):
             timeline(report_folder, tlactivity, data_list6, header6)
         else:
             logfunc(f'Snapchat - Privacy - {username}')
-            
-        if len(data_list6) > 0:
+        
+        data_list6 = []
+        
+        if len(data_list7) > 0:
             report = ArtifactHtmlReport(f'Snapchat - Bitmoji')
             report.start_artifact_report(report_folder, f'Snapchat - Bitmoji - {username}')
             report.add_script()
@@ -271,6 +288,8 @@ def get_snapSubinfo(files_found, report_folder, seeker, wrap_text, time_offset):
             timeline(report_folder, tlactivity, data_list7, header7)
         else:
             logfunc(f'Snapchat - Bitmoji - {username}')
+        
+        data_list7 = []
                 
 __artifacts__ = {
         "ssnapSubinfo": (

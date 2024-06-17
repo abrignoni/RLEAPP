@@ -47,6 +47,8 @@ def get_snapLocprivsets(files_found, report_folder, seeker, wrap_text, time_offs
         one = (os.path.split(file_found))
         username = (os.path.basename(one[0]))
         
+        data_list2 = []
+        
         if filename.startswith('loc_priv_sets.csv'):
             with open(file_found) as f:
                 input_data = f.read() 
@@ -101,6 +103,8 @@ def get_snapLocprivsets(files_found, report_folder, seeker, wrap_text, time_offs
             
         else:
             logfunc(f'No Snapchat - Location Privacy Settings - {username}')
+            
+        data_list2 = []
     
 __artifacts__ = {
         "snapLocprivsets": (

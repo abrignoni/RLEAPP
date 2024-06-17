@@ -47,6 +47,8 @@ def get_snapFriendsN(files_found, report_folder, seeker, wrap_text, time_offset)
         one = (os.path.split(file_found))
         username = (os.path.basename(one[0]))
         
+        data_list = []
+        
         if filename.startswith('friends_list.csv'):
             with open(file_found) as f:
                 input_data = f.read() 
@@ -83,6 +85,8 @@ def get_snapFriendsN(files_found, report_folder, seeker, wrap_text, time_offset)
             
         else:
             logfunc(f'No Snapchat - Friends - {username}')
+        
+        data_list = []
     
 __artifacts__ = {
         "snapFriendsN": (
