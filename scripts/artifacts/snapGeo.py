@@ -47,6 +47,8 @@ def get_snapGeo(files_found, report_folder, seeker, wrap_text, time_offset):
         one = (os.path.split(file_found))
         username = (os.path.basename(one[0]))
         
+        data_list2 = []
+        
         if filename.startswith('geo_locations.csv'):
             with open(file_found) as f:
                 input_data = f.read() 
@@ -89,7 +91,7 @@ def get_snapGeo(files_found, report_folder, seeker, wrap_text, time_offset):
                         x[3] = acc
                         
                     
-        if len(data_list2):
+        if len(data_list2) > 0:
             report = ArtifactHtmlReport(f'Snapchat - Geolocation')
             report.start_artifact_report(report_folder, f'Snapchat - Geolocation - {username}')
             report.add_script()
@@ -108,6 +110,8 @@ def get_snapGeo(files_found, report_folder, seeker, wrap_text, time_offset):
             
         else:
             logfunc(f'No Snapchat - Geolocation - {username}')
+        
+        data_list2 = []
     
 __artifacts__ = {
         "snapGeo": (

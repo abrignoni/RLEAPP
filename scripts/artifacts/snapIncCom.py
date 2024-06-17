@@ -48,6 +48,8 @@ def get_snapIncCom(files_found, report_folder, seeker, wrap_text, time_offset):
         one = (os.path.split(file_found))
         username = (os.path.basename(one[0]))
         
+        data_list2 = []
+        
         if filename.startswith('snap_inc_communications.csv'):
             with open(file_found) as f:
                 input_data = f.read() 
@@ -119,7 +121,9 @@ def get_snapIncCom(files_found, report_folder, seeker, wrap_text, time_offset):
             
         else:
             logfunc(f'No Snapchat - Inc Comms - {username}')
-    
+        
+        data_list2 = []
+        
 __artifacts__ = {
         "snapIncCom": (
             "Snapchat Returns",
