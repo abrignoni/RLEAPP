@@ -15,6 +15,7 @@ a = Analysis(
         'openpyxl',
         'pillow_heif',
         'pypdf',
+        'requests',
         'xlrd',
     ],
     hookspath=[],
@@ -54,7 +55,7 @@ coll = COLLECT(
 app = BUNDLE(
     coll,
     name='rleappGUI.app',
-    icon='../icon.icns',
+    icon=None,
     bundle_identifier='4n6.brigs.RLEAPP',
-    version='1.1.0',
+    version='1.1.1',
 )

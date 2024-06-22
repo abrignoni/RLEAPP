@@ -19,3 +19,4 @@ pillow-heif
 mammoth
 bencoding
 pytz
+requests
