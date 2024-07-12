@@ -1,10 +1,10 @@
 __artifacts_v2__ = {
     "chatgpt": {
         "name": "ChatGPT",
-        "description": "Parses user's ChatGPT data export. Parser includes conversations, user info, and others. This parser is based on a research project",
+        "description": "Parses user's ChatGPT data export. Parser includes conversations, user info, and others. This parser is based on a research project. Latest validation date: 9 July 2024",
         "author": "Evangelos Dragonas (@theAtropos4n6)",
-        "version": "1.0.1",
-        "date": "2024-02-10",
+        "version": "1.0.2",
+        "date": "2024-07-09",
         "requirements": "",
         "category": "ChatGPT",
         "paths": (
@@ -24,9 +24,48 @@ __artifacts_v2__ = {
 import json
 import os
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
+import pytz
 from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, convert_utc_human_to_timezone,convert_ts_int_to_timezone,convert_ts_human_to_utc,is_platform_windows
+from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
+
+
+#Copied-pasted the timestamp conversion + timezone conversion functions from ilapfuncs.py to enable this capability for this parser till holistic implementation from the core team
+def convert_ts_int_to_utc(ts):
+    timestamp = datetime.fromtimestamp(ts, tz=timezone.utc)
+    return timestamp
+
+def convert_utc_human_to_timezone(utc_time, time_offset): 
+    #fetch the timezone information
+    timezone = pytz.timezone(time_offset)
+    
+    #convert utc to timezone
+    timezone_time = utc_time.astimezone(timezone)
+    
+    #return the converted value
+    return timezone_time
+
+def convert_ts_int_to_timezone(time, time_offset):
+    #convert ts_int_to_utc_human
+    utc_time = convert_ts_int_to_utc(time)
+
+    #fetch the timezone information
+    timezone = pytz.timezone(time_offset)
+    
+    #convert utc to timezone
+    timezone_time = utc_time.astimezone(timezone)
+    
+    #return the converted value
+    return timezone_time
+
+def convert_ts_human_to_utc(ts): #This is for timestamp in human form
+    if '.' in ts:
+        ts = ts.split('.')[0]
+        
+    dt = datetime.strptime(ts, '%Y-%m-%d %H:%M:%S') #Make it a datetime object
+    timestamp = dt.replace(tzinfo=timezone.utc) #Make it UTC
+    return timestamp
+
 
 
 def get_chatgpt(files_found, report_folder, seeker, wrap_text, time_offset):
@@ -86,13 +125,11 @@ def get_chatgpt(files_found, report_folder, seeker, wrap_text, time_offset):
                                 recipient = msg_content.get("recipient", "")
                                 conversations_messages.append((msg_create_time,msg_update_time,message_id,conversation_title,conversation_id,author_role,author_name,content_parts,about_user_message,about_model_message,content_type,content_language,content_text,rest_metadata,status,voice_mode_message,author_metadata,is_visually_hidden_from_conversation,end_turn,weight,recipient))
                                 
-                                # create_time_msg = convert_utc_human_to_timezone(convert_ts_int_to_utc(int(msg_create_time)), time_offset)
-                                # print(create_time_msg)
                             #parsing collected conversations metadata
                 if len(conversations_metadata) > 0:
                     description = f'Metadata from ChatGPT conversations'
                     report = ArtifactHtmlReport(f'ChatGPT - Conversations Metadata')
-                    report.start_artifact_report(report_folder, f'ChatGPT - Conversations Metadata', description)
+                    report.start_artifact_report(report_folder, f'Conversations Metadata', description)
                     report.add_script()
                     data_headers = ('Creation Time','Modification Date','Title','Conversation ID','Moderation Results','Plugin IDs','Gizmo ID','Is Archived') 
                     report.write_artifact_data_table(data_headers, conversations_metadata, file_found, html_escape=False)
@@ -110,7 +147,7 @@ def get_chatgpt(files_found, report_folder, seeker, wrap_text, time_offset):
                 if len(conversations_messages) > 0:
                     description = f'User conversations with ChatGPT'
                     report = ArtifactHtmlReport(f'ChatGPT - Conversations')
-                    report.start_artifact_report(report_folder, f'ChatGPT - Conversations', description)
+                    report.start_artifact_report(report_folder, f'Conversations', description)
                     report.add_script()
                     data_headers = ('Creation Time','Modification Date','Message ID','Conversation Title','Conversation ID','Author (Role)','Author (Name)','Parts','Custom Instructions (User)','Custom Instructions (Model)','Content Type','Language','Text','Rest Metadata','Status','Voice Chat','Author (Metadata)','Is Visually Hidden From Conversation','End Turn','Weight','Recipient')
                     report.write_artifact_data_table(data_headers, conversations_messages, file_found, html_escape=False)
@@ -138,7 +175,7 @@ def get_chatgpt(files_found, report_folder, seeker, wrap_text, time_offset):
                 if len(shared_conversations_metadata) > 0:
                     description = f'Metadata from ChatGPT shared conversations'
                     report = ArtifactHtmlReport(f'ChatGPT - Shared Conversations')
-                    report.start_artifact_report(report_folder, f'ChatGPT - Shared Conversations', description)
+                    report.start_artifact_report(report_folder, f'Shared Conversations', description)
                     report.add_script()
                     data_headers = ('Share ID','Conversation ID','Title','Is Anonymous') 
                     report.write_artifact_data_table(data_headers, shared_conversations_metadata, file_found, html_escape=False)
@@ -162,7 +199,7 @@ def get_chatgpt(files_found, report_folder, seeker, wrap_text, time_offset):
                 if len(user) > 0:
                     description = f'ChatGPT user info'
                     report = ArtifactHtmlReport(f'ChatGPT - User')
-                    report.start_artifact_report(report_folder, f'ChatGPT - User', description)
+                    report.start_artifact_report(report_folder, f'User', description)
                     report.add_script()
                     data_headers = ('User ID','Email','Is ChatGPT Plus User') 
                     report.write_artifact_data_table(data_headers, user, file_found, html_escape=False)
@@ -192,7 +229,7 @@ def get_chatgpt(files_found, report_folder, seeker, wrap_text, time_offset):
                 if len(message_feedback) > 0:
                     description = f'ChatGPT message feedback'
                     report = ArtifactHtmlReport(f'ChatGPT - Message Feedback')
-                    report.start_artifact_report(report_folder, f'ChatGPT - Message Feedback', description)
+                    report.start_artifact_report(report_folder, f'Message Feedback', description)
                     report.add_script()
                     data_headers = ('Creation Time','User ID','Message ID','Conversation ID','Rating','Workspace ID','Content','Storage Protocol') 
                     report.write_artifact_data_table(data_headers, message_feedback, file_found, html_escape=False)
