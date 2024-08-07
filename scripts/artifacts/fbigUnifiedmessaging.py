@@ -15,145 +15,154 @@ def get_fbigUnifiedmessaging(files_found, report_folder, seeker, wrap_text, time
         
         filename = os.path.basename(file_found)
         rfilename = filename
-        if filename.startswith('index.html') or filename.startswith('preservation'):
-            rfilename = filename
-            file_to_report_data = file_found
-            data_list = []
-            with open(file_found, encoding='utf-8') as fp:
-                soup = BeautifulSoup(fp, 'html.parser')
-            #<div id="property-unified_messages" class="content-pane">
-            uni = soup.find_all("div", {"id": "property-unified_messages"})
-            
-            control = 0
-            itemsdict = {}
-            lmf = []
-            for x in uni:
-                tables = x.find_all("table")
-                
-                for table in tables:
-                    thvalue = (table.find('th').get_text())
-                    tdvalue = (table.find('th').find_next_sibling("td").get_text())
-                    
-                    if thvalue == 'Unified Messages':
-                        for subtable in table.find_all('table'):
-                            thvalue = (subtable.find('th').get_text())
-                            tdvalue = (subtable.find('th').find_next_sibling("td").get_text())
-                            wtag = subtable.find('th').find_next_sibling("td")
-                            wtag = str(wtag)
-                            if thvalue == 'Thread':
-                                split = tdvalue.split(')')
-                                threadid = split[0].replace('(','').strip()
-                            else:
-                                wtag = wtag.replace('<td>', '').replace('</td>', '').strip()
-                                if thvalue == 'Current Participants':
-                                    current_part = wtag
-                                elif thvalue == 'Share':
-                                    pass
-                                elif thvalue == 'Attachments':
-                                    pass
-                                else:
-                                    if thvalue == 'Author':
-                                        author = tdvalue
-                                        
-                                        itemsdict['author'] = author
-                                        if control == 0:
-                                            control = 1
-                                        else:
-                                            itemsdict['threadid'] = threadid
-                                            current_split = current_part.split('<br/>', 1)
-                                            ag = ''
-                                            for current_items in current_split[1:]:
-                                                ag = ag + current_items
-                                            itemsdict['currentpart'] = ag.strip()
-                                            if len(lmf) > 0:
-                                                counterl = 0
-                                                agregator = agregator + ('<table>')
-                                                for item in lmf:
-                                                    if counterl == 0:
-                                                        agregator = agregator +('<tr>')
-                                                
-                                                    thumb = media_to_html(item, files_found, report_folder)
-                                                    
-                                                    counterl = counterl + 1
-                                                    agregator = agregator + f'<td>{thumb}</td>'
-                                                    #hacer uno que no tenga html
-                                                    if counterl == 2:
-                                                        counterl = 0
-                                                        agregator = agregator + ('</tr>')
-                                                if counterl == 1:
-                                                    agregator = agregator + ('</tr>')
-                                                agregator = agregator + ('</table><br>')
-                                            else:
-                                                agregator = ''
-                                                
-                                            data_list.append((itemsdict.get('sent', ''),itemsdict.get('threadid', ''), itemsdict.get('currentpart', ''), itemsdict.get('author', ''), itemsdict.get('body', ''), itemsdict.get('missed', ''), itemsdict.get('duration', ''), agregator, itemsdict.get('summary', ''), itemsdict.get('title', ''), itemsdict.get('url', '') ))
-                                            #print(lmf)
-                                            #to do: check lmf in dictionary, pull and find the files to attach to the report
-                                            agregator = ''
-                                            itemsdict = {}
-                                            lmf = []
-                                    elif thvalue == 'Sent':
-                                        sent = tdvalue
-                                        itemsdict['sent'] = sent.replace('UTC', '').strip()
-                                    elif thvalue == 'Body':
-                                        body = tdvalue
-                                        itemsdict['body'] = body
-                                    elif thvalue == 'Date Created':
-                                        dcreated = tdvalue
-                                        itemsdict['dcreated'] = dcreated
-                                    elif thvalue == 'Summary':
-                                        summary = tdvalue
-                                        itemsdict['summary'] = summary
-                                    elif thvalue == 'Title':
-                                        title = tdvalue
-                                        itemsdict['title'] = title
-                                    elif thvalue == 'Url':
-                                        url = tdvalue
-                                        itemsdict['url'] = url
-                                    elif thvalue == 'Duration':
-                                        duration = tdvalue
-                                        itemsdict['duration'] = duration
-                                    elif thvalue == 'Missed':
-                                        missed = tdvalue
-                                        itemsdict['missed'] = missed
-                                    elif thvalue == 'Attachments':
-                                        attach = tdvalue
-                                        itemsdict['attach'] = attach
-                                    elif thvalue == 'Linked Media File:':
-                                        lmf.append(tdvalue)
-                                        itemsdict['lmf'] = lmf
-                                    else:
-                                        pass
-                        itemsdict['author'] = author
-                        itemsdict['threadid'] = threadid
-                        current_split = current_part.split('<br/>', 1)
-                        ag = ''
-                        for current_items in current_split[1:]:
-                            ag = ag + current_items
-                        itemsdict['currentpart'] = ag.strip()
-                        data_list.append((itemsdict.get('sent', ''),itemsdict.get('threadid', ''),itemsdict.get('currentpart', ''), itemsdict.get('author', ''), itemsdict.get('body', ''),  itemsdict.get('missed', ''), itemsdict.get('duration', ''), agregator, itemsdict.get('summary', ''), itemsdict.get('title', ''), itemsdict.get('url', '') ))
         
-        if filename.startswith('index.html') or filename.startswith('preservation'):
+        if filename.startswith('records.html') or filename.startswith('preservation'):
+            with open(file_found, encoding='utf-8') as fp:
+                soup = BeautifulSoup(fp, 'lxml')
+                
+            threadparticipants = []
+            threadid = currpar = pastpar = ''
+            control = 0
+            controlt = 0
+            data_list = []
+            autor = sent = body = attach = typef = sizef = url = lmf = pt = dcf = textf = urlb = subsevent = ''
+            agg = set()
+            lmftime = 0
+            # Find all divs with class "div_table inner"
+            divs = soup.find_all("div", class_="div_table inner")
+            # Extract and print text from each div in the order they appear
+            for div in divs:
+                text = div.get_text(separator='|', strip=True)
+                text = text.split('|')
+                if text[0] == 'Thread':
+                    if controlt == 0:
+                        threadid = text[1]
+                        controlt = 1
+                    elif  controlt == 1:
+                        threadparticipants.append((threadid,currpar,pastpar))
+                        threadid = currpar = pastpar = ''
+                        threadid = text[1]
+                elif text[0] == 'Current Participants':
+                    currpar = div
+                elif text[0] == 'Past Participants':
+                    pastpar = div
+                if text[0] == 'Author':
+                    #print(text[1], control)
+                    if control == 0:
+                        author = (text[1])
+                        control = 1
+                    elif control == 1:
+                        for x in agg:
+                            x = media_to_html(x, files_found, report_folder)
+                            lmf = lmf + x + '<br><br>'
+                        data_list.append((sent,author,body,lmf,attach,typef,sizef,url,pt,dcf,textf,urlb,subsevent,threadid))
+                        autor = sent = body = attach = typef = sizef = url = lmf = pt = dcf = textf = urlb = subsevent = ''
+                        agg.clear()
+                        author = (text[1])
+                elif text[0] == 'Sent':
+                    #print(div)
+                    sent = (text[1])
+                    
+                elif text[0] == 'Body':
+                    if len(text) == 1:
+                        body = ''
+                    else:
+                        body = text[1]
+                elif text[0] == 'Attachments':
+                    attach = (text[1])
+                elif text[0] == 'Type':
+                    typef = (text[1])
+                elif text[0] == 'Size':
+                    if len(text) == 1:
+                        sizef = ''
+                    else:
+                        sizef = text[1]
+                elif text[0] == 'URL':
+                    if len(text) == 1:
+                        url = ''
+                    else:
+                        url = text[1]
+                elif text[0] == 'Product Type':
+                    pt = (text[1])
+                elif text[0] == 'Date Created':
+                    if len(text) == 1:
+                        dcf = ''
+                    else:
+                        dcf = text[1]
+                elif text[0] == 'Text':
+                    if len(text) == 1:
+                        textf = ''
+                    else:
+                        textf = text[1]
+                elif text[0] == 'Linked Media File:':
+                    if lmftime == sent:
+                        agg.add(text[1])
+                    else:
+                        agg.clear()
+                        agg.add(text[1])
+                        lmftime = sent
+                elif text[0] == 'Url':
+                    urlb = (text[1])
+                elif text[0] == 'Subscription Event':
+                    subsevent = div
+                else:
+                    pass
+                    #print(text[0],text[1])
+                    
+                    #print(text)
+                
+                    
+                    
+            data_list.append((sent,author,body,lmf,attach,typef,sizef,url,pt,dcf,textf,urlb,subsevent,threadid))
+            threadparticipants.append((threadid,currpar,pastpar))
+    
             if data_list:
-                report = ArtifactHtmlReport(f'Facebook & Instagram - Unified Messaging - {rfilename}')
-                report.start_artifact_report(report_folder, f'Facebook Instagram - Unified Messaging - {rfilename}')
-                report.add_script()
-                data_headers = ('Timestamp','Thread ID','Current Participants', 'Author', 'Body', 'Missed','Duration', 'Linked Media File','Summary', 'Title', 'URL' )
-                report.write_artifact_data_table(data_headers, data_list, file_to_report_data, html_no_escape=['Current Participants', 'Linked Media File'])
-                report.end_artifact_report()
-                
-                tsvname = f'Facebook Instagram - Unified Messaging - {rfilename}'
-                tsv(report_folder, data_headers, data_list, tsvname)
-                
-                tlactivity = f'Facebook Instagram - Unified Messaging - {rfilename}'
-                timeline(report_folder, tlactivity, data_list, data_headers)
+                reportnumber = 1
+                data_list.sort(key=lambda x: (x[1], x[0]))
+                chunk_size = 10000
+                for i in range(0, len(data_list), chunk_size):
+                    chunk = data_list[i:i + chunk_size]
+                    
+                    start = str(i)
+                    end = i + chunk_size
+                    end = str(end)
+                    
+                    report = ArtifactHtmlReport(f'Facebook & Instagram - Unified Messaging - {rfilename} - {reportnumber}')
+                    report.start_artifact_report(report_folder, f'Facebook Instagram - Unified Messaging - {rfilename} - {reportnumber}')
+                    report.add_script()
+                    data_headers = ('Timestamp','Author','Body','Linked Media File','Attachments','Type','Size', 'URL','Product Type','Date Created Share','Text','Url','Subscription Event','Thread ID')
+                    report.write_artifact_data_table(data_headers, chunk, file_found, html_no_escape=['Linked Media File','Subscription Event'])
+                    report.end_artifact_report()
+                    
+                    tsvname = f'Facebook Instagram - Unified Messaging - {rfilename} - {reportnumber}'
+                    tsv(report_folder, data_headers, chunk, tsvname)
+                    
+                    tlactivity = f'Facebook Instagram - Unified Messaging - {rfilename} - {reportnumber}'
+                    timeline(report_folder, tlactivity, chunk, data_headers)
+                    
+                    reportnumber = reportnumber + 1
         
             else:
                 logfunc(f'No Facebook Instagram - Unified Messaging - {rfilename}')
+            
+            if len(threadparticipants) > 0:
+                report = ArtifactHtmlReport(f'Facebook & Instagram - Thread Participants  - {rfilename}')
+                report.start_artifact_report(report_folder, f'Facebook Instagram - Thread Participants  - {rfilename}')
+                report.add_script()
+                data_headers = ('Thread ID','Current Participants','Past Participants')
+                report.write_artifact_data_table(data_headers, threadparticipants, file_found, html_no_escape=['Current Participants','Past Participants'])
+                report.end_artifact_report()
                 
+                tsvname = f'Facebook Instagram - Thread Participants - {rfilename}'
+                tsv(report_folder, data_headers, threadparticipants, tsvname)
+                
+            else:
+                logfunc(f'No Facebook & Instagram Thread Participants - {rfilename}')
+        else:
+            pass
 __artifacts__ = {
         "fbigUnifiedmessaging": (
             "Facebook - Instagram Returns",
-            ('*/index.html', '*/preservation*.html', '*/linked_media/unified_message_*'),
+            ('*/records.html', '*/preservation*.html', '*/linked_media/*.*'),
             get_fbigUnifiedmessaging)
 }
