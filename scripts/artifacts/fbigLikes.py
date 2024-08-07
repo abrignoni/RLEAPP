@@ -14,82 +14,79 @@ def get_fbigLikes(files_found, report_folder, seeker, wrap_text, time_offset):
         file_found = str(file_found)
         
         filename = os.path.basename(file_found)
-    
-        if filename.startswith('index.html') or filename.startswith('preservation'):
-            rfilename = filename
-            file_to_report_data = file_found
-            data_list = []
-            with open(file_found, encoding='utf-8') as fp:
-                soup = BeautifulSoup(fp, 'html.parser')
-            #<div id="property-unified_messages" class="content-pane">
-                
-            uni = soup.find_all("div", {"id": "property-likes"})
-            #print(uni)
-            control = 0
-            idd = taken = status = url = source = fil = ispub = sba = ui = ci = ''
-            for x in uni:
-                tables = x.find_all("table")
-                
-                for table in tables:
-                    
-                    thvalue = (table.find('th').get_text())
-                    tdvalue = (table.find('th').find_next_sibling("td").get_text())
-                    
-                    if thvalue == 'likes':
-                        pass
-                    else:
-                        for subtable in table.find_all('table'):
-                            thvalue = (subtable.find('th').get_text())
-                            tdvalue = (subtable.find('th').find_next_sibling("td").get_text())
-                            
-                            #print(thvalue, tdvalue)
-                            
-                            if thvalue == 'Id':
-                                if control == 0:
-                                    idd = tdvalue
-                                    control = 1
-                                else:
-                                    data_list.append((taken,idd,status,url,source,fil,ispub,sba,ui,ci))
-                                    idd = taken = status = url = source = fil = ispub = sba = ui = ci = ''
-                                    idd = tdvalue
-                            if thvalue == 'Taken':
-                                taken = tdvalue
-                            if thvalue == 'Status':
-                                status = tdvalue
-                            if thvalue == 'Url':
-                                url = tdvalue
-                            if thvalue == 'Source':
-                                source = tdvalue
-                            if thvalue == 'Filter':
-                                fil = tdvalue
-                            if thvalue == 'Is Published':
-                                ispub = tdvalue
-                            if thvalue == 'Shared By Author':
-                                sba = tdvalue
-                            if thvalue == 'Upload Ip':
-                                ui = tdvalue
-                            if thvalue == 'Carousel Id':
-                                ci = tdvalue
-                                
-                data_list.append((taken,idd,status,url,source,fil,ispub,sba,ui,ci))
-                
-        if data_list:
-            report = ArtifactHtmlReport(f'Facebook & Instagram - Likes - {rfilename}')
-            report.start_artifact_report(report_folder, f'Facebook Instagram - Likes - {rfilename}')
-            report.add_script()
-            data_headers = ('Timestamp','ID','Status','URL','Source','Filter','Is Published','Shared By Author','Upload IP','Carousel Id')
-            report.write_artifact_data_table(data_headers, data_list, file_to_report_data, html_no_escape=['Current Participants', 'Linked Media File'])
-            report.end_artifact_report()
-            
-            tsvname = f'Facebook Instagram - Likes - {rfilename}'
-            tsv(report_folder, data_headers, data_list, tsvname)
+        rfilename = filename
         
-        else:
-            logfunc(f'No Facebook Instagram - Likes - {rfilename}')
+        if filename.startswith('records.html') or filename.startswith('preservation'):
+            with open(file_found, encoding='utf-8') as fp:
+                soup = BeautifulSoup(fp, 'lxml')
+                
+            data_list = []
+            controlt = 0
+            id = taken = status = vanity = ltime = url = source = filter = ispub = sba = uip = cid = ''
+            
+            uni = soup.find_all("div", {"id": "property-likes"})
+            
+            divs = uni[0].find_all('div', class_='div_table inner')
+            
+            for index, div in enumerate(divs):
+                if index > 1:
+                    text = div.get_text(separator='|', strip=True)
+                    text = text.split('|')
+                    if text[0] == 'Id':
+                        if controlt == 0:
+                            ids = text[1]
+                            controlt = 1
+                        elif  controlt == 1:
+                            data_list.append((taken,ids,status,vanity,ltime,url,source,filter,ispub,cid,sba,uip))
+                            ids = taken = status = vanity = ltime = url = source = filter = ispub = sba = uip = cid = ''
+                            ids = text[1]
+                    elif text[0] == 'Taken':
+                        taken = text[1]
+                    elif text[0] == 'Status':
+                        status = text[1]
+                    elif text[0] == 'Liked Post Author Vanity':
+                        vanity = text[1]
+                    elif text[0] == 'Like Timestamp':
+                        ltime = text[1]
+                    elif text[0] == 'Url':
+                        url = text[1]
+                    elif text[0] == 'Source':
+                        source = text[1]
+                    elif text[0] == 'Filter':
+                        filter = text[1]
+                    elif text[0] == 'Is Published':
+                        ispub = text[1]
+                    elif text[0] == 'Carousel Id':
+                        cid = text[1]
+                    elif text[0] == 'Shared By Author':
+                        sba = text[1]
+                    elif text[0] == 'Upload Ip':
+                        uip = text[1]
+                    else:
+                        print(text[0],text[1])
+                        
+            data_list.append((taken,ids,status,vanity,ltime,url,source,filter,ispub,cid,sba,uip))
+                
+            if data_list:
+                report = ArtifactHtmlReport(f'Facebook & Instagram - Likes - {rfilename}')
+                report.start_artifact_report(report_folder, f'Facebook Instagram - Likes - {rfilename}')
+                report.add_script()
+                data_headers = ('Timestamp','ID','Status','Vanity','Like Timestamp','URL','Source','Filter','Is Published','Carousel Id','Shared By Author','Upload IP')
+                report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Current Participants', 'Linked Media File'])
+                report.end_artifact_report()
+                
+                tsvname = f'Facebook Instagram - Likes - {rfilename}'
+                tsv(report_folder, data_headers, data_list, tsvname)
+                
+                tlactivity = f'Facebook Instagram - Likes - {rfilename}'
+                timeline(report_folder, tlactivity, data_list, data_headers)
+            
+            else:
+                logfunc(f'No Facebook Instagram - Likes - {rfilename}')
                 
 __artifacts__ = {
         "fbigLikes": (
             "Facebook - Instagram Returns",
-            ('*/index.html', '*/preservation*.html'),
+            ('*/records.html', '*/preservation*.html'),
             get_fbigLikes)
 }
