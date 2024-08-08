@@ -1,3 +1,4 @@
+'''Updated 08/05/2024 Shawn Ramsey'''
 import os
 import datetime
 
@@ -55,6 +56,7 @@ def get_snapGeo(files_found, report_folder, seeker, wrap_text, time_offset):
                 
             # Run the cleaning and grouping function
             grouped_data = clean_and_group_data(input_data)
+
             
             for x in grouped_data:
                 data_list = []
@@ -63,8 +65,32 @@ def get_snapGeo(files_found, report_folder, seeker, wrap_text, time_offset):
                 for y in x[1:]:
                     item = y.strip().split(',')
                     data_list.append(item)
-            
-                    
+
+                # Process the first set of coordinates that we have
+                if header.startswith('latitude,longitude,timestamp'):
+                    header3 = header.strip().split(',')
+                    header3[0]='Timestamp'
+                    header3[1]='Latitude'
+                    header3[2]='Longitude'
+                    header3.append('Accuracy')
+                    data_list3 = data_list
+
+                    for x in data_list3:
+                        timestamp = x[2].split(' ')
+                        year = timestamp[5]
+                        day = timestamp[2]
+                        time = timestamp[3]
+                        month = monthletter(timestamp[1])
+                        timestampfinal = (f'{year}-{month}-{day} {time}')
+                        lat = x[0].split(' ')[0]
+                        lon = x[1].split(' ')[0]
+                        acc = x[0].split(' ')[2] + ' meters'
+                        x[0] = timestampfinal
+                        x[1] = lat
+                        x[2] = lon
+                        x.append(acc)
+
+                # Process the second set of coordinates that we have
                 if header.startswith('latitude,longitude,accuracy,timestamp,is_live_location'):
                     header = header.strip().split(',')
                     header2 = header
@@ -90,22 +116,40 @@ def get_snapGeo(files_found, report_folder, seeker, wrap_text, time_offset):
                         x[2] = lon
                         x[3] = acc
                         
-                    
-        if len(data_list2) > 0:
+        if len(data_list3) > 0:
             report = ArtifactHtmlReport(f'Snapchat - Geolocation')
             report.start_artifact_report(report_folder, f'Snapchat - Geolocation - {username}')
+            report.add_script()
+            report.write_artifact_data_table(header3, data_list3, file_found, html_no_escape=['Media'])
+            report.end_artifact_report()
+            
+            tsvname = f'Snapchat - Geolocation - {username}'
+            tsv(report_folder, header3, data_list3, tsvname)
+
+            tlactivity = f'Snapchat - Geolocation - {username}'
+            timeline(report_folder, tlactivity, data_list3, header3)
+            
+            kmlactivity = f'Snapchat - Geolocation - {username}'
+            kmlgen(report_folder, kmlactivity, data_list3, header3) 
+            
+        else:
+            logfunc(f'No Snapchat - Geolocation - {username}')
+
+        if len(data_list2) > 0:
+            report = ArtifactHtmlReport(f'Snapchat - Additional Geolocation')
+            report.start_artifact_report(report_folder, f'Snapchat - Additional Geolocation - {username}')
             report.add_script()
             #data_headers = ('Timestamp','Username','Name','Registration IP','Country','Phone Number','Carrier')
             report.write_artifact_data_table(header2, data_list2, file_found, html_no_escape=['Media'])
             report.end_artifact_report()
             
-            tsvname = f'Snapchat - Geolocation - {username}'
+            tsvname = f'Snapchat - Additional Geolocation - {username}'
             tsv(report_folder, header2, data_list2, tsvname)
-            
-            tlactivity = f'Snapchat - Geolocation - {username}'
+
+            tlactivity = f'Snapchat - Additional Geolocation - {username}'
             timeline(report_folder, tlactivity, data_list2, header2)
             
-            kmlactivity = f'Snapchat - Geolocation - {username}'
+            kmlactivity = f'Snapchat - Additional Geolocation - {username}'
             kmlgen(report_folder, kmlactivity, data_list2, header2) 
             
         else:
