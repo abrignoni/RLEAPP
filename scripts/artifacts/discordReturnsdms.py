@@ -26,8 +26,8 @@ def get_discordReturnsdms(files_found, report_folder, seeker, wrap_text, time_of
                             username = item[4]
                             contents = item[5]
                             media = item[6]
-                            id = item[0]
-                            channelid = item[1]
+                            id = item[1]
+                            channelid = item[0]
                             authorid = item[2]
                             
                             if media == '':

@@ -51,7 +51,9 @@ def get_discordReturnsdmsOnline(files_found, report_folder, seeker, wrap_text, t
                                             handle.write(block)
                                     datalist_temp =[]
                                     datalist_temp.append(str(dlpath))
+                                    #print(datalist_temp)
                                     thumb = media_to_html(f'media{counter}', datalist_temp, report_folder)
+                                    print(thumb)
                                     counter = counter + 1
                                     
                             if ('cdn.discordapp.com' or 'media.discordapp.net') in contents and (contents.startswith('http')):
@@ -69,7 +71,9 @@ def get_discordReturnsdmsOnline(files_found, report_folder, seeker, wrap_text, t
                                             handle.write(block)
                                     datalist_temp =[]
                                     datalist_temp.append(str(dlpath))
-                                    contents = media_to_html(f'media{counter}', datalist_temp, report_folder)
+                                    #talist_temp)
+                                    thumb = media_to_html(f'media{counter}', datalist_temp, report_folder)
+                                    print(thumb)
                                     counter = counter + 1
                             
                             data_list_dm_four.append((timestamp,id,contents,thumb))
@@ -98,11 +102,14 @@ def get_discordReturnsdmsOnline(files_found, report_folder, seeker, wrap_text, t
                                             handle.write(block)
                                     datalist_temp =[]
                                     datalist_temp.append(str(dlpath))
+                                    #print(datalist_temp)
                                     thumb = media_to_html(f'media{counter}', datalist_temp, report_folder)
+                                    print(thumb)
                                     counter = counter + 1
                             
                             if ('cdn.discordapp.com' or 'media.discordapp.net') in contents and (contents.startswith('http')):
                                 url = urllib.parse.unquote(contents)
+                                
                                 dlpath = Path(report_folder, f'media{counter}')
                                 response = requests.get(url, stream=True)
                                 if not response.ok:
@@ -116,10 +123,12 @@ def get_discordReturnsdmsOnline(files_found, report_folder, seeker, wrap_text, t
                                             handle.write(block)
                                     datalist_temp =[]
                                     datalist_temp.append(str(dlpath))
-                                    contents = media_to_html(f'media{counter}', datalist_temp, report_folder)
+                                    #print(datalist_temp)
+                                    thumb = media_to_html(f'media{counter}', datalist_temp, report_folder)
+                                    print(thumb)
                                     counter = counter + 1
                                     
-                        data_list_dm.append((timestamp,username,contents,thumb,id,channelid,authorid))
+                            data_list_dm.append((timestamp,username,contents,thumb,id,channelid,authorid))
                             
         
         if len(data_list_dm) > 0:
