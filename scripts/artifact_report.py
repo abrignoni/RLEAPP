@@ -1,7 +1,8 @@
 import html
 import os
+import sys
+
 from scripts.html_parts import *
-from scripts.ilapfuncs import is_platform_windows
 from scripts.version_info import rleapp_version
 
 class ArtifactHtmlReport:
@@ -19,7 +20,6 @@ class ArtifactHtmlReport:
 
     def start_artifact_report(self, report_folder, artifact_file_name, artifact_description=''):
         '''Creates the report HTML file and writes the artifact name as a heading'''
-        self.report_file_path = os.path.join(os.path.split(report_folder.rstrip('\\'))[0], f'{artifact_file_name}.html')
         self.report_file = open(os.path.join(report_folder, f'{artifact_file_name}.temphtml'), 'w', encoding='utf8')
         self.report_file.write(page_header.format(f'RLEAPP - {self.artifact_name} report'))
         self.report_file.write(body_start.format(f'RLEAPP {rleapp_version}'))
@@ -29,11 +29,6 @@ class ArtifactHtmlReport:
         self.report_file.write(body_main_header)
         self.report_file.write(body_main_data_title.format(f'{self.artifact_name} report', artifact_description))
         self.report_file.write(body_spinner) # Spinner till data finishes loading
-        #self.report_file.write(body_infinite_loading_bar) # Not working!
-
-    def get_report_file_path(self):
-        '''returns the html report name'''
-        return self.report_file_path
 
     def add_script(self, script=''):
         '''Adds a default script or the script supplied'''
@@ -88,7 +83,7 @@ class ArtifactHtmlReport:
         if write_total:
             self.write_minor_header(f'Total number of entries: {num_entries}', 'h6')
         if write_location:
-            if is_platform_windows():
+            if sys.platform == 'win32':
                 source_path = source_path.replace('/', '\\')
             if source_path.startswith('\\\\?\\'):
                 source_path = source_path[4:]
@@ -118,7 +113,7 @@ class ArtifactHtmlReport:
                          row)) + '</tr>')
         else:
             for row in data_list:
-                self.report_file.write('<tr>' + ''.join( ('<td>{}</td>'.format(str(x) if x != None else '') for x in row) ) + '</tr>')
+                self.report_file.write('<tr>' + ''.join( ('<td>{}</td>'.format(str(x) if x not in [None, 'N/A'] else '') for x in row) ) + '</tr>')
         
         self.report_file.write('</tbody>')
         if cols_repeated_at_bottom:
@@ -153,5 +148,3 @@ class ArtifactHtmlReport:
             self.report_file.write(body_main_trailer + body_end + self.script_code + page_footer)
             self.report_file.close()
             self.report_file = None
-
-        

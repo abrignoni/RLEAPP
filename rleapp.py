@@ -3,14 +3,17 @@ import argparse
 import io
 import os.path
 import typing
-import plugin_loader
 import scripts.report as report
 import traceback
+import sys
+
+import scripts.plugin_loader as plugin_loader
 
 from scripts.search_files import *
 from scripts.ilapfuncs import *
 from scripts.version_info import rleapp_version
 from time import process_time, gmtime, strftime, perf_counter
+from scripts.lavafuncs import *
 
 def validate_args(args):
     if args.artifact_paths or args.create_profile_casedata:
@@ -35,13 +38,6 @@ def validate_args(args):
 
     if args.load_profile and not os.path.exists(args.load_profile):
         raise argparse.ArgumentError(None, 'RLEAPP Profile file not found! Run the program again.')
-
-    # Not implemented yet
-    # try:
-    #     timezone = pytz.timezone(args.timezone)
-    # except pytz.UnknownTimeZoneError:
-    #   raise argparse.ArgumentError(None, 'Unknown timezone! Run the program again.')
-        
 
 def create_profile(plugins, path):
     available_modules = [(module_data.category, module_data.name) for module_data in plugins]
@@ -112,7 +108,7 @@ def create_profile(plugins, path):
         else:
             print('Please enter a valid choice!!!\n')
             user_choice = ''
-
+  
 def create_casedata(path):
     case_data_values = {}
     print('--- LEAPP Case Data file creation ---\n')
@@ -153,15 +149,28 @@ def main():
     parser.add_argument('-p', '--artifact_paths', required=False, action="store_true",
                         help=("Generate a text file list of artifact paths. "
                               "This argument is meant to be used alone, without any other arguments."))
+    parser.add_argument('--custom_output_folder', required=False, action="store", help="Custom name for the output folder")
 
     loader = plugin_loader.PluginLoader()
     available_plugins = list(loader.plugins)
     profile_filename = None
     casedata = {}
 
-    selected_plugins = available_plugins.copy()
+    # Check if no arguments were provided
+    if len(sys.argv) == 1:
+        parser.print_help(sys.stderr)
+        sys.exit()
 
     args = parser.parse_args()
+
+    extracttype = args.t
+
+    plugins = []
+
+    for plugin in available_plugins:
+        plugins.append(plugin)
+
+    selected_plugins = plugins.copy()
 
     try:
         validate_args(args)
@@ -198,7 +207,7 @@ def main():
                 create_choice = input('Please enter your choice: ').lower()
                 print()
                 if create_choice == '1':
-                    create_profile(available_plugins, args.create_profile_casedata)
+                    create_profile(plugins, args.create_profile_casedata)
                     create_choice = ''
                 elif create_choice == '2':
                     create_casedata(args.create_profile_casedata)
@@ -256,7 +265,7 @@ def main():
                     return
                 else:
                     profile_plugins = set(profile.get("plugins", []))
-                    selected_plugins = [selected_plugin for selected_plugin in available_plugins 
+                    selected_plugins = [selected_plugin for selected_plugin in plugins 
                                         if selected_plugin.name in profile_plugins]
             else:
                 profile_load_error = "File was not a valid profile file: invalid format"
@@ -264,10 +273,10 @@ def main():
                 return
     
     input_path = args.input_path
-    extracttype = args.t
     wrap_text = args.wrap_text
     output_path = os.path.abspath(args.output_path)
     time_offset = args.timezone
+    custom_output_folder = args.custom_output_folder
 
     # File system extractions contain paths > 260 char, which causes problems
     # This fixes the problem by prefixing \\?\ on each windows path.
@@ -275,10 +284,12 @@ def main():
         if input_path[1] == ':' and extracttype =='fs': input_path = '\\\\?\\' + input_path.replace('/', '\\')
         if output_path[1] == ':': output_path = '\\\\?\\' + output_path.replace('/', '\\')
 
-    out_params = OutputParameters(output_path)
+    out_params = OutputParameters(output_path, custom_output_folder)
+    initialize_lava(input_path, out_params.report_folder_base, extracttype)
 
     crunch_artifacts(selected_plugins, extracttype, input_path, out_params, wrap_text, loader, casedata, time_offset, profile_filename)
 
+    lava_finalize_output(out_params.report_folder_base)
 
 def crunch_artifacts(
         plugins: typing.Sequence[plugin_loader.PluginSpec], extracttype, input_path, out_params, wrap_text,
@@ -298,7 +309,7 @@ def crunch_artifacts(
     seeker = None
     try:
         if extracttype == 'fs':
-            seeker = FileSeekerDir(input_path)
+            seeker = FileSeekerDir(input_path, out_params.temp_folder)
 
         elif extracttype in ('tar', 'gz'):
             seeker = FileSeekerTar(input_path, out_params.temp_folder)
@@ -333,6 +344,8 @@ def crunch_artifacts(
 
     # Search for the files per the arguments
     for plugin in plugins:
+        logfunc()
+        logfunc('{} [{}] artifact started'.format(plugin.name, plugin.module_name))
         if isinstance(plugin.search, list) or isinstance(plugin.search, tuple):
             search_regexes = plugin.search
         else:
@@ -354,26 +367,24 @@ def crunch_artifacts(
                 log.write(f'</li></ul>')
                 files_found.extend(found)
         if files_found:
-            logfunc()
-            logfunc('{} [{}] artifact started'.format(plugin.name, plugin.module_name))
-            category_folder = os.path.join(out_params.report_folder_base, plugin.category)
+            category_folder = os.path.join(out_params.report_folder_base, '_HTML', plugin.category)
             if not os.path.exists(category_folder):
                 try:
-                    os.mkdir(category_folder)
+                    os.makedirs(category_folder)
                 except (FileExistsError, FileNotFoundError) as ex:
                     logfunc('Error creating {} report directory at path {}'.format(plugin.name, category_folder))
                     logfunc('Error was {}'.format(str(ex)))
                     continue  # cannot do work
             try:
-                plugin.method(files_found, category_folder, seeker, wrap_text, time_offset)
+                artifact_data = plugin.method(files_found, category_folder, seeker, wrap_text, time_offset)
             except Exception as ex:
                 logfunc('Reading {} artifact had errors!'.format(plugin.name))
                 logfunc('Error was {}'.format(str(ex)))
                 logfunc('Exception Traceback: {}'.format(traceback.format_exc()))
                 continue  # nope
-
-            logfunc('{} [{}] artifact completed'.format(plugin.name, plugin.module_name))
-
+        else:
+            logfunc(f"No file found")
+        logfunc('{} [{}] artifact completed'.format(plugin.name, plugin.module_name))
     log.close()
 
     logfunc('')
@@ -396,12 +407,13 @@ def crunch_artifacts(
         if input_path.startswith('\\\\?\\'):
             input_path = input_path[4:]
     
-        
-    report.generate_report(out_params.report_folder_base, run_time_secs, run_time_HMS, extracttype, input_path, casedata)
+    report.generate_report(out_params.report_folder_base, run_time_secs, run_time_HMS, extracttype, input_path, casedata, profile_filename, icons)
     logfunc('Report generation Completed.')
     logfunc('')
     logfunc(f'Report location: {out_params.report_folder_base}')
+
     return True
 
 if __name__ == '__main__':
     main()
+    

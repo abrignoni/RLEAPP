@@ -11,17 +11,98 @@ import sys
 from functools import lru_cache
 from pathlib import Path
 
+import scripts.artifact_report as artifact_report
+
 # common third party imports
 import pytz
 import simplekml
 from bs4 import BeautifulSoup
 from scripts.filetype import guess_mime
+from functools import wraps
 
 # LEAPP version unique imports
 import json
 from typing import Pattern
+from scripts.lavafuncs import lava_process_artifact, lava_insert_sqlite_data
 
 os.path.basename = lru_cache(maxsize=None)(os.path.basename)
+
+icons = {}
+
+def get_file_path(files_found, filename):
+    """Returns the path of the searched filename id exists or returns None"""
+    try:
+        for file_found in files_found:
+            if file_found.endswith(filename):
+                return file_found
+    except Exception as e:
+        logfunc(f"Error: {str(e)}")
+    return None        
+
+def strip_tuple_from_headers(data_headers):
+    return [header[0] if isinstance(header, tuple) else header for header in data_headers]
+
+def check_output_types(type, output_types):
+    if type in output_types or type == output_types or 'all' in output_types or 'all' == output_types:
+        return True
+    elif type != 'kml' and ('standard' in output_types or 'standard' == output_types):
+        return True
+    else:
+        return False
+
+def artifact_processor(func):
+    @wraps(func)
+    def wrapper(files_found, report_folder, seeker, wrap_text, timezone_offset):
+        module_name = func.__module__.split('.')[-1]
+        func_name = func.__name__
+
+        func_object = func.__globals__.get(func_name, {})
+        artifact_info = func_object.artifact_info #get('artifact_info', {})
+
+        artifact_name = artifact_info.get('name', func_name)
+        category = artifact_info.get('category', '')
+        description = artifact_info.get('description', '')
+        icon = artifact_info.get('artifact_icon', '')
+        output_types = artifact_info.get('output_types', ['html', 'tsv', 'timeline', 'lava', 'kml'])
+
+        data_headers, data_list, source_path = func(files_found, report_folder, seeker, wrap_text, timezone_offset)
+        
+        if not source_path:
+            logfunc(f"No file found")
+
+        elif len(data_list):
+            logfunc(f"Found {len(data_list)} records for {artifact_name}")
+            icons.setdefault(category, {artifact_name: icon}).update({artifact_name: icon})
+
+            # Strip tuples from headers for HTML, TSV, and timeline
+            stripped_headers = strip_tuple_from_headers(data_headers)
+
+            if check_output_types('html', output_types):
+                report = artifact_report.ArtifactHtmlReport(artifact_name)
+                report.start_artifact_report(report_folder, artifact_name, description)
+                report.add_script()
+                report.write_artifact_data_table(stripped_headers, data_list, source_path)
+                report.end_artifact_report()
+
+            if check_output_types('tsv', output_types):
+                tsv(report_folder, stripped_headers, data_list, artifact_name)
+            
+            if check_output_types('timeline', output_types):
+                timeline(report_folder, artifact_name, data_list, stripped_headers)
+
+            if check_output_types('lava', output_types):
+                table_name, object_columns, column_map = lava_process_artifact(category, module_name, artifact_name, data_headers, len(data_list), data_views=artifact_info.get("data_views"))
+                lava_insert_sqlite_data(table_name, data_list, object_columns, data_headers, column_map)
+
+            if check_output_types('kml', output_types):
+                kmlgen(report_folder, artifact_name, data_list, stripped_headers)
+
+        else:
+            if output_types != 'none':
+                logfunc(f"No {artifact_name} data available")
+        
+        return data_headers, data_list, source_path
+    return wrapper
 
 class OutputParameters:
     '''Defines the parameters that are common for '''
@@ -29,12 +110,15 @@ class OutputParameters:
     nl = '\n'
     screen_output_file_path = ''
 
-    def __init__(self, output_folder):
+    def __init__(self, output_folder, custom_folder_name=None):
         now = datetime.datetime.now()
         currenttime = str(now.strftime('%Y-%m-%d_%A_%H%M%S'))
-        self.report_folder_base = os.path.join(output_folder,
-                                               'RLEAPP_Reports_' + currenttime)  # rleapp , rleappGUI, ileap_artifacts, report.py
-        self.temp_folder = os.path.join(self.report_folder_base, 'temp')
+        if custom_folder_name:
+            folder_name = custom_folder_name
+        else:
+            folder_name = 'RLEAPP_Reports_' + currenttime
+        self.report_folder_base = os.path.join(output_folder, folder_name)
+        self.temp_folder = os.path.join(self.report_folder_base, 'data')
         OutputParameters.screen_output_file_path = os.path.join(self.report_folder_base, 'Script Logs',
                                                                 'Screen Output.html')
         OutputParameters.screen_output_file_path_devinfo = os.path.join(self.report_folder_base, 'Script Logs',
@@ -115,7 +199,7 @@ def is_platform_windows():
     return sys.platform == 'win32'
 
 def sanitize_file_path(filename, replacement_char='_'):
-    '''
+    r'''
     Removes illegal characters (for windows) from the string passed. Does not replace \ or /
     '''
     return re.sub(r'[*?:"<>|\'\r\n]', replacement_char, filename)
@@ -157,7 +241,32 @@ def open_sqlite_db_readonly(path):
             path = "%5C%5C%3F%5C\\UNC" + path[1:]
         else:                               # normal path
             path = "%5C%5C%3F%5C" + path
-    return sqlite3.connect(f"file:{path}?mode=ro", uri=True)
+    try:
+        if path:
+            with sqlite3.connect(f"file:{path}?mode=ro", uri=True) as db:
+                return db
+    except sqlite3.OperationalError as e:
+        logfunc(f"Error with {path}:")
+        logfunc(f" - {str(e)}")
+    return None
+
+def get_sqlite_db_records(path, query, attach_query=None):
+    db = open_sqlite_db_readonly(path)
+    if db:
+        try:
+            cursor = db.cursor()
+            if attach_query:
+                cursor.execute(attach_query)
+            cursor.execute(query)
+            records = cursor.fetchall()
+            return records
+        except sqlite3.OperationalError as e:
+            logfunc(f"Error with {path}:")
+            logfunc(f" - {str(e)}")
+        except sqlite3.ProgrammingError as e:
+            logfunc(f"Error with {path}:")
+            logfunc(f" - {str(e)}")
+    return []
 
 def does_column_exist_in_db(db, table_name, col_name):
     '''Checks if a specific col exists'''
@@ -172,19 +281,30 @@ def does_column_exist_in_db(db, table_name, col_name):
             if row['name'].lower() == col_name:
                 return True
     except sqlite3.Error as ex:
-        print(f"Query error, query={query} Error={str(ex)}")
+        logfunc(f"Query error, query={query} Error={str(ex)}")
         pass
     return False
 
-def does_table_exist(db, table_name):
+def does_table_exist(path, table_name):
+    '''Checks if a table with specified name exists in an sqlite db'''
+    db = open_sqlite_db_readonly(path)
+    if db:    
+        try:
+            query = f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}'"
+            cursor = db.execute(query)
+            for row in cursor:
+                return True
+        except sqlite3.Error as ex:
+            logfunc(f"Query error, query={query} Error={str(ex)}")
+    return False
+
+def does_view_exist(db, table_name):
     '''Checks if a table with specified name exists in an sqlite db'''
     try:
-        query = f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}'"
+        query = f"SELECT name FROM sqlite_master WHERE type='view' AND name='{table_name}'"
         cursor = db.execute(query)
         for row in cursor:
             return True
-    #NOTE: I believe this was a mistake, sqlite3.Error was missing the .
-    #NOTE: I have not had a situation come up to hit this to know yet if this was an issue.
     except sqlite3.Error as ex:
         logfunc(f"Query error, query={query} Error={str(ex)}")
     return False
@@ -199,6 +319,7 @@ class GuiWindow:
             progress_bar = GuiWindow.window_handle.nametowidget('!progressbar')
             progress_bar.config(value=n)
 
+
 def logfunc(message=""):
     def redirect_logs(string):
         log_text.insert('end', string)
@@ -212,6 +333,7 @@ def logfunc(message=""):
     with open(OutputParameters.screen_output_file_path, 'a', encoding='utf8') as a:
         print(message)
         a.write(message + '<br>' + OutputParameters.nl)
+
 
 def logdevinfo(message=""):
     with open(OutputParameters.screen_output_file_path_devinfo, 'a', encoding='utf8') as b:
@@ -342,49 +464,57 @@ def timeline(report_folder, tlactivity, data_list, data_headers):
     db.close()
 
 def kmlgen(report_folder, kmlactivity, data_list, data_headers):
-    report_folder = report_folder.rstrip('/')
-    report_folder = report_folder.rstrip('\\')
-    report_folder_base, tail = os.path.split(report_folder)
-    kml_report_folder = os.path.join(report_folder_base, '_KML Exports')
-    if os.path.isdir(kml_report_folder):
-        latlongdb = os.path.join(kml_report_folder, '_latlong.db')
-        db = sqlite3.connect(latlongdb)
-        cursor = db.cursor()
-        cursor.execute('''PRAGMA synchronous = EXTRA''')
-        cursor.execute('''PRAGMA journal_mode = WAL''')
-        db.commit()
-    else:
-        os.makedirs(kml_report_folder)
-        latlongdb = os.path.join(kml_report_folder, '_latlong.db')
-        db = sqlite3.connect(latlongdb)
-        cursor = db.cursor()
-        cursor.execute(
-        """
-        CREATE TABLE data(key TEXT, latitude TEXT, longitude TEXT, activity TEXT)
-        """
-            )
-        db.commit()
-    
-    kml = simplekml.Kml(open=1)
-    
+    if 'Longitude' not in data_headers or 'Latitude' not in data_headers:
+        return
+
+    data = []
+    kml = simplekml.Kml(open=1)    
     a = 0
-    length = (len(data_list))
+    length = len(data_list)
+
     while a < length:
         modifiedDict = dict(zip(data_headers, data_list[a]))
-        times = modifiedDict['Timestamp']
+        times = modifiedDict.get('Timestamp','N/A')
+        if times == 'N/A':
+            times = data_list[a][0] if isinstance(data_list[a][0], datetime) else 'N/A'
         lon = modifiedDict['Longitude']
         lat = modifiedDict['Latitude']
-        if lat:
+        if lat and lon:
             pnt = kml.newpoint()
             pnt.name = times
             pnt.description = f"Timestamp: {times} - {kmlactivity}"
             pnt.coords = [(lon, lat)]
-            cursor.execute("INSERT INTO data VALUES(?,?,?,?)", (times, lat, lon, kmlactivity))
+            data.append((times, lat, lon, kmlactivity))
         a += 1
-    db.commit()
-    db.close()
-    kml.save(os.path.join(kml_report_folder, f'{kmlactivity}.kml'))
 
+    if len(data) > 0:
+        report_folder = report_folder.rstrip('/')
+        report_folder = report_folder.rstrip('\\')
+        report_folder_base = os.path.dirname(os.path.dirname(report_folder))
+        kml_report_folder = os.path.join(report_folder_base, '_KML Exports')
+        if os.path.isdir(kml_report_folder):
+            latlongdb = os.path.join(kml_report_folder, '_latlong.db')
+            db = sqlite3.connect(latlongdb)
+            cursor = db.cursor()
+            cursor.execute('''PRAGMA synchronous = EXTRA''')
+            cursor.execute('''PRAGMA journal_mode = WAL''')
+            db.commit()
+        else:
+            os.makedirs(kml_report_folder)
+            latlongdb = os.path.join(kml_report_folder, '_latlong.db')
+            db = sqlite3.connect(latlongdb)
+            cursor = db.cursor()
+            cursor.execute(
+            """
+            CREATE TABLE data(key TEXT, latitude TEXT, longitude TEXT, activity TEXT)
+            """
+                )
+            db.commit()
+        
+        cursor.executemany("INSERT INTO data VALUES(?, ?, ?, ?)", data)
+        db.commit()
+        db.close()
+        kml.save(os.path.join(kml_report_folder, f'{kmlactivity}.kml'))
 
 """
 Copyright 2021, CCL Forensics
@@ -464,30 +594,21 @@ def utf8_in_extended_ascii(input_string, *, raise_on_unexpected=False):
     return mis_encoded_utf8_present, "".join(output)
 
 def media_to_html(media_path, files_found, report_folder):
-    """
-    Show selected media files in the HTML report with proper relative pathing.
 
-    Provide the media file unique path or identifier, search for it in the list of paths for the artifact.
-    Place the responsive files in the folder for the artifact and generate realative paths for them in the report.
-
-    :param str media_path: Can be a path or a string that is unique to selected to be shown image.
-    :param list files_found: Paths that are a result of the regex executed when the artifact script is called.
-    :param str report_folder: Folder within the report stucture that is automatically named as the artifact.
-    :return: The relative path to the file in the report folder with proper HTML tags applied.
-    :rtype: str
-    """
-    
     def media_path_filter(name):
         return media_path in name
 
     def relative_paths(source, splitter):
         splitted_a = source.split(splitter)
         for x in splitted_a:
-            if 'LEAPP_Reports_' in x:
-                report_folder = x
+            if '_HTML' in x:
+                splitted_b = source.split(x)
+                return '.' + splitted_b[1]
+            elif 'data' in x:
+                index = splitted_a.index(x)
+                splitted_b = source.split(splitted_a[index - 1])
+                return '..' + splitted_b[1]
 
-        splitted_b = source.split(report_folder)
-        return '.' + splitted_b[1]
 
     platform = is_platform_windows()
     if platform:
@@ -499,12 +620,12 @@ def media_to_html(media_path, files_found, report_folder):
     thumb = media_path
     for match in filter(media_path_filter, files_found):
         filename = os.path.basename(match)
-        if filename.startswith('~') or filename.startswith('._'): #or filename != media_path:
+        if filename.startswith('~') or filename.startswith('._') or filename != media_path:
             continue
 
         dirs = os.path.dirname(report_folder)
         dirs = os.path.dirname(dirs)
-        env_path = os.path.join(dirs, 'temp')
+        env_path = os.path.join(dirs, 'data')
         if env_path in match:
             source = match
             source = relative_paths(source, splitter)
@@ -518,11 +639,11 @@ def media_to_html(media_path, files_found, report_folder):
             shutil.copy2(match, locationfiles)
             source = Path(locationfiles, filename)
             source = relative_paths(str(source), splitter)
-            
+
         mimetype = guess_mime(match)
         if mimetype == None:
             mimetype = ''
-        
+
         if 'video' in mimetype:
             thumb = f'<video width="320" height="240" controls="controls"><source src="{source}" type="video/mp4" preload="none">Your browser does not support the video tag.</video>'
         elif 'image' in mimetype:
