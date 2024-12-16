@@ -304,18 +304,17 @@ def crunch_artifacts(
     logfunc('Objective: Triage Service Provider Returns.')
     logfunc('By: Alexis Brignoni | @AlexisBrignoni | abrignoni.com')
     logfunc('By: Yogesh Khatri   | @SwiftForensics | swiftforensics.com\n')
-    logdevinfo()
     
     seeker = None
     try:
         if extracttype == 'fs':
-            seeker = FileSeekerDir(input_path, out_params.temp_folder)
+            seeker = FileSeekerDir(input_path, out_params.data_folder)
 
         elif extracttype in ('tar', 'gz'):
-            seeker = FileSeekerTar(input_path, out_params.temp_folder)
+            seeker = FileSeekerTar(input_path, out_params.data_folder)
 
         elif extracttype == 'zip':
-            seeker = FileSeekerZip(input_path, out_params.temp_folder)
+            seeker = FileSeekerZip(input_path, out_params.data_folder)
 
         else:
             logfunc('Error on argument -o (input type)')

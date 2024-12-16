@@ -62,13 +62,12 @@ class FileSeekerDir(FileSeekerBase):
         return pathlist
 
 class FileSeekerTar(FileSeekerBase):
-    def __init__(self, tar_file_path, temp_folder):
+    def __init__(self, tar_file_path, data_folder):
         FileSeekerBase.__init__(self)
         self.is_gzip = tar_file_path.lower().endswith('gz')
         mode ='r:gz' if self.is_gzip else 'r'
         self.tar_file = tarfile.open(tar_file_path, mode)
-        self.temp_folder = temp_folder
-        self.directory = temp_folder
+        self.data_folder = data_folder
         self.searched = {}
         self.copied = set()
 
@@ -79,7 +78,7 @@ class FileSeekerTar(FileSeekerBase):
         for member in self.tar_file.getmembers():
             if pat( root + normcase(member.name) ) is not None:
                 clean_name = sanitize_file_path(member.name)
-                full_path = os.path.join(self.temp_folder, Path(clean_name))
+                full_path = os.path.join(self.data_folder, Path(clean_name))
                 if member.name not in self.copied:
                     try:
                         if member.isdir():
@@ -103,12 +102,11 @@ class FileSeekerTar(FileSeekerBase):
         self.tar_file.close()
 
 class FileSeekerZip(FileSeekerBase):
-    def __init__(self, zip_file_path, temp_folder):
+    def __init__(self, zip_file_path, data_folder):
         FileSeekerBase.__init__(self)
         self.zip_file = ZipFile(zip_file_path)
         self.name_list = self.zip_file.namelist()
-        self.temp_folder = temp_folder
-        self.directory = temp_folder
+        self.data_folder = data_folder
         self.searched = {}
         self.copied = set()
 
@@ -122,7 +120,7 @@ class FileSeekerZip(FileSeekerBase):
             if pat( root + normcase(member) ) is not None:
                 if member not in self.copied:
                     try:
-                        extracted_path = self.zip_file.extract(member, path=self.temp_folder) # already replaces illegal chars with _ when exporting
+                        extracted_path = self.zip_file.extract(member, path=self.data_folder) # already replaces illegal chars with _ when exporting
                         self.copied.add(member)
                         f = self.zip_file.getinfo(member)
                         date_time = f.date_time
@@ -133,7 +131,7 @@ class FileSeekerZip(FileSeekerBase):
                         logfunc(f'Could not write file to filesystem, path was {member} ' + str(ex))
                 if member.startswith("/"):
                     member = member[1:]
-                filepath = os.path.join(self.temp_folder, member)
+                filepath = os.path.join(self.data_folder, member)
                 if is_platform_windows():
                     filepath = filepath.replace('/', '\\')
                 pathlist.append(filepath)

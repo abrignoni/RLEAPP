@@ -118,29 +118,13 @@ class OutputParameters:
         else:
             folder_name = 'RLEAPP_Reports_' + currenttime
         self.report_folder_base = os.path.join(output_folder, folder_name)
-        self.temp_folder = os.path.join(self.report_folder_base, 'data')
+        self.data_folder = os.path.join(self.report_folder_base, 'data')
         OutputParameters.screen_output_file_path = os.path.join(self.report_folder_base, 'Script Logs',
                                                                 'Screen Output.html')
-        OutputParameters.screen_output_file_path_devinfo = os.path.join(self.report_folder_base, 'Script Logs',
-                                                                        'DeviceInfo.html')
 
         os.makedirs(os.path.join(self.report_folder_base, 'Script Logs'))
-        os.makedirs(self.temp_folder)
+        os.makedirs(self.data_folder)
         
-def convert_local_to_utc(local_timestamp_str):
-    # Parse the timestamp string with timezone offset, ex. 2023-10-27 18:18:29-0400
-    local_timestamp = datetime.strptime(local_timestamp_str, "%Y-%m-%d %H:%M:%S%z")
-    
-    # Convert to UTC timestamp
-    utc_timestamp = local_timestamp.astimezone(timezone.utc)
-    
-    # Return the UTC timestamp
-    return utc_timestamp
-
-def convert_time_obj_to_utc(ts):
-    timestamp = ts.replace(tzinfo=timezone.utc)
-    return timestamp
-
 def convert_utc_human_to_timezone(utc_time, time_offset): 
     #fetch the timezone information
     timezone = pytz.timezone(time_offset)
@@ -164,21 +148,16 @@ def convert_ts_int_to_timezone(time, time_offset):
     #return the converted value
     return timezone_time
 
-def timestampsconv(webkittime):
-    unix_timestamp = webkittime + 978307200
-    finaltime = datetime.fromtimestamp(unix_timestamp, tz=timezone.utc)
-    return(finaltime)
-
 def convert_ts_human_to_utc(ts): #This is for timestamp in human form
     if '.' in ts:
         ts = ts.split('.')[0]
         
     dt = datetime.strptime(ts, '%Y-%m-%d %H:%M:%S') #Make it a datetime object
-    timestamp = dt.replace(tzinfo=timezone.utc) #Make it UTC
+    timestamp = dt.replace(tzinfo=datetime.UTC) #Make it UTC
     return timestamp
 
 def convert_ts_int_to_utc(ts): #This int timestamp to human format & utc
-    timestamp = datetime.fromtimestamp(ts, tz=timezone.utc)
+    timestamp = datetime.fromtimestamp(ts, tz=datetime.UTC)
     return timestamp
 
 def get_birthdate(date):
@@ -335,18 +314,6 @@ def logfunc(message=""):
         a.write(message + '<br>' + OutputParameters.nl)
 
 
-def logdevinfo(message=""):
-    with open(OutputParameters.screen_output_file_path_devinfo, 'a', encoding='utf8') as b:
-        b.write(message + '<br>' + OutputParameters.nl)
-
-""" def deviceinfoin(ordes, kas, vas, sources): # unused function
-    sources = str(sources)
-    db = sqlite3.connect(reportfolderbase+'Device Info/di.db')
-    cursor = db.cursor()
-    datainsert = (ordes, kas, vas, sources,)
-    cursor.execute('INSERT INTO devinf (ord, ka, va, source)  VALUES(?,?,?,?)', datainsert)
-    db.commit() """
-
 def html2csv(reportfolderbase):
     # List of items that take too long to convert or that shouldn't be converted
     itemstoignore = ['index.html',
@@ -391,7 +358,7 @@ def html2csv(reportfolderbase):
 def tsv(report_folder, data_headers, data_list, tsvname, source_file=None):
     report_folder = report_folder.rstrip('/')
     report_folder = report_folder.rstrip('\\')
-    report_folder_base, tail = os.path.split(report_folder)
+    report_folder_base = os.path.dirname(os.path.dirname(report_folder))
     tsv_report_folder = os.path.join(report_folder_base, '_TSV Exports')
 
     if os.path.isdir(tsv_report_folder):
@@ -428,7 +395,7 @@ def tsv(report_folder, data_headers, data_list, tsvname, source_file=None):
 def timeline(report_folder, tlactivity, data_list, data_headers):
     report_folder = report_folder.rstrip('/')
     report_folder = report_folder.rstrip('\\')
-    report_folder_base, tail = os.path.split(report_folder)
+    report_folder_base = os.path.dirname(os.path.dirname(report_folder))
     tl_report_folder = os.path.join(report_folder_base, '_Timeline')
 
     if os.path.isdir(tl_report_folder):
@@ -657,7 +624,7 @@ def media_to_html(media_path, files_found, report_folder):
 def usergen(report_folder, data_list_usernames):
     report_folder = report_folder.rstrip('/')
     report_folder = report_folder.rstrip('\\')
-    report_folder_base, tail = os.path.split(report_folder)
+    report_folder_base = os.path.dirname(os.path.dirname(report_folder))
     udb_report_folder = os.path.join(report_folder_base, '_Usernames DB')
 
     if os.path.isdir(udb_report_folder):
@@ -695,7 +662,7 @@ def usergen(report_folder, data_list_usernames):
 def ipgen(report_folder, data_list_ipaddress):
     report_folder = report_folder.rstrip('/')
     report_folder = report_folder.rstrip('\\')
-    report_folder_base, tail = os.path.split(report_folder)
+    report_folder_base = os.path.dirname(os.path.dirname(report_folder))
     udb_report_folder = os.path.join(report_folder_base, '_IPAddress DB')
 
     if os.path.isdir(udb_report_folder):
