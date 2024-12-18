@@ -55,7 +55,7 @@ coll = COLLECT(
 app = BUNDLE(
     coll,
     name='rleappGUI.app',
-    icon=None,
+    icon='scripts/icon.icns',
     bundle_identifier='4n6.brigs.RLEAPP',
-    version='1.1.1',
+    version='1.1.2',
 )
