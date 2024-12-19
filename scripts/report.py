@@ -229,7 +229,7 @@ def create_index_html(reportfolderbase, time_in_secs, time_HMS, extraction_type,
         <html>
             <head>
                 <meta http-equiv="refresh" content="0; url=_HTML/index.html" />
-                <title>iLEAPP Report</title>
+                <title>RLEAPP Report</title>
             </head>
         </html>
         """
@@ -239,9 +239,9 @@ def create_index_html(reportfolderbase, time_in_secs, time_HMS, extraction_type,
 
 
 
-def generate_authors_table_code(ileapp_contributors):
+def generate_authors_table_code(rleapp_contributors):
     authors_data = ''
-    for author_name, blog, tweet_handle, git in ileapp_contributors:
+    for author_name, blog, tweet_handle, git in rleapp_contributors:
         author_data = ''
         if blog:
             author_data += f'<a href="{blog}" target="_blank">{blog_icon}</a> &nbsp;\n'
