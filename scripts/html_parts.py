@@ -11,9 +11,9 @@ page_header = \
         <!-- Dark mode -->
         <link rel="stylesheet" href="_elements/dark-mode.css">
         <!-- Font Awesome -->
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+        <link rel="stylesheet" href="_elements/all.css">
         <!-- Google Fonts Roboto -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+        <link rel="stylesheet" href="_elements/Roboto.css">
         <!-- Bootstrap core CSS -->
         <link rel="stylesheet" href="_elements/MDB-Free_4.13.0/css/bootstrap.min.css">
         <!-- Material Design Bootstrap - TOGGLE THIS FOR ALTERNATE DESIGN!-->
@@ -143,7 +143,7 @@ body_infinite_loading_bar = \
 """
 # body_main_data is a placeholder, replace content with real data
 body_main_data = \
-"""
+r"""
                 <h5>All dates and times are in UTC unless stated otherwise.</h5>
                 <div class="alert alert-warning" role="alert">
                     All dates and times are in UTC unless noted otherwise!
@@ -176,9 +176,6 @@ tabs_code = \
             <a class="nav-link active" id="case-tab" data-toggle="tab" href="#case" role="tab" aria-controls="case" aria-selected="true">Details</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" id="device-list-tab" data-toggle="tab" href="#device" role="tab" aria-controls="device" aria-selected="false">Device details</a>
-        </li>
-        <li class="nav-item">
             <a class="nav-link" id="run-log-tab" data-toggle="tab" href="#run" role="tab" aria-controls="run" aria-selected="false">Script run log</a>
         </li>
         <li class="nav-item">
@@ -187,7 +184,6 @@ tabs_code = \
     </ul>
     <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade show active" id="case" role="tabpanel" aria-labelledby="case-tab"><br />{}</div>
-        <div class="tab-pane fade" id="device" role="tabpanel" aria-labelledby="device-tab"><br />{}</div>
         <div class="tab-pane fade text-monospace" id="run" role="tabpanel" aria-labelledby="script-run-tab"><br />{}</div>
         <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="profile-tab"><br />{}</div>
     </div>
