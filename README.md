@@ -1,6 +1,6 @@
-# RLEAPP
+![RLEAPP](https://github.com/abrignoni/RLEAPP/blob/main/assets/RLEAPP_logo.png)
 
-Returns Logs Events And Protobuf Parser
+# Returns Logs Events And Protobuf Parser
 
 If you want to contribute hit me up on twitter: https://twitter.com/AlexisBrignoni   
 
