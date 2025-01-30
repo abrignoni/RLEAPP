@@ -587,9 +587,8 @@ def media_to_html(media_path, files_found, report_folder):
     thumb = media_path
     for match in filter(media_path_filter, files_found):
         filename = os.path.basename(match)
-        if filename.startswith('~') or filename.startswith('._') or filename != media_path:
+        if filename.startswith('~') or filename.startswith('._'):# or filename != media_path:
             continue
-
         dirs = os.path.dirname(report_folder)
         dirs = os.path.dirname(dirs)
         env_path = os.path.join(dirs, 'data')
@@ -606,8 +605,8 @@ def media_to_html(media_path, files_found, report_folder):
             shutil.copy2(match, locationfiles)
             source = Path(locationfiles, filename)
             source = relative_paths(str(source), splitter)
-
         mimetype = guess_mime(match)
+        
         if mimetype == None:
             mimetype = ''
 
