@@ -1,10 +1,10 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 a = Analysis(
-    ['rleapp.py'],
-    pathex=['scripts/artifacts'],
+    ['../../rleapp.py'],
+    pathex=['../scripts/artifacts'],
     binaries=[],
-    datas=[('scripts/', 'scripts')],
+    datas=[('../', 'scripts')],
     hiddenimports=[
         'bencoding',
         'fitz',

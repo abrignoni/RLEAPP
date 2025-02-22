@@ -2,10 +2,10 @@
 
 block_cipher = None
 
-a = Analysis(['rleapp.py'],
-             pathex=['.\\scripts\\artifacts'],
+a = Analysis(['..\\..\\rleapp.py'],
+             pathex=['..\\scripts\\artifacts'],
              binaries=[],
-             datas=[('.\\scripts', '.\\scripts')],
+             datas=[('..\\scripts', '..\\scripts')],
              hiddenimports=['simplekml'],
              hookspath=['.\\'],
              runtime_hooks=[],
