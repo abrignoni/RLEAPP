@@ -10,6 +10,7 @@ from PIL import Image, ImageTk
 from tkinter import ttk, filedialog as tk_filedialog, messagebox as tk_msgbox
 from scripts.version_info import rleapp_version
 from scripts.search_files import *
+from scripts.modules_to_exclude import modules_to_exclude
 from scripts.lavafuncs import *
 
 
@@ -17,8 +18,9 @@ def pickModules():
     '''Create a list of available modules'''
     global mlist
     for plugin in sorted(loader.plugins, key=lambda p: p.category.upper()):
+        plugin_enabled = tk.BooleanVar(value=False) if plugin.module_name in modules_to_exclude else tk.BooleanVar(value=True)
         plugin_module_name = plugin.artifact_info.get('name', plugin.name) if hasattr(plugin, 'artifact_info') else plugin.name
-        mlist[plugin.name] = [plugin.category, plugin_module_name, plugin.module_name, tk.BooleanVar(value=True)]
+        mlist[plugin.name] = [plugin.category, plugin_module_name, plugin.module_name, plugin_enabled]
 
 
 def get_selected_modules():
@@ -506,6 +508,9 @@ mlist_text.config(state='disabled')
 main_window.bind_class('Checkbutton', '<MouseWheel>', scroll)
 main_window.bind_class('Checkbutton', '<Button-4>', scroll)
 main_window.bind_class('Checkbutton', '<Button-5>', scroll)
+main_window.bind("<Control-f>", lambda event: modules_filter_entry.focus_set()) # Focus on The Filter Field
+main_window.bind("<Control-i>", lambda event: input_entry.focus_set()) # Focus on the Input Field
+main_window.bind("<Control-o>", lambda event: output_entry.focus_set()) # Focus on the Output Field
 
 ### Process
 bottom_frame = ttk.Frame(main_window)

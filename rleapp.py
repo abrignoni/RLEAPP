@@ -37,7 +37,13 @@ def validate_args(args):
         raise argparse.ArgumentError(None, 'LEAPP Case Data file not found! Run the program again.')
 
     if args.load_profile and not os.path.exists(args.load_profile):
-        raise argparse.ArgumentError(None, 'RLEAPP Profile file not found! Run the program again.')
+        raise argparse.ArgumentError(None, 'ALEAPP Profile file not found! Run the program again.')
+
+    try:
+        timezone = pytz.timezone(args.timezone)
+    except pytz.UnknownTimeZoneError:
+      raise argparse.ArgumentError(None, 'Unknown timezone! Run the program again.')
+        
 
 def create_profile(plugins, path):
     available_modules = [(module_data.category, module_data.name) for module_data in plugins]
@@ -163,8 +169,6 @@ def main():
 
     args = parser.parse_args()
 
-    extracttype = args.t
-
     plugins = []
 
     for plugin in available_plugins:
@@ -273,6 +277,7 @@ def main():
                 return
     
     input_path = args.input_path
+    extracttype = args.t
     wrap_text = args.wrap_text
     output_path = os.path.abspath(args.output_path)
     time_offset = args.timezone
@@ -375,7 +380,7 @@ def crunch_artifacts(
                     logfunc('Error was {}'.format(str(ex)))
                     continue  # cannot do work
             try:
-                artifact_data = plugin.method(files_found, category_folder, seeker, wrap_text, time_offset)
+                plugin.method(files_found, category_folder, seeker, wrap_text, time_offset)
             except Exception as ex:
                 logfunc('Reading {} artifact had errors!'.format(plugin.name))
                 logfunc('Error was {}'.format(str(ex)))

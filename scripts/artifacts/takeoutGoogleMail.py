@@ -133,7 +133,6 @@ def get_takeoutGoogleMail(files_found, report_folder, seeker, wrap_text, time_of
             description = f'Google Takeout - MBOX'
             report = ArtifactHtmlReport(f'Google Takeout - MBOX - {a}')
             report.start_artifact_report(report_folder, f'Google Takeout - MBOX - {a}', description)
-            html_report = report.get_report_file_path()
             report.add_script()
             data_headers = ('Date','From','To','Subject','Body','Attachments')
             report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Attachments'])

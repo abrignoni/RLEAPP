@@ -47,7 +47,6 @@ def get_takeoutGoogleFit(files_found, report_folder, seeker, wrap_text, time_off
                 description = 'Daily totals for each activity metric, like steps and distance.'
                 report = ArtifactHtmlReport('Google Fit - Daily Activity Metrics')
                 report.start_artifact_report(report_folder, 'Google Fit - Daily Activity Metrics', description)
-                html_report = report.get_report_file_path()
                 report.add_script()
                 data_headers = ('Date','Move Minutes','Calories (kcal)','Distance (m)','Heart Points','Heart Minutes','Average Heart Rate (BPM)','Max Heart Rate (BPM)','Min Heart Rate (BPM)','Low Latitude','Low Longitude','High Latitude','High Longitude')
                 report.write_artifact_data_table(data_headers, data_list, file_found)

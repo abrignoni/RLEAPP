@@ -109,7 +109,6 @@ def get_takeoutSavedLinks(files_found, report_folder, seeker, wrap_text, time_of
                 description = 'Collections of saved links (images, places, web pages, etc.) from Google Search and Maps.'
                 report = ArtifactHtmlReport('Saved Links - Favorite Pages')
                 report.start_artifact_report(report_folder, 'Saved Links - Favorite Pages', description)
-                html_report = report.get_report_file_path()
                 report.add_script()
                 data_headers = ('Title','Note','URL','Comment')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
