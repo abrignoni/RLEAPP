@@ -22,7 +22,7 @@ def getbody(message): #getting plain text 'email body'
         body = message.get_payload(decode=True).decode('Latin_1')
     return body
     
-def get_googleReturnsmbox(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_googleReturnsmbox(files_found, report_folder, seeker, wrap_text):
     
     platform = is_platform_windows()
     if platform:

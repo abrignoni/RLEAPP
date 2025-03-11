@@ -310,6 +310,3 @@ def mark_item_active(data, itemname):
     else:
         ret = data[0: pos] + " active" + data[pos:]
         return ret
-    
-    
-    

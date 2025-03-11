@@ -197,9 +197,6 @@ def process(casedata):
         casedata = {key: value.get() for key, value in casedata.items()}
         out_params = OutputParameters(output_folder)
         wrap_text = True
-        time_offset = timezone_set.get()
-        if time_offset == '':
-            time_offset = 'UTC'
 
         logtext_frame.grid(row=1, column=0, rowspan=3, padx=14, pady=4, sticky='nswe')
         bottom_frame.grid_remove()
@@ -209,7 +206,7 @@ def process(casedata):
 
         crunch_successful = rleapp.crunch_artifacts(
             selected_modules, extracttype, input_path, out_params, wrap_text, loader,
-            casedata, time_offset, profile_filename)
+            casedata, profile_filename)
         
         lava_finalize_output(out_params.report_folder_base)
 
@@ -379,7 +376,6 @@ casedata = {'Case Number': tk.StringVar(),
             'Agency': tk.StringVar(),
             'Examiner': tk.StringVar(),
             }
-timezone_set = tk.StringVar()
 modules_filter_var = tk.StringVar()
 modules_filter_var.trace_add("write", filter_modules)  # Trigger filtering on input change
 pickModules()
@@ -441,9 +437,9 @@ style.configure('TProgressbar', thickness=4, background='DarkGreen')
 title_frame = ttk.Frame(main_window)
 title_frame.grid(padx=14, pady=8, sticky='we')
 title_frame.grid_columnconfigure(0, weight=1)
-ileapp_logo = ImageTk.PhotoImage(file=resource_path("RLEAPP_logo.png"))
-ileapp_logo_label = ttk.Label(title_frame, image=ileapp_logo)
-ileapp_logo_label.grid(row=0, column=0, sticky='w')
+rleapp_logo = ImageTk.PhotoImage(file=resource_path("RLEAPP_logo.png"))
+rleapp_logo_label = ttk.Label(title_frame, image=rleapp_logo)
+rleapp_logo_label.grid(row=0, column=0, sticky='w')
 leapps_logo = ImageTk.PhotoImage(Image.open(resource_path("leapps_r_logo.png")).resize((110, 51)))
 leapps_logo_label = ttk.Label(title_frame, image=leapps_logo, cursor="target")
 leapps_logo_label.grid(row=0, column=1, sticky='w')

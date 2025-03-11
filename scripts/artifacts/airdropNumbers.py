@@ -27,7 +27,7 @@ AREACODE_FILE = {COUNTRY.US: 'areacodes_us.txt', COUNTRY.DE: 'areacodes_de.txt'}
 
 
 
-def get_airdropNumbers(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_airdropNumbers(files_found, report_folder, seeker, wrap_text):
     # log show ./system_logs.logarchive --style ndjson --predicate 'category = "AirDrop"' > airdrop.ndjson
     selected_country = COUNTRY.US
     areacodelist = []

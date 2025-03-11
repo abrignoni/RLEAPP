@@ -66,7 +66,7 @@ def utf8_in_extended_ascii(input_string, *, raise_on_unexpected=False):
     return mis_encoded_utf8_present, "".join(output)
 
 
-def get_kikReturns(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_kikReturns(files_found, report_folder, seeker, wrap_text):
     
     for file_found in files_found:
         file_found = str(file_found)

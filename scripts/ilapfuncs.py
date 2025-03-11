@@ -275,7 +275,7 @@ def get_data_list_with_media(media_header_idx, data_list, media_style):
 
 def artifact_processor(func):
     @wraps(func)
-    def wrapper(files_found, report_folder, seeker, wrap_text, timezone_offset):
+    def wrapper(files_found, report_folder, seeker, wrap_text):
         module_name = func.__module__.split('.')[-1]
         func_name = func.__name__
 
@@ -291,7 +291,7 @@ def artifact_processor(func):
 
         output_types = artifact_info.get('output_types', ['html', 'tsv', 'timeline', 'lava', 'kml'])
 
-        data_headers, data_list, source_path = func(files_found, report_folder, seeker, wrap_text, timezone_offset)
+        data_headers, data_list, source_path = func(files_found, report_folder, seeker, wrap_text)
         
         if not source_path:
             logfunc(f"No file found")

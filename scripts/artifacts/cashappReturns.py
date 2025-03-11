@@ -70,7 +70,7 @@ class AccountInfo:
     def add_issued_bank_account(self, bank_account, routing_number):
         self.issued_bank_accounts.append((bank_account, routing_number))
 
-def get_cashappReturns(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_cashappReturns(files_found, report_folder, seeker, wrap_text):
     # log show ./system_logs.logarchive --style ndjson --predicate 'category = "CashApp"' > cashapp.ndjson
 
     # Probably needs to be deleted

@@ -20,7 +20,7 @@ site_activity_columns = ["Action", "Ip_address", "Source", "Time"]
 third_party_columns = ["Access_granted", "Access_revoked", "Name"]
 
 
-def get_coinbaseArchive(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_coinbaseArchive(files_found, report_folder, seeker, wrap_text):
     
     for file_found in files_found:
         file_found = str(file_found)

@@ -20,7 +20,7 @@ import re
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, convert_ts_int_to_utc, convert_utc_human_to_timezone
 
-def get_sysShutdown(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_sysShutdown(files_found, report_folder, seeker, wrap_text):
     
     data_list_shutdown_log = []
     data_list_shutdown_reboot = []

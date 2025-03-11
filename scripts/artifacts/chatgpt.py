@@ -68,7 +68,7 @@ def convert_ts_human_to_utc(ts): #This is for timestamp in human form
 
 
 
-def get_chatgpt(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_chatgpt(files_found, report_folder, seeker, wrap_text):
     conversations_metadata = []
     conversations_messages = []
     draft_messages = []

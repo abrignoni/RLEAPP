@@ -8,7 +8,7 @@ from pathlib import Path
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, kmlgen, is_platform_windows, utf8_in_extended_ascii, media_to_html
 
-def get_fbigDirecShares(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_fbigDirecShares(files_found, report_folder, seeker, wrap_text):
     data_list = []
     for file_found in files_found:
         file_found = str(file_found)

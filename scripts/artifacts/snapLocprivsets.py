@@ -38,7 +38,7 @@ def clean_and_group_data(input_data):
         
     return grouped_data
 
-def get_snapLocprivsets(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_snapLocprivsets(files_found, report_folder, seeker, wrap_text):
 
     for file_found in files_found:
         file_found = str(file_found)
