@@ -116,8 +116,9 @@ def get_takeoutSemanticLocationHistory(files_found, report_folder, seeker, wrap_
                             segment_end_TS = element['activitySegment']['duration'].get('endTimestamp','')
                             segment_end_TS = segment_end_TS.replace('T', ' ').replace('Z', '')
                             
-                        segment_activity_type = element['activitySegment'].get('activityType')
-                        segment_confidence = element['activitySegment'].get('confidence')
+                        segment_activity_type = element['activitySegment'].get('activityType','')
+                        segment_confidence = element['activitySegment'].get('confidence','')
+                        segment_distance = element['activitySegment'].get('distance','')
                         
                         if "activities" in element['activitySegment']: # parent activity list
                             count_activity += 1
@@ -134,7 +135,7 @@ def get_takeoutSemanticLocationHistory(files_found, report_folder, seeker, wrap_
                         data_list_segments_kml.append((segment_start_TS,segment_start_lat,segment_start_long))
                         data_list_segments_kml.append((segment_end_TS,segment_end_lat,segment_end_long))
                         
-                        data_list_segments.append((segment_start_TS,segment_end_TS,segment_start_lat,segment_start_long,segment_end_lat,segment_end_long,segment_activity_type,segment_confidence,subactivity_str[:-2],file_name))
+                        data_list_segments.append((segment_start_TS,segment_end_TS,segment_start_lat,segment_start_long,segment_end_lat,segment_end_long,segment_activity_type,segment_distance,segment_confidence,subactivity_str[:-2],file_name))
 
     if len(data_list_visits) > 0:
         report = ArtifactHtmlReport('Google Semantic Location History - Place Visits')
@@ -162,7 +163,7 @@ def get_takeoutSemanticLocationHistory(files_found, report_folder, seeker, wrap_
         report = ArtifactHtmlReport('Google Semantic Location History - Activity Segments')
         report.start_artifact_report(report_folder, 'Google Semantic Location History - Activity Segments')
         report.add_script()
-        data_headers = ('Activity Start Timestamp','Activity End Timestamp','Start Latitude','Start Longitude','End Latitude','End Longitude','Activity Type','Confidence','Activities','File Name')
+        data_headers = ('Activity Start Timestamp','Activity End Timestamp','Start Latitude','Start Longitude','End Latitude','End Longitude','Activity Type','Distance (Meters)','Confidence','Activities','File Name')
 
         report.write_artifact_data_table(data_headers, data_list_segments, file_found)
         report.end_artifact_report()
