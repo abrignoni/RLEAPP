@@ -65,7 +65,7 @@ class FileSeekerDir(FileSeekerBase):
                 data_path = os.path.join(self.data_folder, item_rel_path[1:])
                 if is_platform_windows():
                     data_path = data_path.replace('/', '\\')
-                if item not in self.copied or force:
+                if Path(item).is_file() and item not in self.copied or force:
                     try:
                         os.makedirs(os.path.dirname(data_path), exist_ok=True)
                         copyfile(item, data_path)
@@ -77,7 +77,7 @@ class FileSeekerDir(FileSeekerBase):
                     except Exception as ex:
                         logfunc(f'Could not copy {item} to {data_path} ' + str(ex))
                 else:
-                    data_path = self.copied[item]
+                    data_path = self.copied.get(item, data_path)
                 pathlist.append(data_path)
                 if return_on_first_hit:
                     self.searched[filepattern] = pathlist
