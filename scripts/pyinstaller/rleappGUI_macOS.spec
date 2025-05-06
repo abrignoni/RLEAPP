@@ -2,10 +2,10 @@
 
 
 a = Analysis(
-    ['rleappGUI.py'],
+    ['../../rleappGUI.py'],
     pathex=['scripts/artifacts'],
     binaries=[],
-    datas=[('scripts/', 'scripts')],
+    datas=[('../', 'scripts'), ('../../assets', 'assets')],
     hiddenimports=[
         'bencoding',
         'fitz',
@@ -55,7 +55,7 @@ coll = COLLECT(
 app = BUNDLE(
     coll,
     name='rleappGUI.app',
-    icon='scripts/icon.icns',
+    icon='../../assets/icon.icns',
     bundle_identifier='4n6.brigs.RLEAPP',
-    version='1.1.2',
+    version='2.2.0',
 )

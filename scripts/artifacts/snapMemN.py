@@ -23,7 +23,7 @@ def read_multiline_csv(file_path):
     return rows
 
 
-def get_snapMemN(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_snapMemN(files_found, report_folder, seeker, wrap_text):
 
     for file_found in files_found:
         file_found = str(file_found)

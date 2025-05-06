@@ -176,7 +176,7 @@ def find_nth(haystack: str, needle: str, n: int, start: int = 0) -> int:
         n -= 1
     return start
 
-def get_chaseReturnsRTL(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_chaseReturnsRTL(files_found, report_folder, seeker, wrap_text):
     account_list = []
     data_list = []
     

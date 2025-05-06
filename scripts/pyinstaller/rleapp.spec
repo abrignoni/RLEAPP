@@ -2,11 +2,23 @@
 
 block_cipher = None
 
-a = Analysis(['rleapp.py'],
-             pathex=['.\\scripts\\artifacts'],
+a = Analysis(['..\\..\\rleapp.py'],
+             pathex=['..\\scripts\\artifacts'],
              binaries=[],
-             datas=[('.\\scripts', '.\\scripts')],
-             hiddenimports=['simplekml'],
+             datas=[('..\\', '.\\scripts')],
+             hiddenimports=[
+                'bencoding',
+                'fitz',
+                'ijson',
+                'mailbox',
+                'mammoth',
+                'openpyxl',
+                'pillow_heif',
+                'pypdf',
+                'requests',
+                'simplekml',
+                'xlrd',
+                ],
              hookspath=['.\\'],
              runtime_hooks=[],
              excludes=[],

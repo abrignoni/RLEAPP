@@ -9,7 +9,7 @@ import urllib.parse
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html, kmlgen
 
-def get_discordReturnsOnlineArchived(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_discordReturnsOnlineArchived(files_found, report_folder, seeker, wrap_text):
 
     counter = 0
     for file_found in files_found:

@@ -8,7 +8,7 @@ from pathlib import Path
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, kmlgen, is_platform_windows, utf8_in_extended_ascii, media_to_html
 
-def get_fbigIpaddresses(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_fbigIpaddresses(files_found, report_folder, seeker, wrap_text):
     data_list = []
     logfunc('Processing the request. This may take a few moments.')
     for file_found in files_found:

@@ -107,7 +107,7 @@ iphone_models = {
 	'iPhone16,2': 'iPhone 15 Pro Max',
 }
 
-def get_takeoutLocationHistorySettings(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_takeoutLocationHistorySettings(files_found, report_folder, seeker, wrap_text):
 	
 	for file_found in files_found:
 		file_found = str(file_found)

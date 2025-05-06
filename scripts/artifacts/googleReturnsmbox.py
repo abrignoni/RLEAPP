@@ -22,7 +22,7 @@ def getbody(message): #getting plain text 'email body'
         body = message.get_payload(decode=True).decode('Latin_1')
     return body
     
-def get_googleReturnsmbox(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_googleReturnsmbox(files_found, report_folder, seeker, wrap_text):
     
     platform = is_platform_windows()
     if platform:
@@ -91,7 +91,6 @@ def get_googleReturnsmbox(files_found, report_folder, seeker, wrap_text, time_of
             description = f'Google Returns - Mbox'
             report = ArtifactHtmlReport(f'Google Returns - Mbox - {a}')
             report.start_artifact_report(report_folder, f'Google Returns - Mbox - {a}', description)
-            html_report = report.get_report_file_path()
             report.add_script()
             data_headers = ('Date','From','To','Subject','Body','Attachments')
             report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Attachments'])

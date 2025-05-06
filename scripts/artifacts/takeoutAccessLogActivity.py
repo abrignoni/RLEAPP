@@ -12,7 +12,7 @@ import csv
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, ipgen
 
-def get_takeoutAccessLogActivity(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_takeoutAccessLogActivity(files_found, report_folder, seeker, wrap_text):
 
     for file_found in files_found:
         file_found = str(file_found)
@@ -25,7 +25,7 @@ def get_takeoutAccessLogActivity(files_found, report_folder, seeker, wrap_text, 
             description = 'A list of Google services accessed by your devices (for example every time your phone synchronizes with your Gmail)'
             report = ArtifactHtmlReport('Google Access Log Activities')
             report.start_artifact_report(report_folder, 'Google Access Log Activities', description)
-            html_report = report.get_report_file_path()
+            html_report = report.report_file_path
             report.add_script()
             has_header = True
             
@@ -136,7 +136,7 @@ def get_takeoutAccessLogActivity(files_found, report_folder, seeker, wrap_text, 
                 description = 'A list of devices (i.e. Nest, Pixel, iPhone, Galaxy, etc) which have accessed your Google account over the last 30 days'
                 report = ArtifactHtmlReport('Google Access Log Devices')
                 report.start_artifact_report(report_folder, 'Google Access Log Devices', description)
-                html_report = report.get_report_file_path()
+                html_report = report.report_file_path
                 report.add_script()
                 
                 data_headers = ('First Activity Timestamp','Last Activity Timestamp','Device Type','Device Brand','Device Model','Device OS','OS Version','Device Last Country','Device Last Location Timestamp','GAIA ID')

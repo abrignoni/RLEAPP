@@ -10,6 +10,7 @@ from PIL import Image, ImageTk
 from tkinter import ttk, filedialog as tk_filedialog, messagebox as tk_msgbox
 from scripts.version_info import rleapp_version
 from scripts.search_files import *
+from scripts.modules_to_exclude import modules_to_exclude
 from scripts.lavafuncs import *
 
 
@@ -17,8 +18,9 @@ def pickModules():
     '''Create a list of available modules'''
     global mlist
     for plugin in sorted(loader.plugins, key=lambda p: p.category.upper()):
+        plugin_enabled = tk.BooleanVar(value=False) if plugin.module_name in modules_to_exclude else tk.BooleanVar(value=True)
         plugin_module_name = plugin.artifact_info.get('name', plugin.name) if hasattr(plugin, 'artifact_info') else plugin.name
-        mlist[plugin.name] = [plugin.category, plugin_module_name, plugin.module_name, tk.BooleanVar(value=True)]
+        mlist[plugin.name] = [plugin.category, plugin_module_name, plugin.module_name, plugin_enabled]
 
 
 def get_selected_modules():
@@ -35,26 +37,44 @@ def get_selected_modules():
 
 def select_all():
     '''Select all modules in the list of available modules and execute get_selected_modules'''
-    for artifact_name in mlist:
-        main_window.nametowidget(f'f_modules.f_list.tbox.mcb_{artifact_name}').select()
+    for module_infos in mlist.values():
+        module_infos[-1].set(True)
 
     get_selected_modules()
 
 
 def deselect_all():
     '''Unselect all modules in the list of available modules and execute get_selected_modules'''
-    for artifact_name in mlist:
-        main_window.nametowidget(f'f_modules.f_list.tbox.mcb_{artifact_name}').deselect()
+    for module_infos in mlist.values():
+        module_infos[-1].set(False)
 
     get_selected_modules()
 
+
+def filter_modules(*args):
+    mlist_text.config(state='normal')
+    filter_term = modules_filter_var.get().lower()
+
+    mlist_text.delete('0.0', tk.END)
+
+    for artifact_name, module_infos in mlist.items():
+        filter_modules_info = f"{module_infos[0]} {module_infos[1]}".lower()
+        if filter_term in filter_modules_info:
+            cb = tk.Checkbutton(mlist_text, name=f'mcb_{artifact_name}',
+                                text=f'{module_infos[0]} [{module_infos[1]} | {module_infos[2]}.py]',
+                                variable=module_infos[-1], onvalue=True, offvalue=False, command=get_selected_modules)
+            cb.config(background=theme_bgcolor, fg=theme_fgcolor, selectcolor=theme_inputcolor,
+                    highlightthickness=0, activebackground=theme_bgcolor, activeforeground=theme_fgcolor)
+            mlist_text.window_create('insert', window=cb)
+            mlist_text.insert('end', '\n')
+    mlist_text.config(state='disabled')
 
 def load_profile():
     '''Select modules from a profile file'''
     global profile_filename
 
-    destination_path = tk_filedialog.askopenfilename(parent=main_window, 
-                                                     title='Load a profile', 
+    destination_path = tk_filedialog.askopenfilename(parent=main_window,
+                                                     title='Load a profile',
                                                      filetypes=(('RLEAPP Profile', '*.rlprofile'),))
 
     if destination_path and os.path.exists(destination_path):
@@ -71,9 +91,9 @@ def load_profile():
                 else:
                     deselect_all()
                     ticked = set(profile.get('plugins', []))
-                    for artifact_name in mlist:
+                    for artifact_name, module_infos in mlist.items():
                         if artifact_name in ticked:
-                            main_window.nametowidget(f'f_modules.f_list.tbox.mcb_{artifact_name}').select()
+                            module_infos[-1].set(True)
                     get_selected_modules()
             else:
                 profile_load_error = 'File was not a valid profile file: invalid format'
@@ -87,8 +107,8 @@ def load_profile():
 
 def save_profile():
     '''Save selected modules in a profile file'''
-    destination_path = tk_filedialog.asksaveasfilename(parent=main_window, 
-                                                       title='Save a profile', 
+    destination_path = tk_filedialog.asksaveasfilename(parent=main_window,
+                                                       title='Save a profile',
                                                        filetypes=(('RLEAPP Profile', '*.rlprofile'),))
 
     if destination_path:
@@ -123,7 +143,7 @@ def ValidateInput():
     else:
         ext_type = Path(i_path).suffix[1:].lower()
 
-        # check output now
+    # check output now
     if len(o_path) == 0:  # output folder
         tk_msgbox.showerror(title='Error', message='No OUTPUT folder selected!', parent=main_window)
         return False, ext_type
@@ -145,6 +165,14 @@ def open_report(report_path):
 def open_website(url):
     webbrowser.open_new_tab(url)
 
+
+def resource_path(filename):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, 'assets', filename)
 
 def process(casedata):
     '''Execute selected modules and create reports'''
@@ -169,9 +197,6 @@ def process(casedata):
         casedata = {key: value.get() for key, value in casedata.items()}
         out_params = OutputParameters(output_folder)
         wrap_text = True
-        time_offset = timezone_set.get()
-        if time_offset == '':
-            time_offset = 'UTC'
 
         logtext_frame.grid(row=1, column=0, rowspan=3, padx=14, pady=4, sticky='nswe')
         bottom_frame.grid_remove()
@@ -181,7 +206,7 @@ def process(casedata):
 
         crunch_successful = rleapp.crunch_artifacts(
             selected_modules, extracttype, input_path, out_params, wrap_text, loader,
-            casedata, time_offset, profile_filename)
+            casedata, profile_filename)
         
         lava_finalize_output(out_params.report_folder_base)
 
@@ -338,11 +363,11 @@ def case_data():
 
 ## Main window creation
 main_window = tk.Tk()
-window_width = 902
+window_width = 890
 window_height = 620
 
 ## Variables
-icon = os.path.join(os.path.dirname(__file__), 'assets', 'icon.png')
+icon = resource_path('icon.png')
 loader: typing.Optional[plugin_loader.PluginLoader] = None
 loader = plugin_loader.PluginLoader()
 mlist = {}
@@ -351,7 +376,8 @@ casedata = {'Case Number': tk.StringVar(),
             'Agency': tk.StringVar(),
             'Examiner': tk.StringVar(),
             }
-timezone_set = tk.StringVar()
+modules_filter_var = tk.StringVar()
+modules_filter_var.trace_add("write", filter_modules)  # Trigger filtering on input change
 pickModules()
 
 ## Theme properties
@@ -409,20 +435,19 @@ style.configure('TProgressbar', thickness=4, background='DarkGreen')
 ## Main Window Layout
 ### Top part of the window
 title_frame = ttk.Frame(main_window)
-title_frame.grid(padx=14, pady=4, sticky='w')
-title_frame.grid(padx=14, pady=4, sticky='we')
+title_frame.grid(padx=14, pady=8, sticky='we')
 title_frame.grid_columnconfigure(0, weight=1)
-ileapp_logo = ImageTk.PhotoImage(file="assets/RLEAPP_logo.png")
-ileapp_logo_label = ttk.Label(title_frame, image=ileapp_logo)
-ileapp_logo_label.grid(row=0, column=0, sticky='w')
-leapps_logo = ImageTk.PhotoImage(Image.open("assets/leapps_r_logo.png").resize((110, 51)))
+rleapp_logo = ImageTk.PhotoImage(file=resource_path("RLEAPP_logo.png"))
+rleapp_logo_label = ttk.Label(title_frame, image=rleapp_logo)
+rleapp_logo_label.grid(row=0, column=0, sticky='w')
+leapps_logo = ImageTk.PhotoImage(Image.open(resource_path("leapps_r_logo.png")).resize((110, 51)))
 leapps_logo_label = ttk.Label(title_frame, image=leapps_logo, cursor="target")
 leapps_logo_label.grid(row=0, column=1, sticky='w')
 leapps_logo_label.bind("<Button-1>", lambda e: open_website("https://leapps.org"))
 
 ### Input output selection
 input_frame = ttk.LabelFrame(
-    main_window, 
+    main_window,
     text=' Select the file (tar/zip/gz) or directory containing the data to be parsed: ')
 input_frame.grid(padx=14, pady=2, sticky='we')
 input_frame.grid_columnconfigure(0, weight=1)
@@ -441,60 +466,63 @@ output_entry.grid(row=0, column=0, padx=5, pady=4, sticky='we')
 output_folder_button = ttk.Button(output_frame, text='Browse Folder', command=select_output)
 output_folder_button.grid(row=0, column=1, padx=5, pady=4)
 
-### Modules
-modules_frame = ttk.Frame(main_window, name='f_modules')
-modules_frame.grid(padx=14, pady=4, sticky='we')
-modules_frame.grid_columnconfigure(0, weight=1)
-
-#### Buttons
-button_frame = ttk.Frame(modules_frame)
-button_frame.grid(row=0, column=0, pady=4, sticky='we')
-
-all_button = ttk.Button(button_frame, text='Select All', command=select_all)
-all_button.grid(row=0, column=0, padx=5)
-none_button = ttk.Button(button_frame, text='Deselect All', command=deselect_all)
-none_button.grid(row=0, column=1, padx=5)
-load_button = ttk.Button(button_frame, text='Load Profile', command=load_profile)
-load_button.grid(row=0, column=2, padx=5)
-save_button = ttk.Button(button_frame, text='Save Profile', command=save_profile)
-save_button.grid(row=0, column=3, padx=5)
-ttk.Separator(button_frame, orient='vertical').grid(row=0, column=4, padx=10, sticky='ns')
-case_data_button = ttk.Button(button_frame, text='Case Data', command=case_data)
-case_data_button.grid(row=0, column=5, padx=5)
-
-#### List of modules
-mlist_frame = ttk.LabelFrame(modules_frame, text=' Available Modules: ', name='f_list')
-mlist_frame.grid(row=1, column=0, padx=4, pady=4, sticky='we')
+mlist_frame = ttk.LabelFrame(main_window, text=' Available Modules: ', name='f_list')
+mlist_frame.grid(padx=14, pady=5, sticky='we')
 mlist_frame.grid_columnconfigure(0, weight=1)
+
+button_frame = ttk.Frame(mlist_frame)
+button_frame.grid(row=0, column=0, columnspan=2,pady=4, sticky='we')
+button_frame.grid_columnconfigure(1, weight=1)
+
+if is_platform_macos():
+    modules_filter_icon = ttk.Label(button_frame, text="\U0001F50E")
+    modules_filter_icon.grid(row=0, column=0, padx=4)
+else:
+    modules_filter_img = ImageTk.PhotoImage(file=resource_path("magnif_glass.png"))
+    modules_filter_icon = ttk.Label(button_frame, image=modules_filter_img)
+    modules_filter_icon.grid(row=0, column=0, padx=4)
+modules_filter_entry = ttk.Entry(button_frame, textvariable=modules_filter_var)
+modules_filter_entry.grid(row=0, column=1, padx=1, sticky='we')
+ttk.Separator(button_frame, orient='vertical').grid(row=0, column=2, padx=10, sticky='ns')
+all_button = ttk.Button(button_frame, text='Select All', command=select_all)
+all_button.grid(row=0, column=3, padx=5)
+none_button = ttk.Button(button_frame, text='Deselect All', command=deselect_all)
+none_button.grid(row=0, column=4, padx=5)
+ttk.Separator(button_frame, orient='vertical').grid(row=0, column=5, padx=10, sticky='ns')
+load_button = ttk.Button(button_frame, text='Load Profile', command=load_profile)
+load_button.grid(row=0, column=6, padx=5)
+save_button = ttk.Button(button_frame, text='Save Profile', command=save_profile)
+save_button.grid(row=0, column=7, padx=5)
 v = ttk.Scrollbar(mlist_frame, orient='vertical')
-v.grid(row=0, column=1, sticky='ns')
+v.grid(row=1, column=1, sticky='ns')
 mlist_text = tk.Text(mlist_frame, name='tbox', bg=theme_bgcolor, highlightthickness=0,
                      yscrollcommand=v.set, height=mlist_window_height)
-mlist_text.grid(row=0, column=0, sticky='we')
+mlist_text.grid(row=1, column=0, sticky='we')
 v.config(command=mlist_text.yview)
-for artifact_name, module_infos in mlist.items():
-    cb = tk.Checkbutton(mlist_text, name=f'mcb_{artifact_name}',
-                        text=f'{module_infos[0]} [{module_infos[1]} | {module_infos[2]}.py]',
-                        variable=module_infos[-1], onvalue=True, offvalue=False, command=get_selected_modules)
-    cb.config(background=theme_bgcolor, fg=theme_fgcolor, selectcolor=theme_inputcolor,
-              highlightthickness=0, activebackground=theme_bgcolor, activeforeground=theme_fgcolor)
-    mlist_text.window_create('insert', window=cb)
-    mlist_text.insert('end', '\n')
+filter_modules()
 mlist_text.config(state='disabled')
 main_window.bind_class('Checkbutton', '<MouseWheel>', scroll)
 main_window.bind_class('Checkbutton', '<Button-4>', scroll)
 main_window.bind_class('Checkbutton', '<Button-5>', scroll)
+main_window.bind("<Control-f>", lambda event: modules_filter_entry.focus_set()) # Focus on The Filter Field
+main_window.bind("<Control-i>", lambda event: input_entry.focus_set()) # Focus on the Input Field
+main_window.bind("<Control-o>", lambda event: output_entry.focus_set()) # Focus on the Output Field
 
 ### Process
 bottom_frame = ttk.Frame(main_window)
 bottom_frame.grid(padx=16, pady=6, sticky='we')
 bottom_frame.grid_columnconfigure(2, weight=1)
+bottom_frame.grid_columnconfigure(4, weight=1)
 process_button = ttk.Button(bottom_frame, text='Process', command=lambda: process(casedata))
-process_button.grid(row=0, column=0, rowspan=2, padx=5)
+process_button.grid(row=0, column=0, padx=5)
 close_button = ttk.Button(bottom_frame, text='Close', command=main_window.quit)
-close_button.grid(row=0, column=1, rowspan=2, padx=5)
+close_button.grid(row=0, column=1, padx=5)
+ttk.Separator(bottom_frame, orient='vertical').grid(row=0, column=2, padx=10, sticky='ns')
+case_data_button = ttk.Button(bottom_frame, text='Case Data', command=case_data)
+case_data_button.grid(row=0, column=3, padx=5)
+ttk.Separator(bottom_frame, orient='vertical').grid(row=0, column=4, padx=10, sticky='ns')
 selected_modules_label = ttk.Label(bottom_frame, text='Number of selected modules: ')
-selected_modules_label.grid(row=0, column=2, padx=5, sticky='e')
+selected_modules_label.grid(row=0, column=5, padx=5, sticky='e')
 get_selected_modules()
 
 #### Logs
@@ -519,6 +547,5 @@ def OnFocusIn(event):
 main_window.attributes('-topmost', True)
 main_window.focus_force()
 main_window.bind('<FocusIn>', OnFocusIn)
-
 
 main_window.mainloop()

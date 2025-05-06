@@ -130,7 +130,7 @@ from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, media_to_html
 
 
-def get_meweLoginLogs(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_meweLoginLogs(files_found, report_folder, seeker, wrap_text):
 
 
     for file_found in files_found:
@@ -171,7 +171,7 @@ def get_meweLoginLogs(files_found, report_folder, seeker, wrap_text, time_offset
                 logfunc(f'No MeWe - Logins Logs - {csvname}')
 
 
-def get_meweLoginStats(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_meweLoginStats(files_found, report_folder, seeker, wrap_text):
 
 
     for file_found in files_found:
@@ -208,7 +208,7 @@ def get_meweLoginStats(files_found, report_folder, seeker, wrap_text, time_offse
                 logfunc(f'No MeWe - Logins Stats - {csvname}')
 
 
-def get_meweUserChat(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_meweUserChat(files_found, report_folder, seeker, wrap_text):
 
 
     for file_found in files_found:
@@ -276,7 +276,7 @@ def get_meweUserChat(files_found, report_folder, seeker, wrap_text, time_offset)
                 logfunc(f'No MeWe - User Chat - {csvname}')
 
 
-def get_mewePosts(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_mewePosts(files_found, report_folder, seeker, wrap_text):
 
 
     for file_found in files_found:
@@ -326,7 +326,7 @@ def get_mewePosts(files_found, report_folder, seeker, wrap_text, time_offset):
                 logfunc(f'No MeWe - Posts - {csvname}')
 
 
-def get_meweGroupChat(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_meweGroupChat(files_found, report_folder, seeker, wrap_text):
 
 
     for file_found in files_found:
@@ -383,7 +383,7 @@ def get_meweGroupChat(files_found, report_folder, seeker, wrap_text, time_offset
                 logfunc(f'No MeWe - Group Chat - {csvname}')
 
 
-def get_meweProfile(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_meweProfile(files_found, report_folder, seeker, wrap_text):
 
 
     for file_found in files_found:
@@ -450,7 +450,7 @@ def get_meweProfile(files_found, report_folder, seeker, wrap_text, time_offset):
                 logfunc(f'No MeWe - Profile - {csvname}')
 
 
-def get_meweGroupmemberships(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_meweGroupmemberships(files_found, report_folder, seeker, wrap_text):
 
 
     for file_found in files_found:
@@ -486,7 +486,7 @@ def get_meweGroupmemberships(files_found, report_folder, seeker, wrap_text, time
 
 
 
-def get_meweEmails(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_meweEmails(files_found, report_folder, seeker, wrap_text):
 
 
     for file_found in files_found:
@@ -523,7 +523,7 @@ def get_meweEmails(files_found, report_folder, seeker, wrap_text, time_offset):
                 
 
 
-def get_meweDevices(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_meweDevices(files_found, report_folder, seeker, wrap_text):
 
 
     for file_found in files_found:
@@ -561,7 +561,7 @@ def get_meweDevices(files_found, report_folder, seeker, wrap_text, time_offset):
                 logfunc(f'No MeWe - Devices - {csvname}')
                 
 
-def get_meweContacts(files_found, report_folder, seeker, wrap_text, time_offset):
+def get_meweContacts(files_found, report_folder, seeker, wrap_text):
 
 
     for file_found in files_found:
