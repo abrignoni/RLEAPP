@@ -1,8 +1,9 @@
-# Module Description: Parses all TikTok data from "Download My Data" export
+# Module Description: Parses all TikTok data from "Download My Data" export (JSON files)
 # Author: @upintheairsheep and @Jadoo4QFan
-# Date: 2025-06-12
-# Artifact version: 1.1
+# Date: 2025-06-15
+# Artifact version: 1.0
 # Requirements: none
+# Note: Gemini Code Assist was used during the script's development, however the code was then heavily tested against real exports.
 
 import datetime
 import json
