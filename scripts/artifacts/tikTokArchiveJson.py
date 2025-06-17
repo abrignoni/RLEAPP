@@ -5,6 +5,22 @@
 # Requirements: none
 # Note: Gemini Code Assist was used during the script's development, however the code was then heavily tested against real exports.
 
+__artifacts_v2__ = {
+    "tikTokJsonExport": {
+        "name": "TikTok Download Your Data (JSON)",
+        "description": "Parses all TikTok data from the 'Download My Data' export (JSON files). Supports both user_data.json and user_data_tiktok.json.",
+        "author": "@upintheairsheep and @Jadoo4QFan",
+        "version": "1.0",
+        "date": "2024-06-16",
+        "requirements": "none",
+        "category": "TikTok",
+        "notes": "Gemini Code Assist was used during the script's development, however the code was then heavily tested against real exports.",
+        "paths": ('*/user_data.json', '*/user_data_tiktok.json'),
+        "function": "get_tikTokData"
+    }
+}
+
+
 import datetime
 import json
 import os
@@ -48,6 +64,8 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
     purchase_history_buy_gifts = []
     ads_configuration = [] # For Ad Interests, DataPartnerList, AdvertiserList
     live_go_live_history = []
+    most_recent_location_data = []
+    your_activity_summary = []
 
     for file_found in files_found:
         file_found = str(file_found)
@@ -78,7 +96,10 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
 
         if 'Video Browsing History' in activity_data: # Changed from data to activity_data
             for video in activity_data['Video Browsing History'].get('VideoList', []):
-                video_history.append((video.get('Link', ''), video.get('Date', '')))
+                video_history.append((
+                    video.get('Link', ''), 
+                    video.get('Date', ''),
+                    video.get('timepertiktok', 0))) # Added timepertiktok
         
         # Comments - handles old and new schema for field names and structure
         comments_list_location = None
@@ -137,7 +158,7 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                     login.get('Carrier', '')
                 ))
         
-        # Purchase History (New based on schema)
+        # Purchase History 
         purchase_history_data = activity_data.get('Purchase History', {})
         # SendGifts
         send_gifts_list = purchase_history_data.get('SendGifts', {}).get('SendGifts', [])
@@ -200,7 +221,7 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                         video_item.get('AddYoursText', '')
                     ))
 
-        # Off TikTok Activity (New based on schema)
+        # Off TikTok Activity 
         ads_data = data.get('Ads and data', {})
         off_tiktok_activity_list = ads_data.get('Off TikTok Activity', {}).get('OffTikTokActivityDataList', [])
         for item in off_tiktok_activity_list:
@@ -210,7 +231,7 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                 item.get('Event', '')
             ))
 
-        # Ads and data - Ad Interests, Ads Based On Data Received From Partners (New based on schema)
+        # Ads and data - Ad Interests, Ads Based On Data Received From Partners 
         # ads_data is already defined
         ad_interests_cat = ads_data.get('Ad Interests', {}).get('AdInterestCategories', '')
         if ad_interests_cat:
@@ -224,7 +245,7 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
         if advertiser_list_str:
             ads_configuration.append(('Advertiser List', advertiser_list_str))
 
-        # Usage Data From Third-Party Apps And Websites (New based on schema)
+        # Usage Data From Third-Party Apps And Websites 
         # ads_data is already defined above for Off TikTok Activity
         usage_data_list = ads_data.get('Usage Data From Third-Party Apps And Websites', {}).get('UsageDataList', [])
         if usage_data_list: # Check if not None or empty
@@ -234,7 +255,27 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                     item.get('Source', ''),
                     item.get('Event', '')
                 ))
-        # Direct Messages (New based on schema)
+
+        # Most Recent Location Data
+        mrl_data_container = activity_data.get('Most Recent Location Data', {})
+        location_data = mrl_data_container.get('LocationData', {})
+        if location_data: # Check if not empty
+            most_recent_location_data.append((
+                location_data.get('Date', 'N/A'),
+                location_data.get('GpsData', 'N/A'),
+                location_data.get('LastRegion', 'N/A')
+            ))
+
+        # Your Activity
+        your_activity_container = activity_data.get('Your Activity', {})
+        activity_summary = your_activity_container.get('Activity Summary', {}).get('ActivitySummaryMap', {})
+        if activity_summary: # Check if not empty
+            your_activity_summary.append((
+                activity_summary.get('videosCommentedOnSinceAccountRegistration', 0),
+                activity_summary.get('videosSharedSinceAccountRegistration', 0),
+                activity_summary.get('videosWatchedToTheEndSinceAccountRegistration', 0)
+            ))
+        # Direct Messages 
         dm_root = data.get('Direct Messages', {})
         chat_history_container = dm_root.get('Chat History', {}).get('ChatHistory', {})
         for chat_key, messages_list in chat_history_container.items():
@@ -413,7 +454,7 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                    ['Username', 'Date'], 'TikTok Blocked Users', 'TikTok Blocked Users')
     
     generate_report('TikTok Video History', video_history,
-                   ['URL', 'Date'], 'TikTok Video History', 'TikTok Video History')
+                   ['URL', 'Date', 'Time Per TikTok (s)'], 'TikTok Video History', 'TikTok Video History') # Added Time Per TikTok header
     
     generate_report('TikTok Comments', comments,
                    ['Comment', 'Date'], 'TikTok Comments', 'TikTok Comments')
@@ -531,11 +572,12 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                    ['Start Time', 'End Time', 'Duration', 'Room ID', 'Room Title', 'Cover URI', 'Replay URL', 'Total Earning', 'Total Likes', 'Total Views', 'Total Gifters', 'Quality Setting', 'Muted List'],
                    'TikTok Go Live History', 'TikTok Go Live History')
 
-    # ToDo in the future: Many items, such as POI Reviews and Recently Deleted Posts are not in any dataset I have access to, mostly TikTok Shop-related. Income Plus Wallet Transactions, Live Watch Settings, Current Payment Information, Customer Support History, Order Dispute History, Product Review History, Return and Refund History, Order History.
+    generate_report('TikTok Most Recent Location Data', most_recent_location_data,
+                   ['Date', 'GPS Data', 'Last Region'],
+                   'TikTok Most Recent Location Data', 'TikTok Most Recent Location Data')
 
-__artifacts__ = {
-    "tikTokData": (
-        "TikTok Download Your Data Export",
-        ('*/user_data.json', '*/user_data_tiktok.json'), # Added user_data_tiktok.json
-        get_tikTokData)
-}
+    generate_report('TikTok Your Activity Summary', your_activity_summary,
+                   ['Videos Commented On', 'Videos Shared', 'Videos Watched to End'],
+                   'TikTok Your Activity Summary', 'TikTok Your Activity Summary')
+
+    # ToDo in the future: Many items, such as POI Reviews and Recently Deleted Posts are not in any dataset I have access to, mostly TikTok Shop-related. Income Plus Wallet Transactions, Live Watch Settings, Current Payment Information, Customer Support History, Order Dispute History, Product Review History, Return and Refund History, Order History.
