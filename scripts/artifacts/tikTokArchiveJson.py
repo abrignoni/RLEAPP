@@ -11,7 +11,7 @@ __artifacts_v2__ = {
         "description": "Parses all TikTok data from the 'Download My Data' export (JSON files). Supports both user_data.json and user_data_tiktok.json.",
         "author": "@upintheairsheep and @Jadoo4QFan",
         "version": "1.0",
-        "date": "2024-06-16",
+        "date": "2024-06-15",
         "requirements": "none",
         "category": "TikTok",
         "notes": "Gemini Code Assist was used during the script's development, however the code was then heavily tested against real exports.",
@@ -66,6 +66,13 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
     live_go_live_history = []
     most_recent_location_data = []
     your_activity_summary = []
+    location_reviews = []
+    income_plus_wallet_transactions = []
+    watch_live_settings = []
+    recently_deleted_posts = []
+    ai_moji = []
+    # Placeholders for other new TikTok Shop sections if their structure becomes known
+
 
     for file_found in files_found:
         file_found = str(file_found)
@@ -77,25 +84,36 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
             data = json.loads(f.read())
 
         # Get top-level structures from data
-        activity_data = data.get('Activity', {})
+        # Prioritize new schema names with fallback to old names
+        activity_data = data.get('Your Activity', data.get('Activity', {}))
         app_settings_data = data.get('App Settings', {})
         comment_data_root = data.get('Comment', {}) # 'Comment' is a top-level key in schema
-        video_data_root = data.get('Video', {})     # 'Video' is a top-level key in schema
+        video_data_root = data.get('Post', data.get('Video', {})) # Changed 'Video' to 'Post'
         profile_data_root = data.get('Profile', {}) # Profile is a top-level key
         tiktok_live_data_root = data.get('Tiktok Live', {}) # TikTok Live is a top-level key
-        tiktok_shop_data_root = data.get('Tiktok Shopping', {}) # TikTok Shopping is a top-level key
-
+        tiktok_shop_data_root = data.get('TikTok Shop', data.get('Tiktok Shopping', {})) # Changed 'Tiktok Shopping' to 'TikTok Shop'
+        # New top-level keys for additional data
+        location_review_data_root = data.get('Location Review', {})
+        ads_data = data.get('Ads and data', {}) # Already present in script
+        income_plus_wallet_transactions_data_root = data.get('Income Plus Wallet Transactions', {})
+        direct_message_data_root = data.get('Direct Message', data.get('Direct Messages', {}))
+ 
         # Process each data type
-        if 'Favorite Effects' in activity_data:
-            for effect in activity_data['Favorite Effects'].get('FavoriteEffectsList', []):
-                favorite_effects.append((effect.get('EffectLink', ''), effect.get('Date', ''))) # Changed 'Link' to 'EffectLink'
+        # Favorite Effects - Updated to use 'EffectLink'
+        favorite_effects_data = activity_data.get('Favorite Effects', {})
+        if favorite_effects_data:
+            for effect in favorite_effects_data.get('FavoriteEffectsList', []):
+                favorite_effects.append((effect.get('EffectLink', effect.get('Link', '')), effect.get('Date', '')))
 
-        if 'Block' in app_settings_data: # Changed from data to app_settings_data
-            for user in app_settings_data['Block'].get('BlockList', []):
+        # Block List - Updated path
+        block_list_data = app_settings_data.get('Block List', app_settings_data.get('Block', {})) # New: "Block List", Old: "Block"
+        if block_list_data:
+            for user in block_list_data.get('BlockList', []):
                 blocked_users.append((user.get('UserName', ''), user.get('Date', '')))
 
-        if 'Video Browsing History' in activity_data: # Changed from data to activity_data
-            for video in activity_data['Video Browsing History'].get('VideoList', []):
+        video_browsing_history_data = activity_data.get('Watch History', activity_data.get('Video Browsing History', {}))
+        if video_browsing_history_data:
+            for video in video_browsing_history_data.get('VideoList', []):
                 video_history.append((
                     video.get('Link', ''), 
                     video.get('Date', ''),
@@ -115,40 +133,49 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                 date_val = comment_item.get('date', comment_item.get('Date', ''))
                 comments.append((text, date_val))
 
-        if 'Favorite Hashtags' in activity_data: # Changed from data to activity_data
-            for hashtag in activity_data['Favorite Hashtags'].get('FavoriteHashtagList', []):
+        favorite_hashtags_data = activity_data.get('Favorite Hashtags', {})
+        if favorite_hashtags_data:
+            for hashtag in favorite_hashtags_data.get('FavoriteHashtagList', []):
                 favorite_hashtags.append((hashtag.get('Link', ''), hashtag.get('Date', '')))
 
-        if 'Favorite Sounds' in activity_data: # Changed from data to activity_data
-            for sound in activity_data['Favorite Sounds'].get('FavoriteSoundList', []):
+        favorite_sounds_data = activity_data.get('Favorite Sounds', {})
+        if favorite_sounds_data:
+            for sound in favorite_sounds_data.get('FavoriteSoundList', []):
                 favorite_sounds.append((sound.get('Link', ''), sound.get('Date', '')))
 
-        if 'Favorite Videos' in activity_data: # Changed from data to activity_data
-            for video in activity_data['Favorite Videos'].get('FavoriteVideoList', []):
+        favorite_videos_data = activity_data.get('Favorite Videos', {})
+        if favorite_videos_data:
+            for video in favorite_videos_data.get('FavoriteVideoList', []):
                 favorite_videos.append((video.get('Link', ''), video.get('Date', '')))
 
-        if 'Follower List' in activity_data: # Changed from data to activity_data
-            for follower in activity_data['Follower List'].get('FansList', []):
+        # Follower List - Updated path
+        follower_list_data = activity_data.get('Follower', activity_data.get('Follower List', {}))
+        if follower_list_data:
+            for follower in follower_list_data.get('FansList', []): # FansList seems to be consistent
                 followers.append((follower.get('UserName', ''), follower.get('Date', '')))
 
-        if 'Following List' in activity_data: # Changed from data to activity_data
-            for following_user in activity_data['Following List'].get('Following', []):
+        # Following List - Updated path
+        following_list_data = activity_data.get('Following', activity_data.get('Following List', {}))
+        if following_list_data:
+            for following_user in following_list_data.get('Following', []): # 'Following' list name is consistent
                 following.append((following_user.get('UserName', ''), following_user.get('Date', '')))
 
-        if 'Hashtag' in activity_data: # Changed from data to activity_data
-            for hashtag in activity_data['Hashtag'].get('HashtagList', []):
+        hashtag_data = activity_data.get('Hashtag', {})
+        if hashtag_data:
+            for hashtag in hashtag_data.get('HashtagList', []):
                 hashtags_used.append((hashtag.get('HashtagName', ''), hashtag.get('HashtagLink', '')))
 
         # Liked Videos - handles old and new schema for field names
-        if 'Like List' in activity_data: # Changed from data to activity_data
+        if 'Like List' in activity_data:
             item_favorite_list = activity_data['Like List'].get('ItemFavoriteList', [])
             for video_item in item_favorite_list:
                 link_val = video_item.get('link', video_item.get('Link', '')) # New 'link', old 'Link'
                 date_val = video_item.get('date', video_item.get('Date', '')) # New 'date', old 'Date'
                 liked_videos.append((link_val, date_val))
 
-        if 'Login History' in activity_data: # Changed from data to activity_data
-            for login in activity_data['Login History'].get('LoginHistoryList', []):
+        login_history_data = activity_data.get('Login History', {})
+        if login_history_data:
+            for login in login_history_data.get('LoginHistoryList', []):
                 login_history.append((
                     login.get('Date', ''),
                     login.get('IP', ''),
@@ -158,9 +185,9 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                     login.get('Carrier', '')
                 ))
         
-        # Purchase History 
-        purchase_history_data = activity_data.get('Purchase History', {})
-        # SendGifts
+        # Purchase History (New based on schema)
+        purchase_history_data = activity_data.get('Purchases', activity_data.get('Purchase History', {})) # New: Purchases, Old: Purchase History
+        # SendGifts - schema shows SendGifts directly under Purchases, script had it nested.
         send_gifts_list = purchase_history_data.get('SendGifts', {}).get('SendGifts', [])
         if send_gifts_list: # Check if not None or empty
             for gift in send_gifts_list:
@@ -172,12 +199,15 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
             for gift in buy_gifts_list:
                 purchase_history_buy_gifts.append((gift.get('Date', ''), gift.get('Price', '')))
 
-        if 'Search History' in activity_data: # Changed from data to activity_data
-            for search in activity_data['Search History'].get('SearchList', []):
+        # Search History - Updated path
+        search_history_data = activity_data.get('Searches', activity_data.get('Search History', {}))
+        if search_history_data:
+            for search in search_history_data.get('SearchList', []):
                 search_history.append((search.get('SearchTerm', ''), search.get('Date', '')))
 
-        if 'Share History' in activity_data: # Changed from data to activity_data
-            for share in activity_data['Share History'].get('ShareHistoryList', []):
+        share_history_data = activity_data.get('Share History', {})
+        if share_history_data:
+            for share in share_history_data.get('ShareHistoryList', []):
                 share_history.append((
                     share.get('Date', ''),
                     share.get('SharedContent', ''),
@@ -185,8 +215,9 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                     share.get('Method', '')
                 ))
 
-        if 'Status' in activity_data: # Changed from data to activity_data
-            for status in activity_data['Status'].get('Status List', []):
+        status_data = activity_data.get('Status', {})
+        if status_data:
+            for status in status_data.get('Status List', []):
                 status_info.append((
                     status.get('Resolution', ''),
                     status.get('App Version', ''),
@@ -197,11 +228,10 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                     status.get('Web ID', '')
                 ))
 
-        # Updated for 'Video' section based on schema: data['Video']['Videos']['VideoList']
-        # and field name changes
-        if 'Videos' in video_data_root:
-            video_list_container = video_data_root['Videos']
-            if 'VideoList' in video_list_container:
+        # Updated for 'Post' (was 'Video') section based on schema: data['Post']['Posts']['VideoList']
+        # Handles both video_data_root['Posts']['VideoList'] and video_data_root['Videos']['VideoList']
+        video_list_container = video_data_root.get('Posts', video_data_root.get('Videos', {}))
+        if video_list_container and 'VideoList' in video_list_container:
                 for video_item in video_list_container.get('VideoList', []):
                     uploaded_videos.append((
                         video_item.get('Date', ''),
@@ -221,8 +251,17 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                         video_item.get('AddYoursText', '')
                     ))
 
-        # Off TikTok Activity 
-        ads_data = data.get('Ads and data', {})
+        # Recently Deleted Posts (New based on schema)
+        recently_deleted_posts_container = video_data_root.get('Recently Deleted Posts', {})
+        if recently_deleted_posts_container:
+            for post_item in recently_deleted_posts_container.get('PostList', []):
+                # Assuming PostList items have a similar structure to VideoList or a simple structure
+                # For now, just capturing the raw item. Adjust if structure is known.
+                recently_deleted_posts.append((json.dumps(post_item),)) # Store as JSON string for now
+
+
+        # Off TikTok Activity (New based on schema)
+        # ads_data already retrieved earlier
         off_tiktok_activity_list = ads_data.get('Off TikTok Activity', {}).get('OffTikTokActivityDataList', [])
         for item in off_tiktok_activity_list:
             off_tiktok_activity.append((
@@ -231,8 +270,7 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                 item.get('Event', '')
             ))
 
-        # Ads and data - Ad Interests, Ads Based On Data Received From Partners 
-        # ads_data is already defined
+        # Ads and data - Ad Interests, Ads Based On Data Received From Partners (New based on schema)
         ad_interests_cat = ads_data.get('Ad Interests', {}).get('AdInterestCategories', '')
         if ad_interests_cat:
             ads_configuration.append(('Ad Interest Categories', ad_interests_cat))
@@ -245,8 +283,7 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
         if advertiser_list_str:
             ads_configuration.append(('Advertiser List', advertiser_list_str))
 
-        # Usage Data From Third-Party Apps And Websites 
-        # ads_data is already defined above for Off TikTok Activity
+        # Usage Data From Third-Party Apps And Websites (New based on schema)
         usage_data_list = ads_data.get('Usage Data From Third-Party Apps And Websites', {}).get('UsageDataList', [])
         if usage_data_list: # Check if not None or empty
             for item in usage_data_list:
@@ -256,7 +293,7 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                     item.get('Event', '')
                 ))
 
-        # Most Recent Location Data
+        # Most Recent Location Data (New based on user request)
         mrl_data_container = activity_data.get('Most Recent Location Data', {})
         location_data = mrl_data_container.get('LocationData', {})
         if location_data: # Check if not empty
@@ -266,7 +303,7 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                 location_data.get('LastRegion', 'N/A')
             ))
 
-        # Your Activity
+        # Your Activity (New based on user request)
         your_activity_container = activity_data.get('Your Activity', {})
         activity_summary = your_activity_container.get('Activity Summary', {}).get('ActivitySummaryMap', {})
         if activity_summary: # Check if not empty
@@ -275,9 +312,26 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                 activity_summary.get('videosSharedSinceAccountRegistration', 0),
                 activity_summary.get('videosWatchedToTheEndSinceAccountRegistration', 0)
             ))
-        # Direct Messages 
-        dm_root = data.get('Direct Messages', {})
-        chat_history_container = dm_root.get('Chat History', {}).get('ChatHistory', {})
+
+        # Location Review (New based on provided snippet)
+        location_reviews_container = location_review_data_root.get('Location Reviews', {})
+        reviews_list_lr = location_reviews_container.get('ReviewsList', [])
+        if reviews_list_lr:
+            for review in reviews_list_lr:
+                location_reviews.append((
+                    review.get('PlaceName', ''),
+                    review.get('Date', ''),
+                    review.get('Rating', ''),
+                    review.get('Status', ''),
+                    review.get('Likes', ''),
+                    review.get('ReviewText', '')
+                ))
+
+
+        # Direct Messages (New based on schema)
+        # direct_message_data_root already retrieved
+        chat_history_intermediate = direct_message_data_root.get('Direct Messages', direct_message_data_root.get('Chat History', {}))
+        chat_history_container = chat_history_intermediate.get('ChatHistory', {})
         for chat_key, messages_list in chat_history_container.items():
             # Extract target user from chat_key like "Chat History with USERNAME:"
             chat_with_user = chat_key.replace('Chat History with ', '').rstrip(':')
@@ -285,8 +339,8 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                 direct_messages.append((message.get('Date', ''), chat_with_user, message.get('From', ''), message.get('Content', '')))
 
         # Profile - Auto Fill
-        auto_fill_data = profile_data_root.get('Auto Fill', {})
-        if auto_fill_data: # Check if auto_fill_data is not empty
+        auto_fill_data = profile_data_root.get('Autofill', profile_data_root.get('Auto Fill', {})) # New: Autofill, Old: Auto Fill
+        if auto_fill_data:
             profile_auto_fill.append((
                 auto_fill_data.get('PhoneNumber', 'N/A'),
                 auto_fill_data.get('Email', 'N/A'),
@@ -301,8 +355,8 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
             ))
 
         # Profile - Profile Information
-        profile_info_container = profile_data_root.get('Profile Information', {})
-        profile_map = profile_info_container.get('ProfileMap', {})
+        profile_info_container = profile_data_root.get('Profile Info', profile_data_root.get('Profile Information', {})) # New: Profile Info, Old: Profile Information
+        profile_map = profile_info_container.get('ProfileMap', {}) # ProfileMap seems consistent
         if profile_map: # Check if profile_map is not empty
             profile_information.append((
                 profile_map.get('userName', ''),
@@ -313,6 +367,14 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                 profile_map.get('likesReceived', ''),
                 profile_map.get('profilePhoto', ''),
                 profile_map.get('profileVideo', '')
+            ))
+
+        # Profile - AI-Moji (New based on schema)
+        ai_moji_data = profile_data_root.get('AI-Moji', {})
+        if ai_moji_data:
+            ai_moji.append((
+                ai_moji_data.get('CreateDate', 'N/A'),
+                json.dumps(ai_moji_data.get('AIMojiList', {})) # Store list/object as JSON string
             ))
 
         # TikTok Live - Watch Live History
@@ -339,6 +401,20 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                 for question in questions_list:
                     watch_live_interactions.append((live_id, live_data.get('WatchTime', ''), 'Question', question.get('QuestionTime', ''), question.get('QuestionContent', '')))
         
+        # TikTok Live - Watch Live Settings (New based on schema)
+        watch_live_settings_container = tiktok_live_data_root.get('Watch Live Settings', {})
+        if watch_live_settings_container:
+            settings_map_wls = watch_live_settings_container.get('WatchLiveSettingsMap', {})
+            app_setting = settings_map_wls.get('app', 'N/A')
+            web_setting = settings_map_wls.get('web', 'N/A')
+            mod_time_app = watch_live_settings_container.get('MostRecentModificationTimeInApp', 'N/A')
+            mod_time_web = watch_live_settings_container.get('MostRecentModificationTimeInWeb', 'N/A')
+            watch_live_settings.append((
+                app_setting, web_setting, mod_time_app, mod_time_web
+            ))
+
+
+
         # App Settings - General Settings
         settings_map = app_settings_data.get('Settings', {}).get('SettingsMap', {})
         if settings_map:
@@ -372,7 +448,8 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                 tiktok_go_live_settings.append((key, value_str))
         
         # TikTok Live - Go Live History (New based on schema)
-        go_live_list = tiktok_live_data_root.get('Go Live History', {}).get('GoLiveList', [])
+        go_live_history_data = tiktok_live_data_root.get('Go Live History', {})
+        go_live_list = go_live_history_data.get('GoLiveList', [])
         if go_live_list: # Check if not None or empty
             for live_event in go_live_list:
                 muted_list_val = live_event.get('MutedList')
@@ -394,30 +471,61 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                 ))
 
         # TikTok Shopping - Communication History
-        comm_history_map = tiktok_shop_data_root.get('Communication History', {}).get('CommunicationHistories', {})
+        comm_history_container = tiktok_shop_data_root.get('Communication With Shops', tiktok_shop_data_root.get('Communication History', {}))
+        comm_history_map = comm_history_container.get('CommunicationHistories', {})
         for shop_name_key, messages in comm_history_map.items():
             if isinstance(messages, list):
                 for message in messages:
                     shop_communication_history.append((
                         message.get('send_time', ''),
-                        shop_name_key, # shop_name is also in message, but key is more direct
+                        message.get('shop_name', shop_name_key), # Prefer shop_name from message if available
                         message.get('direction', ''),
                         message.get('content', '') 
                     ))
 
         # TikTok Shopping - Product Browsing History
         product_browsing_list = tiktok_shop_data_root.get('Product Browsing History', {}).get('ProductBrowsingHistories', [])
-        if product_browsing_list: # Check if not None
+        if product_browsing_list:
             for item in product_browsing_list:
                 shop_product_browsing_history.append((
                     item.get('browsing_date', ''),
                     item.get('shop_name', ''),
                     item.get('product_name', '')
                 ))
+        
+        # TikTok Shopping - Current Payment Information (New based on schema)
+        # Placeholder as internal structure of PayCard is not defined
+        current_payment_info = tiktok_shop_data_root.get('Current Payment Information', {}).get('PayCard', {})
+        if current_payment_info: # If not empty
+             shop_communication_history.append(("Current Payment Information", "See JSON", "N/A", json.dumps(current_payment_info))) # Reusing shop_communication_history for simplicity, consider a dedicated list
+
+        # TikTok Shopping - Customer Support History (New based on schema)
+        # Placeholder
+        customer_support_history = tiktok_shop_data_root.get('Customer Support History', {}).get('CustomerSupportHistories', {})
+        if customer_support_history:
+            shop_communication_history.append(("Customer Support History", "See JSON", "N/A", json.dumps(customer_support_history)))
+
+        # TikTok Shopping - Order Dispute History (New based on schema)
+        # Placeholder
+        order_dispute_history = tiktok_shop_data_root.get('Order Dispute History', {}).get('OrderDisputeHistories', {})
+        if order_dispute_history:
+            shop_communication_history.append(("Order Dispute History", "See JSON", "N/A", json.dumps(order_dispute_history)))
+
+        # TikTok Shopping - Order History (New based on schema)
+        # Placeholder
+        order_history = tiktok_shop_data_root.get('Order History', {}).get('OrderHistories', {})
+        if order_history:
+            shop_communication_history.append(("Order History", "See JSON", "N/A", json.dumps(order_history)))
+
+        # TikTok Shopping - Product Reviews (New based on schema)
+        # Placeholder
+        product_reviews_history = tiktok_shop_data_root.get('Product Reviews', {}).get('ProductReviewHistories', {})
+        if product_reviews_history:
+            shop_communication_history.append(("Product Reviews History", "See JSON", "N/A", json.dumps(product_reviews_history)))
 
         # TikTok Shopping - Saved Address Information
         saved_address_list = tiktok_shop_data_root.get('Saved Address Information', {}).get('SavedAddress', [])
-        if saved_address_list: # Check if not None
+        if saved_address_list:
             for address in saved_address_list:
                 shop_saved_addresses.append((address.get('receiver_name', ''), address.get('masked_phone_number', ''), address.get('adress_info', '')))
 
@@ -429,11 +537,24 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
         
         # TikTok Shopping - Vouchers
         vouchers_list = tiktok_shop_data_root.get('Vouchers', {}).get('Vouchers', [])
-        if vouchers_list: # Check if not None
+        if vouchers_list:
             for voucher in vouchers_list:
                 shop_vouchers.append((voucher.get('ReceivedDate', ''), voucher.get('VoucherId', ''), voucher.get('VoucherName', 'N/A'), voucher.get('VoucherText', ''), voucher.get('Status', '')))
+
+        # TikTok Shopping - Returns and Refunds History (New based on schema)
+        # Placeholder
+        returns_refunds_history = tiktok_shop_data_root.get('Returns and Refunds History', {}).get('ReturnAndRefundHistories', {})
+        if returns_refunds_history:
+            shop_communication_history.append(("Returns and Refunds History", "See JSON", "N/A", json.dumps(returns_refunds_history)))
+
     # Generate reports for each data type
     def generate_report(title, data_list, headers, tsvname, tlactivity):
+        # Ensure data_list is not None before checking its length or processing
+        if data_list is None:
+            logfunc(f'No {title} data available (data_list is None)')
+            return
+
+
         if data_list:
             report = ArtifactHtmlReport(title)
             report.start_artifact_report(report_folder, title)
@@ -454,7 +575,7 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                    ['Username', 'Date'], 'TikTok Blocked Users', 'TikTok Blocked Users')
     
     generate_report('TikTok Video History', video_history,
-                   ['URL', 'Date', 'Time Per TikTok (s)'], 'TikTok Video History', 'TikTok Video History') # Added Time Per TikTok header
+                   ['URL', 'Date', 'Time Per TikTok (s)'], 'TikTok Video History', 'TikTok Video History')
     
     generate_report('TikTok Comments', comments,
                    ['Comment', 'Date'], 'TikTok Comments', 'TikTok Comments')
@@ -520,6 +641,10 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                    ['Live ID', 'Watch Time', 'Link'],
                    'TikTok Watch Live History', 'TikTok Watch Live History')
     
+    generate_report('TikTok Watch Live Settings', watch_live_settings,
+                   ['App Setting', 'Web Setting', 'App Mod Time', 'Web Mod Time'],
+                   'TikTok Watch Live Settings', 'TikTok Watch Live Settings')
+
     generate_report('TikTok Watch Live Interactions', watch_live_interactions,
                    ['Live ID', 'Live Watch Time', 'Interaction Type', 'Interaction Time', 'Content'],
                    'TikTok Watch Live Interactions', 'TikTok Watch Live Interactions')
@@ -580,4 +705,23 @@ def get_tikTokData(files_found, report_folder, seeker, wrap_text):
                    ['Videos Commented On', 'Videos Shared', 'Videos Watched to End'],
                    'TikTok Your Activity Summary', 'TikTok Your Activity Summary')
 
-    # ToDo in the future: Many items, such as POI Reviews and Recently Deleted Posts are not in any dataset I have access to, mostly TikTok Shop-related. Income Plus Wallet Transactions, Live Watch Settings, Current Payment Information, Customer Support History, Order Dispute History, Product Review History, Return and Refund History, Order History.
+    generate_report('TikTok Location Reviews', location_reviews,
+                   ['Place Name', 'Date', 'Rating', 'Status', 'Likes', 'Review Text'],
+                   'TikTok Location Reviews', 'TikTok Location Reviews')
+
+    generate_report('TikTok Income Plus Wallet Transactions', income_plus_wallet_transactions,
+                   ['Transaction Date', 'Details (JSON)'], # Headers might need adjustment based on actual data
+                   'TikTok Income Plus Wallet Transactions', 'TikTok Income Plus Wallet Transactions')
+
+    generate_report('TikTok Recently Deleted Posts', recently_deleted_posts,
+                   ['Post Data (JSON)'], # Headers might need adjustment
+                   'TikTok Recently Deleted Posts', 'TikTok Recently Deleted Posts')
+
+    generate_report('TikTok AI-Moji', ai_moji,
+                   ['Create Date', 'AI Moji List (JSON)'],
+                   'TikTok AI-Moji', 'TikTok AI-Moji')
+
+    # Note: Placeholders for other new TikTok Shop sections (Current Payment Information, etc.)
+    # would need similar generate_report calls if their data structures are defined and parsed.
+    # For now, some of them are appended to shop_communication_history as JSON strings.
+    # If they have structured data, dedicated lists and report calls would be better.
