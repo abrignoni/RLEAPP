@@ -28,10 +28,27 @@ def validate_args(args):
 
     # Check existence of paths
     if not os.path.exists(args.input_path):
-        raise argparse.ArgumentError(None, 'INPUT file/folder does not exist! Run the program again.')
+        raise argparse.ArgumentError(None, f'INPUT path \'{args.input_path}\' does not exist! Run the program again.')
 
     if not os.path.exists(args.output_path):
-        raise argparse.ArgumentError(None, 'OUTPUT folder does not exist! Run the program again.')
+        raise argparse.ArgumentError(None, 'OUTPUT path \'{args.output_path}\' does not exist! Run the program again.')
+    if not os.path.isdir(os.path.abspath(args.output_path)): 
+        raise argparse.ArgumentError(None, f'OUTPUT path \'{args.output_path}\' must be a directory! Run the program again.')
+
+    # Validate input_path based on type
+    abs_input_path = os.path.abspath(args.input_path)
+    if args.t == 'fs': # Filesystem input type
+        # Check if input path is a directory
+        if not os.path.isdir(abs_input_path):
+            raise argparse.ArgumentError(None, f'INPUT path \'{args.input_path}\' is not a directory. Type "fs" requires '
+                                               f'a directory input. Run the program again.')
+        # Check if directory is empty
+        if not os.listdir(abs_input_path):
+            raise argparse.ArgumentError(None, f'Input directory \'{args.input_path}\' is empty. Run the program again.')
+    elif args.t == 'file': # Single file input type
+        if not os.path.isfile(abs_input_path):
+            raise argparse.ArgumentError(None, f'INPUT path \'{args.input_path}\' is not a file. Type "file" requires a '
+                                               f'single file input. Run the program again.')
 
     if args.load_case_data and not os.path.exists(args.load_case_data):
         raise argparse.ArgumentError(None, 'LEAPP Case Data file not found! Run the program again.')
@@ -169,6 +186,7 @@ def main():
         plugins.append(plugin)
 
     selected_plugins = plugins.copy()
+    extracttype = args.t
 
     try:
         validate_args(args)
@@ -271,7 +289,6 @@ def main():
                 return
     
     input_path = args.input_path
-    extracttype = args.t
     wrap_text = args.wrap_text
     output_path = os.path.abspath(args.output_path)
     custom_output_folder = args.custom_output_folder
@@ -329,19 +346,20 @@ def crunch_artifacts(
     logfunc(f'Info: {len(loader)} modules loaded.')
     if profile_filename:
         logfunc(f'Loaded profile: {profile_filename}')
-    logfunc(f'Artifact categories to parse: {len(plugins)}')
+    logfunc(f'Artifact to parse: {len(plugins)}')
     logfunc(f'File/Directory selected: {input_path}')
     logfunc('\n--------------------------------------------------------------------------------------')
 
-    log = open(os.path.join(out_params.report_folder_base, 'Script Logs', 'ProcessedFilesLog.html'), 'w+', encoding='utf8')
+    log = open(os.path.join(out_params.report_folder_base, '_HTML', '_Script_Logs', 'ProcessedFilesLog.html'), 'w+', encoding='utf8')
     log.write(f'Extraction/Path selected: {input_path}<br><br>')
     
     parsed_modules = 0
 
     # Search for the files per the arguments
-    for plugin in plugins:
+    for plugin_number, plugin in enumerate(plugins, start=1):
         logfunc()
-        logfunc('{} [{}] artifact started'.format(plugin.name, plugin.module_name))
+        logfunc('[{}/{}] {} [{}] artifact started'.format(plugin_number, len(plugins),
+                                                              plugin.name, plugin.module_name))
         if isinstance(plugin.search, list) or isinstance(plugin.search, tuple):
             search_regexes = plugin.search
         else:
