@@ -143,7 +143,7 @@ def get_media_references_id(media_id, artifact_name, name):
 def set_media_references(media_ref_id, media_id, module_name, artifact_name, name, media_path):
     media_references = MediaReferences(media_ref_id)
     media_references.set_values((
-        media_ref_id, media_id, module_name, artifact_name, name
+        media_ref_id, media_id, module_name, artifact_name, name, media_path
     ))
     lava_insert_sqlite_media_references(media_references)
 
@@ -323,7 +323,7 @@ def artifact_processor(func):
             if len(sig.parameters) == 1:
                 data_headers, data_list, source_path = func(Context)
             else:
-                data_headers, data_list, source_path = func(files_found, report_folder, seeker, wrap_text, timezone_offset)
+                data_headers, data_list, source_path = func(files_found, report_folder, seeker, wrap_text)
         finally:
             Context.clear()
         
