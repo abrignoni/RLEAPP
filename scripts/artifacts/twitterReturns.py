@@ -37,6 +37,32 @@ __artifacts_v2__ = {
         "paths": ('*/*_direct_messages_media/*.*','*/*direct-messages*.txt',),
         "output_types": "standard",
         "artifact_icon": "twitter",
+    },
+    "deleteddmtwitter": {
+        "name": "Deleted Twitter DMs",
+        "description": "Processes direct messages from a twitter return",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2025-07-01",
+        "last_update_date": "2025-07-01",
+        "requirements": "none",
+        "category": "Twitter",
+        "notes": "",
+        "paths": ('*/*_deleted_direct_messages_media/*.*','*/*-deleted-direct-messages*.txt',),
+        "output_types": "standard",
+        "artifact_icon": "twitter",
+    },
+    "blocktwitter": {
+        "name": "Blocked Twitter",
+        "description": "Processes direct messages from a twitter return",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2025-07-02",
+        "last_update_date": "2025-07-02",
+        "requirements": "none",
+        "category": "Twitter",
+        "notes": "",
+        "paths": ('*/*-block*.txt',),
+        "output_types": "standard",
+        "artifact_icon": "twitter",
     }
 }
 
@@ -246,4 +272,113 @@ def dmtwitter(files_found, report_folder, seeker, wrap_text):
             data = load_json_from_signed_file(filenametweets)
 
             for items in data:
-                timestamp = (items['dmConversation'].get('created_at'))
+                convid = items['dmConversation']['conversationId']
+                messages = items['dmConversation']['messages']
+                #senderid = items['dmConversation']['messages']['messageCreate']['senderId']
+                
+                
+                for message in messages:
+                    senderid = message['messageCreate']['senderId']
+                    recipientid = message['messageCreate']['recipientId']
+                    text = message['messageCreate']['text']
+                    timestamp = message['messageCreate']['createdAt']
+                    timestamp = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%fZ').replace(tzinfo=timezone.utc)
+                    mediaurls = message['messageCreate']['mediaUrls']
+                    reactions = message['messageCreate']['reactions']
+                    data_list.append((timestamp,senderid,recipientid,text,convid,mediaurls,reactions,filename))
+
+    data_headers = (('Timestamp', 'datetime'),'Sender ID','Recipient ID','Text','Conversation ID','Media URLs','Reactions','File Source')
+
+    return data_headers, data_list, 'See source path(s) below'
+
+@artifact_processor
+def deleteddmtwitter(files_found, report_folder, seeker, wrap_text):
+    artifact_info = inspect.stack()[0]
+    data_list = []
+    
+    for file_found in files_found:
+        file_found = str(file_found)
+        
+        filename = os.path.basename(file_found)
+        
+        if '-' in filename:
+            lastpart = filename.split('-',1)[1]
+        else:
+            lastpart = ''
+            
+        if filename.startswith('.'):
+            pass
+            
+        elif lastpart.startswith('deleted-direct-messages'):
+            #logfunc(file_found)
+            filenametweets = file_found
+            data = load_json_from_signed_file(filenametweets)
+            
+            for items in data:
+                convid = items['dmConversation']['conversationId']
+                messages = items['dmConversation']['messages']
+                #senderid = items['dmConversation']['messages']['messageCreate']['senderId']
+                
+                
+                for message in messages:
+                    idstr = message['messageCreate']['id']
+                    senderid = message['messageCreate']['senderId']
+                    recipientid = message['messageCreate']['recipientId']
+                    text = message['messageCreate']['text']
+                    timestamp = message['messageCreate']['createdAt']
+                    timestamp = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%fZ').replace(tzinfo=timezone.utc)
+                    mediaurls = message['messageCreate']['mediaUrls']
+                    reactions = message['messageCreate']['reactions']
+                    
+                    media_item = ''
+                    
+                    for tentative_media in files_found:
+                        if idstr in tentative_media:
+                            media_path = Path(tentative_media )
+                            
+                            filenamem = (media_path.name)
+                            filepath = str(media_path.parents[1])
+                            
+                            #logfunc(f'{tentative_media}-{filenamem}')
+                            media_item = check_in_media(tentative_media, filenamem)
+                            break
+                    
+                    data_list.append((timestamp,senderid,recipientid,text,media_item,convid,mediaurls,reactions,filename))
+                    
+    data_headers = (('Timestamp', 'datetime'),'Sender ID','Recipient ID','Text',('Image', 'media'),'Conversation ID','Media URLs','Reactions','File Source')
+    
+    return data_headers, data_list, 'See source path(s) below'
+
+@artifact_processor
+def blocktwitter(files_found, report_folder, seeker, wrap_text):
+    artifact_info = inspect.stack()[0]
+    data_list = []
+    
+    for file_found in files_found:
+        file_found = str(file_found)
+        
+        filename = os.path.basename(file_found)
+        
+        if '-' in filename:
+            lastpart = filename.split('-',1)[1]
+        else:
+            lastpart = ''
+            
+        if filename.startswith('.'):
+            pass
+            
+        elif lastpart.startswith('block'):
+            #logfunc(file_found)
+            filenametweets = file_found
+            data = load_json_from_signed_file(filenametweets)
+            
+            for items in data:
+                accountid = items['blocking']['accountId']
+                userlink = items['blocking']['userLink']
+                
+                data_list.append((accountid,userlink,filename))
+    
+    data_headers = ('Account ID','User Link','File Source')
+    
+    return data_headers, data_list, 'See source path(s) below'            
+                
