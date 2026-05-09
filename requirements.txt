@@ -20,3 +20,4 @@ mammoth
 bencoding
 pytz
 requests
+pdfminer.six
