@@ -300,11 +300,11 @@ def main():
         if output_path[1] == ':': output_path = '\\\\?\\' + output_path.replace('/', '\\')
 
     out_params = OutputParameters(output_path, custom_output_folder)
-    initialize_lava(input_path, out_params.report_folder_base, extracttype)
+    initialize_lava(input_path, out_params.output_folder_base, extracttype)
 
     crunch_artifacts(selected_plugins, extracttype, input_path, out_params, wrap_text, loader, casedata, profile_filename)
 
-    lava_finalize_output(out_params.report_folder_base)
+    lava_finalize_output(out_params.output_folder_base)
 
 def crunch_artifacts(
         plugins: typing.Sequence[plugin_loader.PluginSpec], extracttype, input_path, out_params, wrap_text,
@@ -350,7 +350,7 @@ def crunch_artifacts(
     logfunc(f'File/Directory selected: {input_path}')
     logfunc('\n--------------------------------------------------------------------------------------')
 
-    log = open(os.path.join(out_params.report_folder_base, '_HTML', '_Script_Logs', 'ProcessedFilesLog.html'), 'w+', encoding='utf8')
+    log = open(os.path.join(out_params.output_folder_base, '_HTML', '_Script_Logs', 'ProcessedFilesLog.html'), 'w+', encoding='utf8')
     log.write(f'Extraction/Path selected: {input_path}<br><br>')
     
     parsed_modules = 0
@@ -381,7 +381,7 @@ def crunch_artifacts(
                 log.write(f'</li></ul>')
                 files_found.extend(found)
         if files_found:
-            category_folder = os.path.join(out_params.report_folder_base, '_HTML', plugin.category)
+            category_folder = os.path.join(out_params.output_folder_base, '_HTML', plugin.category)
             if not os.path.exists(category_folder):
                 try:
                     os.makedirs(category_folder)
@@ -416,15 +416,15 @@ def crunch_artifacts(
     logfunc('Report generation started.')
     # remove the \\?\ prefix we added to input and output paths, so it does not reflect in report
     if is_platform_windows(): 
-        if out_params.report_folder_base.startswith('\\\\?\\'):
-            out_params.report_folder_base = out_params.report_folder_base[4:]
+        if out_params.output_folder_base.startswith('\\\\?\\'):
+            out_params.output_folder_base = out_params.output_folder_base[4:]
         if input_path.startswith('\\\\?\\'):
             input_path = input_path[4:]
     
-    report.generate_report(out_params.report_folder_base, run_time_secs, run_time_HMS, extracttype, input_path, casedata, profile_filename, icons)
+    report.generate_report(out_params.output_folder_base, run_time_secs, run_time_HMS, extracttype, input_path, casedata, profile_filename, icons)
     logfunc('Report generation Completed.')
     logfunc('')
-    logfunc(f'Report location: {out_params.report_folder_base}')
+    logfunc(f'Report location: {out_params.output_folder_base}')
 
     return True
 
