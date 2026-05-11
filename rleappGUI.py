@@ -198,6 +198,8 @@ def process(casedata):
         progress_bar.config(maximum=len(selected_modules))
         casedata = {key: value.get() for key, value in casedata.items()}
         out_params = OutputParameters(output_folder)
+        Context.set_output_params(out_params)
+        
         wrap_text = True
 
         logtext_frame.grid(row=1, column=0, rowspan=3, padx=14, pady=4, sticky='nswe')
