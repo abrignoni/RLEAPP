@@ -300,6 +300,7 @@ def main():
         if output_path[1] == ':': output_path = '\\\\?\\' + output_path.replace('/', '\\')
 
     out_params = OutputParameters(output_path, custom_output_folder)
+    Context.set_output_params(out_params)
     initialize_lava(input_path, out_params.output_folder_base, extracttype)
 
     crunch_artifacts(selected_plugins, extracttype, input_path, out_params, wrap_text, loader, casedata, profile_filename)
