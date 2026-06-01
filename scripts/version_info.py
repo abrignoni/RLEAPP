@@ -16,5 +16,6 @@ rleapp_contributors = [
     ['Evangelos Dragonas', 'https://atropos4n6.com/', '@theAtropos4n6', 'https://github.com/theAtropos4n6'],
     ['Panos Nakoutis', '', '@4n6equals10', ''],
     ['Johann Polewczyk', 'https://www.linkedin.com/in/johann-polewczyk-6a905425/',
-     '@johannplw', 'https://github.com/Johann-PLW']
+     '@johannplw', 'https://github.com/Johann-PLW'],
+    ['Christian Peter', 'https://cp-df.com', '@DasZamomin', 'https://github.com/prosch88'],
 ]
