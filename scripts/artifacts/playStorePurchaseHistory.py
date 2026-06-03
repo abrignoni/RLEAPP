@@ -37,7 +37,7 @@ def get_playStorePurchaseHistory(files_found, report_folder, seeker, wrap_text):
         num_entries = len(data_list)
         if num_entries > 0:
             description = 'List of your Google Play purchases.'
-            report = ArtifactHtmlReport('Google Play Store Purchase History')
+            report = ArtifactHtmlReport('Google Play Store - Purchase History')
             report.start_artifact_report(report_folder, 'Google Play Store Purchase History', description)
             report.add_script()
             data_headers = ('Purchase Timestamp','Item Title','Document Type','Price','Payment Method','User Country') 
@@ -45,13 +45,13 @@ def get_playStorePurchaseHistory(files_found, report_folder, seeker, wrap_text):
             report.write_artifact_data_table(data_headers, data_list, file_found)
             report.end_artifact_report()
             
-            tsvname = f'Google Play Store Purchase History'
+            tsvname = f'Google Play Store - Purchase History'
             tsv(report_folder, data_headers, data_list, tsvname)
             
-            tlactivity = f'Google Play Store Purchase History'
+            tlactivity = f'Google Play Store - Purchase History'
             timeline(report_folder, tlactivity, data_list, data_headers)
         else:
-            logfunc('No Google Play Store Purchase History data available')
+            logfunc('No Google Play Store - Purchase History data available')
 
 __artifacts__ = {
         "playStorePurchaseHistory": (

@@ -39,21 +39,21 @@ def get_playStoreSubscriptions(files_found, report_folder, seeker, wrap_text):
         num_entries = len(data_list)
         if num_entries > 0:
             description = 'List of your Google Play subscriptions.'
-            report = ArtifactHtmlReport('Google Play Store Subscriptions')
-            report.start_artifact_report(report_folder, 'Google Play Store Subscriptions', description)
+            report = ArtifactHtmlReport('Google Play Store - Subscriptions')
+            report.start_artifact_report(report_folder, 'Google Play Store - Subscriptions', description)
             report.add_script()
             data_headers = ('Renewal Timestamp','Subscription','Renewal Price','Renewal Period','Status')
 
             report.write_artifact_data_table(data_headers, data_list, file_found)
             report.end_artifact_report()
             
-            tsvname = f'Google Play Store Subscriptions'
+            tsvname = f'Google Play Store - Subscriptions'
             tsv(report_folder, data_headers, data_list, tsvname)
             
-            tlactivity = f'Google Play Store Subscriptions'
+            tlactivity = f'Google Play Store - Subscriptions'
             timeline(report_folder, tlactivity, data_list, data_headers)
         else:
-            logfunc('No Google Play Store Subscriptions data available')
+            logfunc('No Google Play Store - Subscriptions data available')
 
 __artifacts__ = {
         "playStoreSubscriptions": (

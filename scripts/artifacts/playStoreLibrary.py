@@ -33,21 +33,21 @@ def get_playStoreLibrary(files_found, report_folder, seeker, wrap_text):
         num_entries = len(data_list)
         if num_entries > 0:
             description = 'List of your Google Play downloads including music, movies and apps.'
-            report = ArtifactHtmlReport('Google Play Store Library')
-            report.start_artifact_report(report_folder, 'Google Play Store Library', description)
+            report = ArtifactHtmlReport('Google Play Store - Library')
+            report.start_artifact_report(report_folder, 'Google Play Store - Library', description)
             report.add_script()
             data_headers = ('Added Timestamp','Title','Type')
 
             report.write_artifact_data_table(data_headers, data_list, file_found)
             report.end_artifact_report()
             
-            tsvname = f'Google Play Store Library'
+            tsvname = f'Google Play Store - Library'
             tsv(report_folder, data_headers, data_list, tsvname)
             
-            tlactivity = f'Google Play Store Library'
+            tlactivity = f'Google Play Store - Library'
             timeline(report_folder, tlactivity, data_list, data_headers)
         else:
-            logfunc('No Google Play Store Library data available')
+            logfunc('No Google Play Store - Library data available')
 
 __artifacts__ = {
         "playStoreLibrary": (

@@ -36,18 +36,18 @@ def get_playStoreReviews(files_found, report_folder, seeker, wrap_text):
         num_entries = len(data_list)
         if num_entries > 0:
             description = 'Details about your Google Play reviews.'
-            report = ArtifactHtmlReport('Google Play Store Reviews')
-            report.start_artifact_report(report_folder, 'Google Play Store Reviews', description)
+            report = ArtifactHtmlReport('Google Play Store - Reviews')
+            report.start_artifact_report(report_folder, 'Google Play Store - Reviews', description)
             report.add_script()
             data_headers = ('Creation Timestamp','Title','Comment','Review Title','Star Rating','Type')
 
             report.write_artifact_data_table(data_headers, data_list, file_found)
             report.end_artifact_report()
             
-            tsvname = f'Google Play Store Reviews'
+            tsvname = f'Google Play Store - Reviews'
             tsv(report_folder, data_headers, data_list, tsvname)
             
-            tlactivity = f'Google Play Store Reviews'
+            tlactivity = f'Google Play Store - Reviews'
             timeline(report_folder, tlactivity, data_list, data_headers)
         else:
             logfunc('No Google Play Store Reviews data available')
