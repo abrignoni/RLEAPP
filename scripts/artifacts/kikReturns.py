@@ -103,22 +103,20 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
             with open(file_found, 'r', encoding='unicode_escape') as f:
                 delimited = csv.reader(f, delimiter='\t')
                 for item in delimited:
-                    user = item[1]
-                    user_other = item[2]
-                    app = item[3]
-                    contentID = item[4]
-                    info = item[5]
-                    timestamp = item[6]
-                    thumb = ''
-                    thumb = media_to_html(contentID, files_found, report_folder)
-                    data_list.append((timestamp, user, user_other, app, info, contentID, thumb))
+                    user = item[0]
+                    user_other = item[1]
+                    ip = item[2]
+                    ts = item[3]
+                    app = item[4]
+                    cid = item[5]
+                    data_list.append((ts, user, user_other, ip, app, cid))
                             
 
             if data_list:
                 report = ArtifactHtmlReport('Kik - Chat Platform Sent Received')
                 report.start_artifact_report(report_folder, 'Kik - Chat Platform Sent Received')
                 report.add_script()
-                data_headers = ('Timestamp', 'User', 'User', 'App', 'Info', 'Content ID', 'Content')
+                data_headers = ('Timestamp', 'User', 'Friend User', 'IP', 'APP', 'CID')
                 report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
                 report.end_artifact_report()
                 
@@ -126,6 +124,8 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                 timeline(report_folder, tlactivity, data_list, data_headers)
             else:
                 logfunc('No Kik Chat Platform Sent Received data available')
+        
+        
         
         if filename.startswith('chat_platform_sent.txt'):
             data_list =[]
@@ -387,27 +387,28 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
             else:
                 logfunc('No Kik Group Send Msg data available')
                 
-        if filename.endswith('.csv'):
+        if filename.endswith('data-text.csv'):
             
             data_list =[]
             with open(file_found, 'r', encoding='unicode_escape') as f:
                 delimited = csv.reader(f, delimiter=',')
                 for item in delimited:
                     msgid = item[0]
-                    senderjid = item[1]
-                    receiverjid = item[2]
-                    chattype = item[3]
-                    msg = utf8_in_extended_ascii(item[4])[1]
-                    ip = item[5]
-                    port = item[6]
-                    sentat = item[7]
-                    data_list.append((sentat,senderjid,receiverjid,chattype,msg,ip,port,msgid))
+                    senderjid = item[4]
+                    receiverjid = item[5]
+                    filenamed = item[3]
+                    msg = utf8_in_extended_ascii(item[3])[1]
+                    ip = item[6]
+                    port = item[7]
+                    sentat = item[9]
+                    sentatts = item[10]
+                    data_list.append((sentat,senderjid,receiverjid,msg,ip,port,msgid))
                     
             if data_list:
                 report = ArtifactHtmlReport('Kik - Text Message Data')
                 report.start_artifact_report(report_folder, 'Kik - Text Message Data')
                 report.add_script()
-                data_headers = ('Timestamp', 'User', 'Field', 'User', 'Field', 'IP')
+                data_headers = ('Timestamp', 'Sender ID', 'Receiver ID', 'Message', 'IP', 'Port', 'Message ID')
                 report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
                 report.end_artifact_report()
                 
@@ -415,6 +416,32 @@ def get_kikReturns(files_found, report_folder, seeker, wrap_text):
                 timeline(report_folder, tlactivity, data_list, data_headers)
             else:
                 logfunc('No Kik Text Message Data available')
+                
+        if filename.endswith('binds.csv'):
+            
+            data_list =[]
+            with open(file_found, 'r', encoding='unicode_escape') as f:
+                delimited = csv.reader(f, delimiter=',')
+                for item in delimited:
+                    userid = item[0]
+                    ip = item[1]
+                    port = item[2]
+                    ts = item[3]
+                    device = item[4]
+                    data_list.append((ts,userid,ip,port,device))
+                    
+            if data_list:
+                report = ArtifactHtmlReport('Kik - Binds')
+                report.start_artifact_report(report_folder, 'Kik - Binds')
+                report.add_script()
+                data_headers = ('Timestamp', 'Sender ID', 'IP', 'Port', 'Device')
+                report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
+                report.end_artifact_report()
+                
+                tlactivity = f'Kik - Binds'
+                timeline(report_folder, tlactivity, data_list, data_headers)
+            else:
+                logfunc('No Kik - Binds available')
 
 __artifacts__ = {
         "kikReturns": (

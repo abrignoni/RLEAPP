@@ -606,6 +606,6 @@ def get_reddit(files_found, report_folder, seeker, wrap_text):
 __artifacts__ = {
         "reddit": (
             "Reddit Returns",
-            ('*/Reddit production/*/account linked to */*/*.csv'),
+            ('*/Reddit production/*/account linked to */*/*.csv','*.csv'),
             get_reddit)
 }
