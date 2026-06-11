@@ -13,6 +13,12 @@ from scripts.version_info import rleapp_version
 from scripts.search_files import *
 from scripts.modules_to_exclude import modules_to_exclude
 from scripts.lavafuncs import *
+from leapp_functions.lava_launcher import (
+    LAVA_WEBSITE,
+    find_lava_launcher,
+    open_lava_project,
+    open_output_folder,
+)
 
 
 def pickModules():
@@ -164,6 +170,35 @@ def open_report(report_path):
     main_window.quit()
 
 
+def open_lava(project_path, launcher):
+    '''Open the generated project in LAVA and quit after processing completed.'''
+    try:
+        open_lava_project(project_path, launcher)
+    except (OSError, ValueError) as ex:
+        tk_msgbox.showerror(
+            title='Unable to open LAVA',
+            message=f'RLEAPP could not open the project in LAVA:\n{ex}',
+            parent=main_window)
+        return
+    main_window.quit()
+
+
+def explore_lava():
+    '''Open the LAVA website.'''
+    webbrowser.open_new_tab(LAVA_WEBSITE)
+
+
+def open_folder(output_path):
+    '''Open the generated output folder.'''
+    try:
+        open_output_folder(output_path)
+    except OSError as ex:
+        tk_msgbox.showerror(
+            title='Unable to open output folder',
+            message=f'RLEAPP could not open the output folder:\n{ex}',
+            parent=main_window)
+
+
 def open_website(url):
     webbrowser.open_new_tab(url)
 
@@ -214,13 +249,43 @@ def process(casedata):
 
         if crunch_successful:
             report_path = os.path.join(out_params.report_folder_base, 'index.html')
+            lava_project_path = os.path.join(out_params.report_folder_base, '_lava_data.json')
+            output_folder_path = out_params.report_folder_base
             if report_path.startswith('\\\\?\\'):  # windows
                 report_path = report_path[4:]
+                lava_project_path = lava_project_path[4:]
+                output_folder_path = output_folder_path[4:]
             if report_path.startswith('\\\\'):  # UNC path
                 report_path = report_path[2:]
+                lava_project_path = lava_project_path[2:]
+                output_folder_path = output_folder_path[2:]
             progress_bar.grid_remove()
-            open_report_button = ttk.Button(main_window, text='Open Report & Close', command=lambda: open_report(report_path))
-            open_report_button.grid(ipadx=8)
+            completion_button_frame = ttk.Frame(main_window)
+            completion_button_frame.grid(ipadx=8)
+            open_report_button = ttk.Button(
+                completion_button_frame,
+                text='Open HTML in Browser & Close',
+                command=lambda: open_report(report_path))
+            open_report_button.pack(side='left', padx=5)
+
+            lava_launcher = find_lava_launcher(lava_project_path)
+            if lava_launcher:
+                lava_button = ttk.Button(
+                    completion_button_frame,
+                    text='Open Project in LAVA & Close',
+                    command=lambda: open_lava(lava_project_path, lava_launcher))
+            else:
+                lava_button = ttk.Button(
+                    completion_button_frame,
+                    text='Explore LAVA',
+                    command=explore_lava)
+            lava_button.pack(side='left', padx=5)
+
+            open_folder_button = ttk.Button(
+                completion_button_frame,
+                text='Open Output Folder',
+                command=lambda: open_folder(output_folder_path))
+            open_folder_button.pack(side='left', padx=5)
         else:
             log_path = out_params.screen_output_file_path
             if log_path.startswith('\\\\?\\'):  # windows
