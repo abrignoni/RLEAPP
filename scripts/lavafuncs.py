@@ -1,13 +1,19 @@
 import json
 import sqlite3
+import sys
 import os
+from platform import platform
 from collections import OrderedDict
 import re
 import datetime
 
+from scripts.version_info import rleapp_version
+
 # Global variables
 lava_data = None
 lava_db = None
+lava_db_name = '_lava_artifacts.db'
+lava_json_name = '_lava_data.lava'
 
 def sanitize_sql_name(name):
     # Remove non-alphanumeric characters and replace spaces with underscores
@@ -29,15 +35,24 @@ def initialize_lava(input_path, output_path, input_type):
     global lava_data, lava_db
     
     lava_data = {
+        "parser_info": {
+            "leapp_name": "RLEAPP",
+            "leapp_version": rleapp_version,
+            "leapp_mode": "GUI" if "leappGUI" in sys.argv[0] else "CLI",
+            "package": "Source code" if not getattr(sys, 'frozen', False) else "Binary",
+            "OS": platform(),
+            "start_timestamp": int(datetime.datetime.now(datetime.timezone.utc).timestamp())
+        },
         "param_input": input_path,
         "param_output": output_path,
         "param_type": input_type,
         "processing_status": "In Progress",
+        "lava_db_name": lava_db_name,
         "modules": [],
         "artifacts": OrderedDict()
     }
     
-    db_path = os.path.join(output_path, '_lava_artifacts.db')
+    db_path = os.path.join(output_path, lava_db_name)
     lava_db = sqlite3.connect(db_path)
     
     cursor = lava_db.cursor()
@@ -275,8 +290,10 @@ def lava_finalize_output(output_path):
     for category in lava_data["artifacts"]:
         lava_data["artifacts"][category].sort(key=lambda x: x["name"])
     
+    lava_data["parser_info"]["end_timestamp"] = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
+
     # Save LAVA JSON output
-    with open(os.path.join(output_path, '_lava_data.json'), 'w') as f:
+    with open(os.path.join(output_path, lava_json_name), 'w', encoding='utf-8') as f:
         json.dump(lava_data, f, indent=4)
     
     # Close the SQLite database
