@@ -1,13 +1,19 @@
 import json
 import sqlite3
+import sys
 import os
+from platform import platform
 from collections import OrderedDict
 import re
 import datetime
 
+from scripts.version_info import rleapp_version
+
 # Global variables
 lava_data = None
 lava_db = None
+lava_db_name = '_lava_artifacts.db'
+lava_json_name = '_lava_data.lava'
 
 def sanitize_sql_name(name):
     # Remove non-alphanumeric characters and replace spaces with underscores
@@ -29,15 +35,24 @@ def initialize_lava(input_path, output_path, input_type):
     global lava_data, lava_db
     
     lava_data = {
+        "parser_info": {
+            "leapp_name": "RLEAPP",
+            "leapp_version": rleapp_version,
+            "leapp_mode": "GUI" if "leappGUI" in sys.argv[0] else "CLI",
+            "package": "Source code" if not getattr(sys, 'frozen', False) else "Binary",
+            "OS": platform(),
+            "start_timestamp": int(datetime.datetime.now(datetime.timezone.utc).timestamp())
+        },
         "param_input": input_path,
         "param_output": output_path,
         "param_type": input_type,
         "processing_status": "In Progress",
+        "lava_db_name": lava_db_name,
         "modules": [],
         "artifacts": OrderedDict()
     }
     
-    db_path = os.path.join(output_path, '_lava_artifacts.db')
+    db_path = os.path.join(output_path, lava_db_name)
     lava_db = sqlite3.connect(db_path)
     
     cursor = lava_db.cursor()
@@ -94,31 +109,34 @@ def lava_process_artifact(category, module_name, artifact_name, data, record_cou
         artifact["object_columns"] = [{"name": name, "type": type_} for name, type_ in object_columns.items()]
 
     if data_views:
-        if chat_params := data_views.get("chat"):
+        view_params = None
+
+        # Backward compatibility for chat view. Remove 'chat' once modules are updated.
+        if "chat" in data_views:
+            view_params = data_views.pop("chat")
+            data_views["conversation"] = view_params
+        elif "conversation" in data_views:
+            view_params = data_views.get("conversation")
+
+        if view_params:
             sanitized_params = {}
 
-            #Boolean value is whether or not to sanitize the column name. Should do this for parameters that map to columns
-            keys = {
-                "directionSentValue": False,
-                "threadDiscriminatorColumn": True,
-                "threadLabelColumn": True,
-                "textColumn": True,
-                "directionColumn": True,
-                "timeColumn": True,
-                "senderColumn": True,
-                "mediaColumn": True,
-                "sentMessageLabelColumn": True,
-                "sentMessageStaticLabel": False
+            column_names = [item[0] if isinstance(item, tuple) else item for item in data]
+
+            convert_map = {
+                "threadDiscriminatorColumn": "conversationDiscriminatorColumn",
+                "threadLabelColumn": "conversationLabelColumn"
             }
 
-            for (key, value) in chat_params.items():
-                if key in keys:
-                    if keys[key]:
-                        sanitized_params[key] = sanitize_sql_name(value)
-                    else:
-                        sanitized_params[key] = value
+            for key, value in view_params.items():
+                final_key = convert_map.get(key, key)
 
-            data_views["chat"] = sanitized_params
+                if value in column_names:
+                    sanitized_params[final_key] = sanitize_sql_name(value)
+                else:
+                    sanitized_params[final_key] = value
+
+            data_views["conversation"] = sanitized_params
 
         artifact['data_views'] = data_views
     
@@ -275,8 +293,10 @@ def lava_finalize_output(output_path):
     for category in lava_data["artifacts"]:
         lava_data["artifacts"][category].sort(key=lambda x: x["name"])
     
+    lava_data["parser_info"]["end_timestamp"] = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
+
     # Save LAVA JSON output
-    with open(os.path.join(output_path, '_lava_data.json'), 'w') as f:
+    with open(os.path.join(output_path, lava_json_name), 'w', encoding='utf-8') as f:
         json.dump(lava_data, f, indent=4)
     
     # Close the SQLite database
