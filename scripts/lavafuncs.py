@@ -233,20 +233,27 @@ def lava_get_media_item(media_id):
     in the media_items table if exists or return None '''
     global lava_db
     cursor = lava_db.cursor()
-    query = f"SELECT * FROM _lava_media_items WHERE id='{media_id}'"
-    return cursor.execute(query).fetchone()
+    query = "SELECT * FROM _lava_media_items WHERE id = ?"
+    return cursor.execute(query, (media_id,)).fetchone()
     # return result.fetchone()
 
 def lava_insert_sqlite_media_item(media_item):
     global lava_db
-    created_at = media_item.created_at if media_item.created_at else 'NULL'
-    updated_at = media_item.updated_at if media_item.updated_at else 'NULL'
     cursor = lava_db.cursor()
+    sql = '''INSERT INTO _lava_media_items
+                ("id", "source_path", "extraction_path", "type", "metadata", "created_at", "updated_at")
+                VALUES (?, ?, ?, ?, ?, ?, ?)'''
+    params = (
+        media_item.id,
+        str(media_item.source_path),
+        str(media_item.extraction_path),
+        media_item.mimetype,
+        media_item.metadata,
+        media_item.created_at if media_item.created_at else None,
+        media_item.updated_at if media_item.updated_at else None
+    )
     try:
-        cursor.execute(f'''INSERT INTO _lava_media_items 
-                    ("id", "source_path", "extraction_path", "type", "metadata", "created_at", "updated_at") 
-                    VALUES ("{media_item.id}", "{media_item.source_path}", "{media_item.extraction_path}", 
-                    "{media_item.mimetype}", "{media_item.metadata}", {created_at}, {updated_at})''')
+        cursor.execute(sql, params)
         lava_db.commit()
     except sqlite3.IntegrityError as e:
         print(str(e))
@@ -254,29 +261,36 @@ def lava_insert_sqlite_media_item(media_item):
 def lava_get_media_references(media_ref):
     global lava_db
     cursor = lava_db.cursor()
-    query = f"SELECT * FROM _lava_media_references WHERE id='{media_ref}'"
-    return cursor.execute(query).fetchone()
+    query = "SELECT * FROM _lava_media_references WHERE id = ?"
+    return cursor.execute(query, (media_ref,)).fetchone()
 
 def lava_insert_sqlite_media_references(media_references):
     global lava_db
     cursor = lava_db.cursor()
-    cursor.execute(f'''INSERT INTO _lava_media_references 
+    sql = '''INSERT INTO _lava_media_references
                 ("id", "media_item_id", "module_name", "artifact_name", "name", "media_path")
-                VALUES ("{media_references.id}", "{media_references.media_item_id}", 
-                "{media_references.module_name}", "{media_references.artifact_name}", 
-                "{media_references.name}", "{media_references.media_path}")''')
+                VALUES (?, ?, ?, ?, ?, ?)'''
+    params = (
+        media_references.id,
+        media_references.media_item_id,
+        media_references.module_name,
+        media_references.artifact_name,
+        media_references.name,
+        str(media_references.media_path)
+    )
+    cursor.execute(sql, params)
     lava_db.commit()
 
 def lava_get_full_media_info(media_ref_id):
     global lava_db
     lava_db.row_factory = sqlite3.Row
     cursor = lava_db.cursor()
-    query = f'''
+    query = '''
     SELECT *
     FROM _lava_media_info
-    WHERE media_ref_id = '{media_ref_id}'
+    WHERE media_ref_id = ?
     '''
-    return cursor.execute(query).fetchone()
+    return cursor.execute(query, (media_ref_id,)).fetchone()
 
 def lava_finalize_output(output_path):
     global lava_data, lava_db
