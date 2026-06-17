@@ -249,7 +249,7 @@ def process(casedata):
 
         if crunch_successful:
             report_path = os.path.join(out_params.report_folder_base, 'index.html')
-            lava_project_path = os.path.join(out_params.report_folder_base, '_lava_data.json')
+            lava_project_path = os.path.join(out_params.report_folder_base, lava_json_name)
             output_folder_path = out_params.report_folder_base
             if report_path.startswith('\\\\?\\'):  # windows
                 report_path = report_path[4:]

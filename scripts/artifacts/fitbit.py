@@ -285,6 +285,12 @@ def get_fitbit(files_found, report_folder, seeker, wrap_text):
 __artifacts__ = {
         "fitbit": (
             "Google Takeout Archive",
-            ('*/Fitbit/Sleep/Sleep Profile.csv','*/Fitbit/Sleep Score/sleep_score.csv','*/Fitbit/Stress Score/Stress Score.csv','*/Fitbit/Your Profile/Profile.csv','*/Fitbit/Paired Devices/Trackers.csv','*/Fitbit/Activity Goals/Activity Goals.csv'),
+            (
+            '*/Fitbit/Sleep/Sleep Profile.csv',
+            '*/Fitbit/Sleep Score/sleep_score.csv',
+            '*/Fitbit/Stress Score/Stress Score.csv',
+            '*/Fitbit/Your Profile/Profile.csv',
+            '*/Fitbit/Paired Devices/Trackers.csv',
+            '*/Fitbit/Activity Goals/Activity Goals.csv'),
             get_fitbit)
 }
