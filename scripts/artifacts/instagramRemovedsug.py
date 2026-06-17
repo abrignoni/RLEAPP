@@ -1,13 +1,29 @@
+__artifacts_v2__ = {
+    "instagramRemovedsug": {  # This should match the function name exactly
+        "name": "Instagram Archive - Removed Account Suggestions",
+        "description": "Parses Instagram removed suggested accounts",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2021-08-30",
+        "last_update_date": "2025-07-03",
+        "requirements": "none",
+        "category": "Instagram Archive",
+        "notes": "",
+        "paths": ('*/followers_and_following/removed_suggestions.json'),
+        "output_types": "standard",  # or ["html", "tsv", "timeline", "lava"]
+        "artifact_icon": "instagram",
+    }
+}
+
 import os
 import datetime
 import json
-import shutil
 from pathlib import Path	
 
 from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, kmlgen, is_platform_windows, utf8_in_extended_ascii, media_to_html
+from scripts.ilapfuncs import artifact_processor 
 
-def get_instagramRemovedsug(files_found, report_folder, seeker, wrap_text):
+@artifact_processor
+def instagramRemovedsug(files_found, report_folder, seeker, wrap_text):
     data_list = []
     for file_found in files_found:
         file_found = str(file_found)
@@ -28,27 +44,5 @@ def get_instagramRemovedsug(files_found, report_folder, seeker, wrap_text):
                 
                 data_list.append((timestamp, value, href))
     
-                
-    if data_list:
-        report = ArtifactHtmlReport('Instagram Archive - Removed Suggestions')
-        report.start_artifact_report(report_folder, 'Instagram Archive - Removed Suggestions')
-        report.add_script()
-        data_headers = ('Timestamp','Following', 'Href')
-        report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Media'])
-        report.end_artifact_report()
-        
-        tsvname = f'Instagram Archive - Removed Suggestions'
-        tsv(report_folder, data_headers, data_list, tsvname)
-        
-        tlactivity = f'Instagram Archive - Removed Suggestions'
-        timeline(report_folder, tlactivity, data_list, data_headers)
-
-    else:
-        logfunc('No Instagram Archive - Removed Suggestions')
-                
-__artifacts__ = {
-        "instagramRemovedsug": (
-            "Instagram Archive",
-            ('*/followers_and_following/removed_suggestions.json'),
-            get_instagramRemovedsug)
-}
+    data_headers = (('Timestamp','datetime'),'Removed Account Suggestion', 'Profile URL')
+    return data_headers, data_list, file_found

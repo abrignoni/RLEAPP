@@ -26,13 +26,13 @@ def get_googleProfile(files_found, report_folder, seeker, wrap_text):
         addresses = ''
         gender=''
         formattedName = data['name'].get('formattedName','')
-        displayName = data.get('displayName')
-        birthday = data.get('birthday')
-        _gender = data.get('gender')
+        displayName = data.get('displayName','')
+        birthday = data.get('birthday','')
+        _gender = data.get('gender','')
         if (_gender):
             gender = _gender.get('type','')
 
-        if (len(emails)>0):
+        if len(data['emails'])>0:
             for x in data['emails']:
                 emails.append((x['value']))
 

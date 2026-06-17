@@ -42,7 +42,7 @@ def get_googlePayTransactions(files_found, report_folder, seeker, wrap_text):
                     
             if data_list:
                 description = 'Purchases on Google like Play and YouTube, and purchases made using Google Pay balance.'
-                report = ArtifactHtmlReport('Google Pay Transactions')
+                report = ArtifactHtmlReport('Google Pay - Transactions')
                 report.start_artifact_report(report_folder, 'Google Pay Transactions', description)
                 html_report = report.get_report_file_path()
                 report.add_script()
@@ -50,13 +50,13 @@ def get_googlePayTransactions(files_found, report_folder, seeker, wrap_text):
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
                 
-                tsvname = f'Google Pay Transactions'
+                tsvname = f'Google Pay - Transactions'
                 tsv(report_folder, data_headers, data_list, tsvname)
 
-                tlactivity = f'Google Pay Transactions'
+                tlactivity = f'Google Pay - Transactions'
                 timeline(report_folder, tlactivity, data_list, data_headers)
             else:
-                logfunc('No Google Pay Transactions data available')
+                logfunc('No Google Pay - Transactions data available')
                 
 __artifacts__ = {
         "googlePayTransactions": (

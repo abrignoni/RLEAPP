@@ -1,20 +1,30 @@
-# Module Description: Parses Google Tasks from Takeout
-# Author: @KevinPagano3
-# Date: 2022-04-28
-# Artifact version: 0.0.3
-# Requirements: none
+__artifacts_v2__ = {
+    "googleTasks": {
+        "name": "Google Tasks",
+        "description": "Parses Google Tasks from a Takeout archive includes tasks and task lists",
+        "author": "@stark4n6",
+        "creation_date": "2022-04-28",
+        "last_update_date": "2026-06-01",
+        "requirements": "none",
+        "category": "Google Takeout Archive",
+        "notes": "",
+        "paths": ('*/Tasks/Tasks.json'),
+        "output_types": "standard",  # or ["html", "tsv", "timeline", "lava"]
+        "artifact_icon": "check-circle",
+    }
+}
 
 import json
 import os
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
+from scripts.ilapfuncs import artifact_processor
 
-def get_googleTasks(files_found, report_folder, seeker, wrap_text):
+@artifact_processor
+def googleTasks(files_found, report_folder, seeker, wrap_text):
     
     for file_found in files_found:
         file_found = str(file_found)
-        if not os.path.basename(file_found) == 'Tasks.json': # skip -journal and other files
+        if not os.path.basename(file_found) == 'Tasks.json':
             continue
 
         with open(file_found, encoding = 'utf-8', mode = 'r') as f:
@@ -37,7 +47,6 @@ def get_googleTasks(files_found, report_folder, seeker, wrap_text):
         task_starred = ''
         
         for x in data['items']:
-        
             tasklist_title = x.get('title','')
             tasklist_updated = x.get('updated','')
 
@@ -72,29 +81,7 @@ def get_googleTasks(files_found, report_folder, seeker, wrap_text):
                     
             else:
                 data_list.append((task_created,task_updated,task_due,task_status,tasklist_title,task_parent_title,task_title,task_notes,task_type,task_parent_id,task_id,task_starred))
-        
-        num_entries = len(data_list)
-        if num_entries > 0:
-            description = 'List of tasks lists and tasks created in Google Task.'
-            report = ArtifactHtmlReport('Google Tasks')
-            report.start_artifact_report(report_folder, 'Google Tasks', description)
-            report.add_script()
-            data_headers = ('Task Created','Task Updated','Task Due','Task Status','Task List Name','Parent Task Name','Task Name','Notes','Task Type','Parent Task ID','Task ID','Favorited')
+    
+    data_headers = (('Task Created','datetime'),('Task Updated','datetime'),('Task Due','datetime'),'Task Status','Task List Name','Parent Task Name','Task Name','Notes','Task Type','Parent Task ID','Task ID','Favorited')
 
-            report.write_artifact_data_table(data_headers, data_list, file_found)
-            report.end_artifact_report()
-            
-            tsvname = f'Google Tasks'
-            tsv(report_folder, data_headers, data_list, tsvname)
-            
-            tlactivity = f'Google Tasks'
-            timeline(report_folder, tlactivity, data_list, data_headers)
-        else:
-            logfunc('No Google Tasks data available')
-
-__artifacts__ = {
-        "googleTasks": (
-            "Google Takeout Archive",
-            ('*/Tasks/Tasks.json'),
-            get_googleTasks)
-}
+    return data_headers, data_list, file_found

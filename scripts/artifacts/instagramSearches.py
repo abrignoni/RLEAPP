@@ -1,13 +1,28 @@
+__artifacts_v2__ = {
+    "instagramSearches": {  # This should match the function name exactly
+        "name": "Instagram Archive - Searches",
+        "description": "Parses Instagram searches",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2021-08-30",
+        "last_update_date": "2025-07-02",
+        "requirements": "none",
+        "category": "Instagram Archive",
+        "notes": "",
+        "paths": ('*/recent_searches/account_searches.json'),
+        "output_types": "standard",  # or ["html", "tsv", "timeline", "lava"]
+        "artifact_icon": "instagram",
+    }
+}
+
 import os
 import datetime
 import json
-import shutil
 from pathlib import Path	
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, kmlgen, is_platform_windows, utf8_in_extended_ascii, media_to_html
+from scripts.ilapfuncs import artifact_processor
 
-def get_instagramSearches(files_found, report_folder, seeker, wrap_text):
+@artifact_processor
+def instagramSearches(files_found, report_folder, seeker, wrap_text):
     data_list = []
     for file_found in files_found:
         file_found = str(file_found)
@@ -27,27 +42,5 @@ def get_instagramSearches(files_found, report_folder, seeker, wrap_text):
                 
                 data_list.append((timestamp, search))
     
-                
-    if data_list:
-        report = ArtifactHtmlReport('Instagram Archive - Searches')
-        report.start_artifact_report(report_folder, 'Instagram Archive - Searches')
-        report.add_script()
-        data_headers = ('Timestamp', 'Search')
-        report.write_artifact_data_table(data_headers, data_list, file_found)
-        report.end_artifact_report()
-        
-        tsvname = f'Instagram Archive - Searches'
-        tsv(report_folder, data_headers, data_list, tsvname)
-        
-        tlactivity = f'Instagram Archive - Searches'
-        timeline(report_folder, tlactivity, data_list, data_headers)
-
-    else:
-        logfunc('No Instagram Archive - Searches data available')
-                
-__artifacts__ = {
-        "instagramSearches": (
-            "Instagram Archive",
-            ('*/recent_searches/account_searches.json'),
-            get_instagramSearches)
-}
+    data_headers = (('Timestamp','datetime'), 'Search')
+    return data_headers, data_list, file_found

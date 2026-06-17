@@ -21,12 +21,7 @@ def get_fitbit(files_found, report_folder, seeker, wrap_text):
         #FITBIT SLEEP PROFILE
         if filename.startswith('Sleep Profile.csv'):
             data_list = []
-            
-            description = 'Sleep profiles for a Fitbit account'
-            report = ArtifactHtmlReport('Fitbit Sleep Profile')
-            report.start_artifact_report(report_folder, 'Fitbit Sleep Profile', description)
-            html_report = report.get_report_file_path()
-            report.add_script()
+           
             has_header = True
             
             with open(file_found, 'r', encoding='utf-8') as f:
@@ -56,6 +51,12 @@ def get_fitbit(files_found, report_folder, seeker, wrap_text):
                         data_list.append((create_date,sleep_type,'','','','','','','','','',''))
                 
             if len(data_list) > 0:
+                description = 'Sleep profiles for a Fitbit account'
+                report = ArtifactHtmlReport('Fitbit Sleep Profile')
+                report.start_artifact_report(report_folder, 'Fitbit Sleep Profile', description)
+                html_report = report.get_report_file_path()
+                report.add_script()
+                
                 data_headers = ('Created Date','Sleep Type','Deep Sleep (Minutes)','REM Sleep (%)','Sleep Duration (Hours)','Sleep Start Time ()','Schedule Variability (Minutes)','Restorative Sleep (%)','Time Before Sound Sleep (Minutes)','Sleep Stability (Events/Hr)','Nights w/ Long Awakenings (%)','Days w/ Naps')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
@@ -69,14 +70,9 @@ def get_fitbit(files_found, report_folder, seeker, wrap_text):
                 logfunc('No Fitbit Sleep Profile data available')
                 
         #FITBIT SLEEP SCORES      
-        if filename.startswith('sleep_score.csv'):
+        elif filename.startswith('sleep_score.csv'):
             data_list = []
             
-            description = 'Sleep scores for a Fitbit account'
-            report = ArtifactHtmlReport('Fitbit Sleep Scores')
-            report.start_artifact_report(report_folder, 'Fitbit Sleep Scores', description)
-            html_report = report.get_report_file_path()
-            report.add_script()
             has_header = True
             
             with open(file_found, 'r', encoding='utf-8') as f:
@@ -97,6 +93,11 @@ def get_fitbit(files_found, report_folder, seeker, wrap_text):
                     data_list.append((timestamp,entry_id,overall_score,composition_score,revitalization_score,duration_score,deep_sleep,resting_hr,restlessness))
 
             if len(data_list) > 0:
+                description = 'Sleep scores for a Fitbit account'
+                report = ArtifactHtmlReport('Fitbit Sleep Scores')
+                report.start_artifact_report(report_folder, 'Fitbit Sleep Scores', description)
+                html_report = report.get_report_file_path()
+                report.add_script()
                 data_headers = ('End Timestamp','Entry ID','Overall Score','Deep & REM Score','Restoration Score','Time Asleep Score','Deep Sleep (Minutes)','Resting Heart Rate','Restlessness (%)')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
@@ -110,14 +111,9 @@ def get_fitbit(files_found, report_folder, seeker, wrap_text):
                 logfunc('No Fitbit Sleep Scores data available')
         
         #FITBIT STRESS SCORES
-        if filename.startswith('Stress Score.csv'):
+        elif filename.startswith('Stress Score.csv'):
             data_list = []
-            
-            description = 'Stress scores for a Fitbit account'
-            report = ArtifactHtmlReport('Fitbit Stress Scores')
-            report.start_artifact_report(report_folder, 'Fitbit Stress Scores', description)
-            html_report = report.get_report_file_path()
-            report.add_script()
+
             has_header = True
             
             with open(file_found, 'r', encoding='utf-8') as f:
@@ -138,7 +134,12 @@ def get_fitbit(files_found, report_folder, seeker, wrap_text):
 
                     data_list.append((date_created,date_updated,stress_score,sleep_points,responsiveness_points,exertion_points,status,calculation_failed))
 
-            if len(data_list) > 0:
+            if len(data_list) > 0:             
+                description = 'Stress scores for a Fitbit account'
+                report = ArtifactHtmlReport('Fitbit Stress Scores')
+                report.start_artifact_report(report_folder, 'Fitbit Stress Scores', description)
+                html_report = report.get_report_file_path()
+                report.add_script()
                 data_headers = ('Created Timestamp','Updated Timestamp','Stress Score','Sleep Points (n/30)','Responsiveness Points (n/30)','Exertion Points (n/40)','Status','Calculation Failed')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
@@ -152,14 +153,9 @@ def get_fitbit(files_found, report_folder, seeker, wrap_text):
                 logfunc('No Fitbit Stress Scores data available')
                 
         #FITBIT PROFILE
-        if filename.startswith('Profile.csv'):
+        elif filename.startswith('Profile.csv'):
             data_list = []
             
-            description = 'Profile details for a Fitbit account'
-            report = ArtifactHtmlReport('Fitbit Account Profile')
-            report.start_artifact_report(report_folder, 'Fitbit Account Profile', description)
-            html_report = report.get_report_file_path()
-            report.add_script()
             has_header = True
             
             with open(file_found, 'r', encoding='utf-8') as f:
@@ -190,6 +186,11 @@ def get_fitbit(files_found, report_folder, seeker, wrap_text):
                     data_list.append((user_id,full_name,display_name,username,email_address,date_of_birth,child,country,state,city,timezone,member_since,about_me,gender,height,weight,stride_length_walking,stride_length_running))
 
             if len(data_list) > 0:
+                description = 'Profile details for a Fitbit account'
+                report = ArtifactHtmlReport('Fitbit Account Profile')
+                report.start_artifact_report(report_folder, 'Fitbit Account Profile', description)
+                html_report = report.get_report_file_path()
+                report.add_script()
                 data_headers = ('User ID','Full Name','Display Name','Username','Email Address','Date of Birth','Is Child','Country','State','City','Timezone','Member Since','About Me','Gender','Height (cm)','Weight (kg)','Strike Length (Walking)','Stride Length (Running)')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
@@ -201,14 +202,9 @@ def get_fitbit(files_found, report_folder, seeker, wrap_text):
                 logfunc('No Fitbit Account Profile data available')
         
         #FITBIT TRACKERS
-        if filename.startswith('Trackers.csv'):
+        elif filename.startswith('Trackers.csv'):
             data_list = []
             
-            description = 'Trackers for a Fitbit account'
-            report = ArtifactHtmlReport('Fitbit Trackers')
-            report.start_artifact_report(report_folder, 'Fitbit Trackers', description)
-            html_report = report.get_report_file_path()
-            report.add_script()
             has_header = True
             
             with open(file_found, 'r', encoding='utf-8') as f:
@@ -228,6 +224,11 @@ def get_fitbit(files_found, report_folder, seeker, wrap_text):
                     data_list.append((last_sync,device_name,tracker_name,tracker_id,battery_level,heart_rate_update,alarm_update,dominant_hand))
 
             if len(data_list) > 0:
+                description = 'Trackers for a Fitbit account'
+                report = ArtifactHtmlReport('Fitbit Trackers')
+                report.start_artifact_report(report_folder, 'Fitbit Trackers', description)
+                html_report = report.get_report_file_path()
+                report.add_script()
                 data_headers = ('Last Synced Timestamp','Device Name','Tracker Name','Tracker ID','Battery Level','Heart Rate Update Timestamp','Alarm Update Timestamp','On Dominant Hand')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
@@ -241,14 +242,9 @@ def get_fitbit(files_found, report_folder, seeker, wrap_text):
                 logfunc('No Fitbit Trackers data available')
                 
         #FITBIT ACTIVITY GOALS
-        if filename.startswith('Activity Goals.csv'):
+        elif filename.startswith('Activity Goals.csv'):
             data_list = []
-            
-            description = 'Activity goals for a Fitbit account'
-            report = ArtifactHtmlReport('Fitbit Activity Goals')
-            report.start_artifact_report(report_folder, 'Fitbit Activity Goals', description)
-            html_report = report.get_report_file_path()
-            report.add_script()
+
             has_header = True
             
             with open(file_found, 'r', encoding='utf-8') as f:
@@ -269,6 +265,11 @@ def get_fitbit(files_found, report_folder, seeker, wrap_text):
                     data_list.append((goal_created,goal_start,goal_end,goal_type,goal_frequency,goal_target,goal_result,goal_status,goal_primary))
 
             if len(data_list) > 0:
+                description = 'Activity goals for a Fitbit account'
+                report = ArtifactHtmlReport('Fitbit Activity Goals')
+                report.start_artifact_report(report_folder, 'Fitbit Activity Goals', description)
+                html_report = report.get_report_file_path()
+                report.add_script()
                 data_headers = ('Created Timestamp','Start Date','End Date','Type','Frequency','Target','Result','Status','Is Primary')
                 report.write_artifact_data_table(data_headers, data_list, file_found)
                 report.end_artifact_report()
@@ -284,6 +285,12 @@ def get_fitbit(files_found, report_folder, seeker, wrap_text):
 __artifacts__ = {
         "fitbit": (
             "Google Takeout Archive",
-            ('*/Fitbit/Sleep/Sleep Profile.csv','*/Fitbit/Sleep Score/sleep_score.csv','*/Fitbit/Stress Score/Stress Score.csv','*/Fitbit/Your Profile/Profile.csv','*/Fitbit/Paired Devices/Trackers.csv','*/Fitbit/Activity Goals/Activity Goals.csv'),
+            (
+            '*/Fitbit/Sleep/Sleep Profile.csv',
+            '*/Fitbit/Sleep Score/sleep_score.csv',
+            '*/Fitbit/Stress Score/Stress Score.csv',
+            '*/Fitbit/Your Profile/Profile.csv',
+            '*/Fitbit/Paired Devices/Trackers.csv',
+            '*/Fitbit/Activity Goals/Activity Goals.csv'),
             get_fitbit)
 }

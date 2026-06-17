@@ -1,14 +1,28 @@
+__artifacts_v2__ = {
+    "instagramLogout": {  # This should match the function name exactly
+        "name": "Instagram Archive - Logout Activity",
+        "description": "Parses Instagram logout activity",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2021-08-30",
+        "last_update_date": "2025-07-04",
+        "requirements": "none",
+        "category": "Instagram Archive",
+        "notes": "",
+        "paths": ('*/login_and_*_creation/logout_activity.json'),
+        "output_types": "standard",  # or ["html", "tsv", "timeline", "lava"]
+        "artifact_icon": "instagram",
+    }
+}
+
 import os
 import datetime
 import json
-import shutil
 from pathlib import Path	
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, kmlgen, is_platform_windows
+from scripts.ilapfuncs import artifact_processor
 
-def get_instagramLogout(files_found, report_folder, seeker, wrap_text):
-    
+@artifact_processor
+def instagramLogout(files_found, report_folder, seeker, wrap_text):
     for file_found in files_found:
         file_found = str(file_found)
         
@@ -22,7 +36,7 @@ def get_instagramLogout(files_found, report_folder, seeker, wrap_text):
             login = (deserialized['account_history_logout_history'])
             for x in login:
                 
-                title = (x.get('title', ''))
+                title = (x.get('title', '')).replace('T',' ')
                 cookiename = (x['string_map_data']['Cookie Name'].get('value', ''))
                 ipaddress = (x['string_map_data']['IP Address'].get('value', ''))
                 langagecode = (x['string_map_data']['Language Code'].get('value', ''))
@@ -32,28 +46,6 @@ def get_instagramLogout(files_found, report_folder, seeker, wrap_text):
                     timestamp = (datetime.datetime.fromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S'))
                     
                 data_list.append((timestamp, title, ipaddress, useragent, langagecode, cookiename))
-                
-                
-            if data_list:
-                report = ArtifactHtmlReport('Instagram Archive - Logout Activity')
-                report.start_artifact_report(report_folder, 'Instagram Archive - Logout Activity')
-                report.add_script()
-                data_headers = ('Timestamp', 'Title', 'IP Address', 'User Agent', 'Language Code', 'Cookie Name')
-                report.write_artifact_data_table(data_headers, data_list, file_found)
-                report.end_artifact_report()
-                
-                tsvname = f'Instagram Archive - Logout Activity'
-                tsv(report_folder, data_headers, data_list, tsvname)
-                
-                tlactivity = f'Instagram Archive - Logout Activity'
-                timeline(report_folder, tlactivity, data_list, data_headers)
-                
-            else:
-                logfunc('No Instagram Archive - Logout Activity data available')
-                
-__artifacts__ = {
-        "instagramLogout": (
-            "Instagram Archive",
-            ('*/login_and_account_creation/logout_activity.json'),
-            get_instagramLogout)
-}
+    
+    data_headers = (('Timestamp (Local)','datetime'), 'Timestamp (UTC)', 'IP Address', 'User Agent', 'Language Code', 'Cookie Name')
+    return data_headers, data_list, file_found

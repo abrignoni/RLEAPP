@@ -1,13 +1,29 @@
+__artifacts_v2__ = {
+    "instagramMessageReq": {  # This should match the function name exactly
+        "name": "Instagram Archive - Message Request",
+        "description": "Parses Instagram message requests",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2021-08-30",
+        "last_update_date": "2025-07-03",
+        "requirements": "none",
+        "category": "Instagram Archive",
+        "notes": "",
+        "paths": ('*/messages/message_requests/*'),
+        "output_types": "standard",  # or ["html", "tsv", "timeline", "lava"]
+        "artifact_icon": "instagram",
+        "html_columns": ['Media','Reactions'],
+    }
+}
+
 import os
 import datetime
 import json
-import shutil
-from pathlib import Path	
+from pathlib import Path
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, kmlgen, is_platform_windows, utf8_in_extended_ascii, media_to_html
+from scripts.ilapfuncs import artifact_processor, utf8_in_extended_ascii, media_to_html
 
-def get_instagramMessageReq(files_found, report_folder, seeker, wrap_text):
+@artifact_processor
+def instagramMessageReq(files_found, report_folder, seeker, wrap_text):
     data_list = []
     for file_found in files_found:
         file_found = str(file_found)
@@ -135,31 +151,7 @@ def get_instagramMessageReq(files_found, report_folder, seeker, wrap_text):
                         agregator = agregator + ('</tr>')
                     agregator = agregator + ('</table><br>')
                 
-                data_list.append((timestamp, title, names, sender_name, content, agregator, agregator_reac, is_unsent, type, thread_type, is_still_participant ))
+                data_list.append((timestamp, title, names, sender_name, content, agregator, agregator_reac, is_unsent, type, thread_type, is_still_participant, file_found))
     
-                
-    if data_list:
-        file_found = os.path.dirname(file_found)
-        file_found = os.path.dirname(file_found)
-        report = ArtifactHtmlReport('Instagram Archive - Message Request')
-        report.start_artifact_report(report_folder, 'Instagram Archive - Message Requests')
-        report.add_script()
-        data_headers = ('Timestamp', 'Title', 'Participants', 'Sender', 'Content', 'Media', 'Reactions', 'Is unsent', 'Type', 'Thread Type', 'Is Still Participant')
-        report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Reactions','Media'])
-        report.end_artifact_report()
-        
-        tsvname = f'Instagram Archive - Message Request'
-        tsv(report_folder, data_headers, data_list, tsvname)
-        
-        tlactivity = f'Instagram Archive - Message Request'
-        timeline(report_folder, tlactivity, data_list, data_headers)
-
-    else:
-        logfunc('No Instagram Archive - Message Request data available')
-                
-__artifacts__ = {
-        "instagramMessageReq": (
-            "Instagram Archive",
-            ('*/messages/message_requests/*'),
-            get_instagramMessageReq)
-}
+    data_headers = (('Timestamp', 'datetime'), 'Party Account Name', 'Participants', 'Sender Account Name', 'Content', 'Media', 'Reactions', 'Is Unsent', 'Type', 'Thread Type', 'Is Still Participant','Source File')
+    return data_headers, data_list, 'See source path(s) below'

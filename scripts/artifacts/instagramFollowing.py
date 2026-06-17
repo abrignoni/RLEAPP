@@ -1,13 +1,28 @@
+__artifacts_v2__ = {
+    "instagramFollowing": {  # This should match the function name exactly
+        "name": "Instagram Archive - Following",
+        "description": "Parses Instagram profiles the account is following",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2021-08-30",
+        "last_update_date": "2025-07-02",
+        "requirements": "none",
+        "category": "Instagram Archive",
+        "notes": "",
+        "paths": ('*/followers_and_following/following.json'),
+        "output_types": "standard",  # or ["html", "tsv", "timeline", "lava"]
+        "artifact_icon": "instagram",
+    }
+}
+
 import os
 import datetime
 import json
-import shutil
 from pathlib import Path	
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, kmlgen, is_platform_windows, utf8_in_extended_ascii, media_to_html
+from scripts.ilapfuncs import artifact_processor
 
-def get_instagramFollowing(files_found, report_folder, seeker, wrap_text):
+@artifact_processor
+def instagramFollowing(files_found, report_folder, seeker, wrap_text):
     data_list = []
     for file_found in files_found:
         file_found = str(file_found)
@@ -26,29 +41,7 @@ def get_instagramFollowing(files_found, report_folder, seeker, wrap_text):
                 if timestamp > 0:
                     timestamp = (datetime.datetime.fromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S'))
                 
-                data_list.append((timestamp, value, href))
+                data_list.append((timestamp, value, href, file_found))
     
-                
-    if data_list:
-        report = ArtifactHtmlReport('Instagram Archive - Following')
-        report.start_artifact_report(report_folder, 'Instagram Archive - Following')
-        report.add_script()
-        data_headers = ('Timestamp','Following', 'Href')
-        report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Media'])
-        report.end_artifact_report()
-        
-        tsvname = f'Instagram Archive - Following'
-        tsv(report_folder, data_headers, data_list, tsvname)
-        
-        tlactivity = f'Instagram Archive - Following'
-        timeline(report_folder, tlactivity, data_list, data_headers)
-
-    else:
-        logfunc('No Instagram Archive - Following')
-                
-__artifacts__ = {
-        "instagramFollowing": (
-            "Instagram Archive",
-            ('*/followers_and_following/following.json'),
-            get_instagramFollowing)
-}
+    data_headers = (('Timestamp', 'datetime'),'Following', 'Profile URL', 'Source File')
+    return data_headers, data_list, 'See source path(s) below'

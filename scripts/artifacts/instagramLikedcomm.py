@@ -1,13 +1,29 @@
+__artifacts_v2__ = {
+    "instagramLikedcomm": {  # This should match the function name exactly
+        "name": "Instagram Archive - Liked Comments",
+        "description": "Parses Instagram liked comments",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2021-08-30",
+        "last_update_date": "2025-07-03",
+        "requirements": "none",
+        "category": "Instagram Archive",
+        "notes": "",
+        "paths": ('*/likes/liked_comments.json'),
+        "output_types": "standard",  # or ["html", "tsv", "timeline", "lava"]
+        "artifact_icon": "instagram",
+    }
+}
+
 import os
 import datetime
 import json
-import shutil
 from pathlib import Path	
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, kmlgen, is_platform_windows, utf8_in_extended_ascii, media_to_html
+from scripts.ilapfuncs import artifact_processor, utf8_in_extended_ascii
 
-def get_instagramLikedcomm(files_found, report_folder, seeker, wrap_text):
+@artifact_processor
+
+def instagramLikedcomm(files_found, report_folder, seeker, wrap_text):
     data_list = []
     for file_found in files_found:
         file_found = str(file_found)
@@ -29,28 +45,6 @@ def get_instagramLikedcomm(files_found, report_folder, seeker, wrap_text):
                     timestamp = (datetime.datetime.fromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S'))
                     
                 data_list.append((timestamp, title, href, value))
-    
                 
-    if data_list:
-        report = ArtifactHtmlReport('Instagram Archive - Liked Comments')
-        report.start_artifact_report(report_folder, 'Instagram Archive - Liked Comments')
-        report.add_script()
-        data_headers = ('Timestamp','Title', 'Href', 'Value')
-        report.write_artifact_data_table(data_headers, data_list, file_found)
-        report.end_artifact_report()
-        
-        tsvname = f'Instagram Archive - Liked Comments'
-        tsv(report_folder, data_headers, data_list, tsvname)
-        
-        tlactivity = f'Instagram Archive - Liked Comments'
-        timeline(report_folder, tlactivity, data_list, data_headers)
-
-    else:
-        logfunc('No Instagram Archive - Liked Comments data available')
-                
-__artifacts__ = {
-        "instagramLikedcomm": (
-            "Instagram Archive",
-            ('*/likes/liked_comments.json'),
-            get_instagramLikedcomm)
-}
+    data_headers = (('Timestamp', 'datetime'),'Account Name', 'Post URL', 'Value')
+    return data_headers, data_list, file_found
