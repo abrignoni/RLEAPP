@@ -19,7 +19,6 @@ import datetime
 import json
 from pathlib import Path	
 
-from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import artifact_processor
 
 @artifact_processor

@@ -20,7 +20,6 @@ import datetime
 import json
 from pathlib import Path	
 
-from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import artifact_processor, utf8_in_extended_ascii, media_to_html
 
 @artifact_processor
