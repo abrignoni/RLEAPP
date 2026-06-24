@@ -404,12 +404,17 @@ def lava_insert_sqlite_data(table_name, data, object_columns, headers, column_ma
                 if isinstance(value, str):
                     try:
                         dt = datetime.datetime.fromisoformat(value)
-                        value = int(dt.timestamp())
+                        if dt.tzinfo is None:
+                            dt = dt.replace(tzinfo=datetime.timezone.utc)
+                        epoch = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+                        value = (dt - epoch).total_seconds()
                     except ValueError:
                         # If conversion fails, keep the original value
                         pass
                 elif isinstance(value, datetime.datetime):
                     # Need to do it this way due to dates that could be before Epoch
+                    if value.tzinfo is None:
+                        value = value.replace(tzinfo=datetime.timezone.utc)
                     epoch = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
                     value = (value - epoch).total_seconds()
             processed_row.append(value)
