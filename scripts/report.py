@@ -64,7 +64,7 @@ def get_search_mode_categories():
 search_set = get_search_mode_categories()
 
 
-def generate_report(reportfolderbase, time_in_secs, time_HMS, extraction_type, image_input_path, casedata, profile_filename, icons):
+def generate_report(reportfolderbase, time_in_secs, time_HMS, extraction_type, image_input_path, casedata, profile_filename, icons, lava_only):
     control = None
     side_heading = \
         """
@@ -136,7 +136,7 @@ def generate_report(reportfolderbase, time_in_secs, time_HMS, extraction_type, i
                 pass # Perhaps it was not empty!
 
     # Create index.html's page content
-    create_index_html(reportfolderbase, time_in_secs, time_HMS, extraction_type, image_input_path, nav_list_data, casedata, profile_filename)
+    create_index_html(reportfolderbase, time_in_secs, time_HMS, extraction_type, image_input_path, nav_list_data, casedata, profile_filename, lava_only)
     elements_folder = os.path.join(reportfolderbase, '_HTML', '_elements')
     __location__ = os.path.dirname(os.path.abspath(__file__))
 
@@ -159,7 +159,7 @@ def get_file_content(path):
     f.close()
     return data
 
-def create_index_html(reportfolderbase, time_in_secs, time_HMS, extraction_type, image_input_path, nav_list_data, casedata, profile_filename):
+def create_index_html(reportfolderbase, time_in_secs, time_HMS, extraction_type, image_input_path, nav_list_data, casedata, profile_filename, lava_only):
     '''Write out the index.html page to the report folder'''
     case_list = []
     agency_logo_mimetype = ''
@@ -192,6 +192,14 @@ def create_index_html(reportfolderbase, time_in_secs, time_HMS, extraction_type,
     ]
     
     tab1_content = generate_key_val_table_without_headings('', case_list, agency_logo_mimetype, agency_logo_b64)
+    if lava_only:
+        tab1_content += \
+        """
+            <p class="note alert-warning mb-4">
+            This report contains artifacts that are likely to return too much data to be viewed in a Web browser.<br>
+            Please review the <i>'LAVA only artifacts'</i> tab for a listing of those artifacts and information on how to open this report using LAVA.
+            </p>
+        """
     tab1_content += \
         """
             <p class="note note-primary mb-4">
@@ -207,7 +215,12 @@ def create_index_html(reportfolderbase, time_in_secs, time_HMS, extraction_type,
     processed_files_path = os.path.join(reportfolderbase, '_HTML', '_Script_Logs', 'ProcessedFilesLog.html')
     tab3_content = get_file_content(processed_files_path)
 
-    content += tabs_code.format(tab1_content, tab2_content, tab3_content)
+    if lava_only:
+        lava_only_path = os.path.join(reportfolderbase, '_HTML', '_Script_Logs', 'Lava_only_artifacts_log.html')
+        tab4_content = get_file_content(lava_only_path)
+        content += tabs_code_with_lava.format(tab1_content, tab2_content, tab3_content, tab4_content)
+    else:
+        content += tabs_code.format(tab1_content, tab2_content, tab3_content)
 
     content += '</div>'  # CARD end
 
