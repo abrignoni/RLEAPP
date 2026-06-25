@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import tkinter as tk
 import typing
 import json
@@ -6,11 +8,13 @@ import webbrowser
 import base64
 
 import scripts.plugin_loader as plugin_loader
+import leapp_functions.history as history
 
 from PIL import Image, ImageTk
 from tkinter import ttk, filedialog as tk_filedialog, messagebox as tk_msgbox
 from scripts.version_info import rleapp_version
 from scripts.search_files import *
+from scripts.ilapfuncs import *
 from scripts.modules_to_exclude import modules_to_exclude
 from scripts.lavafuncs import *
 from leapp_functions.lava_launcher import (
@@ -19,6 +23,35 @@ from leapp_functions.lava_launcher import (
     open_lava_project,
     open_output_folder,
 )
+from scripts.context import Context
+from scripts.lavafuncs import lava_json_name
+
+leapp_name = "RLEAPP"
+
+def show_history_menu(button, path_type):
+    """
+    Displays a popup menu with recently used paths.
+    """
+    menu = tk.Menu(main_window, tearoff=0)
+
+    if not history.is_history_enabled():
+        menu.add_command(label="(History Disabled - Enable in Settings)", state="disabled")
+    else:
+        paths = history.get_input_paths() if path_type == 'input' else history.get_output_paths()
+        if not paths:
+            menu.add_command(label="(No recent paths)", state="disabled")
+        for path in paths:
+            def set_path(p=path):
+                if path_type == 'input':
+                    input_entry.delete(0, tk.END)
+                    input_entry.insert(0, p)
+                else:
+                    output_entry.delete(0, tk.END)
+                    output_entry.insert(0, p)
+            menu.add_command(label=history.format_path_for_display(path), command=set_path)
+    x = input_entry.winfo_rootx()
+    y = button.winfo_rooty() + button.winfo_height()
+    menu.post(x, y)
 
 
 def pickModules():
@@ -142,10 +175,10 @@ def ValidateInput():
     # check input
     if len(i_path) == 0:
         tk_msgbox.showerror(title='Error', message='No INPUT file or folder selected!', parent=main_window)
-        return False, ext_type
+        return False, ext_type, None
     elif not os.path.exists(i_path):
         tk_msgbox.showerror(title='Error', message='INPUT file/folder does not exist!', parent=main_window)
-        return False, ext_type
+        return False, ext_type, None
     elif os.path.isdir(i_path):
         ext_type = 'fs'
     else:
@@ -154,14 +187,14 @@ def ValidateInput():
     # check output now
     if len(o_path) == 0:  # output folder
         tk_msgbox.showerror(title='Error', message='No OUTPUT folder selected!', parent=main_window)
-        return False, ext_type
+        return False, ext_type, None
 
     # check if at least one module is selected
     if len(get_selected_modules()) == 0:
         tk_msgbox.showerror(title='Error', message='No module selected for processing!', parent=main_window)
-        return False, ext_type
+        return False, ext_type, None
 
-    return True, ext_type
+    return True, ext_type, None
 
 
 def open_report(report_path):
@@ -203,6 +236,178 @@ def open_website(url):
     webbrowser.open_new_tab(url)
 
 
+def open_settings_window():
+    '''Open Settings modal window'''
+    settings_window = tk.Toplevel(main_window)
+    settings_window.transient(main_window)
+    settings_window_width = 400
+    settings_window_height = 260
+
+    #### Places Case Data window in the center of the main window
+    main_window.update_idletasks()
+    main_x = main_window.winfo_x()
+    main_y = main_window.winfo_y()
+    main_w = main_window.winfo_width()
+    main_h = main_window.winfo_height()
+
+    margin_width = main_x + (main_w - settings_window_width) // 2
+    margin_height = main_y + (main_h - settings_window_height) // 2
+
+    settings_window.geometry(f'{settings_window_width}x{settings_window_height}+{margin_width}+{margin_height}')
+    settings_window.resizable(False, False)
+    settings_window.configure(bg=theme_bgcolor)
+    settings_window.title('Settings')
+    settings_window.grid_columnconfigure(0, weight=1)
+
+    def on_main_focus(event):
+        if settings_window.winfo_exists():
+            settings_window.bell()
+            settings_window.lift()
+            settings_window.focus_force()
+
+    main_window.bind("<FocusIn>", on_main_focus)
+
+    def close_settings_window():
+        main_window.unbind("<FocusIn>")
+        settings_window.destroy()
+
+    settings_window.protocol("WM_DELETE_WINDOW", close_settings_window)
+
+    settings_title_label = ttk.Label(settings_window, text='Settings', font='Helvetica 18')
+    settings_title_label.grid(row=0, column=0, padx=14, pady=7, sticky='w')
+
+    history_enabled_var = tk.BooleanVar(value=history.is_history_enabled())
+
+    def toggle_history():
+        history.set_history_enabled(history_enabled_var.get())
+
+    def update_clear_history_button():
+        state = tk.NORMAL if history.has_history() else tk.DISABLED
+        clear_history_btn.config(state=state)
+
+    def open_clear_history_window():
+        clear_window = tk.Toplevel(settings_window)
+        clear_window.transient(settings_window)
+        clear_window_width = 460
+        clear_window_height = 220
+
+        settings_window.update_idletasks()
+        settings_x = settings_window.winfo_x()
+        settings_y = settings_window.winfo_y()
+        settings_w = settings_window.winfo_width()
+        settings_h = settings_window.winfo_height()
+
+        margin_width = settings_x + (settings_w - clear_window_width) // 2
+        margin_height = settings_y + (settings_h - clear_window_height) // 2
+
+        clear_window.geometry(f'{clear_window_width}x{clear_window_height}+{margin_width}+{margin_height}')
+        clear_window.resizable(False, False)
+        clear_window.configure(bg=theme_bgcolor)
+        clear_window.title('Clear History')
+        clear_window.grid_columnconfigure(0, weight=1)
+
+        def on_settings_focus(event):
+            if clear_window.winfo_exists():
+                clear_window.bell()
+                clear_window.lift()
+                clear_window.focus_force()
+
+        settings_window.bind("<FocusIn>", on_settings_focus)
+
+        def close_clear_window():
+            settings_window.unbind("<FocusIn>")
+            clear_window.destroy()
+
+        clear_window.protocol("WM_DELETE_WINDOW", close_clear_window)
+
+        clear_title_label = ttk.Label(clear_window, text='Clear History', font='Helvetica 18')
+        clear_title_label.grid(row=0, column=0, padx=14, pady=7, sticky='w')
+
+        clear_message = (
+            'History is stored in shared LEAPP files. Input and output paths are shared by all '
+            'LEAPP tools, while recent runs are tagged by tool.'
+        )
+        clear_message_label = ttk.Label(clear_window, text=clear_message, wraplength=420)
+        clear_message_label.grid(row=1, column=0, padx=14, pady=10, sticky='w')
+
+        button_frame = ttk.Frame(clear_window)
+        button_frame.grid(row=2, column=0, padx=14, pady=18, sticky='e')
+
+        def clear_single_leapp_history():
+            if not tk_msgbox.askyesno(
+                    title=f'Clear {leapp_name} history',
+                    message=(
+                        f'Clear shared recent input/output paths and '
+                        f'{leapp_name} recent run entries?'
+                    ),
+                    parent=clear_window):
+                return
+            history.clear_single_leapp_history(leapp_name.lower())
+            update_clear_history_button()
+            close_clear_window()
+
+        def clear_all_history():
+            if not tk_msgbox.askyesno(
+                    title='Clear all LEAPP history',
+                    message='Clear all shared LEAPP history, including recent input and output paths?',
+                    parent=clear_window):
+                return
+            history.clear_history()
+            update_clear_history_button()
+            close_clear_window()
+
+        clear_single_leapp_btn = ttk.Button(
+            button_frame,
+            text=f'Clear {leapp_name} History',
+            command=clear_single_leapp_history)
+        clear_single_leapp_btn.pack(side='left', padx=5)
+        if not history.has_single_leapp_history(leapp_name.lower()):
+            clear_single_leapp_btn.config(state=tk.DISABLED)
+
+        clear_all_btn = ttk.Button(
+            button_frame,
+            text='Clear All History',
+            command=clear_all_history)
+        clear_all_btn.pack(side='left', padx=5)
+
+        cancel_btn = ttk.Button(button_frame, text='Cancel', command=close_clear_window)
+        cancel_btn.pack(side='left', padx=5)
+
+        if is_platform_macos():
+            clear_window.grab_set_global()
+        else:
+            clear_window.grab_set()
+
+    history_check = tk.Checkbutton(
+        settings_window,
+        text='Enable saving paths as recent history',
+        variable=history_enabled_var,
+        command=toggle_history,
+        background=theme_bgcolor,
+        fg=theme_fgcolor,
+        selectcolor=theme_inputcolor,
+        activebackground=theme_bgcolor,
+        activeforeground=theme_fgcolor,
+        highlightthickness=0,
+    )
+    history_check.grid(row=1, column=0, padx=14, pady=20, sticky='w')
+
+    clear_history_btn = ttk.Button(
+        settings_window,
+        text='Clear History',
+        command=open_clear_history_window)
+    clear_history_btn.grid(row=2, column=0, padx=14, pady=10, sticky='w')
+    update_clear_history_button()
+
+    close_btn = ttk.Button(settings_window, text='Close', command=close_settings_window)
+    close_btn.grid(row=3, column=0, padx=14, pady=20, sticky='e')
+
+    if is_platform_macos():
+        settings_window.grab_set_global()
+    else:
+        settings_window.grab_set()
+
+
 def resource_path(filename):
     try:
         base_path = sys._MEIPASS
@@ -211,10 +416,11 @@ def resource_path(filename):
 
     return os.path.join(base_path, 'assets', filename)
 
+
 def process(casedata):
     '''Execute selected modules and create reports'''
     # check if selections made properly; if not we will return to input form without exiting app altogether
-    is_valid, extracttype = ValidateInput()
+    is_valid, extracttype, blah = ValidateInput()
 
     if is_valid:
         GuiWindow.window_handle = main_window
@@ -233,24 +439,34 @@ def process(casedata):
         progress_bar.config(maximum=len(selected_modules))
         casedata = {key: value.get() for key, value in casedata.items()}
         out_params = OutputParameters(output_folder)
+        Context.set_output_params(out_params)
         wrap_text = True
+        bottom_frame.pack_forget()
+        mlist_frame.pack_forget()
+        output_frame.pack_forget()
+        input_frame.pack_forget()
+        logtext_frame.pack(padx=8, pady=4, expand=True, fill='both')
+        progress_bar_frame.pack(padx=2, pady=2, ipady=2, fill='x')
 
-        logtext_frame.grid(row=1, column=0, rowspan=3, padx=14, pady=4, sticky='nswe')
-        bottom_frame.grid_remove()
-        progress_bar.grid(padx=16, sticky='we')
+        initialize_lava(input_path, out_params.output_folder_base, extracttype)
 
-        initialize_lava(input_path, out_params.report_folder_base, extracttype)
+        # Record history if enabled
+        history.record_input_path(input_path)
+        history.record_output_path(output_folder)
 
         crunch_successful = rleapp.crunch_artifacts(
-            selected_modules, extracttype, input_path, out_params, wrap_text, loader,
-            casedata, profile_filename)
-        
-        lava_finalize_output(out_params.report_folder_base)
+            selected_modules, extracttype, input_path, out_params, wrap_text,
+            loader, casedata, profile_filename)
+
+        lava_finalize_output(out_params.output_folder_base)
 
         if crunch_successful:
-            report_path = os.path.join(out_params.report_folder_base, 'index.html')
-            lava_project_path = os.path.join(out_params.report_folder_base, lava_json_name)
-            output_folder_path = out_params.report_folder_base
+            # Record the run in history
+            report_path = os.path.join(out_params.output_folder_base, 'index.html')
+            lava_project_path = os.path.join(out_params.output_folder_base, lava_json_name)
+            history.record_recent_run(leapp_name.lower(), rleapp_version, lava_project_path)
+
+            output_folder_path = out_params.output_folder_base
             if report_path.startswith('\\\\?\\'):  # windows
                 report_path = report_path[4:]
                 lava_project_path = lava_project_path[4:]
@@ -259,9 +475,9 @@ def process(casedata):
                 report_path = report_path[2:]
                 lava_project_path = lava_project_path[2:]
                 output_folder_path = output_folder_path[2:]
-            progress_bar.grid_remove()
-            completion_button_frame = ttk.Frame(main_window)
-            completion_button_frame.grid(ipadx=8)
+            progress_bar.pack_forget()
+            completion_button_frame = ttk.Frame(progress_bar_frame)
+            completion_button_frame.place(relx=0.5, rely=0.5, anchor='center')
             open_report_button = ttk.Button(
                 completion_button_frame,
                 text='Open HTML in Browser & Close',
@@ -308,6 +524,8 @@ def select_input(button_type):
         input_filename = tk_filedialog.askdirectory(parent=main_window, title='Select a folder')
     input_entry.delete(0, 'end')
     input_entry.insert(0, input_filename)
+    if input_filename:
+        history.record_input_path(input_filename)
 
 
 def select_output():
@@ -315,6 +533,8 @@ def select_output():
     output_filename = tk_filedialog.askdirectory(parent=main_window, title='Select a folder')
     output_entry.delete(0, 'end')
     output_entry.insert(0, output_filename)
+    if output_filename:
+        history.record_output_path(output_filename)
 
 
 def case_data():
@@ -416,24 +636,47 @@ def case_data():
 
     ### Case Data Window creation
     case_window = tk.Toplevel(main_window)
+    case_window.transient(main_window)
     case_window_width = 560
     if is_platform_linux():
         case_window_height = 325
+    elif is_platform_macos():
+        case_window_height = 317
     else:
         case_window_height = 305
 
-    #### Places Case Data window in the center of the screen
-    screen_width = main_window.winfo_screenwidth()
-    screen_height = main_window.winfo_screenheight()
-    margin_width = (screen_width - case_window_width) // 2
-    margin_height = (screen_height - case_window_height) // 2
+    #### Places Case Data window in the center of the main window
+    main_window.update_idletasks()
+    main_x = main_window.winfo_x()
+    main_y = main_window.winfo_y()
+    main_w = main_window.winfo_width()
+    main_h = main_window.winfo_height()
+
+    margin_width = main_x + (main_w - case_window_width) // 2
+    margin_height = main_y + (main_h - case_window_height) // 2
 
     #### Case Data window properties
-    case_window.geometry(f'{case_window_width}x{case_window_height}+{margin_width}+{margin_height}')
+    case_window.geometry(
+        f'{case_window_width}x{case_window_height}'
+        f'{geometry_offset(margin_width)}{geometry_offset(margin_height)}')
     case_window.resizable(False, False)
     case_window.configure(bg=theme_bgcolor)
     case_window.title('Add Case Data')
     case_window.grid_columnconfigure(0, weight=1)
+
+    def on_main_focus(event):
+        if case_window.winfo_exists():
+            case_window.bell()
+            case_window.lift()
+            case_window.focus_force()
+
+    main_window.bind("<FocusIn>", on_main_focus)
+
+    def close_case_window():
+        main_window.unbind("<FocusIn>")
+        case_window.destroy()
+
+    case_window.protocol("WM_DELETE_WINDOW", close_case_window)
 
     #### Layout
     case_title_label = ttk.Label(case_window, text='Add Case Data', font=('Helvetica 18'))
@@ -472,10 +715,13 @@ def case_data():
     ttk.Separator(modules_btn_frame, orient='vertical').grid(row=0, column=2, padx=20, sticky='ns')
     clear_case_button = ttk.Button(modules_btn_frame, text='Clear', command=clear)
     clear_case_button.grid(row=0, column=3, padx=5)
-    close_case_button = ttk.Button(modules_btn_frame, text='Close', command=case_window.destroy)
+    close_case_button = ttk.Button(modules_btn_frame, text='Close', command=close_case_window)
     close_case_button.grid(row=0, column=4, padx=5)
 
-    case_window.grab_set()
+    if is_platform_macos():
+        case_window.grab_set_global()
+    else:
+        case_window.grab_set()
 
 
 ## Main window creation
@@ -524,13 +770,14 @@ margin_width = (screen_width - window_width) // 2
 margin_height = (screen_height - window_height) // 2
 
 ## Main window properties
-main_window.geometry(f'{window_width}x{window_height}+{margin_width}+{margin_height}')
+main_window.minsize(890, 690)
 main_window.title(f'RLEAPP version {rleapp_version}')
-main_window.resizable(False, False)
 main_window.configure(bg=theme_bgcolor)
 logo_icon = tk.PhotoImage(file=icon)
 main_window.iconphoto(True, logo_icon)
 main_window.grid_columnconfigure(0, weight=1)
+main_window.option_add('*TkChooseDir*foreground', 'black')
+main_window.option_add('*TkFDialog*foreground', 'black')
 
 ## Widgets default style
 style = ttk.Style()
@@ -555,70 +802,77 @@ style.configure('TProgressbar', thickness=4, background='DarkGreen')
 ## Main Window Layout
 ### Top part of the window
 title_frame = ttk.Frame(main_window)
-title_frame.grid(padx=14, pady=8, sticky='we')
-title_frame.grid_columnconfigure(0, weight=1)
+title_frame.pack(padx=14, pady=8, fill='x')
 rleapp_logo = ImageTk.PhotoImage(file=resource_path("RLEAPP_logo.png"))
 rleapp_logo_label = ttk.Label(title_frame, image=rleapp_logo)
-rleapp_logo_label.grid(row=0, column=0, sticky='w')
+rleapp_logo_label.pack(side='left')
+
+settings_icon = ImageTk.PhotoImage(Image.open(resource_path("settings.png")).resize((32, 32)))
+settings_label = ttk.Label(title_frame, image=settings_icon, cursor="hand2")
+settings_label.pack(side='right', padx=(10, 0))
+settings_label.bind("<Button-1>", lambda e: open_settings_window())
+
 leapps_logo = ImageTk.PhotoImage(Image.open(resource_path("leapps_r_logo.png")).resize((110, 51)))
 leapps_logo_label = ttk.Label(title_frame, image=leapps_logo, cursor="target")
-leapps_logo_label.grid(row=0, column=1, sticky='w')
+leapps_logo_label.pack(side='right')
 leapps_logo_label.bind("<Button-1>", lambda e: open_website("https://leapps.org"))
 
 ### Input output selection
 input_frame = ttk.LabelFrame(
     main_window,
     text=' Select the file (tar/zip/gz) or directory containing the data to be parsed: ')
-input_frame.grid(padx=14, pady=2, sticky='we')
-input_frame.grid_columnconfigure(0, weight=1)
+input_frame.pack(padx=14, pady=2, fill='x')
 input_entry = ttk.Entry(input_frame)
-input_entry.grid(row=0, column=0, padx=5, pady=4, sticky='we')
+input_entry.pack(side='left', padx=5, pady=4, fill='x', expand=True)
+input_history_button = ttk.Button(input_frame, text='▼', width=3,
+                                command=lambda: show_history_menu(input_history_button, 'input'))
+input_history_button.pack(side='left', padx=2, pady=4)
 input_file_button = ttk.Button(input_frame, text='Browse File', command=lambda: select_input('file'))
-input_file_button.grid(row=0, column=1, padx=5, pady=4)
+input_file_button.pack(side='left', padx=5, pady=4)
 input_folder_button = ttk.Button(input_frame, text='Browse Folder', command=lambda: select_input('folder'))
-input_folder_button.grid(row=0, column=2, padx=5, pady=4)
+input_folder_button.pack(side='left', padx=5, pady=4)
 
 output_frame = ttk.LabelFrame(main_window, text=' Select Output Folder: ')
-output_frame.grid(padx=14, pady=5, sticky='we')
-output_frame.grid_columnconfigure(0, weight=1)
+output_frame.pack(padx=14, pady=5, fill='x')
 output_entry = ttk.Entry(output_frame)
-output_entry.grid(row=0, column=0, padx=5, pady=4, sticky='we')
+output_entry.pack(side='left', padx=5, pady=4, fill='x', expand=True)
+output_history_button = ttk.Button(output_frame, text='▼', width=3,
+                                 command=lambda: show_history_menu(output_history_button, 'output'))
+output_history_button.pack(side='left', padx=2, pady=4)
 output_folder_button = ttk.Button(output_frame, text='Browse Folder', command=select_output)
-output_folder_button.grid(row=0, column=1, padx=5, pady=4)
+output_folder_button.pack(side='left', padx=5, pady=4)
 
 mlist_frame = ttk.LabelFrame(main_window, text=' Available Modules: ', name='f_list')
-mlist_frame.grid(padx=14, pady=5, sticky='we')
-mlist_frame.grid_columnconfigure(0, weight=1)
+mlist_frame.pack(padx=14, pady=5, expand=True, fill='both')
 
 button_frame = ttk.Frame(mlist_frame)
-button_frame.grid(row=0, column=0, columnspan=2,pady=4, sticky='we')
-button_frame.grid_columnconfigure(1, weight=1)
+button_frame.pack(pady=4, fill='x')
 
 if is_platform_macos():
     modules_filter_icon = ttk.Label(button_frame, text="\U0001F50E")
-    modules_filter_icon.grid(row=0, column=0, padx=4)
 else:
     modules_filter_img = ImageTk.PhotoImage(file=resource_path("magnif_glass.png"))
     modules_filter_icon = ttk.Label(button_frame, image=modules_filter_img)
-    modules_filter_icon.grid(row=0, column=0, padx=4)
+modules_filter_icon.pack(padx=4, side='left')
 modules_filter_entry = ttk.Entry(button_frame, textvariable=modules_filter_var)
-modules_filter_entry.grid(row=0, column=1, padx=1, sticky='we')
-ttk.Separator(button_frame, orient='vertical').grid(row=0, column=2, padx=10, sticky='ns')
+modules_filter_entry.pack(padx=2, fill='x', expand=True, side='left')
+ttk.Separator(button_frame, orient='vertical').pack(padx=10, side='left', fill='y')
 all_button = ttk.Button(button_frame, text='Select All', command=select_all)
-all_button.grid(row=0, column=3, padx=5)
+all_button.pack(padx=5, side='left')
 none_button = ttk.Button(button_frame, text='Deselect All', command=deselect_all)
-none_button.grid(row=0, column=4, padx=5)
-ttk.Separator(button_frame, orient='vertical').grid(row=0, column=5, padx=10, sticky='ns')
+none_button.pack(padx=5, side='left')
+ttk.Separator(button_frame, orient='vertical').pack(padx=10, side='left', fill='y')
 load_button = ttk.Button(button_frame, text='Load Profile', command=load_profile)
-load_button.grid(row=0, column=6, padx=5)
+load_button.pack(padx=5, side='left')
 save_button = ttk.Button(button_frame, text='Save Profile', command=save_profile)
-save_button.grid(row=0, column=7, padx=5)
-v = ttk.Scrollbar(mlist_frame, orient='vertical')
-v.grid(row=1, column=1, sticky='ns')
-mlist_text = tk.Text(mlist_frame, name='tbox', bg=theme_bgcolor, highlightthickness=0,
-                     yscrollcommand=v.set, height=mlist_window_height)
-mlist_text.grid(row=1, column=0, sticky='we')
-v.config(command=mlist_text.yview)
+save_button.pack(padx=5, side='left')
+module_list_frame = ttk.Frame(mlist_frame)
+module_list_frame.pack(expand=True, fill='both')
+mlist_text = tk.Text(module_list_frame, name='tbox', bg=theme_bgcolor, highlightthickness=0)
+mlist_text.pack(expand=True, fill='both', padx=4)
+mlist_text_scrollbar = ttk.Scrollbar(module_list_frame, orient='vertical', command=mlist_text.yview)
+mlist_text.config(yscrollcommand=mlist_text_scrollbar.set)
+mlist_text_scrollbar.place(relx=1, rely=0, relheight=1, anchor='ne')
 filter_modules()
 mlist_text.config(state='disabled')
 main_window.bind_class('Checkbutton', '<MouseWheel>', scroll)
@@ -630,42 +884,91 @@ main_window.bind("<Control-o>", lambda event: output_entry.focus_set()) # Focus 
 
 ### Process
 bottom_frame = ttk.Frame(main_window)
-bottom_frame.grid(padx=16, pady=6, sticky='we')
-bottom_frame.grid_columnconfigure(2, weight=1)
-bottom_frame.grid_columnconfigure(4, weight=1)
+bottom_frame.pack(padx=16, pady=6, fill='x')
 process_button = ttk.Button(bottom_frame, text='Process', command=lambda: process(casedata))
-process_button.grid(row=0, column=0, padx=5)
+process_button.pack(side='left', padx=5)
 close_button = ttk.Button(bottom_frame, text='Close', command=main_window.quit)
-close_button.grid(row=0, column=1, padx=5)
-ttk.Separator(bottom_frame, orient='vertical').grid(row=0, column=2, padx=10, sticky='ns')
-case_data_button = ttk.Button(bottom_frame, text='Case Data', command=case_data)
-case_data_button.grid(row=0, column=3, padx=5)
-ttk.Separator(bottom_frame, orient='vertical').grid(row=0, column=4, padx=10, sticky='ns')
-selected_modules_label = ttk.Label(bottom_frame, text='Number of selected modules: ')
-selected_modules_label.grid(row=0, column=5, padx=5, sticky='e')
+close_button.pack(side='left', padx=5)
+# ttk.Separator(bottom_frame, orient='vertical').pack(padx=10, side='left', expand=True, fill='both')
+case_data_button_frame = ttk.Frame(bottom_frame)
+case_data_button_frame.pack(side='left', expand=True, fill='x')
+case_data_button = ttk.Button(case_data_button_frame, text='Case Data', command=case_data)
+case_data_button.pack(padx=5)
+# ttk.Separator(bottom_frame, orient='vertical').pack(padx=10, side='left', expand=True, fill='both')
+selected_modules_frame = ttk.Frame(bottom_frame)
+selected_modules_frame.pack(side='right', padx=5)
+selected_modules_label = ttk.Label(selected_modules_frame, text='Number of selected modules: ')
+selected_modules_label.pack(anchor='e')
+auto_unselected_modules_label = ttk.Label(
+    selected_modules_frame,
+    text='(Modules making some time to run were automatically unselected)',
+    font='Helvetica 10')
+auto_unselected_modules_label.pack(anchor='e')
 get_selected_modules()
 
 #### Logs
 logtext_frame = ttk.Frame(main_window, name='logs_frame')
-logtext_frame.grid_columnconfigure(0, weight=1)
-vlog = ttk.Scrollbar(logtext_frame, orient='vertical')
-vlog.grid(row=0, column=1, pady=10, sticky='ns')
 log_text = tk.Text(
-    logtext_frame, name='log_text', bg=theme_inputcolor, fg='black', 
-    highlightthickness=1, yscrollcommand=vlog.set, height=log_text_height)
-log_text.grid(row=0, column=0, padx=4, pady=10, sticky='we')
-vlog.config(command=log_text.yview)
+    logtext_frame, name='log_text', bg=theme_inputcolor, fg='black', highlightthickness=1)
+log_text.pack(expand=True, fill='both')
+log_text_scrollbar = ttk.Scrollbar(logtext_frame, orient='vertical', command=log_text.yview)
+log_text.config(yscrollcommand=log_text_scrollbar.set)
+log_text_scrollbar.place(relx=1, rely=0, relheight=1, anchor='ne')
 
 ### Progress bar
-progress_bar = ttk.Progressbar(main_window, orient='horizontal')
+progress_bar_frame = ttk.Frame(main_window, name='progress_bar_frame')
+progress_bar = ttk.Progressbar(progress_bar_frame, name='progress_bar', orient='horizontal')
+progress_bar.pack(padx=16, pady=20, fill='x')
 
 ### Push main window on top
 def OnFocusIn(event):
     if type(event.widget).__name__ == 'Tk':
         event.widget.attributes('-topmost', False)
 
+def geometry_offset(value):
+    return f'+{value}' if value >= 0 else str(value)
+
+def center_main_window_macos(window, width, height):
+    """ 
+    MacOS: Determine full desktop dimensions and which monitor the mouse is on, 
+    then center the window within those specific monitor boundaries.
+    """
+    window.update_idletasks()
+    mx, my = window.winfo_pointerxy()
+
+    # 1. Get primary monitor dimensions (always starts at 0,0 on macOS)
+    window.geometry("+0+0")
+    window.update_idletasks()
+    pw = window.winfo_screenwidth()
+    ph = window.winfo_screenheight()
+
+    # 2. Move to mouse position to get the second monitor's dimensions
+    window.geometry(f'{geometry_offset(mx)}{geometry_offset(my)}')
+    window.update_idletasks()
+    sw = window.winfo_screenwidth()
+    sh = window.winfo_screenheight()
+
+    # 3. Get virtual desktop bounds to handle monitors to the left/right
+    vx = window.winfo_vrootx()
+
+    # 4. Determine the actual boundaries of the monitor the mouse is on
+    if mx < 0: # Monitor is to the left of primary
+        mon_x, mon_y, mon_w, mon_h = vx, 0, abs(vx), sh
+    elif mx >= pw: # Monitor is to the right of primary
+        mon_x, mon_y, mon_w, mon_h = pw, 0, sw, sh
+    else: # Mouse is on the primary monitor
+        mon_x, mon_y, mon_w, mon_h = 0, 0, pw, ph
+
+    # 5. Center the window within those specific monitor boundaries
+    start_x = mon_x + (mon_w - width) // 2
+    start_y = mon_y + (mon_h - height) // 2
+
+    window.geometry(f'{width}x{height}{geometry_offset(start_x)}{geometry_offset(start_y)}')
+
 main_window.attributes('-topmost', True)
 main_window.focus_force()
 main_window.bind('<FocusIn>', OnFocusIn)
 
+if is_platform_macos():
+    center_main_window_macos(main_window, 890, 690)
 main_window.mainloop()

@@ -84,7 +84,7 @@ __artifacts_v2__ = {
         "function": "get_mewePosts"
     },
     "meweUserChat": {
-        "name": "MeWe Posts",
+        "name": "MeWe Chat Posts",
         "description": "This parses the User Chat Posts from a MeWe warrant return.",
         "author": "Troy Schnack (@TheBaldJedi)",
         "version": "1.2.0",
