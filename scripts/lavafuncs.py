@@ -118,6 +118,15 @@ def initialize_lava(input_path, output_path, input_type):
 
     db_path = os.path.join(output_path, lava_db_name)
     lava_db = sqlite3.connect(db_path)
+    # Performance: the media insert helpers commit() per row, so a media-heavy
+    # artifact (e.g. a device backup with tens of thousands of files) triggers
+    # tens of thousands of fsync'd commits. Default rollback-journal +
+    # synchronous=FULL makes each commit fsync the whole DB, which can take many
+    # minutes. WAL + synchronous=NORMAL keeps the same durability for a tool run
+    # (only a power-loss in the final checkpoint window could lose the tail) and
+    # is dramatically faster.
+    lava_db.execute("PRAGMA journal_mode=WAL")
+    lava_db.execute("PRAGMA synchronous=NORMAL")
 
     cursor = lava_db.cursor()
     cursor.execute('''CREATE TABLE _artifact_search_patterns (
