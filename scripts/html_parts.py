@@ -189,6 +189,30 @@ tabs_code = \
         <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="profile-tab"><br />{}</div>
     </div>
 """
+
+tabs_code_with_lava = \
+"""
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="case-tab" data-toggle="tab" href="#case" role="tab" aria-controls="case" aria-selected="true">Details</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="run-log-tab" data-toggle="tab" href="#run" role="tab" aria-controls="run" aria-selected="false">Script run log</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="files-list-tab" data-toggle="tab" href="#files" role="tab" aria-controls="files" aria-selected="false">Processed files list</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="lava-only-tab" data-toggle="tab" href="#lava-only" role="tab" aria-controls="lava-only" aria-selected="false">LAVA only artifacts</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="case" role="tabpanel" aria-labelledby="case-tab"><br />{}</div>
+        <div class="tab-pane fade text-monospace" id="run" role="tabpanel" aria-labelledby="script-run-tab"><br />{}</div>
+        <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="profile-tab"><br />{}</div>
+        <div class="tab-pane fade" id="lava-only" role="tabpanel" aria-labelledby="lava-only-tab"><br />{}</div>
+    </div>
+"""
 # thank you note , at bottom of index.html
 thank_you_note = \
 """
