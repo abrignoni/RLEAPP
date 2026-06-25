@@ -36,6 +36,7 @@ import datetime
 
 from scripts.version_info import rleapp_version
 from scripts.context import Context
+from scripts.storage_safety import configure_lava_journal_mode
 
 # Global variables
 lava_data = None
@@ -125,8 +126,17 @@ def initialize_lava(input_path, output_path, input_type):
     # minutes. WAL + synchronous=NORMAL keeps the same durability for a tool run
     # (only a power-loss in the final checkpoint window could lose the tail) and
     # is dramatically faster.
-    lava_db.execute("PRAGMA journal_mode=WAL")
-    lava_db.execute("PRAGMA synchronous=NORMAL")
+    #
+    # WAL is NOT safe over a network filesystem (https://www.sqlite.org/wal.html),
+    # and examiners commonly write LEAPP output straight to NAS/mapped drives.
+    # configure_lava_journal_mode enables WAL only when output_path is confirmed
+    # local, stays on the network-safe rollback journal otherwise, and verifies
+    # WAL actually took effect before tuning synchronous mode.
+    try:
+        from scripts.ilapfuncs import logfunc as _logfunc
+    except Exception:
+        _logfunc = None
+    configure_lava_journal_mode(lava_db, output_path, logfunc=_logfunc)
 
     cursor = lava_db.cursor()
     cursor.execute('''CREATE TABLE _artifact_search_patterns (
