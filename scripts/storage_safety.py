@@ -33,9 +33,39 @@ _NETWORK_FSTYPES = frozenset({
 })
 
 
-def _is_unc_path(path):
-    """A path beginning with \\\\ or // is a UNC network path (Windows/SMB)."""
+# Windows extended-length path prefixes. These are NOT network indicators:
+#   \\?\C:\dir         -> a LOCAL drive-letter path (the \\?\ just lifts MAX_PATH)
+#   \\?\UNC\srv\share  -> a UNC (network) path in extended-length form
+# LEAPP prepends \\?\ to every drive-letter output path (rleapp.py), so the path
+# handed to us is routinely extended-length and must be normalized before the
+# leading-\\ UNC test, or a local \\?\X:\... is misread as a network share.
+_EXT_PREFIX = '\\\\?\\'          # \\?\
+_EXT_UNC_PREFIX = '\\\\?\\UNC\\'  # \\?\UNC\
+
+
+def _strip_extended_prefix(path):
+    r"""Normalize a Windows extended-length path to its plain form.
+
+    \\?\UNC\server\share -> \\server\share   (still UNC/network)
+    \\?\C:\dir           -> C:\dir            (plain drive-letter)
+    Anything else is returned unchanged.
+    """
     p = str(path)
+    if p.startswith(_EXT_UNC_PREFIX):
+        return '\\\\' + p[len(_EXT_UNC_PREFIX):]
+    if p.startswith(_EXT_PREFIX):
+        return p[len(_EXT_PREFIX):]
+    return p
+
+
+def _is_unc_path(path):
+    r"""True if path is a UNC network path (\\server\share or //server/share).
+
+    The Windows extended-length prefix is stripped first so that a local
+    \\?\<drive>: path is not mistaken for UNC, while \\?\UNC\... is preserved
+    as UNC.
+    """
+    p = _strip_extended_prefix(path)
     return p.startswith('\\\\') or p.startswith('//')
 
 
@@ -47,6 +77,7 @@ def _windows_path_is_network(path):
     Uses the Win32 API GetDriveType against the path's drive root.
     UNC paths are treated as network without an API call.
     """
+    path = _strip_extended_prefix(path)
     if _is_unc_path(path):
         return True
 
@@ -119,6 +150,10 @@ def path_is_network(path):
         False — confirmed local storage
         None  — could not determine (caller should treat as unsafe for WAL)
     """
+    # Normalize away the Windows extended-length prefix first so a local
+    # \\?\<drive>: path is not misread as UNC.
+    path = _strip_extended_prefix(path)
+
     # UNC is network on any platform that understands it
     if _is_unc_path(path):
         return True
