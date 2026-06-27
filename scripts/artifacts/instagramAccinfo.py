@@ -1,60 +1,46 @@
+__artifacts_v2__ = {
+    "instagramAccinfo": {
+        "name": "Instagram Archive - Account Info",
+        "description": "Parses profile account insights from an Instagram data archive (account_information.json)",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2021-08-20",
+        "last_update_date": "2026-06-27",
+        "requirements": "none",
+        "category": "Instagram Archive",
+        "notes": "",
+        "paths": ('*/account_information/account_information.json'),
+        "output_types": "standard",
+        "artifact_icon": "instagram",
+    }
+}
+
 import os
-import datetime
 import json
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
+from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc
 
-def get_instagramAccinfo(files_found, report_folder, seeker, wrap_text):
-    
-    for file_found in files_found:
+
+@artifact_processor
+def instagramAccinfo(context):
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        
-        filename = os.path.basename(file_found)
-        
-        if filename.startswith('account_information.json'):
-            data_list =[]
-            data_list_timeline = []
-            with open(file_found, "rb") as fp:
+        if os.path.basename(file_found).startswith('account_information.json'):
+            source_path = file_found
+            with open(file_found, 'r', encoding='utf-8') as fp:
                 deserialized = json.load(fp)
+
             for x in deserialized['profile_account_insights']:
-                for key, values in x.items():
-                    if values:
-                        for a, b in values.items():
-                            insightsCat = a
-                            for c, d in b.items():
-                                if c == 'href':
-                                    href = d
-                                if c == 'value':
-                                    value = d
-                                if c == 'timestamp':
-                                    timestamp = d
-                                    if timestamp > 0:
-                                        timestamp = (datetime.datetime.fromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S'))
-                            data_list.append((insightsCat,timestamp,value,href))
-                            data_list_timeline.append((timestamp, insightsCat, href, value))
-                    
-                
-            if data_list:
-                report = ArtifactHtmlReport('Instagram Archive - Account Info')
-                report.start_artifact_report(report_folder, 'Instagram Archive - Account Info')
-                report.add_script()
-                data_headers = ('Insights Category', 'Timestamp', 'Value', 'Href')
-                data_headers_timeline = ( 'Timestamp','Insights Category', 'Href', 'Value')
-                report.write_artifact_data_table(data_headers, data_list, file_found)
-                report.end_artifact_report()
-                
-                tsvname = f'Instagram Archive - Account Info'
-                tsv(report_folder, data_headers, data_list, tsvname)
-                
-                tlactivity = f'Instagram Archive - Account Info'
-                timeline(report_folder, tlactivity, data_list_timeline, data_headers_timeline)
-            else:
-                logfunc('No Instagram Archive - Account Info data available')
-                
-__artifacts__ = {
-        "instagramAccinfo": (
-            "Instagram Archive",
-            ('*/account_information/account_information.json'),
-            get_instagramAccinfo)
-}
+                for values in x.values():
+                    if not values:
+                        continue
+                    for insights_cat, b in values.items():
+                        href = b.get('href', '')
+                        value = b.get('value', '')
+                        timestamp = b.get('timestamp', '')
+                        timestamp = convert_unix_ts_to_utc(timestamp) if timestamp else ''
+                        data_list.append((insights_cat, timestamp, value, href))
+
+    data_headers = ('Insights Category', ('Timestamp', 'datetime'), 'Value', 'Href')
+    return data_headers, data_list, context.get_relative_path(source_path)
