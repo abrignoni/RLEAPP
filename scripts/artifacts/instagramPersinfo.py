@@ -14,25 +14,19 @@ __artifacts_v2__ = {
     }
 }
 
-import datetime
-import inspect
 import json
 import os
-import shutil
-from pathlib import Path
 
-from scripts.ilapfuncs import artifact_processor, check_in_media, logfunc
+from scripts.ilapfuncs import artifact_processor, check_in_media, convert_unix_ts_to_utc
 
 def timestamp_check(timestamp):
-    if timestamp > 0:
-        timestamp = (datetime.datetime.fromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S'))
-    else:
-        timestamp = ''
-    return timestamp
+    if timestamp:
+        return convert_unix_ts_to_utc(timestamp)
+    return ''
 
 @artifact_processor
-def instagramPersinfo(files_found, report_folder, seeker, wrap_text):
-    artifact_info = inspect.stack()[0]
+def instagramPersinfo(context):
+    files_found = context.get_files_found()
     data_list = []
     sources = []
     
@@ -80,5 +74,5 @@ def instagramPersinfo(files_found, report_folder, seeker, wrap_text):
                                                    
     data_headers = (('Timestamp', 'datetime'), 'Key', 'Value', ('URI','media'), 'HREF')
     #('HREF/URI','media'))
-    source_files = "\n\n".join(sources)
+    source_files = "\n\n".join(context.get_relative_path(s) for s in sources)
     return data_headers, data_list, source_files

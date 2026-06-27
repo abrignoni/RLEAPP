@@ -15,10 +15,9 @@ __artifacts_v2__ = {
 }
 
 import os
-import datetime
 import json
 
-from scripts.ilapfuncs import artifact_processor
+from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc
 
 
 @artifact_processor
@@ -40,8 +39,7 @@ def instagramAdsviewed(context):
                 # Epoch seconds -> render as UTC (the legacy code used naive
                 # fromtimestamp, i.e. the parsing machine's local time).
                 if timestamp:
-                    timestamp = datetime.datetime.fromtimestamp(
-                        int(timestamp), tz=datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
+                    timestamp = convert_unix_ts_to_utc(timestamp)
 
                 data_list.append((timestamp, author))
 

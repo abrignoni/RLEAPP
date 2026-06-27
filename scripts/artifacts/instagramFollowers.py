@@ -15,14 +15,13 @@ __artifacts_v2__ = {
 }
 
 import os
-import datetime
 import json
-from pathlib import Path	
 
-from scripts.ilapfuncs import artifact_processor
+from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc
 
 @artifact_processor
-def instagramFollowers(files_found, report_folder, seeker, wrap_text):
+def instagramFollowers(context):
+    files_found = context.get_files_found()
     data_list = []
     for file_found in files_found:
         file_found = str(file_found)
@@ -31,17 +30,16 @@ def instagramFollowers(files_found, report_folder, seeker, wrap_text):
         
         if filename.startswith('followers.json'):
             
-            with open(file_found, "r") as fp:
+            with open(file_found, "r", encoding="utf-8") as fp:
                 deserialized = json.load(fp)
         
             for x in deserialized['relationships_followers']:
                 href = x['string_list_data'][0].get('href', '')
                 value = x['string_list_data'][0].get('value', '')
                 timestamp = x['string_list_data'][0].get('timestamp', '')
-                if timestamp > 0:
-                    timestamp = (datetime.datetime.fromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S'))
+                timestamp = convert_unix_ts_to_utc(timestamp) if timestamp else ''
                 
-                data_list.append((timestamp, value, href, filename))
+                data_list.append((timestamp, value, href, context.get_relative_path(file_found)))
     
     data_headers = (('Timestamp', 'datetime'),'Follower', 'Profile URL', 'File Source')
     return data_headers, data_list, 'See source path(s) below'

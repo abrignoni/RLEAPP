@@ -15,14 +15,13 @@ __artifacts_v2__ = {
 }
 
 import os
-import datetime
 import json
-from pathlib import Path	
 
-from scripts.ilapfuncs import artifact_processor
+from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc
 
 @artifact_processor
-def instagramLogout(files_found, report_folder, seeker, wrap_text):
+def instagramLogout(context):
+    files_found = context.get_files_found()
     for file_found in files_found:
         file_found = str(file_found)
         
@@ -42,10 +41,9 @@ def instagramLogout(files_found, report_folder, seeker, wrap_text):
                 langagecode = (x['string_map_data']['Language Code'].get('value', ''))
                 timestamp = (x['string_map_data']['Time'].get('timestamp', ''))
                 useragent = (x['string_map_data']['User Agent'].get('value', ''))
-                if timestamp > 0:
-                    timestamp = (datetime.datetime.fromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S'))
+                timestamp = convert_unix_ts_to_utc(timestamp) if timestamp else ''
                     
                 data_list.append((timestamp, title, ipaddress, useragent, langagecode, cookiename))
     
     data_headers = (('Timestamp (Local)','datetime'), 'Timestamp (UTC)', 'IP Address', 'User Agent', 'Language Code', 'Cookie Name')
-    return data_headers, data_list, file_found
+    return data_headers, data_list, context.get_relative_path(file_found)

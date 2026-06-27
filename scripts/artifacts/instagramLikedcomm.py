@@ -15,15 +15,14 @@ __artifacts_v2__ = {
 }
 
 import os
-import datetime
 import json
-from pathlib import Path	
 
-from scripts.ilapfuncs import artifact_processor, utf8_in_extended_ascii
+from scripts.ilapfuncs import artifact_processor, utf8_in_extended_ascii, convert_unix_ts_to_utc
 
 @artifact_processor
 
-def instagramLikedcomm(files_found, report_folder, seeker, wrap_text):
+def instagramLikedcomm(context):
+    files_found = context.get_files_found()
     data_list = []
     for file_found in files_found:
         file_found = str(file_found)
@@ -32,7 +31,7 @@ def instagramLikedcomm(files_found, report_folder, seeker, wrap_text):
         
         if filename.startswith('liked_comments.json'):
             
-            with open(file_found, "r") as fp:
+            with open(file_found, "r", encoding="utf-8") as fp:
                 deserialized = json.load(fp)
         
             for x in deserialized['likes_comment_likes']:
@@ -41,10 +40,9 @@ def instagramLikedcomm(files_found, report_folder, seeker, wrap_text):
                 value = x['string_list_data'][0].get('value', '')
                 value = utf8_in_extended_ascii(value)[1]
                 timestamp = x['string_list_data'][0].get('timestamp', '')
-                if timestamp > 0:
-                    timestamp = (datetime.datetime.fromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S'))
+                timestamp = convert_unix_ts_to_utc(timestamp) if timestamp else ''
                     
                 data_list.append((timestamp, title, href, value))
                 
     data_headers = (('Timestamp', 'datetime'),'Account Name', 'Post URL', 'Value')
-    return data_headers, data_list, file_found
+    return data_headers, data_list, context.get_relative_path(file_found)

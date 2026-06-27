@@ -15,14 +15,13 @@ __artifacts_v2__ = {
 }
 
 import os
-import datetime
 import json
-from pathlib import Path	
 
-from scripts.ilapfuncs import artifact_processor
+from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc
 
 @artifact_processor
-def instagramSavedposts(files_found, report_folder, seeker, wrap_text):
+def instagramSavedposts(context):
+    files_found = context.get_files_found()
     data_list = []
     for file_found in files_found:
         file_found = str(file_found)
@@ -31,17 +30,16 @@ def instagramSavedposts(files_found, report_folder, seeker, wrap_text):
         
         if filename.startswith('saved_posts.json'):
             
-            with open(file_found, "r") as fp:
+            with open(file_found, "r", encoding="utf-8") as fp:
                 deserialized = json.load(fp)
         
             for x in deserialized['saved_saved_media']:
                 title = x['title']
                 href = x['string_map_data']['Saved on'].get('href', '')
                 timestamp = x['string_map_data']['Saved on'].get('timestamp', '')
-                if timestamp > 0:
-                    timestamp = (datetime.datetime.fromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S'))
+                timestamp = convert_unix_ts_to_utc(timestamp) if timestamp else ''
                     
-                data_list.append((timestamp, title, href, filename))
+                data_list.append((timestamp, title, href, context.get_relative_path(file_found)))
     
     data_headers = (('Timestamp', 'datetime'),'Profile Name', 'URL', 'File Source')
     return data_headers, data_list, 'See source path(s) below'
