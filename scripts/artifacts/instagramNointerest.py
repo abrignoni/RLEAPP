@@ -1,53 +1,41 @@
+__artifacts_v2__ = {
+    "instagramNointerest": {
+        "name": "Instagram Archive - Accounts No Interest",
+        "description": "Parses accounts the user marked as not interested from an Instagram data archive",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2021-08-27",
+        "last_update_date": "2026-06-27",
+        "requirements": "none",
+        "category": "Instagram Archive",
+        "notes": "",
+        "paths": ('*/ads_and_content/*re_not_interested_in.json'),
+        "output_types": "standard",
+        "artifact_icon": "instagram",
+    }
+}
+
 import os
-import datetime
 import json
-import shutil
-from pathlib import Path	
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, kmlgen, is_platform_windows, utf8_in_extended_ascii, media_to_html
+from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc
 
-def get_instagramNointerest(files_found, report_folder, seeker, wrap_text):
+
+@artifact_processor
+def instagramNointerest(context):
     data_list = []
-    for file_found in files_found:
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        
-        filename = os.path.basename(file_found)
-        
-        if filename.startswith("accounts_you're_not_interested_in.json"):
-            
-            with open(file_found, "r") as fp:
+        if os.path.basename(file_found).startswith("accounts_you're_not_interested_in.json"):
+            source_path = file_found
+            with open(file_found, 'r', encoding='utf-8') as fp:
                 deserialized = json.load(fp)
-        
+
             for x in deserialized['impressions_history_recs_hidden_authors']:
                 value = x['string_map_data']['Username'].get('value', '')
                 timestamp = x['string_map_data']['Time'].get('timestamp', '')
-                if timestamp > 0:
-                    timestamp = (datetime.datetime.fromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S'))
-                
+                timestamp = convert_unix_ts_to_utc(timestamp) if timestamp else ''
                 data_list.append((timestamp, value))
-    
-                
-    if data_list:
-        report = ArtifactHtmlReport('Instagram Archive - Accounts No Interest')
-        report.start_artifact_report(report_folder, 'Instagram Archive - Accounts No Interest')
-        report.add_script()
-        data_headers = ('Timestamp','Username')
-        report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Media'])
-        report.end_artifact_report()
-        
-        tsvname = f'Instagram Archive - Accounts No Interest'
-        tsv(report_folder, data_headers, data_list, tsvname)
-        
-        tlactivity = f'Instagram Archive - Accounts No Interest'
-        timeline(report_folder, tlactivity, data_list, data_headers)
 
-    else:
-        logfunc('No Instagram Archive - Accounts No Interest')
-                
-__artifacts__ = {
-        "instagramNointerest": (
-            "Instagram Archive",
-            ('*/ads_and_content/*re_not_interested_in.json'),
-            get_instagramNointerest)
-}
+    data_headers = (('Timestamp', 'datetime'), 'Username')
+    return data_headers, data_list, context.get_relative_path(source_path)
