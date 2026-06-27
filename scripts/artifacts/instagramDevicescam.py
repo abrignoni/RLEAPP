@@ -1,56 +1,43 @@
-import os
-import datetime
-import json
-import shutil
-from pathlib import Path	
-
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, kmlgen, is_platform_windows
-
-def get_instagramDevicescam(files_found, report_folder, seeker, wrap_text):
-    
-    for file_found in files_found:
-        file_found = str(file_found)
-        
-        filename = os.path.basename(file_found)
-    
-        if filename.startswith('camera_information.json'):
-            data_list =[]
-            with open(file_found, "rb") as fp:
-                deserialized = json.load(fp)
-                
-            devices = (deserialized['devices_camera'])
-            for x in devices:
-                
-                deviceid = (x['string_map_data']['Device ID'].get('value', ''))
-                compression = (x['string_map_data']['Compression'].get('value', ''))
-                ftversion = (x['string_map_data']['Face Tracker Version'].get('value', ''))
-                sdksup = (x['string_map_data']['Supported SDK Versions'].get('value', ''))
-                
-                    
-                data_list.append((deviceid, compression, ftversion, sdksup))
-                
-                
-            if data_list:
-                report = ArtifactHtmlReport('Instagram Archive - Camera Info')
-                report.start_artifact_report(report_folder, 'Instagram Archive - Camera Info')
-                report.add_script()
-                data_headers = ('Device ID', 'Compression', 'Face Tracker Version', 'Supported SDK Versions')
-                report.write_artifact_data_table(data_headers, data_list, file_found)
-                report.end_artifact_report()
-                
-                tsvname = f'Instagram Archive - Camera Info'
-                tsv(report_folder, data_headers, data_list, tsvname)
-                
-                tlactivity = f'Instagram Archive - Camera Info'
-                timeline(report_folder, tlactivity, data_list, data_headers)
-                
-            else:
-                logfunc('No Instagram Archive - Camera Info data available')
-                
-__artifacts__ = {
-        "instagramDevicescam": (
-            "Instagram Archive",
-            ('*/device_information/camera_information.json'),
-            get_instagramDevicescam)
+__artifacts_v2__ = {
+    "instagramDevicescam": {
+        "name": "Instagram Archive - Camera Info",
+        "description": "Parses camera device information from an Instagram data archive (camera_information.json)",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2021-08-21",
+        "last_update_date": "2026-06-27",
+        "requirements": "none",
+        "category": "Instagram Archive",
+        "notes": "",
+        "paths": ('*/device_information/camera_information.json'),
+        "output_types": "standard",
+        "artifact_icon": "instagram",
+    }
 }
+
+import os
+import json
+
+from scripts.ilapfuncs import artifact_processor
+
+
+@artifact_processor
+def instagramDevicescam(context):
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
+        file_found = str(file_found)
+        if os.path.basename(file_found).startswith('camera_information.json'):
+            source_path = file_found
+            with open(file_found, 'r', encoding='utf-8') as fp:
+                deserialized = json.load(fp)
+
+            for x in deserialized['devices_camera']:
+                smd = x['string_map_data']
+                deviceid = smd['Device ID'].get('value', '')
+                compression = smd['Compression'].get('value', '')
+                ftversion = smd['Face Tracker Version'].get('value', '')
+                sdksup = smd['Supported SDK Versions'].get('value', '')
+                data_list.append((deviceid, compression, ftversion, sdksup))
+
+    data_headers = ('Device ID', 'Compression', 'Face Tracker Version', 'Supported SDK Versions')
+    return data_headers, data_list, context.get_relative_path(source_path)

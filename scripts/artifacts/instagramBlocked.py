@@ -1,54 +1,43 @@
+__artifacts_v2__ = {
+    "instagramBlocked": {
+        "name": "Instagram Archive - Blocked",
+        "description": "Parses blocked accounts from an Instagram data archive (blocked_accounts.json)",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2021-08-27",
+        "last_update_date": "2026-06-27",
+        "requirements": "none",
+        "category": "Instagram Archive",
+        "notes": "",
+        "paths": ('*/followers_and_following/blocked_accounts.json'),
+        "output_types": "standard",
+        "artifact_icon": "instagram",
+    }
+}
+
 import os
-import datetime
 import json
-import shutil
-from pathlib import Path	
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, kmlgen, is_platform_windows, utf8_in_extended_ascii, media_to_html
+from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc
 
-def get_instagramBlocked(files_found, report_folder, seeker, wrap_text):
+
+@artifact_processor
+def instagramBlocked(context):
     data_list = []
-    for file_found in files_found:
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        
-        filename = os.path.basename(file_found)
-        
-        if filename.startswith('blocked_accounts.json'):
-            
-            with open(file_found, "r") as fp:
+        if os.path.basename(file_found).startswith('blocked_accounts.json'):
+            source_path = file_found
+            with open(file_found, 'r', encoding='utf-8') as fp:
                 deserialized = json.load(fp)
-        
-            for x in deserialized['relationships_blocked_users']:
-                href = x['string_list_data'][0].get('href', '')
-                value = x['string_list_data'][0].get('value', '')
-                timestamp = x['string_list_data'][0].get('timestamp', '')
-                if timestamp > 0:
-                    timestamp = (datetime.datetime.fromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S'))
-                
-                data_list.append((timestamp, value, href))
-    
-                
-    if data_list:
-        report = ArtifactHtmlReport('Instagram Archive - Blocked')
-        report.start_artifact_report(report_folder, 'Instagram Archive - Blocked')
-        report.add_script()
-        data_headers = ('Timestamp','Following', 'Href')
-        report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Media'])
-        report.end_artifact_report()
-        
-        tsvname = f'Instagram Archive - Blocked'
-        tsv(report_folder, data_headers, data_list, tsvname)
-        
-        tlactivity = f'Instagram Archive - Blocked'
-        timeline(report_folder, tlactivity, data_list, data_headers)
 
-    else:
-        logfunc('No Instagram Archive - Blocked')
-                
-__artifacts__ = {
-        "instagramBlocked": (
-            "Instagram Archive",
-            ('*/followers_and_following/blocked_accounts.json'),
-            get_instagramBlocked)
-}    
+            for x in deserialized['relationships_blocked_users']:
+                entry = x['string_list_data'][0]
+                href = entry.get('href', '')
+                value = entry.get('value', '')
+                timestamp = entry.get('timestamp', '')
+                timestamp = convert_unix_ts_to_utc(timestamp) if timestamp else ''
+                data_list.append((timestamp, value, href))
+
+    data_headers = (('Timestamp', 'datetime'), 'Following', 'Href')
+    return data_headers, data_list, context.get_relative_path(source_path)
