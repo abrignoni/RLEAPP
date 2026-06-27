@@ -16,14 +16,13 @@ __artifacts_v2__ = {
 }
 
 import os
-import datetime
 import json
-from pathlib import Path	
 
-from scripts.ilapfuncs import artifact_processor, utf8_in_extended_ascii, media_to_html
+from scripts.ilapfuncs import artifact_processor, utf8_in_extended_ascii, check_in_media, convert_unix_ts_to_utc
 
 @artifact_processor
-def instagramMessages(files_found, report_folder, seeker, wrap_text):
+def instagramMessages(context):
+    files_found = context.get_files_found()
     data_list = []
     for file_found in files_found:
         file_found = str(file_found)
@@ -32,7 +31,7 @@ def instagramMessages(files_found, report_folder, seeker, wrap_text):
         
         if filename.startswith('message_1.json'):
             
-            with open(file_found, "r") as fp:
+            with open(file_found, "r", encoding="utf-8") as fp:
                 deserialized = json.load(fp)
         
             participants = deserialized.get('participants')
@@ -44,7 +43,8 @@ def instagramMessages(files_found, report_folder, seeker, wrap_text):
             
             for x in deserialized['messages']:
                 agregator_reac = ''
-                agregator = ''
+                media_items = []
+                share_info = ''
                 
                 sender_name = x.get('sender_name', '')
                 sender_name = utf8_in_extended_ascii(sender_name)[1]
@@ -52,18 +52,17 @@ def instagramMessages(files_found, report_folder, seeker, wrap_text):
                 timestamp = x.get('timestamp_ms', '')
                 
                 share = x.get('share','')
-                link =''
                 if share:
                     link = share.get('link','')
                     share_text = share.get('share_text','')
                     share_text = utf8_in_extended_ascii(share_text)[1]
                     content_owner = share.get('original_content_owner', '')
                     content_owner = utf8_in_extended_ascii(content_owner)[1]
-                    agregator = f'<a href={link} target="_blank" >{link}</><br><br>'
+                    share_info = f'Shared: {link}'
                     if share_text:
-                        agregator = agregator + f'Shared Text: {share_text}<br><br>'
+                        share_info = share_info + f'\nShared Text: {share_text}'
                     if content_owner:
-                        agregator = agregator + f'Original Content Owner: {content_owner}'
+                        share_info = share_info + f'\nOriginal Content Owner: {content_owner}'
                     
                 
                 reactions = x.get('reactions', '')
@@ -88,62 +87,33 @@ def instagramMessages(files_found, report_folder, seeker, wrap_text):
                         agregator_reac = agregator_reac + ('</tr>')
                     agregator_reac = agregator_reac + ('</table><br>')
                 
-                if timestamp > 0:
-                    timestamp = (datetime.datetime.fromtimestamp(int(timestamp)/1000).strftime('%Y-%m-%d %H:%M:%S'))
+                timestamp = convert_unix_ts_to_utc(timestamp) if timestamp else ''
                 content = x.get('content', '' )
                 content = utf8_in_extended_ascii(content)[1]
+                if share_info:
+                    content = (content + '\n' + share_info).strip()
                 type = x.get('type', '')
                 is_unsent = x.get('is_unsent', '')
                 
                 photos = x.get('photos', '')
                 if photos:
-                    counter = 0
-                    agregator = agregator + ('<table>')
                     for pics in photos:
-                        if counter == 0:
-                            agregator = agregator +('<tr>')
-                        pictures = pics.get('uri', '')
-                        time = pics.get('creation_timestamp', '')
-                        if time > 0:
-                            time= (datetime.datetime.fromtimestamp(int(time)).strftime('%Y-%m-%d %H:%M:%S'))
-                        
-                        thumb = media_to_html(pictures, files_found, report_folder)
-                        
-                        counter = counter + 1
-                        agregator = agregator + f'<td>{thumb}</td>'
-                        #hacer uno que no tenga html
-                        if counter == 2:
-                            counter = 0
-                            agregator = agregator + ('</tr>')
-                    if counter == 1:
-                        agregator = agregator + ('</tr>')
-                    agregator = agregator + ('</table><br>')
+                        uri = pics.get('uri', '')
+                        if uri:
+                            ref = check_in_media(uri, os.path.basename(uri))
+                            if ref:
+                                media_items.append(ref)
                 
                 videos = x.get('videos', '')
                 if videos:
-                    counter = 0
-                    agregator = agregator + ('<table>')
                     for vids in videos:
-                        if counter == 0:
-                            agregator = agregator + ('<tr>')
-                        movie = vids.get('uri', '')
-                        time = vids.get('creation_timestamp', '')
-                        if time > 0:
-                            time= (datetime.datetime.fromtimestamp(int(time)).strftime('%Y-%m-%d %H:%M:%S'))
+                        uri = vids.get('uri', '')
+                        if uri:
+                            ref = check_in_media(uri, os.path.basename(uri))
+                            if ref:
+                                media_items.append(ref)
                         
-                        thumb = media_to_html(movie, files_found, report_folder)
-                        
-                        counter = counter + 1
-                        agregator = agregator + f'<td>{thumb}</td>'
-                        #hacer uno que no tenga html
-                        if counter == 2:
-                            counter = 0
-                            agregator = agregator + ('</tr>')
-                    if counter == 1:
-                        agregator = agregator + ('</tr>')
-                    agregator = agregator + ('</table><br>')
-                        
-                data_list.append((timestamp, names, sender_name, content, agregator, agregator_reac, is_unsent, type, file_found))
+                data_list.append((timestamp, names, sender_name, content, media_items, agregator_reac, is_unsent, type, context.get_relative_path(file_found)))
     
-    data_headers = (('Timestamp','datetime'), 'Participants', 'Sender', 'Content', 'Media', 'Reactions', 'Is unsent', 'Type','Source File')
+    data_headers = (('Timestamp','datetime'), 'Participants', 'Sender', 'Content', ('Media','media'), 'Reactions', 'Is unsent', 'Type','Source File')
     return data_headers, data_list, 'See source path(s) below'
