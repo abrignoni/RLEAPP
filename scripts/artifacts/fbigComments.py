@@ -1,62 +1,68 @@
-import os
-import datetime
-import json
-import shutil
-from bs4 import BeautifulSoup
-from pathlib import Path	
-
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, kmlgen, is_platform_windows, utf8_in_extended_ascii, media_to_html
-
-def get_fbigComments(files_found, report_folder, seeker, wrap_text):
-    
-    for file_found in files_found:
-        file_found = str(file_found)
-        
-        filename = os.path.basename(file_found)
-
-        if filename.startswith('records.html') or filename.startswith('preservation'):
-            rfilename = filename
-            
-            
-            with open(file_found, encoding='utf-8') as fp:
-                soup = BeautifulSoup(fp, 'lxml')
-            
-            data_list = []
-            pairs_list = []
-            uni = soup.find_all("div", {"id": "property-comments"})
-            
-            divs = uni[0].find_all('div', class_='div_table inner')
-            for index, div in enumerate(divs):
-                
-                if index > 1:
-                    divinn = (div.find('div', class_='most_inner'))
-                    divtext = (divinn.get_text())
-                    pairs_list.append(divtext)
-                    if len(pairs_list) == 6:
-                        data_list.append((pairs_list[1],pairs_list[0],pairs_list[2],pairs_list[3],pairs_list[4],pairs_list[5]))
-                        pairs_list =[]
-        
-        if data_list:
-            report = ArtifactHtmlReport(f'Facebook & Instagram - Comments - {rfilename}')
-            report.start_artifact_report(report_folder, f'Facebook Instagram - Comments - {rfilename}')
-            report.add_script()
-            data_headers = ('Timestamp','ID','Status', 'Text', 'Media Account ID', 'Media Owner' )
-            report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Current Participants', 'Linked Media File'])
-            report.end_artifact_report()
-            
-            tsvname = f'Facebook Instagram - Comments - {rfilename}'
-            tsv(report_folder, data_headers, data_list, tsvname)
-            
-            tlactivity = f'Facebook Instagram - Comments- {rfilename}'
-            timeline(report_folder, tlactivity, data_list, data_headers)
-        
-        else:
-            logfunc(f'No Facebook Instagram - Comments - {rfilename}')
-                
-__artifacts__ = {
-        "fbigComments": (
-            "Facebook - Instagram Returns",
-            ('*/records.html', '*/preservation*.html'),
-            get_fbigComments)
+__artifacts_v2__ = {
+    "fbigComments": {
+        "name": "Facebook Instagram Returns - Comments",
+        "description": "Comments parsed from a Facebook/Instagram law enforcement return (records.html / preservation).",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2023-06-30",
+        "last_update_date": "2026-06-27",
+        "requirements": "none",
+        "category": "Facebook - Instagram Returns",
+        "notes": "",
+        "paths": ('*/records.html', '*/preservation*.html'),
+        "output_types": "standard",
+        "artifact_icon": "message-circle",
+    }
 }
+
+import os
+from datetime import datetime, timezone
+
+from bs4 import BeautifulSoup
+
+from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc
+
+
+def _fbig_ts(value):
+    # Return timestamps vary by export; convert epoch / ISO (incl. ' UTC') to aware UTC, else keep raw.
+    value = (value or '').strip()
+    if not value:
+        return value
+    cleaned = value.replace(' UTC', '').strip()
+    if cleaned.isdigit():
+        return convert_unix_ts_to_utc(int(cleaned))
+    try:
+        dt = datetime.fromisoformat(cleaned.replace('Z', '+00:00'))
+    except ValueError:
+        return value
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)   # ' UTC'/naive -> the return is UTC, don't shift to local
+    return dt.astimezone(timezone.utc)
+
+
+@artifact_processor
+def fbigComments(context):
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
+        file_found = str(file_found)
+        basename = os.path.basename(file_found)
+        if not (basename.startswith('records.html') or basename.startswith('preservation')):
+            continue
+        source_path = file_found
+        with open(file_found, encoding='utf-8') as fp:
+            soup = BeautifulSoup(fp, 'lxml')
+        sections = soup.find_all('div', {'id': 'property-comments'})
+        if not sections:
+            continue
+        chunk = []
+        for index, div in enumerate(sections[0].find_all('div', class_='div_table inner')):
+            if index <= 1:
+                continue
+            inner = div.find('div', class_='most_inner')
+            chunk.append(inner.get_text() if inner else '')
+            if len(chunk) == 6:
+                data_list.append((_fbig_ts(chunk[1]), chunk[0], chunk[2], chunk[3], chunk[4], chunk[5]))
+                chunk = []
+
+    data_headers = (('Timestamp', 'datetime'), 'ID', 'Status', 'Text', 'Media Account ID', 'Media Owner')
+    return data_headers, data_list, context.get_relative_path(source_path)
