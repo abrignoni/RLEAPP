@@ -55,8 +55,9 @@ def googleFi_UserInfoRecords(context):
                 entry[13].title(), entry[14].title(), entry[15].title(), entry[16].strip().title()))
 
     data_headers = (('Start Timestamp', 'datetime'), ('End Timestamp', 'datetime'),
-                    'User Phone Number', 'Usage Type', 'Direction', 'Duration (Minutes)',
-                    'Remote Phone Number', 'Equipment ID', 'Carrier', 'Network Carrier',
+                    ('User Phone Number', 'phonenumber'), 'Usage Type', 'Direction',
+                    'Duration (Minutes)', ('Remote Phone Number', 'phonenumber'),
+                    'Equipment ID', 'Carrier', 'Network Carrier',
                     ('Network Carrier Start Timestamp', 'datetime'), 'Is Wifi?', 'Is Hosted Voice?',
                     'Is Hangouts?', 'Is Voicemail?')
     return data_headers, data_list, context.get_relative_path(source_path)
