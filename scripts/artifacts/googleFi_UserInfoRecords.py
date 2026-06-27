@@ -1,70 +1,62 @@
-# Module Description: Parses Google Fi user info records from Takeout
-# Author: @KevinPagano3
-# Date: 2022-02-28
-# Artifact version: 0.0.1
-# Requirements: none
+__artifacts_v2__ = {
+    "googleFi_UserInfoRecords": {
+        "name": "Google Fi - User Info Records",
+        "description": "Parses Google Fi user info records from Takeout",
+        "author": "@KevinPagano3",
+        "creation_date": "2022-02-28",
+        "last_update_date": "2026-06-27",
+        "requirements": "none",
+        "category": "Google Takeout Archive",
+        "notes": "",
+        "paths": ('*/Google Fi/User Info*/GoogleFi.UserInfo.Records.txt'),
+        "output_types": "standard",
+        "artifact_icon": "phone",
+    }
+}
 
 import os
+from datetime import datetime, timezone
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
+from scripts.ilapfuncs import artifact_processor
 
-def get_googleFi_UserInfoRecords(files_found, report_folder, seeker, wrap_text):
-    
-    for file_found in files_found:
+
+def _utc_label_to_dt(value):
+    # Source values are labelled " UTC"; strip the label and parse to an aware UTC datetime.
+    value = value.replace(' UTC', '').strip()
+    if not value:
+        return value
+    try:
+        return datetime.fromisoformat(value).replace(tzinfo=timezone.utc)
+    except ValueError:
+        return value
+
+
+@artifact_processor
+def googleFi_UserInfoRecords(context):
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        if not os.path.basename(file_found) == 'GoogleFi.UserInfo.Records.txt': # skip -journal and other files
+        if os.path.basename(file_found) != 'GoogleFi.UserInfo.Records.txt':
             continue
+        source_path = file_found
+        with open(file_found, encoding='utf-8') as f:
+            lines = f.readlines()[1:]
 
-        with open(file_found, encoding = 'utf-8', mode = 'r') as f:
-            data = f.readlines()[1:]
-            
-        data_list = []
-        
-        for line in data:
+        for line in lines:
             entry = line.split('\t')
-            
-            user_phone = entry[0]
-            usage_type = entry[1].replace('USAGE_TYPE_','').title()
-            start_ts = entry[2].replace(' UTC','')
-            end_ts = entry[3].replace(' UTC','')
-            direction = entry[4].replace('DIRECTION_','').title()
-            duration = entry[5].replace('Duration:','')
-            user_country = entry[6]
-            remote_country = entry[7]
-            remote_phone = entry[8]
-            equipment_id = entry[9]
-            carrier = entry[10]
-            network_carrier = entry[11]
-            network_carrier_start_ts = entry[12].replace(' UTC','')
-            is_wifi = entry[13].title()
-            is_hosted_voice = entry[14].title()
-            is_hangouts = entry[15].title()
-            is_voicemail = entry[16].strip().title()
+            if len(entry) < 17:
+                continue
+            data_list.append((
+                _utc_label_to_dt(entry[2]), _utc_label_to_dt(entry[3]),
+                entry[0], entry[1].replace('USAGE_TYPE_', '').title(),
+                entry[4].replace('DIRECTION_', '').title(), entry[5].replace('Duration:', ''),
+                entry[8], entry[9], entry[10], entry[11], _utc_label_to_dt(entry[12]),
+                entry[13].title(), entry[14].title(), entry[15].title(), entry[16].strip().title()))
 
-            data_list.append((start_ts,end_ts,user_phone,usage_type,direction,duration,remote_phone,equipment_id,carrier,network_carrier,network_carrier_start_ts,is_wifi,is_hosted_voice,is_hangouts,is_voicemail))
-
-        num_entries = len(data_list)
-        if num_entries > 0:
-            report = ArtifactHtmlReport('Google Fi - User Info Records')
-            report.start_artifact_report(report_folder, 'Google Fi - User Info Records')
-            report.add_script()
-            data_headers = ('Start Timestamp','End Timestamp','User Phone Number','Usage Type','Direction','Duration (Minutes)','Remote Phone Number','Equipment ID','Carrier','Network Carrier','Network Carrier Start Timestamp','Is Wifi?','Is Hosted Voice?','Is Hangouts?','Is Voicemail?')
-
-            report.write_artifact_data_table(data_headers, data_list, file_found)
-            report.end_artifact_report()
-            
-            tsvname = f'Google Fi - User Info Records'
-            tsv(report_folder, data_headers, data_list, tsvname)
-            
-            tlactivity = f'Google Fi - User Info Records'
-            timeline(report_folder, tlactivity, data_list, data_headers)
-        else:
-            logfunc('No Google Fi - User Info Records data available')
-
-__artifacts__ = {
-        "googleFi_UserInfoRecords": (
-            "Google Takeout Archive",
-            ('*/Google Fi/User Info*/GoogleFi.UserInfo.Records.txt'),
-            get_googleFi_UserInfoRecords)
-}
+    data_headers = (('Start Timestamp', 'datetime'), ('End Timestamp', 'datetime'),
+                    'User Phone Number', 'Usage Type', 'Direction', 'Duration (Minutes)',
+                    'Remote Phone Number', 'Equipment ID', 'Carrier', 'Network Carrier',
+                    ('Network Carrier Start Timestamp', 'datetime'), 'Is Wifi?', 'Is Hosted Voice?',
+                    'Is Hangouts?', 'Is Voicemail?')
+    return data_headers, data_list, context.get_relative_path(source_path)
