@@ -1,63 +1,59 @@
-# Module Description: Parses Google Play Store application installations from Takeout
-# Author: @KevinPagano3
-# Date: 2021-08-22
-# Artifact version: 0.0.1
-# Requirements: none
+__artifacts_v2__ = {
+    "playStoreInstalls": {
+        "name": "Google Play Store Installs",
+        "description": "List of your Google Play app installs.",
+        "author": "@KevinPagano3",
+        "creation_date": "2021-08-22",
+        "last_update_date": "2026-06-27",
+        "requirements": "none",
+        "category": "Google Takeout Archive",
+        "notes": "",
+        "paths": ('*/Google Play Store/Installs.json'),
+        "output_types": "standard",
+        "artifact_icon": "download",
+    }
+}
 
-import datetime
 import json
 import os
+from datetime import datetime, timezone
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
+from scripts.ilapfuncs import artifact_processor
 
-def get_playStoreInstalls(files_found, report_folder, seeker, wrap_text):
-    
-    for file_found in files_found:
+
+def _iso_to_utc(value):
+    if not value:
+        return value
+    try:
+        return datetime.fromisoformat(value.replace('Z', '+00:00')).astimezone(timezone.utc)
+    except (ValueError, AttributeError):
+        return value
+
+
+@artifact_processor
+def playStoreInstalls(context):
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        if not os.path.basename(file_found) == 'Installs.json': # skip -journal and other files
+        if os.path.basename(file_found) != 'Installs.json':
             continue
-
-        with open(file_found, encoding = 'utf-8', mode = 'r') as f:
-            data = json.loads(f.read())
-        data_list = []
+        source_path = file_found
+        with open(file_found, encoding='utf-8') as f:
+            data = json.load(f)
 
         for x in data:
-            docType = x['install']['doc'].get('documentType','')
-            title = x['install']['doc'].get('title','')
-            firstInstallationTime = x['install'].get('firstInstallationTime','')
-            firstInstallationTime = firstInstallationTime.replace('T', ' ').replace('Z', '')
-            lastUpdateTime = x['install'].get('lastUpdateTime','')
-            lastUpdateTime = lastUpdateTime.replace('T', ' ').replace('Z', '')
-            model = x['install']['deviceAttribute'].get('model','')
-            carrier  = x['install']['deviceAttribute'].get('carrier','')
-            manufacturer = x['install']['deviceAttribute'].get('manufacturer','')
-            deviceDisplayName = x['install']['deviceAttribute'].get('deviceDisplayName','')
-            
-            data_list.append((firstInstallationTime, lastUpdateTime, title, docType, manufacturer, model, carrier, deviceDisplayName))
-    
-        num_entries = len(data_list)
-        if num_entries > 0:
-            description = 'List of your Google Play app installs.'
-            report = ArtifactHtmlReport('Google Play Store Installs')
-            report.start_artifact_report(report_folder, 'Google Play Store Installs',description)
-            report.add_script()
-            data_headers = ('First Install Timestamp','Last Update Timestamp','Title','Type','Device Manufacturer','Device Model','Carrier','Device Display Name')
+            install = x.get('install', {})
+            doc = install.get('doc', {})
+            device_attr = install.get('deviceAttribute', {})
+            data_list.append((
+                _iso_to_utc(install.get('firstInstallationTime', '')),
+                _iso_to_utc(install.get('lastUpdateTime', '')),
+                doc.get('title', ''), doc.get('documentType', ''),
+                device_attr.get('manufacturer', ''), device_attr.get('model', ''),
+                device_attr.get('carrier', ''), device_attr.get('deviceDisplayName', '')))
 
-            report.write_artifact_data_table(data_headers, data_list, file_found)
-            report.end_artifact_report()
-            
-            tsvname = f'Google Play Store Installs'
-            tsv(report_folder, data_headers, data_list, tsvname)
-            
-            tlactivity = f'Google Play Store Installs'
-            timeline(report_folder, tlactivity, data_list, data_headers)
-        else:
-            logfunc('No Google Play Store Installs data available')
-
-__artifacts__ = {
-        "playStoreInstalls": (
-            "Google Takeout Archive",
-            ('*/Google Play Store/Installs.json'),
-            get_playStoreInstalls)
-}
+    data_headers = (('First Install Timestamp', 'datetime'), ('Last Update Timestamp', 'datetime'),
+                    'Title', 'Type', 'Device Manufacturer', 'Device Model', 'Carrier',
+                    'Device Display Name')
+    return data_headers, data_list, context.get_relative_path(source_path)
