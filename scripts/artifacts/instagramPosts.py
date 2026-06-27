@@ -1,79 +1,63 @@
-import os
-import datetime
-import json
-import shutil
-from pathlib import Path	
-
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, kmlgen, is_platform_windows, media_to_html
-
-def get_instagramPosts(files_found, report_folder, seeker, wrap_text):
-    
-    for file_found in files_found:
-        file_found = str(file_found)
-        
-        filename = os.path.basename(file_found)
-        
-        if filename.startswith('posts_1.json'):
-            data_list =[]
-            with open(file_found, "rb") as fp:
-                deserialized = json.load(fp)
-                
-            for x in deserialized:
-                timestamp = title = uri = latitude = longitude = deviceid = sourcetype = scenecapturetype = software = datatimeexif = ''
-                for a, b in x.items():
-                    if a == 'media':
-                        for y in b:
-                            #print(y)
-                            
-                            for c, d in y.items():
-                                if c == 'media_metadata':
-                                    #print(c, d)
-                                    
-                                    for f, g in d.items():
-                                        metadata_type = (f) #string video_metadata o photo_metadata
-                                        deviceid = (g['exif_data'][0].get('device_id', ''))
-                                        sourcetype = (g['exif_data'][0].get('source_type', ''))
-                                        scenecapturetype = (g['exif_data'][0].get('scene_capture_type', ''))
-                                        software = (g['exif_data'][0].get('software', ''))
-                                        datatimeexif =(g['exif_data'][0].get('date_time_original', ''))
-                                        latitude = (g['exif_data'][0].get('latitude', ''))
-                                        longitude = (g['exif_data'][0].get('longitude', ''))
-                                if c == 'title':
-                                    title = d
-                                if c == 'uri':
-                                    uri = d
-                                    thumb = media_to_html(uri, files_found, report_folder)
-                                    
-                                if c == 'creation_timestamp':
-                                    if d > 0:
-                                        timestamp = (datetime.datetime.fromtimestamp(int(d)).strftime('%Y-%m-%d %H:%M:%S'))
-                                        
-                            data_list.append((timestamp, title, thumb, uri, latitude, longitude, deviceid, sourcetype, scenecapturetype, software, datatimeexif))
-                    
-                
-            if data_list:
-                report = ArtifactHtmlReport('Instagram Archive - Posts')
-                report.start_artifact_report(report_folder, 'Instagram Archive - Posts')
-                report.add_script()
-                data_headers = ('Timestamp', 'Title', 'Content', 'URI', 'Latitude', 'Longitude', 'Device ID', 'Source Type', 'Scene Capture type', 'Software', 'Date Time EXIF')
-                report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
-                report.end_artifact_report()
-                
-                tsvname = f'Instagram Archive - Posts'
-                tsv(report_folder, data_headers, data_list, tsvname)
-                
-                tlactivity = f'Instagram Archive - Posts'
-                timeline(report_folder, tlactivity, data_list, data_headers)
-                
-                kmlactivity = 'Instagram Archive - Posts'
-                kmlgen(report_folder, kmlactivity, data_list, data_headers)
-            else:
-                logfunc('No Instagram Archive - Posts data available')
-                
-__artifacts__ = {
-        "instagramPosts": (
-            "Instagram Archive",
-            ('*/content/posts_1.json', '*/media/*'),
-            get_instagramPosts)
+__artifacts_v2__ = {
+    "instagramPosts": {
+        "name": "Instagram Archive - Posts",
+        "description": "Parses posts, post media, and EXIF/GPS metadata from an Instagram data archive (posts_1.json)",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2021-08-21",
+        "last_update_date": "2026-06-27",
+        "requirements": "none",
+        "category": "Instagram Archive",
+        "notes": "",
+        "paths": ('*/content/posts_1.json', '*/media/*'),
+        "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
+        "artifact_icon": "instagram",
+    }
 }
+
+import os
+import json
+
+from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc, check_in_media
+
+
+@artifact_processor
+def instagramPosts(context):
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
+        file_found = str(file_found)
+        if os.path.basename(file_found).startswith('posts_1.json'):
+            source_path = file_found
+            with open(file_found, 'r', encoding='utf-8') as fp:
+                deserialized = json.load(fp)
+
+            for post in deserialized:
+                for media_item in post.get('media', []):
+                    title = media_item.get('title', '')
+                    uri = media_item.get('uri', '')
+                    timestamp = media_item.get('creation_timestamp', '')
+                    timestamp = convert_unix_ts_to_utc(timestamp) if timestamp else ''
+                    media_ref = check_in_media(uri, title) if uri else None
+
+                    deviceid = sourcetype = scenecapturetype = ''
+                    software = datetimeexif = latitude = longitude = ''
+                    metadata = media_item.get('media_metadata') or {}
+                    for meta in metadata.values():
+                        exif_list = meta.get('exif_data') or []
+                        if exif_list:
+                            exif = exif_list[0]
+                            deviceid = exif.get('device_id', '')
+                            sourcetype = exif.get('source_type', '')
+                            scenecapturetype = exif.get('scene_capture_type', '')
+                            software = exif.get('software', '')
+                            datetimeexif = exif.get('date_time_original', '')
+                            latitude = exif.get('latitude', '')
+                            longitude = exif.get('longitude', '')
+
+                    data_list.append((timestamp, title, media_ref, uri, latitude, longitude,
+                                      deviceid, sourcetype, scenecapturetype, software, datetimeexif))
+
+    data_headers = (('Timestamp', 'datetime'), 'Title', ('Content', 'media'), 'URI',
+                    'Latitude', 'Longitude', 'Device ID', 'Source Type',
+                    'Scene Capture type', 'Software', 'Date Time EXIF')
+    return data_headers, data_list, context.get_relative_path(source_path)
