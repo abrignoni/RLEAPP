@@ -1,61 +1,42 @@
-# Module Description: Parses Google Chrome History from Takeout
-# Author: @KevinPagano3
-# Date: 2021-08-20
-# Artifact version: 0.0.1
-# Requirements: none
+__artifacts_v2__ = {
+    "chromeHistory": {
+        "name": "Chrome Web History",
+        "description": "Parses Google Chrome History from Takeout",
+        "author": "@KevinPagano3",
+        "creation_date": "2021-08-20",
+        "last_update_date": "2026-06-27",
+        "requirements": "none",
+        "category": "Google Takeout Archive",
+        "notes": "",
+        "paths": ('*/Chrome/BrowserHistory.json'),
+        "output_types": "standard",
+        "artifact_icon": "chrome",
+    }
+}
 
-import datetime
 import json
 import os
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
+from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc
 
-def get_chromeHistory(files_found, report_folder, seeker, wrap_text):
-    
-    for file_found in files_found:
+
+@artifact_processor
+def chromeHistory(context):
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        if not os.path.basename(file_found) == 'BrowserHistory.json': # skip -journal and other files
+        if os.path.basename(file_found) != 'BrowserHistory.json':
             continue
+        source_path = file_found
+        with open(file_found, encoding='utf-8') as f:
+            data = json.load(f)
 
-        with open(file_found, encoding = 'utf-8', mode = 'r') as f:
-            data = json.loads(f.read())
-        data_list = []
-        url = ''
-        title = ''
-        timestamp = ''
-        page_transition = ''
+        for site in data.get('Browser History', []):
+            timestamp = site.get('time_usec', '')
+            timestamp = convert_unix_ts_to_utc(timestamp) if timestamp else ''
+            data_list.append((timestamp, site.get('title', ''), site.get('url', ''),
+                              site.get('page_transition', '')))
 
-        for site in data['Browser History']:
-            
-            url = site['url']
-            title = site['title']
-            timestamp = datetime.datetime.fromtimestamp(int(site['time_usec'])/1000000).strftime('%Y-%m-%d %H:%M:%S.%f')
-            page_transition = site['page_transition']
-
-            data_list.append((timestamp, title, url, page_transition))
-
-        num_entries = len(data_list)
-        if num_entries > 0:
-            report = ArtifactHtmlReport('Chrome Web History')
-            report.start_artifact_report(report_folder, 'Chrome Web History')
-            report.add_script()
-            data_headers = ('Timestamp','Webpage Title','URL','Page Transition') 
-
-            report.write_artifact_data_table(data_headers, data_list, file_found)
-            report.end_artifact_report()
-            
-            tsvname = f'Chrome Web History'
-            tsv(report_folder, data_headers, data_list, tsvname)
-            
-            tlactivity = f'Chrome Web History'
-            timeline(report_folder, tlactivity, data_list, data_headers)
-        else:
-            logfunc('No Chrome Web History data available')
-
-__artifacts__ = {
-        "chromeHistory": (
-            "Google Takeout Archive",
-            ('*/Chrome/BrowserHistory.json'),
-            get_chromeHistory)
-}
+    data_headers = (('Timestamp', 'datetime'), 'Webpage Title', 'URL', 'Page Transition')
+    return data_headers, data_list, context.get_relative_path(source_path)

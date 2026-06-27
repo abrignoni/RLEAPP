@@ -1,94 +1,81 @@
-# Module Description: Parses OS Settings from Google Takeout
-# Author: @upintheairsheep & @KevinPagano3
-# Date: 2023-08-18
-# Artifact version: 0.0.1
-# Requirements: none
+__artifacts_v2__ = {
+    "chromeArcPackages": {
+        "name": "Chrome ARC Packages",
+        "description": "Parses ARC (Android) package backup info from Google Takeout OS Settings.json",
+        "author": "@upintheairsheep & @KevinPagano3",
+        "creation_date": "2023-08-18",
+        "last_update_date": "2026-06-27",
+        "requirements": "none",
+        "category": "Google Takeout Archive",
+        "notes": "",
+        "paths": ('*/Chrome/OS Settings.json'),
+        "output_types": "standard",
+        "artifact_icon": "package",
+    },
+    "chromeOSSettings": {
+        "name": "Chrome OS Settings",
+        "description": "Parses user OS priority preferences (gender, birth year) from Google Takeout OS Settings.json",
+        "author": "@upintheairsheep & @KevinPagano3",
+        "creation_date": "2023-08-18",
+        "last_update_date": "2026-06-27",
+        "requirements": "none",
+        "category": "Google Takeout Archive",
+        "notes": "",
+        "paths": ('*/Chrome/OS Settings.json'),
+        "output_types": "standard",
+        "artifact_icon": "settings",
+    }
+}
 
-import datetime
 import json
 import os
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
+from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc
 
-def get_chromeOSSettings(files_found, report_folder, seeker, wrap_text):
 
-    for file_found in files_found:
+@artifact_processor
+def chromeArcPackages(context):
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        if not os.path.basename(file_found) == 'OS Settings.json': # skip -journal and other files
+        if os.path.basename(file_found) != 'OS Settings.json':
             continue
+        source_path = file_found
+        with open(file_found, encoding='utf-8') as f:
+            data = json.load(f)
 
-        with open(file_found, encoding = 'utf-8', mode = 'r') as f:
-            data = json.loads(f.read())
-        data_list = []
-        data_list2 = []
+        for package in data.get('Arc Package', []):
+            last_backup = package.get('last_backup_time', '')
+            last_backup = convert_unix_ts_to_utc(last_backup) if last_backup else ''
+            data_list.append((last_backup, package.get('package_name', ''),
+                              package.get('package_version', ''),
+                              package.get('last_backup_android_id', '')))
 
-        for package in data['Arc Package']:
-            chromeARC_lastBack = package['last_backup_time']
-            if chromeARC_lastBack == 0:
-                chromeARC_lastBack = ''
-            else:
-                chromeARC_lastBack = datetime.datetime.fromtimestamp(int(chromeARC_lastBack)/1000000).strftime('%Y-%m-%d %H:%M:%S.%f')
-            chromeARC_name = package.get('package_name','')
-            chromeARC_ver = package.get('package_version','')
-            chromeARC_bkID = package.get('last_backup_android_id','')
+    data_headers = (('Last Backed Up Timestamp', 'datetime'), 'Package Name',
+                    'Package Version', 'Last Backup Android ID')
+    return data_headers, data_list, context.get_relative_path(source_path)
 
-            data_list.append((chromeARC_lastBack, chromeARC_name, chromeARC_ver, chromeARC_bkID))
 
-        num_entries = len(data_list)
-        if num_entries > 0:
-            report = ArtifactHtmlReport('Chrome ARC Packages')
-            report.start_artifact_report(report_folder, 'Chrome ARC Packages')
-            report.add_script()
-            data_headers = ('Last Backed Up Timestamp','Package Name','Package Version','Last Backup Android ID')
+@artifact_processor
+def chromeOSSettings(context):
+    data_list = []
+    source_path = ''
+    genders = {0: 'Female', 1: 'Male', 2: 'Rather not say'}
+    for file_found in context.get_files_found():
+        file_found = str(file_found)
+        if os.path.basename(file_found) != 'OS Settings.json':
+            continue
+        source_path = file_found
+        with open(file_found, encoding='utf-8') as f:
+            data = json.load(f)
 
-            report.write_artifact_data_table(data_headers, data_list, file_found)
-            report.end_artifact_report()
-
-            tsvname = f'Chrome ARC Packages'
-            tsv(report_folder, data_headers, data_list, tsvname)
-
-            tlactivity = f'Chrome ARC Packages'
-            timeline(report_folder, tlactivity, data_list, data_headers)
-        else:
-            logfunc('No Chrome ARC Packages data available')
-
-        for pref in data['OS Priority Preference']:
+        for pref in data.get('OS Priority Preference', []):
             pref_name = pref['preference']['name']
-            pref_value = pref['preference']['value']
-            preference_value = json.loads(pref_value)
-            gender = preference_value['gender']
-            if gender == 0:
-                gender = 'Female'
-            elif gender == 1:
-                gender = 'Male'
-            elif gender == 2:
-                gender = 'Rather not say'
-            else:
-                gender = 'Other'
-            birth_year = preference_value['birth_year']
+            preference_value = json.loads(pref['preference']['value'])
+            gender = genders.get(preference_value.get('gender'), 'Other')
+            birth_year = preference_value.get('birth_year', '')
+            data_list.append((pref_name, gender, birth_year))
 
-            data_list2.append((pref_name,gender,birth_year))
-            
-        num_entries = len(data_list2)
-        if num_entries > 0:
-            report = ArtifactHtmlReport('Chrome OS Settings')
-            report.start_artifact_report(report_folder, 'Chrome OS Settings')
-            report.add_script()
-            data_headers = ('Preference Name','User Gender','User Birth Year')
-
-            report.write_artifact_data_table(data_headers, data_list2, file_found)
-            report.end_artifact_report()
-
-            tsvname = f'Chrome OS Settings'
-            tsv(report_folder, data_headers, data_list2, tsvname)
-
-        else:
-            logfunc('No Chrome OS Settings data available')
-
-__artifacts__ = {
-        "chromeOSSettings": (
-            "Google Takeout Archive",
-            ('*/Chrome/OS Settings.json'),
-            get_chromeOSSettings)
-}
+    data_headers = ('Preference Name', 'User Gender', 'User Birth Year')
+    return data_headers, data_list, context.get_relative_path(source_path)
