@@ -1,179 +1,145 @@
-# Module Description: Semantic Location by Month
-# Author: @AlexisBrignoni
-# Date: 2023-05-28
-# Artifact version: 0.0.1
-# Requirements: none
+__artifacts_v2__ = {
+    "semanticLocationsMonthPlaces": {
+        "name": "Semantic Locations - Places By Month",
+        "description": "Parses placeVisit entries from Google Takeout per-month Semantic Location History JSON files",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2023-05-28",
+        "last_update_date": "2026-06-27",
+        "requirements": "none",
+        "category": "Google Takeout Archive",
+        "notes": "",
+        "paths": ('*/Location History*/Semantic Location History/*/*_*.json',),
+        "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
+        "artifact_icon": "map-pin",
+    },
+    "semanticLocationsMonthActivity": {
+        "name": "Semantic Locations - Activity By Month",
+        "description": "Parses activitySegment entries from Google Takeout per-month Semantic Location History JSON files",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2023-05-28",
+        "last_update_date": "2026-06-27",
+        "requirements": "none",
+        "category": "Google Takeout Archive",
+        "notes": "Start/End/Parking coordinates are separate columns and waypoint coordinates are aggregated into the Waypoints cell; the original per-segment waypoint-track KML is not auto-emitted.",
+        "paths": ('*/Location History*/Semantic Location History/*/*_*.json',),
+        "output_types": "standard",
+        "html_columns": ["Waypoints"],
+        "artifact_icon": "navigation",
+    }
+}
 
 import json
-import os
+from datetime import datetime, timezone
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, kmlgen
+from scripts.ilapfuncs import artifact_processor
 
-def get_semanticLocbymonth(files_found, report_folder, seeker, wrap_text):
-    
-    for file_found in files_found:
+
+def _iso_to_utc(value):
+    if not value:
+        return value
+    try:
+        return datetime.fromisoformat(value.replace('Z', '+00:00')).astimezone(timezone.utc)
+    except (ValueError, AttributeError):
+        return value
+
+
+@artifact_processor
+def semanticLocationsMonthPlaces(context):
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        
-        filename = os.path.basename(file_found)
-
-        data_list = []
-        data_list_wayp =[]
-        waypointrecord = 0
-        agg = ''
-        
-        with open(file_found, 'r', encoding='utf-8') as f:
+        if not file_found.endswith('.json'):
+            continue
+        source_path = file_found
+        with open(file_found, encoding='utf-8') as f:
             data = json.load(f)
-            
-        for record in data['timelineObjects']:
-            for datakey, datavalue in record.items():
-                if datakey == 'placeVisit':
-                    for key, values in datavalue.items():
-                        #print(key, values)
-                        if key == 'location':
-                            latitudel = values['latitudeE7']/1e7
-                            longitudel = values['longitudeE7']/1e7
-                            placeid = values['placeId']
-                            try:
-                                address = values['address']
-                            except KeyError:
-                                address = None
-                            try:
-                                name = values.get('name','')
-                            except KeyError:
-                                name = None
-                            devicetag = values.get('sourceInfo',' ')
-                            if devicetag != ' ':
-                                devicetag = values['sourceInfo']['deviceTag']
-                            locconfidence = values.get('locationConfidence','')
-                            calculatedprob = values.get('calibratedProbability','')
-                        elif key == 'otherCandidateLocations':
-                            pass
-                        elif key == 'duration':
-                            starttimestamp = values['startTimestamp'].replace('T',' ').replace('Z','')
-                            endtimestamp = values['endTimestamp'].replace('T',' ').replace('Z','')
-                        elif key == 'centerLatE7':
-                            centerLatE7 = values/1e7
-                        elif key == 'centerLngE7':
-                            centerLngE7 = values/1e7
-                        elif key == 'visitConfidence':
-                            visitconfidence = values
-                        elif key == 'locationConfidence':
-                            locationconfidence = values
-                        elif key == 'placeVisitType':
-                            placevisittype = values
-                        elif key == 'placeVisitImportance':
-                            placeVisitImportance = values
-                    data_list.append((starttimestamp,endtimestamp,datakey,centerLatE7,centerLngE7,latitudel,longitudel,placeid,name,address,devicetag,locconfidence,calculatedprob,visitconfidence,locationconfidence,placevisittype,placeVisitImportance))
-                    
-                    starttimestamp = endtimestamp = datakey = centerLatE7 = centerLatE7 = latitudel = longitudel = placeid = name = address = devicetag = placeid = locconfidence = calculatedprob = visitconfidence = locationconfidence = placevisittype = placeVisitImportance = ''
-                    
-                elif datakey == 'activitySegment':
-                    for key, values in datavalue.items():
-                        #print(key, values)
-                        if key == 'startLocation':
-                            startlatitude = values['latitudeE7']/1e7
-                            startlongitude = values['longitudeE7']/1e7
-                        elif key == 'endLocation':
-                            endlatitude = values['latitudeE7']/1e7
-                            endlongitude = values['longitudeE7']/1e7
-                        elif key == 'duration':
-                            starttimestamp = values['startTimestamp'].replace('T',' ').replace('Z','')
-                            endtimestamp = values['endTimestamp'].replace('T',' ').replace('Z','')
-                        elif key == 'distance':
-                            distance = values
-                        elif key == 'activityType':
-                            activitytype = values
-                        elif key == 'confidence':
-                            confidence = values
-                        elif key == 'activities':
-                            activitytypehighprob = values[0]['activityType']
-                            activitytypehighprobnumber = values[0]['probability']
-                        elif key == 'waypointPath':
-                            listofpoints = (values['waypoints'])
-                            
-                            #for KML 
-                            waypointlist = []
-                            waypoint_headers = ('Timestamp','Latitude','Longitude')
-                            waypointrecord = waypointrecord + 1
-                            waypointskmlactivity = f'Waypoint Record: {waypointrecord}'
-                            waypointlist.append((starttimestamp,startlatitude,startlongitude))
-                            waypointlist.append((endtimestamp,endlatitude,endlongitude))
-                            
-                            #for HTML
-                            agg = agg + f'{startlatitude},{startlongitude}<br>'
-                            agg = agg + f'{endlatitude},{endlongitude}<br>'
-                            
-                            for points in listofpoints:
-                                waylat = points['latE7']/1e7
-                                waylong = points['lngE7']/1e7
-                                waypointlist.append(('',waylat,waylong))
-                                
-                                #for html
-                                agg = agg + f'{waylat},{waylong}<br>'
-                            
-                            data_headers = ('Timestamp','Latitude','Longitude')
-                            kmlactivity = f'{filename} - Waypoint Track - {waypointrecord}'
-                            kmlgen(report_folder, kmlactivity, waypointlist, data_headers)
-                            waypointlist = []
-                            
-                        elif key == 'parkingEvent':
-                            parkingloclat = values['location']['latitudeE7']/1e7
-                            parkingloclong = values['location']['longitudeE7']/1e7
-                            parkingaccuracy = values['location']['accuracyMetres']
-                            parkinglocationtime = values['timestamp'].replace('T',' ').replace('Z','')
-                            
-                            
-                    data_list_wayp.append((starttimestamp,endtimestamp,datakey,startlatitude,startlongitude,endlatitude,endlongitude,distance,activitytype,confidence,activitytypehighprob,activitytypehighprobnumber,agg,waypointrecord,parkinglocationtime,parkingloclat,parkingloclong,parkingaccuracy))
-                    
-                    starttimestamp = endtimestamp = datakey = startlatitude = startlongitude = endlatitude = endlongitude = distance = activitytype = confidence = activitytypehighprob = activitytypehighprobnumber = agg = parkinglocationtime = parkingloclat = parkingloclong = parkingaccuracy = ''
-        
-        
-        num_entries = len(data_list_wayp)
-        if num_entries > 0:
-            description = 'Semantic Locations - Activity by Month'
-            report = ArtifactHtmlReport('Semantic Locations - Activity By Month')
-            report.start_artifact_report(report_folder, f'{filename} - Activity', description)
-            report.add_script()
-            data_headers = ('Timestamp','End Timestamp','Record','Start Latitude','Start Longitude','End Latitude','End Longitude','Distance','Activity Type','Confidence','Highest Activity Type Probability','Activity High Probability Percentage','Waypoints','Waypoint Record Number for KML','Parking Location Time','Parking Location Latitude','Parking Location Longitude','Parking Accuracy in Meters')
 
-            report.write_artifact_data_table(data_headers, data_list_wayp, file_found, html_no_escape=['Waypoints'])
-            report.end_artifact_report()
-            
-            tsvname = f'{filename} - Activity'
-            tsv(report_folder, data_headers, data_list_wayp, tsvname)
-            
-            tlactivity = f'{filename} - Activity'
-            timeline(report_folder, tlactivity, data_list_wayp, data_headers)
-            
-        else:
-            logfunc('No Semantic Locations Activity by Month data available')
-        
-        num_entries = len(data_list)
-        if num_entries > 0:
-            description = 'Semantic Locations - Places visited by Month'
-            report = ArtifactHtmlReport('Semantic Locations - Places By Month')
-            report.start_artifact_report(report_folder, f'{filename} - Places', description)
-            report.add_script()
-            data_headers = ('Timestamp','End Timestamp','Record','Latitude','Longitude','Additional Latitude','Additional Longitude','Place ID','Name','Address','Device Tag','Location Confidence','Calculated Probability','Visit Confidence','Location Confidence','Place Visit Type','Place Visit Importance')
-            
-            report.write_artifact_data_table(data_headers, data_list, file_found)
-            report.end_artifact_report()
-            
-            tsvname = f'{filename} - Places'
-            tsv(report_folder, data_headers, data_list, tsvname)
-            
-            tlactivity = f'{filename} - Places'
-            timeline(report_folder, tlactivity, data_list, data_headers)
-            
-            kmlactivity = f'{filename} - Places'
-            kmlgen(report_folder, kmlactivity, data_list, data_headers)
-        else:
-            logfunc('No Semantic Locations Places by Month available')
+        for record in data.get('timelineObjects', []):
+            if 'placeVisit' not in record:
+                continue
+            pv = record['placeVisit']
+            location = pv.get('location', {})
+            source_info = location.get('sourceInfo', {})
+            devicetag = source_info.get('deviceTag', '') if isinstance(source_info, dict) else ''
+            center_lat = pv['centerLatE7'] / 1e7 if 'centerLatE7' in pv else ''
+            center_lng = pv['centerLngE7'] / 1e7 if 'centerLngE7' in pv else ''
+            duration = pv.get('duration', {})
+            data_list.append((
+                _iso_to_utc(duration.get('startTimestamp', '')),
+                _iso_to_utc(duration.get('endTimestamp', '')), 'placeVisit',
+                center_lat, center_lng,
+                location.get('latitudeE7', 0) / 1e7, location.get('longitudeE7', 0) / 1e7,
+                location.get('placeId', ''), location.get('name', ''), location.get('address', ''),
+                devicetag, location.get('locationConfidence', ''),
+                location.get('calibratedProbability', ''), pv.get('visitConfidence', ''),
+                pv.get('locationConfidence', ''), pv.get('placeVisitType', ''),
+                pv.get('placeVisitImportance', '')))
 
-__artifacts__ = {
-        "semanticLocationsMonth": (
-            "Google Takeout Archive",
-            ('*/Location History*/Semantic Location History/*/*_*.json'),
-            get_semanticLocbymonth)
-}
+    data_headers = (('Timestamp', 'datetime'), ('End Timestamp', 'datetime'), 'Record',
+                    'Latitude', 'Longitude', 'Additional Latitude', 'Additional Longitude',
+                    'Place ID', 'Name', 'Address', 'Device Tag', 'Location Confidence',
+                    'Calculated Probability', 'Visit Confidence', 'Visit Location Confidence',
+                    'Place Visit Type', 'Place Visit Importance')
+    return data_headers, data_list, context.get_relative_path(source_path)
+
+
+@artifact_processor
+def semanticLocationsMonthActivity(context):
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
+        file_found = str(file_found)
+        if not file_found.endswith('.json'):
+            continue
+        source_path = file_found
+        with open(file_found, encoding='utf-8') as f:
+            data = json.load(f)
+
+        for record in data.get('timelineObjects', []):
+            if 'activitySegment' not in record:
+                continue
+            seg = record['activitySegment']
+            start_lat = seg['startLocation']['latitudeE7'] / 1e7 if 'startLocation' in seg else ''
+            start_lon = seg['startLocation']['longitudeE7'] / 1e7 if 'startLocation' in seg else ''
+            end_lat = seg['endLocation']['latitudeE7'] / 1e7 if 'endLocation' in seg else ''
+            end_lon = seg['endLocation']['longitudeE7'] / 1e7 if 'endLocation' in seg else ''
+            duration = seg.get('duration', {})
+            activities = seg.get('activities', [])
+            high_prob_type = activities[0]['activityType'] if activities else ''
+            high_prob_num = activities[0]['probability'] if activities else ''
+
+            waypoint_path = seg.get('waypointPath', {})
+            waypoints = waypoint_path.get('waypoints', []) if isinstance(waypoint_path, dict) else []
+            agg_parts = []
+            if waypoints:
+                agg_parts.append(f'{start_lat},{start_lon}')
+                agg_parts.append(f'{end_lat},{end_lon}')
+                for pt in waypoints:
+                    agg_parts.append(f"{pt['latE7'] / 1e7},{pt['lngE7'] / 1e7}")
+            agg = '<br>'.join(agg_parts)
+
+            parking = seg.get('parkingEvent', {})
+            if parking:
+                ploc = parking.get('location', {})
+                parking_lat = ploc.get('latitudeE7', 0) / 1e7
+                parking_lon = ploc.get('longitudeE7', 0) / 1e7
+                parking_acc = ploc.get('accuracyMetres', '')
+                parking_time = _iso_to_utc(parking.get('timestamp', ''))
+            else:
+                parking_lat = parking_lon = parking_acc = parking_time = ''
+
+            data_list.append((
+                _iso_to_utc(duration.get('startTimestamp', '')),
+                _iso_to_utc(duration.get('endTimestamp', '')), 'activitySegment',
+                start_lat, start_lon, end_lat, end_lon, seg.get('distance', ''),
+                seg.get('activityType', ''), seg.get('confidence', ''), high_prob_type,
+                high_prob_num, agg, parking_time, parking_lat, parking_lon, parking_acc))
+
+    data_headers = (('Timestamp', 'datetime'), ('End Timestamp', 'datetime'), 'Record',
+                    'Start Latitude', 'Start Longitude', 'End Latitude', 'End Longitude',
+                    'Distance', 'Activity Type', 'Confidence', 'Highest Activity Type Probability',
+                    'Activity High Probability Percentage', 'Waypoints',
+                    ('Parking Location Time', 'datetime'), 'Parking Location Latitude',
+                    'Parking Location Longitude', 'Parking Accuracy in Meters')
+    return data_headers, data_list, context.get_relative_path(source_path)
