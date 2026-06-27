@@ -1,59 +1,39 @@
-# Module Description: Parses Google Chrome reading list from Takeout
-# Author: @KevinPagano3
-# Date: 2023-08-24
-# Artifact version: 0.0.1
-# Requirements: none
+__artifacts_v2__ = {
+    "chromeReadingList": {
+        "name": "Chrome Reading List",
+        "description": "Parses Google Chrome reading list from Takeout",
+        "author": "@KevinPagano3",
+        "creation_date": "2023-08-24",
+        "last_update_date": "2026-06-27",
+        "requirements": "none",
+        "category": "Google Takeout Archive",
+        "notes": "",
+        "paths": ('*/Chrome/ReadingList.html'),
+        "output_types": "standard",
+        "artifact_icon": "list",
+    }
+}
 
-import datetime
-import os
-import textwrap
 import bs4
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
+from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc
 
-def get_chromeReadingList(files_found, report_folder, seeker, wrap_text):
 
-    for file_found in files_found:
+@artifact_processor
+def chromeReadingList(context):
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        filename = os.path.basename(file_found)
-
+        source_path = file_found
         with open(file_found, encoding='utf-8') as fp:
             soup = bs4.BeautifulSoup(fp.read(), 'html.parser')
-            
-        data_list = []
-        dt = soup.find_all('dt')
-        
-        for i in dt:
+
+        for i in soup.find_all('dt'):
             n = i.find_next()
-            url = n.get('href','')
-            title = n.text
-            add_date = n.get('add_date','')
-            add_date = datetime.datetime.utcfromtimestamp((int(add_date)/1000000)).strftime('%Y-%m-%d %H:%M:%S')
-                
-            data_list.append((add_date,title,url))
-            
-        num_entries = len(data_list)
-        if num_entries > 0:
-            report = ArtifactHtmlReport('Chrome Reading List')
-            report.start_artifact_report(report_folder, 'Chrome Reading List')
-            report.add_script()
-            data_headers = ('Added Timestamp','Title','URL')
+            add_date = n.get('add_date', '')
+            add_date = convert_unix_ts_to_utc(add_date) if add_date else ''
+            data_list.append((add_date, n.text, n.get('href', '')))
 
-            report.write_artifact_data_table(data_headers, data_list, file_found)
-            report.end_artifact_report()
-
-            tsvname = f'Chrome Reading List'
-            tsv(report_folder, data_headers, data_list, tsvname)
-
-            tlactivity = f'Chrome Reading List'
-            timeline(report_folder, tlactivity, data_list, data_headers)
-        else:
-            logfunc('No Chrome Reading List data available')
-
-__artifacts__ = {
-        "chromeReadingList": (
-            "Google Takeout Archive",
-            ('*/Chrome/ReadingList.html'),
-            get_chromeReadingList)
-}
+    data_headers = (('Added Timestamp', 'datetime'), 'Title', 'URL')
+    return data_headers, data_list, context.get_relative_path(source_path)

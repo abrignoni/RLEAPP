@@ -1,59 +1,41 @@
-# Module Description: Parses Google Chrome Extensions from Takeout
-# Author: @KevinPagano3
-# Date: 2021-08-20
-# Artifact version: 0.0.1
-# Requirements: none
+__artifacts_v2__ = {
+    "chromeExtensions": {
+        "name": "Chrome Extensions",
+        "description": "Parses Google Chrome Extensions from Takeout",
+        "author": "@KevinPagano3",
+        "creation_date": "2021-08-20",
+        "last_update_date": "2026-06-27",
+        "requirements": "none",
+        "category": "Google Takeout Archive",
+        "notes": "",
+        "paths": ('*/Chrome/Extensions.json'),
+        "output_types": "standard",
+        "artifact_icon": "package",
+    }
+}
 
-import datetime
 import json
 import os
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
+from scripts.ilapfuncs import artifact_processor
 
-def get_chromeExtensions(files_found, report_folder, seeker, wrap_text):
-    
-    for file_found in files_found:
+
+@artifact_processor
+def chromeExtensions(context):
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        if not os.path.basename(file_found) == 'Extensions.json': # skip -journal and other files
+        if os.path.basename(file_found) != 'Extensions.json':
             continue
+        source_path = file_found
+        with open(file_found, encoding='utf-8') as f:
+            data = json.load(f)
 
-        with open(file_found, encoding = 'utf-8', mode = 'r') as f:
-            data = json.loads(f.read())
-        data_list = []
+        for site in data.get('Extensions', []):
+            data_list.append((site.get('name', ''), site.get('version', ''), site.get('id', ''),
+                              site.get('enabled', ''), site.get('incognito_enabled', ''),
+                              site.get('remote_install', '')))
 
-        for site in data['Extensions']:
-            
-            ext_name = site.get('name','')
-            ext_version = site.get('version','')
-            ext_ID = site.get('id','')
-            ext_enabled = site.get('enabled','')
-            incoginito_enabled = site.get('incognito_enabled','')
-            remote_install = site.get('remote_install','')
-               
-            data_list.append((ext_name, ext_version, ext_ID, ext_enabled, incoginito_enabled, remote_install))
-
-        num_entries = len(data_list)
-        if num_entries > 0:
-            report = ArtifactHtmlReport('Chrome Extensions')
-            report.start_artifact_report(report_folder, 'Chrome Extensions')
-            report.add_script()
-            data_headers = ('Name','Version','ID','Enabled','Incognito Enabled','Remote Install')
-
-            report.write_artifact_data_table(data_headers, data_list, file_found)
-            report.end_artifact_report()
-            
-            tsvname = f'Chrome Extensions'
-            tsv(report_folder, data_headers, data_list, tsvname)
-            
-            tlactivity = f'Chrome Extensions'
-            timeline(report_folder, tlactivity, data_list, data_headers)
-        else:
-            logfunc('No Chrome Extensions data available')
-
-__artifacts__ = {
-        "chromeExtensions": (
-            "Google Takeout Archive",
-            ('*/Chrome/Extensions.json'),
-            get_chromeExtensions)
-}
+    data_headers = ('Name', 'Version', 'ID', 'Enabled', 'Incognito Enabled', 'Remote Install')
+    return data_headers, data_list, context.get_relative_path(source_path)
