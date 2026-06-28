@@ -1,62 +1,79 @@
-import os
-import xlrd
-
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
-
-def get_dmlPinger(files_found, report_folder, seeker, wrap_text):
-    
-    for file_found in files_found:
-        file_found = str(file_found)
-        filename = os.path.basename(file_found)
-        
-        if filename.startswith('~'):
-            continue
-        if filename.startswith('.'):
-            continue
-        
-        loc = file_found
-        
-        
-        dth = []
-        list = []
-        data_headers = []
-        data_list =[]
-        
-        #First worksheet
-        
-        wb = xlrd.open_workbook(loc)
-        sheetnames = wb.sheet_names() 
-        sheet = wb.sheet_by_index(0)
-        #dsid = sheet.cell_value(2, 0)
-        
-        for i in range(sheet.nrows):
-            for j in range(sheet.ncols):
-                if i == 1:
-                    dth.append(sheet.cell_value(i, j))
-                if i >= 2:
-                    list.append(sheet.cell_value(i, j))
-            if i >= 2:
-                data_list.append(list) 
-            list =[]
-        
-        
-        if data_list:
-            #description = f'Sheet name: {sheetnames[0]} - {dsid}'
-            description = f'Sheet name: {sheetnames[0]}'
-            report = ArtifactHtmlReport('Pinger - DML')
-            report.start_artifact_report(report_folder, 'Pinger - DML', description)
-            report.add_script()
-            data_headers = (dth)
-            report.write_artifact_data_table(data_headers, data_list, file_found)
-            report.end_artifact_report()
-            
-        else:
-            logfunc('No Pinger DML data available')
-            
-__artifacts__ = {
-        "Pinger DML": (
-            "Pinger",
-            ('*/*DML.xlsx'),
-            get_dmlPinger)
+__artifacts_v2__ = {
+    "dmlPinger": {
+        "name": "Pinger - DML",
+        "description": "DML records from a Pinger law enforcement return (xlsx).",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2021-08-18",
+        "last_update_date": "2026-06-28",
+        "requirements": "openpyxl",
+        "category": "Pinger",
+        "notes": "",
+        "paths": ('*/*DML.xlsx',),
+        "output_types": "standard",
+        "artifact_icon": "message-square",
+    }
 }
+
+import os
+from datetime import date, time
+
+from openpyxl import load_workbook
+from openpyxl.utils.exceptions import InvalidFileException
+
+from scripts.ilapfuncs import artifact_processor
+from scripts.lavafuncs import sanitize_sql_name
+
+_RESERVED = {'from', 'to', 'order', 'group', 'where', 'select', 'index', 'join', 'references',
+             'check', 'default', 'add', 'table', 'column', 'create', 'insert', 'update', 'delete',
+             'drop', 'values', 'set', 'primary', 'key', 'unique', 'foreign', 'constraint', 'having',
+             'distinct', 'union', 'using'}
+
+
+def _safe_headers(cells):
+    seen, out = {}, []
+    for i, cell in enumerate(cells):
+        name = str(cell).strip() if cell not in (None, '') else f'Column {i + 1}'
+        if sanitize_sql_name(name) in _RESERVED:
+            name = f'{name} Value'
+        key = name.lower()
+        seen[key] = seen.get(key, -1) + 1
+        if seen[key]:
+            name = f'{name} ({seen[key]})'
+        out.append(name)
+    return out
+
+
+def _parse_xlsx(file_found, header_row):
+    workbook = load_workbook(file_found, read_only=True, data_only=True)
+    sheet = workbook.worksheets[0]
+    headers, rows = [], []
+    for i, row in enumerate(sheet.iter_rows(values_only=True)):
+        if i < header_row:
+            continue
+        cells = [str(c) if isinstance(c, (date, time)) else ('' if c is None else c) for c in row]
+        if i == header_row:
+            headers = _safe_headers(cells)
+        else:
+            rows.append(cells)
+    workbook.close()
+    return headers, rows
+
+
+@artifact_processor
+def dmlPinger(context):
+    headers, data_list, source_path = [], [], ''
+    for file_found in context.get_files_found():
+        file_found = str(file_found)
+        basename = os.path.basename(file_found)
+        if basename.startswith('~') or basename.startswith('.'):
+            continue
+        try:
+            sheet_headers, rows = _parse_xlsx(file_found, 1)
+        except (InvalidFileException, KeyError):
+            continue
+        source_path = file_found
+        if sheet_headers:
+            headers = sheet_headers
+            data_list.extend(rows)
+
+    return tuple(headers), data_list, context.get_relative_path(source_path)

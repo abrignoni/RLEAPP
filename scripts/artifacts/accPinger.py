@@ -1,44 +1,40 @@
+__artifacts_v2__ = {
+    "accPinger": {
+        "name": "Pinger - Account",
+        "description": "User account data from a Pinger law enforcement return (docx).",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2023-07-17",
+        "last_update_date": "2026-06-28",
+        "requirements": "mammoth",
+        "category": "Pinger",
+        "notes": "",
+        "paths": ('*/*.docx',),
+        "output_types": "standard",
+        "html_columns": ["User Data"],
+        "artifact_icon": "user",
+    }
+}
+
 import os
+
 import mammoth
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
+from scripts.ilapfuncs import artifact_processor
 
-def get_accPinger(files_found, report_folder, seeker, wrap_text):
+
+@artifact_processor
+def accPinger(context):
     data_list = []
-    for file_found in files_found:
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        filename = os.path.basename(file_found)
-        
-        if filename.startswith('~'):
+        basename = os.path.basename(file_found)
+        if basename.startswith('~') or basename.startswith('.'):
             continue
-        if filename.startswith('.'):
-            continue
-        
-        loc = file_found
-        
-        
-        with open(file_found, "rb") as docx_file:
+        source_path = file_found
+        with open(file_found, 'rb') as docx_file:
             result = mammoth.convert_to_html(docx_file)
-            html = result.value 
-            data_list.append((html,))
-            
-        
-        if data_list:
-            description = f'User account data'
-            report = ArtifactHtmlReport('Pinger - Account')
-            report.start_artifact_report(report_folder, 'Pinger - Account', description)
-            report.add_script()
-            data_headers = ('User Data',)
-            report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['User Data'])
-            report.end_artifact_report()
-            
-        else:
-            logfunc('No Pinger Account data available')
-            
-__artifacts__ = {
-        "Pinger Account": (
-            "Pinger",
-            ('*/*.docx'),
-            get_accPinger)
-}
+        data_list.append((result.value,))
+
+    data_headers = ('User Data',)
+    return data_headers, data_list, context.get_relative_path(source_path)
