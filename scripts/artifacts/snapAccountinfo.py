@@ -1,113 +1,122 @@
-import os
-import json
-
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html
-
-def get_snapAccountinfo(files_found, report_folder, seeker, wrap_text):
-
-    for file_found in files_found:
-        file_found = str(file_found)
-        
-        filename = os.path.basename(file_found)
-        one = (os.path.split(file_found))
-        username = (os.path.basename(one[0]))
-        
-        if filename.startswith('account.json'):
-            data_list =[]
-            with open(file_found, 'r') as fp:
-                deserialized = json.load(fp)
-            
-            for key, value in deserialized.items():
-                if key == 'Basic Information':
-                    data_list_bi = []
-                    data_list_bi.append((value['Creation Date'],value['Username'],value['Name'],value.get('Registration IP',''),value.get('Country',''),value.get('PhoneNumber',''),value.get('Carrier','')))
-                    
-                if key == 'Device Information':
-                    data_list_di = []
-                    data_list_di.append((value['Make'],value['Model ID'],value['Model Name'],value.get('User Agent',''),value['Language'],value['OS Type'],value['OS Version'],value['Connection Type']))
-                    
-                if key == 'Device History':
-                    data_list_dh = []
-                    for items in value:
-                        data_list_dh.append((items['Start Time'],items['Make'],items['Model'],items['Device Type']))
-                        
-                if key == 'Login History':
-                    data_list_lh = []
-                    for items in value:
-                        data_list_lh.append((items['Created'],items['IP'],items['Country'],items['Status'],items['Device']))
-            
-            if data_list_lh:
-                report = ArtifactHtmlReport(f'Snapchat - Login History')
-                report.start_artifact_report(report_folder, f'Snapchat - Login History')
-                report.add_script()
-                data_headers = ('Timestamp','IP','Country','Status','Device')
-                report.write_artifact_data_table(data_headers, data_list_lh, file_found, html_no_escape=['Media'])
-                report.end_artifact_report()
-                
-                tsvname = f'Snapchat - Login History'
-                tsv(report_folder, data_headers, data_list_lh, tsvname)
-                
-                tlactivity = f'Snapchat - Login History'
-                timeline(report_folder, tlactivity, data_list_lh, data_headers)
-                    
-            else:
-                logfunc(f'No Snapchat - Login History')
-            
-            if data_list_di:
-                report = ArtifactHtmlReport(f'Snapchat - Device History')
-                report.start_artifact_report(report_folder, f'Snapchat - Device History')
-                report.add_script()
-                data_headers = ('Start Time','Make','Model','Device type')
-                report.write_artifact_data_table(data_headers, data_list_di, file_found, html_no_escape=['Media'])
-                report.end_artifact_report()
-                
-                tsvname = f'Snapchat - Device History'
-                tsv(report_folder, data_headers, data_list_di, tsvname)
-                
-                tlactivity = f'Snapchat - Device History'
-                timeline(report_folder, tlactivity, data_list_di, data_headers)
-                
-            else:
-                logfunc(f'No Snapchat - Device History')
-            
-            if data_list_di:
-                report = ArtifactHtmlReport(f'Snapchat - Device Information')
-                report.start_artifact_report(report_folder, f'Snapchat - Device Information')
-                report.add_script()
-                data_headers = ('Make','Model ID','Model Name','User Agent','Language','OS Type','OS Version','Connection Type')
-                report.write_artifact_data_table(data_headers, data_list_di, file_found, html_no_escape=['Media'])
-                report.end_artifact_report()
-                
-                tsvname = f'Snapchat - Device Information'
-                tsv(report_folder, data_headers, data_list_di, tsvname)
-                
-            else:
-                logfunc(f'No Snapchat - Device Information')
-            
-            if data_list_bi:
-                report = ArtifactHtmlReport(f'Snapchat - Account Basic Info')
-                report.start_artifact_report(report_folder, f'Snapchat - Account Basic Info')
-                report.add_script()
-                data_headers = ('Timestamp','Username','Name','Registration IP','Country','Phone Number','Carrier')
-                report.write_artifact_data_table(data_headers, data_list_bi, file_found, html_no_escape=['Media'])
-                report.end_artifact_report()
-                
-                tsvname = f'Snapchat - Account Basic Info'
-                tsv(report_folder, data_headers, data_list_bi, tsvname)
-                
-                tlactivity = f'Snapchat - Account Basic Info'
-                timeline(report_folder, tlactivity, data_list_bi, data_headers)
-                
-            else:
-                logfunc(f'No Snapchat - Account Basic Info')
-            
-        
-            
-    
-__artifacts__ = {
-        "snapAccountinfo": (
-            "Snapchat Archive",
-            ('*/account.json'),
-            get_snapAccountinfo)
+__artifacts_v2__ = {
+    "snapArchiveBasicInfo": {
+        "name": "Snapchat - Account Basic Info",
+        "description": "Account basic information from a Snapchat data archive (account.json).",
+        "author": "@AlexisBrignoni", "creation_date": "2023-12-11",
+        "last_update_date": "2026-06-28", "requirements": "none",
+        "category": "Snapchat Archive", "notes": "",
+        "paths": ('*/account.json',), "output_types": "standard", "artifact_icon": "user",
+    },
+    "snapArchiveDeviceInfo": {
+        "name": "Snapchat - Device Information",
+        "description": "Device information from a Snapchat data archive (account.json).",
+        "author": "@AlexisBrignoni", "creation_date": "2023-12-11",
+        "last_update_date": "2026-06-28", "requirements": "none",
+        "category": "Snapchat Archive", "notes": "",
+        "paths": ('*/account.json',), "output_types": "standard", "artifact_icon": "smartphone",
+    },
+    "snapArchiveDeviceHistory": {
+        "name": "Snapchat - Device History",
+        "description": "Device history from a Snapchat data archive (account.json).",
+        "author": "@AlexisBrignoni", "creation_date": "2023-12-11",
+        "last_update_date": "2026-06-28", "requirements": "none",
+        "category": "Snapchat Archive", "notes": "",
+        "paths": ('*/account.json',), "output_types": "standard", "artifact_icon": "clock",
+    },
+    "snapArchiveLoginHistory": {
+        "name": "Snapchat - Login History",
+        "description": "Login history from a Snapchat data archive (account.json).",
+        "author": "@AlexisBrignoni", "creation_date": "2023-12-11",
+        "last_update_date": "2026-06-28", "requirements": "none",
+        "category": "Snapchat Archive", "notes": "",
+        "paths": ('*/account.json',), "output_types": "standard", "artifact_icon": "log-in",
+    }
 }
+
+import json
+import os
+from datetime import datetime, timezone
+
+from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc
+
+_MONTHS = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
+           'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12}
+
+
+def _snap_ts(value):
+    value = (value or '').strip()
+    if not value:
+        return value
+    cleaned = value.replace(' UTC', '').strip()
+    if cleaned.isdigit():
+        return convert_unix_ts_to_utc(int(cleaned))
+    try:
+        dt = datetime.fromisoformat(cleaned.replace('Z', '+00:00'))
+        return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt.astimezone(timezone.utc)
+    except ValueError:
+        pass
+    try:
+        parts = value.split(' ')
+        return datetime(int(parts[-1]), _MONTHS[parts[1]], int(parts[2]),
+                        *(int(x) for x in parts[3].split(':')), tzinfo=timezone.utc)
+    except (IndexError, KeyError, ValueError):
+        return value
+
+
+def _account_json(context):
+    for file_found in context.get_files_found():
+        file_found = str(file_found)
+        if os.path.basename(file_found).startswith('account.json'):
+            with open(file_found, encoding='utf-8') as fp:
+                return file_found, json.load(fp)
+    return '', {}
+
+
+@artifact_processor
+def snapArchiveBasicInfo(context):
+    source_path, data = _account_json(context)
+    data_list = []
+    bi = data.get('Basic Information')
+    if bi:
+        data_list.append((_snap_ts(bi.get('Creation Date', '')), bi.get('Username', ''),
+                          bi.get('Name', ''), bi.get('Registration IP', ''), bi.get('Country', ''),
+                          bi.get('PhoneNumber', ''), bi.get('Carrier', '')))
+    data_headers = (('Timestamp', 'datetime'), 'Username', 'Name', 'Registration IP', 'Country',
+                    ('Phone Number', 'phonenumber'), 'Carrier')
+    return data_headers, data_list, context.get_relative_path(source_path)
+
+
+@artifact_processor
+def snapArchiveDeviceInfo(context):
+    source_path, data = _account_json(context)
+    data_list = []
+    di = data.get('Device Information')
+    if di:
+        data_list.append((di.get('Make', ''), di.get('Model ID', ''), di.get('Model Name', ''),
+                          di.get('User Agent', ''), di.get('Language', ''), di.get('OS Type', ''),
+                          di.get('OS Version', ''), di.get('Connection Type', '')))
+    data_headers = ('Make', 'Model ID', 'Model Name', 'User Agent', 'Language', 'OS Type',
+                    'OS Version', 'Connection Type')
+    return data_headers, data_list, context.get_relative_path(source_path)
+
+
+@artifact_processor
+def snapArchiveDeviceHistory(context):
+    source_path, data = _account_json(context)
+    data_list = []
+    for item in data.get('Device History', []):
+        data_list.append((_snap_ts(item.get('Start Time', '')), item.get('Make', ''),
+                          item.get('Model', ''), item.get('Device Type', '')))
+    data_headers = (('Start Time', 'datetime'), 'Make', 'Model', 'Device Type')
+    return data_headers, data_list, context.get_relative_path(source_path)
+
+
+@artifact_processor
+def snapArchiveLoginHistory(context):
+    source_path, data = _account_json(context)
+    data_list = []
+    for item in data.get('Login History', []):
+        data_list.append((_snap_ts(item.get('Created', '')), item.get('IP', ''),
+                          item.get('Country', ''), item.get('Status', ''), item.get('Device', '')))
+    data_headers = (('Timestamp', 'datetime'), 'IP', 'Country', 'Status', 'Device')
+    return data_headers, data_list, context.get_relative_path(source_path)
