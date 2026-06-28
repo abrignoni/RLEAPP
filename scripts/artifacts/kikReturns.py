@@ -1,22 +1,54 @@
-import os
-import datetime
-import csv
-import codecs
-import shutil
+def _meta(name, paths, icon, html_columns=None):
+    meta = {"name": f"Kik - {name}",
+            "description": f"{name} from a Kik law enforcement return.",
+            "author": "@AlexisBrignoni", "creation_date": "2021-08-17",
+            "last_update_date": "2026-06-28", "requirements": "none",
+            "category": "Kik Returns", "notes": "", "paths": paths,
+            "output_types": "standard", "artifact_icon": icon}
+    if html_columns:
+        meta["html_columns"] = html_columns
+    return meta
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html
+
+__artifacts_v2__ = {
+    "kikBind": _meta("Bind", ('*/logs/bind.txt',), "log-in"),
+    "kikChatPlatformSentReceived": _meta("Chat Platform Sent Received",
+                                         ('*/logs/chat_platform_sent_received.txt',), "repeat"),
+    "kikChatPlatformSent": _meta("Chat Platform Sent", ('*/logs/chat_platform_sent.txt',), "send"),
+    "kikChatSentReceived": _meta("Chat Sent Received", ('*/logs/chat_sent_received.txt',),
+                                 "message-square"),
+    "kikChatSent": _meta("Chat Sent", ('*/logs/chat_sent.txt',), "message-circle"),
+    "kikAbuseReport": _meta("Abuse Report", ('*/logs/*abuse',), "alert-triangle",
+                            html_columns=["Data"]),
+    "kikFriendAdded": _meta("Friend Added", ('*/logs/friend_added.txt',), "user-plus"),
+    "kikGroupReceiveMsgPlatform": _meta("Group Receive Msg Platform",
+                                        ('*/logs/group_receive_msg_platform.txt',), "download"),
+    "kikGroupReceiveMsg": _meta("Group Receive Msg", ('*/logs/group_receive_msg.txt',), "users"),
+    "kikGroupSendMsgPlatform": _meta("Group Send Msg Platform",
+                                     ('*/logs/group_send_msg_platform.txt',), "upload"),
+    "kikGroupSendMsg": _meta("Group Send Msg", ('*/logs/group_send_msg.txt',), "users"),
+    "kikTextMessageData": _meta("Text Message Data",
+                                ('*/content/text-msg-data/*data-text.csv',), "file-text"),
+    "kikBinds": _meta("Binds", ('*/content/text-msg-data/*binds.csv',), "link"),
+}
+
+import csv
+import os
+from datetime import datetime, timezone
+
+from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc, check_in_media
+
 
 def utf8_in_extended_ascii(input_string, *, raise_on_unexpected=False):
-    """Returns a tuple of bool (whether mis-encoded utf-8 is present) and str (the converted string)"""
-    output = []  # individual characters, join at the end
-    is_in_multibyte = False  # True if we're currently inside a utf-8 multibyte character
+    """Returns a tuple of bool (whether mis-encoded utf-8 is present) and str (the converted)."""
+    output = []
+    is_in_multibyte = False
     multibytes_expected = 0
     multibyte_buffer = []
     mis_encoded_utf8_present = False
-    
+
     def handle_bad_data(index, character):
-        if not raise_on_unexpected: # not raising, so we dump the buffer into output and append this character
+        if not raise_on_unexpected:
             output.extend(multibyte_buffer)
             multibyte_buffer.clear()
             output.append(character)
@@ -26,426 +58,213 @@ def utf8_in_extended_ascii(input_string, *, raise_on_unexpected=False):
             multibytes_expected = 0
         else:
             raise ValueError(f"Expected multibyte continuation at index: {index}")
-            
-    for idx, c in enumerate(input_string):
-        code_point = ord(c)
-        if code_point <= 0x7f or code_point > 0xf4:  # ASCII Range data or higher than you get for mis-encoded utf-8:
+
+    for idx, char in enumerate(input_string):
+        code_point = ord(char)
+        if code_point <= 0x7f or code_point > 0xf4:
             if not is_in_multibyte:
-                output.append(c)  # not in a multibyte, valid ascii-range data, so we append
+                output.append(char)
             else:
-                handle_bad_data(idx, c)
-        else:  # potentially utf-8
-            if (code_point & 0xc0) == 0x80:  # continuation byte
+                handle_bad_data(idx, char)
+        else:
+            if (code_point & 0xc0) == 0x80:
                 if is_in_multibyte:
-                    multibyte_buffer.append(c)
+                    multibyte_buffer.append(char)
                 else:
-                    handle_bad_data(idx, c)
-            else:  # start-byte
+                    handle_bad_data(idx, char)
+            else:
                 if not is_in_multibyte:
-                    assert multibytes_expected == 0
-                    assert len(multibyte_buffer) == 0
                     while (code_point & 0x80) != 0:
                         multibytes_expected += 1
                         code_point <<= 1
-                    multibyte_buffer.append(c)
+                    multibyte_buffer.append(char)
                     is_in_multibyte = True
                 else:
-                    handle_bad_data(idx, c)
-                    
-        if is_in_multibyte and len(multibyte_buffer) == multibytes_expected:  # output utf-8 character if complete
+                    handle_bad_data(idx, char)
+
+        if is_in_multibyte and len(multibyte_buffer) == multibytes_expected:
             utf_8_character = bytes(ord(x) for x in multibyte_buffer).decode("utf-8")
             output.append(utf_8_character)
             multibyte_buffer.clear()
             is_in_multibyte = False
             multibytes_expected = 0
             mis_encoded_utf8_present = True
-        
-    if multibyte_buffer:  # if we have left-over data
+
+    if multibyte_buffer:
         handle_bad_data(len(input_string), "")
-    
+
     return mis_encoded_utf8_present, "".join(output)
 
 
-def get_kikReturns(files_found, report_folder, seeker, wrap_text):
-    
-    for file_found in files_found:
+def _utf8(value):
+    return utf8_in_extended_ascii(value or '')[1]
+
+
+def _ts(value):
+    if value in (None, ''):
+        return ''
+    text = str(value).strip()
+    if text.isdigit():
+        return convert_unix_ts_to_utc(int(text))
+    try:
+        dt = datetime.fromisoformat(text.replace('Z', '+00:00'))
+        return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt.astimezone(timezone.utc)
+    except ValueError:
+        return value
+
+
+def _tab(context, basename, headers, build_row, min_len):
+    data_list, source_path = [], ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        
-        filename = os.path.basename(file_found)
-        
-        if filename.startswith('bind.txt'):
-            data_list =[]
-            with open(file_found, 'r', encoding='unicode_escape') as f:
-                delimited = csv.reader(f, delimiter='\t')
-                for item in delimited:
-                    user = item[1]
-                    ip = item[2]
-                    port = item [3]
-                    timestamp = item[4]
-                    info = item[5]
-                    data_list.append((timestamp, user, ip, port, info))
-                
-            if data_list:
-                report = ArtifactHtmlReport('Kik - Bind')
-                report.start_artifact_report(report_folder, 'Kik - Bind.txt')
-                report.add_script()
-                data_headers = ('Timestamp', 'User', 'IP', 'Port', 'Info')
-                report.write_artifact_data_table(data_headers, data_list, file_found)
-                report.end_artifact_report()
-                
-                tlactivity = f'Kik - bind'
-                timeline(report_folder, tlactivity, data_list, data_headers)
-            else:
-                logfunc('No Kik - Bind data available')
-                
-        if filename.startswith('chat_platform_sent_received.txt'):
-            data_list =[]
-            with open(file_found, 'r', encoding='unicode_escape') as f:
-                delimited = csv.reader(f, delimiter='\t')
-                for item in delimited:
-                    user = item[0]
-                    user_other = item[1]
-                    ip = item[2]
-                    ts = item[3]
-                    app = item[4]
-                    cid = item[5]
-                    data_list.append((ts, user, user_other, ip, app, cid))
-                            
+        base = os.path.basename(file_found)
+        if base.startswith('.') or not base.startswith(basename):
+            continue
+        source_path = file_found
+        with open(file_found, encoding='unicode_escape') as f:
+            for item in csv.reader(f, delimiter='\t'):
+                if len(item) < min_len:
+                    continue
+                data_list.append(build_row(item))
+    return tuple(headers), data_list, context.get_relative_path(source_path)
 
-            if data_list:
-                report = ArtifactHtmlReport('Kik - Chat Platform Sent Received')
-                report.start_artifact_report(report_folder, 'Kik - Chat Platform Sent Received')
-                report.add_script()
-                data_headers = ('Timestamp', 'User', 'Friend User', 'IP', 'APP', 'CID')
-                report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
-                report.end_artifact_report()
-                
-                tlactivity = f'Kik - Chat Platform Sent Received'
-                timeline(report_folder, tlactivity, data_list, data_headers)
-            else:
-                logfunc('No Kik Chat Platform Sent Received data available')
-        
-        
-        
-        if filename.startswith('chat_platform_sent.txt'):
-            data_list =[]
-            with open(file_found, 'r', encoding='unicode_escape') as f:
-                delimited = csv.reader(f, delimiter='\t')
-                for item in delimited:
-                    user = item[1]
-                    user_other = item[2]
-                    app = item[3]
-                    contentID = item[4]
-                    info = item[5]
-                    timestamp = item[6]
-                    thumb = ''
-                    thumb = media_to_html(contentID, files_found, report_folder)
-                    data_list.append((timestamp, user, user_other, app, info, contentID, thumb))
-                        
-                        
-                        
-            if data_list:
-                report = ArtifactHtmlReport('Kik - Chat Platform Sent')
-                report.start_artifact_report(report_folder, 'Kik  - Chat Platform Sent')
-                report.add_script()
-                data_headers = ('Timestamp', 'User', 'User', 'App', 'IP', 'Content ID', 'Content')
-                report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
-                report.end_artifact_report()
-                
-                tlactivity = f'Kik - Chat Platform Sent'
-                timeline(report_folder, tlactivity, data_list, data_headers)
-            else:
-                logfunc('No Kik Chat Platform Sent data available')
-        
-        if filename.startswith('chat_sent_received.txt'):
-            data_list =[]
-            with open(file_found, 'r', encoding='unicode_escape') as f:
-                delimited = csv.reader(f, delimiter='\t')
-                for item in delimited:
-                    user = item[1]
-                    user_other = item[2]
-                    info_one = item[3]
-                    info_two = item[4]
-                    timestamp = item[5]
-                    thumb = ''
-                    
-                    data_list.append((timestamp, user, user_other, info_one, info_two))
-                    #info_two says REDACTED in my data set. Might be some data in other returns. Leaving code for content available in case sample data comes up. If so if REDACTED else content.
-                    '''
-                    thumb = media_to_html(contentID, files_found, report_folder)
-                    '''    
-                        
-            if data_list:
-                report = ArtifactHtmlReport('Kik - Chat Sent Received')
-                report.start_artifact_report(report_folder, 'Kik - Chat Sent Received')
-                report.add_script()
-                data_headers = ('Timestamp', 'User', 'User', 'Info', 'Info')
-                report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
-                report.end_artifact_report()
-                
-                tlactivity = f'Kik - Chat Sent Received'
-                timeline(report_folder, tlactivity, data_list, data_headers)
-            else:
-                logfunc('No Kik Chat Sent Received data available')
-                
-        if filename.startswith('chat_sent.txt'):
-            data_list =[]
-            with open(file_found, 'r', encoding='unicode_escape') as f:
-                delimited = csv.reader(f, delimiter='\t')
-                for item in delimited:
-                    user = item[1]
-                    user_other = item[2]
-                    info_one = item[3]
-                    info_two = item[4]
-                    timestamp = item[5]
-                    thumb = ''
-                    
-                    data_list.append((timestamp, user, user_other, info_one, info_two))
-                                        
-            if data_list:
-                report = ArtifactHtmlReport('Kik - Chat Sent')
-                report.start_artifact_report(report_folder, 'Kik - Chat Sent')
-                report.add_script()
-                data_headers = ('Timestamp', 'User', 'User', 'Info', 'IP')
-                report.write_artifact_data_table(data_headers, data_list, file_found)
-                report.end_artifact_report()
-        
-                tlactivity = f'Kik - Chat Sent'
-                timeline(report_folder, tlactivity, data_list, data_headers)
-            else:
-                logfunc('No Kik Chat Sent data available')
-                
-        if filename.endswith('abuse'):
-            if filename.startswith('.'):
-                break
-            else:
-                data_list =[]
-                aggregator = ''
-                with open(file_found, 'r', encoding='unicode_escape') as f:
-                    for line in f:
-                        if line.startswith('-------Report'):
-                            if aggregator != '':
-                                data_list.append((timestamp, reportFrom, aggregator))
-                                aggregator = ''
-                            line = line.split(' ')
-                            reportFrom = line[2]
-                            timestamp = line[4].strip('(')
-                            timestamp = timestamp + ' ' + line[5]
-                        else:
-                            aggregator = aggregator  + line + '<br>'
-                    data_list.append((timestamp, reportFrom, aggregator))
-                if data_list:
-                    report = ArtifactHtmlReport('Kik - Abuse Report')
-                    report.start_artifact_report(report_folder, 'Kik - Abuse Report')
-                    report.add_script()
-                    data_headers = ('Timestamp', 'Report From', 'Data')
-                    report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Data'])
-                    report.end_artifact_report()
 
-                    tlactivity = f'Kik - Abuse Report'
-                    timeline(report_folder, tlactivity, data_list, data_headers)
+@artifact_processor
+def kikBind(context):
+    headers = (('Timestamp', 'datetime'), 'User', 'IP', 'Port', 'Info')
+    return _tab(context, 'bind.txt', headers,
+                lambda item: (_ts(item[4]), item[1], item[2], item[3], item[5]), 6)
+
+
+@artifact_processor
+def kikChatPlatformSentReceived(context):
+    headers = (('Timestamp', 'datetime'), 'User', 'Friend User', 'IP', 'APP', 'CID')
+    return _tab(context, 'chat_platform_sent_received.txt', headers,
+                lambda item: (_ts(item[3]), item[0], item[1], item[2], item[4], item[5]), 6)
+
+
+@artifact_processor
+def kikChatPlatformSent(context):
+    headers = (('Timestamp', 'datetime'), 'User', 'Other User', 'App', 'IP', 'Content ID',
+               ('Content', 'media'))
+    return _tab(context, 'chat_platform_sent.txt', headers,
+                lambda item: (_ts(item[6]), item[1], item[2], item[3], item[5], item[4],
+                              check_in_media(str(item[4]), str(item[4]))), 7)
+
+
+@artifact_processor
+def kikChatSentReceived(context):
+    headers = (('Timestamp', 'datetime'), 'User', 'Other User', 'Info 1', 'Info 2')
+    return _tab(context, 'chat_sent_received.txt', headers,
+                lambda item: (_ts(item[5]), item[1], item[2], item[3], item[4]), 6)
+
+
+@artifact_processor
+def kikChatSent(context):
+    headers = (('Timestamp', 'datetime'), 'User', 'Other User', 'Info', 'IP')
+    return _tab(context, 'chat_sent.txt', headers,
+                lambda item: (_ts(item[5]), item[1], item[2], item[3], item[4]), 6)
+
+
+@artifact_processor
+def kikFriendAdded(context):
+    headers = (('Timestamp', 'datetime'), 'User', 'Other User')
+    return _tab(context, 'friend_added.txt', headers,
+                lambda item: (_ts(item[3]), item[1], item[2]), 4)
+
+
+@artifact_processor
+def kikGroupReceiveMsgPlatform(context):
+    headers = (('Timestamp', 'datetime'), 'User', 'Field', 'Other User', 'App', 'Info',
+               'Content ID', ('Content', 'media'))
+    return _tab(context, 'group_receive_msg_platform.txt', headers,
+                lambda item: (_ts(item[7]), item[1], item[2], item[3], item[4], item[6], item[5],
+                              check_in_media(str(item[5]), str(item[5]))), 8)
+
+
+@artifact_processor
+def kikGroupReceiveMsg(context):
+    headers = (('Timestamp', 'datetime'), 'User', 'Value', 'Other User', 'Info 1', 'Info 2')
+    return _tab(context, 'group_receive_msg.txt', headers,
+                lambda item: (_ts(item[6]), item[1], item[2], item[3], item[4], item[5]), 6)
+
+
+@artifact_processor
+def kikGroupSendMsgPlatform(context):
+    headers = (('Timestamp', 'datetime'), 'User', 'Field', 'Other User', 'App', 'IP', 'Content ID',
+               ('Content', 'media'))
+    return _tab(context, 'group_send_msg_platform.txt', headers,
+                lambda item: (_ts(item[7]), item[1], item[2], item[3], item[4], item[6], item[5],
+                              check_in_media(str(item[5]), str(item[5]))), 8)
+
+
+@artifact_processor
+def kikGroupSendMsg(context):
+    headers = (('Timestamp', 'datetime'), 'User', 'Field 1', 'Other User', 'Field 2', 'IP')
+    return _tab(context, 'group_send_msg.txt', headers,
+                lambda item: (_ts(item[6]), item[1], item[2], item[3], item[4], item[5]), 7)
+
+
+@artifact_processor
+def kikAbuseReport(context):
+    data_list, source_path = [], ''
+    for file_found in context.get_files_found():
+        file_found = str(file_found)
+        base = os.path.basename(file_found)
+        if base.startswith('.') or not base.endswith('abuse'):
+            continue
+        source_path = file_found
+        timestamp = report_from = aggregator = ''
+        with open(file_found, encoding='unicode_escape') as f:
+            for line in f:
+                if line.startswith('-------Report'):
+                    if aggregator != '':
+                        data_list.append((_ts(timestamp), report_from, aggregator))
+                        aggregator = ''
+                    parts = line.split(' ')
+                    report_from = parts[2] if len(parts) > 2 else ''
+                    timestamp = (parts[4].strip('(') + ' ' + parts[5]) if len(parts) > 5 else ''
                 else:
-                    logfunc('No Kik Abuse Report data available')
-                    
-        if filename.startswith('friend_added.txt'):
-            data_list =[]
-            with open(file_found, 'r', encoding='unicode_escape') as f:
-                delimited = csv.reader(f, delimiter='\t')
-                for item in delimited:
-                    user = item[1]
-                    user_other = item[2]
-                    timestamp = item[3]
-                    
-                    data_list.append((timestamp, user, user_other))
-                    
-            if data_list:
-                report = ArtifactHtmlReport('Kik - Friend Added')
-                report.start_artifact_report(report_folder, 'Kik - Friend Added')
-                report.add_script()
-                data_headers = ('Timestamp', 'User', 'User')
-                report.write_artifact_data_table(data_headers, data_list, file_found)
-                report.end_artifact_report()
-                
-                tlactivity = f'Kik - Friend Added'
-                timeline(report_folder, tlactivity, data_list, data_headers)
-            
-            else:
-                logfunc('No Kik Friend Added data available')
-                
-        if filename.startswith('group_receive_msg_platform.txt'):
-            data_list =[]
-            with open(file_found, 'r', encoding='unicode_escape') as f:
-                delimited = csv.reader(f, delimiter='\t')
-                for item in delimited:
-                    user = item[1]
-                    field = item[2]
-                    user_other = item[3]
-                    appid = item[4]
-                    contentID = item[5]
-                    info = item[6]
-                    timestamp = item[7]
-                    thumb = ''
-                    thumb = media_to_html(contentID, files_found, report_folder)
-                    data_list.append((timestamp, user, field, user_other, appid, info, contentID, thumb))
-                    
-            if data_list:
-                report = ArtifactHtmlReport('Kik - Group Receive Msg Platform')
-                report.start_artifact_report(report_folder, 'Kik  - Group Receive Msg Platform')
-                report.add_script()
-                data_headers = ('Timestamp', 'User', 'Field', 'User', 'App', 'Info', 'Content ID', 'Content')
-                report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
-                report.end_artifact_report()
-                
-                tlactivity = f'Kik - Group Receive Msg Platform'
-                timeline(report_folder, tlactivity, data_list, data_headers)
-            else:
-                logfunc('No Kik Group Receive Msg Platform data available')
-                
-        if filename.startswith('group_receive_msg.txt'):
-            data_list =[]
-            with open(file_found, 'r', encoding='unicode_escape') as f:
-                delimited = csv.reader(f, delimiter='\t')
-                for item in delimited:
-                    user = item[1]
-                    value = item[2]
-                    user_other = item[3]
-                    info_one = item[4]
-                    info_two = item[5]
-                    timestamp = item[6]
-                    thumb = ''
-                    
-                    data_list.append((timestamp, user, value, user_other, info_one, info_two))
-                    
-            if data_list:
-                report = ArtifactHtmlReport('Kik - Group Receive Msg')
-                report.start_artifact_report(report_folder, 'Kik - Group Receive Msg')
-                report.add_script()
-                data_headers = ('Timestamp', 'User', 'Value', 'User', 'Info', 'Info')
-                report.write_artifact_data_table(data_headers, data_list, file_found)
-                report.end_artifact_report()
-                
-                tlactivity = f'Kik - Group Receive Msg'
-                timeline(report_folder, tlactivity, data_list, data_headers)
-            else:
-                logfunc('No Kik Group Receive Msg data available')
-                
-        if filename.startswith('group_send_msg_platform.txt'):
-            
-            data_list =[]
-            with open(file_found, 'r', encoding='unicode_escape') as f:
-                delimited = csv.reader(f, delimiter='\t')
-                for item in delimited:
-                    user = item[1]
-                    field = item[2]
-                    user_other = item[3]
-                    appid = item[4]
-                    contentID = item[5]
-                    info = item[6]
-                    timestamp = item[7]
-                    thumb = ''
-                    thumb = media_to_html(contentID, files_found, report_folder)
-                    data_list.append((timestamp, user, field, user_other, appid, info, contentID, thumb))
-                    
-            if data_list:
-                report = ArtifactHtmlReport('Kik - Group Send Msg Platform')
-                report.start_artifact_report(report_folder, 'Kik - Group Send Msg Platform')
-                report.add_script()
-                data_headers = ('Timestamp', 'User', 'Field', 'User', 'App', 'IP', 'Content ID', 'Content')
-                report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
-                report.end_artifact_report()
-                
-                tlactivity = f'Kik - Group Send Msg Platform'
-                timeline(report_folder, tlactivity, data_list, data_headers)
-            else:
-                logfunc('No Kik Group Send Msg Platform data available')
-                
-        if filename.startswith('group_send_msg.txt'):
-            
-            data_list =[]
-            with open(file_found, 'r', encoding='unicode_escape') as f:
-                delimited = csv.reader(f, delimiter='\t')
-                for item in delimited:
-                    user = item[1]
-                    field = item[2]
-                    user_other = item[3]
-                    info_one = item[4]
-                    ip = item[5]
-                    timestamp = item[6]
-                    
-                    data_list.append((timestamp, user, field, user_other,info_one, ip))
-                            
-            if data_list:
-                report = ArtifactHtmlReport('Kik - Group Send Msg')
-                report.start_artifact_report(report_folder, 'Kik - Group Send Msg')
-                report.add_script()
-                data_headers = ('Timestamp', 'User', 'Field', 'User', 'Field', 'IP')
-                report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
-                report.end_artifact_report()
-                
-                tlactivity = f'Kik - Group Send Msg'
-                timeline(report_folder, tlactivity, data_list, data_headers)
-            else:
-                logfunc('No Kik Group Send Msg data available')
-                
-        if filename.endswith('data-text.csv'):
-            
-            data_list =[]
-            with open(file_found, 'r', encoding='unicode_escape') as f:
-                delimited = csv.reader(f, delimiter=',')
-                for item in delimited:
-                    msgid = item[0]
-                    senderjid = item[4]
-                    receiverjid = item[5]
-                    filenamed = item[3]
-                    msg = utf8_in_extended_ascii(item[3])[1]
-                    ip = item[6]
-                    port = item[7]
-                    sentat = item[9]
-                    sentatts = item[10]
-                    data_list.append((sentat,senderjid,receiverjid,msg,ip,port,msgid))
-                    
-            if data_list:
-                report = ArtifactHtmlReport('Kik - Text Message Data')
-                report.start_artifact_report(report_folder, 'Kik - Text Message Data')
-                report.add_script()
-                data_headers = ('Timestamp', 'Sender ID', 'Receiver ID', 'Message', 'IP', 'Port', 'Message ID')
-                report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
-                report.end_artifact_report()
-                
-                tlactivity = f'Kik Text Message Data'
-                timeline(report_folder, tlactivity, data_list, data_headers)
-            else:
-                logfunc('No Kik Text Message Data available')
-                
-        if filename.endswith('binds.csv'):
-            
-            data_list =[]
-            with open(file_found, 'r', encoding='unicode_escape') as f:
-                delimited = csv.reader(f, delimiter=',')
-                for item in delimited:
-                    userid = item[0]
-                    ip = item[1]
-                    port = item[2]
-                    ts = item[3]
-                    device = item[4]
-                    data_list.append((ts,userid,ip,port,device))
-                    
-            if data_list:
-                report = ArtifactHtmlReport('Kik - Binds')
-                report.start_artifact_report(report_folder, 'Kik - Binds')
-                report.add_script()
-                data_headers = ('Timestamp', 'Sender ID', 'IP', 'Port', 'Device')
-                report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Content'])
-                report.end_artifact_report()
-                
-                tlactivity = f'Kik - Binds'
-                timeline(report_folder, tlactivity, data_list, data_headers)
-            else:
-                logfunc('No Kik - Binds available')
+                    aggregator = aggregator + line + '<br>'
+            if aggregator != '':
+                data_list.append((_ts(timestamp), report_from, aggregator))
+    data_headers = (('Timestamp', 'datetime'), 'Report From', 'Data')
+    return data_headers, data_list, context.get_relative_path(source_path)
 
-__artifacts__ = {
-        "kikReturns": (
-            "Kik Returns",
-            ('*/logs/*.txt','*/logs/*','*/content/*','*/content/text-msg-data/*.csv'),
-            get_kikReturns)
-}
+
+@artifact_processor
+def kikTextMessageData(context):
+    data_list, source_path = [], ''
+    for file_found in context.get_files_found():
+        file_found = str(file_found)
+        base = os.path.basename(file_found)
+        if base.startswith('.') or not base.endswith('data-text.csv'):
+            continue
+        source_path = file_found
+        with open(file_found, encoding='unicode_escape') as f:
+            for item in csv.reader(f, delimiter=','):
+                if len(item) < 10:
+                    continue
+                data_list.append((_ts(item[9]), item[4], item[5], _utf8(item[3]), item[6], item[7],
+                                  item[0]))
+    data_headers = (('Timestamp', 'datetime'), 'Sender ID', 'Receiver ID', 'Message', 'IP', 'Port',
+                    'Message ID')
+    return data_headers, data_list, context.get_relative_path(source_path)
+
+
+@artifact_processor
+def kikBinds(context):
+    data_list, source_path = [], ''
+    for file_found in context.get_files_found():
+        file_found = str(file_found)
+        base = os.path.basename(file_found)
+        if base.startswith('.') or not base.endswith('binds.csv'):
+            continue
+        source_path = file_found
+        with open(file_found, encoding='unicode_escape') as f:
+            for item in csv.reader(f, delimiter=','):
+                if len(item) < 5:
+                    continue
+                data_list.append((_ts(item[3]), item[0], item[1], item[2], item[4]))
+    data_headers = (('Timestamp', 'datetime'), 'Sender ID', 'IP', 'Port', 'Device')
+    return data_headers, data_list, context.get_relative_path(source_path)
