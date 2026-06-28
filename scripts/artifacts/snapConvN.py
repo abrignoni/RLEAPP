@@ -1,125 +1,82 @@
-import os
-import datetime
+__artifacts_v2__ = {
+    "snapConvN": {
+        "name": "Snapchat - Conversations",
+        "description": "Conversations parsed from a Snapchat law enforcement return (conversations.csv).",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2024-06-13",
+        "last_update_date": "2026-06-27",
+        "requirements": "none",
+        "category": "Snapchat Returns",
+        "notes": "",
+        "paths": ('*/conversations.csv', '*/*.*'),
+        "output_types": "standard",
+        "artifact_icon": "message-square",
+    }
+}
+
 import csv
-import traceback
+import os
+from datetime import datetime, timezone
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html, kmlgen
+from scripts.ilapfuncs import artifact_processor, check_in_media
 
-def monthletter(month):
-    monthdict = {'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04', 'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08', 'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'}
-    return monthdict[month]
+_MONTHS = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
+           'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12}
 
-def read_multiline_csv(file_path):
+
+def _snap_ts(value):
+    # Snapchat return format: "Wed Aug 19 12:00:00 UTC 2021" (the tz field is assumed UTC).
+    parts = (value or '').split(' ')
+    try:
+        return datetime(int(parts[5]), _MONTHS[parts[1]], int(parts[2]),
+                        *(int(x) for x in parts[3].split(':')), tzinfo=timezone.utc)
+    except (IndexError, KeyError, ValueError):
+        return value
+
+
+def _read_multiline_csv(file_path):
     rows = []
-    start_adding = False
-    with open(file_path, 'r', newline='', encoding='utf-8') as csvfile:
-        reader = csv.reader(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
-        for row in reader:
-            if start_adding:
+    start = False
+    with open(file_path, 'r', newline='', encoding='utf-8') as f:
+        for row in csv.reader(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL):
+            if start:
                 rows.append(row)
             elif '===========================' in row:
-                start_adding = True
+                start = True
     return rows
 
 
-def get_snapConvN(files_found, report_folder, seeker, wrap_text):
+@artifact_processor
+def snapConvN(context):
+    ts_idx, media_idx = 14, 12
+    data_headers = (('Timestamp', 'datetime'), 'Content_type', 'Message_type', 'Conversation_id',
+                    'Message_id', 'Reply_to_message_id', 'Conversation_title', 'Sender_username',
+                    'Sender_user_id', 'Recipient_username', 'Recipient_user_id', 'Text',
+                    'Media_id', 'Is_saved', 'Is_one_on_one', 'Group_member_usernames',
+                    'Group_member_user_ids', 'Reactions', 'Saved_by', 'Screenshotted_by',
+                    'Replayed_by', 'Screen_recorded_by', 'Read_by', 'Chat_wallpaper_setter_id',
+                    'Upload_ip', 'Source_port_number', ('Media', 'media'))
+    non_media = len(data_headers) - 1
 
-    for file_found in files_found:
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        
-        filename = os.path.basename(file_found)
-        one = (os.path.split(file_found))
-        username = (os.path.basename(one[0]))
-        
-        data_list_f = []
-        
-        if filename.startswith('conversations.csv'):
-            csv_rows = read_multiline_csv(file_found)
+        if not os.path.basename(file_found).startswith('conversations.csv'):
+            continue
+        source_path = file_found
+        rows = _read_multiline_csv(file_found)
+        for raw in rows[1:]:
+            if len(raw) <= ts_idx:
+                continue
+            entry = list(raw)
+            entry.insert(0, _snap_ts(entry[ts_idx]))
+            del entry[ts_idx + 1]
+            media_raw = entry[media_idx] if len(entry) > media_idx else ''
+            refs = [r for r in (check_in_media(m.strip(), m.strip())
+                                for m in media_raw.split(';') if m.strip()) if r]
+            entry = (entry + [''] * non_media)[:non_media]
+            entry.append(refs)
+            data_list.append(entry)
 
-            data_list_f = []
-            try:
-                header = csv_rows[0]
-            
-                timestamp = header[14]
-                header.insert(0,timestamp)
-                del header[15]
-    
-                data_list = csv_rows[1:]
-                for entry in data_list:
-                    
-                    #Change timestamp format
-                    timestamp = entry[14]
-                    timestamp = timestamp.split(' ')
-                    year = timestamp[5]
-                    day = timestamp[2]
-                    time = timestamp[3]
-                    month = monthletter(timestamp[1])
-                    timestampfinal = (f'{year}-{month}-{day} {time}')
-                    
-                    #Move timestamp to the front of the list and delete the original positon
-                    entry.insert(0, timestampfinal)
-                    del entry[15]
-                    
-                    
-                    #Look for media and substitute it in the list
-                    
-                    media = entry[12]
-                    if media == '':
-                        agregator = ''
-                    else:
-                        if ';' in media:
-                            media = media.split(';')
-                            agregator = '<table>'
-                            counter = 0
-                            for x in media:
-                                if counter == 0:
-                                    agregator = agregator + ('<tr>')
-                                thumb = media_to_html(x, files_found, report_folder)        
-                                
-                                counter = counter + 1
-                                agregator = agregator + f'<td>{thumb}</td>'
-                                #hacer uno que no tenga html
-                                if counter == 2:
-                                    counter = 0
-                                    agregator = agregator + ('</tr>')
-                            if counter == 1:
-                                agregator = agregator + ('</tr>')
-                            agregator = agregator + ('</table><br>')
-                        else:
-                            agregator = media_to_html(media, files_found, report_folder)
-                    entry[12] = agregator
-                    #Add to the final list for reporting
-                    
-                    data_list_f.append(entry)
-            except:
-                pass
-                    
-                    
-            if data_list_f:
-                report = ArtifactHtmlReport(f'Snapchat - Conversations')
-                report.start_artifact_report(report_folder, f'Snapchat - Conversations - {username}')
-                report.add_script()
-                data_headers = ('Timestamp', 'Content_type', 'Message_type', 'Conversation_id', 'Message_id', 'Reply_to_message_id', 'Conversation_title', 'Sender_username', 'Sender_user_id', 'Recipient_username', 'Recipient_user_id', 'Text', 'Media_id', 'Is_saved', 'Is_one_on_one', 'Group_member_usernames', 'Group_member_user_ids', 'Reactions', 'Saved_by', 'Screenshotted_by', 'Replayed_by', 'Screen_recorded_by', 'Read_by', 'Chat_wallpaper_setter_id', 'Upload_ip', 'Source_port_number')
-                report.write_artifact_data_table(data_headers, data_list_f, file_found, html_no_escape=['Media_id'])#
-                report.end_artifact_report()
-                
-                tsvname = f'Snapchat - Conversations - {username}'
-                tsv(report_folder, data_headers, data_list_f, tsvname)
-                
-                tlactivity = f'Snapchat - Conversations - {username}'
-                timeline(report_folder, tlactivity, data_list_f, data_headers)
-                
-                
-            else:
-                logfunc(f'No Snapchat - Conversations - {username}')
-                
-            data_list_f = []
-        
-        
-__artifacts__ = {
-        "snapConvN": (
-            "Snapchat Returns",
-            ('*/conversations.csv','*/*.*'),
-            get_snapConvN)
-}
+    return data_headers, data_list, context.get_relative_path(source_path)
