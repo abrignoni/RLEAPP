@@ -1,132 +1,75 @@
-import os
-import datetime
+__artifacts_v2__ = {
+    "snapIncCom": {
+        "name": "Snapchat - Inc Comms",
+        "description": "Incoming communications parsed from a Snapchat law enforcement return (snap_inc_communications.csv).",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2024-06-13",
+        "last_update_date": "2026-06-27",
+        "requirements": "none",
+        "category": "Snapchat Returns",
+        "notes": "",
+        "paths": ('*/snap_inc_communications.csv',),
+        "output_types": "standard",
+        "artifact_icon": "mail",
+    }
+}
+
 import csv
+import os
+from datetime import datetime, timezone
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html, kmlgen
+from scripts.ilapfuncs import artifact_processor
 
-def monthletter(month):
-    monthdict = {'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04', 'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08', 'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'}
-    return monthdict[month]
+_MONTHS = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
+           'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12}
 
-def clean_and_group_data(input_data):
-    # Split the input data into lines
-    lines = input_data.split('\n')
-    
-    # Initialize variables to track whether we are in a section to exclude
-    exclude = False
-    grouped_data = []
-    current_section = []
-    
-    for line in lines:
-        # Check if the line contains dashes or equal signs
+
+def _snap_ts(value):
+    parts = (value or '').split(' ')
+    try:
+        return datetime(int(parts[5]), _MONTHS[parts[1]], int(parts[2]),
+                        *(int(x) for x in parts[3].split(':')), tzinfo=timezone.utc)
+    except (IndexError, KeyError, ValueError):
+        return value
+
+
+def _clean_and_group(input_data):
+    sections, current, exclude = [], [], False
+    for line in input_data.split('\n'):
         if line.startswith('---') or line.startswith('==='):
             exclude = not exclude
-            if not exclude:
-                # End of an excluded section, start a new section
-                if current_section:
-                    grouped_data.append(current_section)
-                    current_section = []
+            if not exclude and current:
+                sections.append(current)
+                current = []
             continue
-        
-        # Add the line to current_section if we are not in an excluded section
         if not exclude and line.strip():
-            current_section.append(line.strip())
-            
-    # Add the last section to the grouped data if it exists
-    if current_section:
-        grouped_data.append(current_section)
-        
-    return grouped_data
+            current.append(line.strip())
+    if current:
+        sections.append(current)
+    return sections
 
-def get_snapIncCom(files_found, report_folder, seeker, wrap_text):
 
-    for file_found in files_found:
+@artifact_processor
+def snapIncCom(context):
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        
-        filename = os.path.basename(file_found)
-        one = (os.path.split(file_found))
-        username = (os.path.basename(one[0]))
-        
-        data_list2 = []
-        
-        if filename.startswith('snap_inc_communications.csv'):
-            with open(file_found) as f:
-                input_data = f.read() 
-                
-            # Run the cleaning and grouping function
-            grouped_data = clean_and_group_data(input_data)
-            
-            for x in grouped_data:
-                data_list = []
-                header = x[0]
-            
-                for y in x[1:]:
-                    for item in csv.reader([y], skipinitialspace=True):
-                        data_list.append(item)
-            
-                    
-                if header.startswith('"Target username "'):
-                    header1 = list((header,''))
-                    data_list1 = data_list
-                elif header.startswith('user_id,email_address,user_agent,campaign_name,type,event_timestamp'):
-                    header = header.strip().split(',')
-                    header2 = header
-                    header2[0]='Timestamp'
-                    header2[1]='User ID'
-                    header2[2]='Email Address'
-                    header2[3]='User Agent'
-                    header2[4]='Campaign Name'
-                    header2[5]='Type'
-                    
-                    data_list2 = data_list
-                    for x in data_list2:
-                        timestamp = x[5].split(' ')
-                        year = timestamp[5]
-                        day = timestamp[2]
-                        time = timestamp[3]
-                        month = monthletter(timestamp[1])
-                        timestampfinal = (f'{year}-{month}-{day} {time}')
-                        
-                        userid = x[0]
-                        emailad = x[1]
-                        usera = x[2]
-                        cn = x[3]
-                        typ = x[4]
-                        
-                        x[0] = timestampfinal
-                        x[1] = userid
-                        x[2] = emailad
-                        x[3] = usera
-                        x[4] = cn
-                        x[5] = typ
-                            
-                            
-                        
-                    
-        if len(data_list2):
-            report = ArtifactHtmlReport(f'Snapchat - Inc Comms')
-            report.start_artifact_report(report_folder, f'Snapchat - Inc Comms - {username}')
-            report.add_script()
-            #data_headers = ('Timestamp','Username','Name','Registration IP','Country','Phone Number','Carrier')
-            report.write_artifact_data_table(header2, data_list2, file_found, html_no_escape=['Media'])
-            report.end_artifact_report()
-            
-            tsvname = f'Snapchat - Inc Comms - {username}'
-            tsv(report_folder, header2, data_list2, tsvname)
-            
-            tlactivity = f'Snapchat - Inc Comms - {username}'
-            timeline(report_folder, tlactivity, data_list2, header2)
-            
-            
-        else:
-            logfunc(f'No Snapchat - Inc Comms - {username}')
-        
-        data_list2 = []
-        
-__artifacts__ = {
-        "snapIncCom": (
-            "Snapchat Returns",
-            ('*/snap_inc_communications.csv'),
-            get_snapIncCom)
-}
+        if not os.path.basename(file_found).startswith('snap_inc_communications.csv'):
+            continue
+        source_path = file_found
+        with open(file_found, encoding='utf-8') as f:
+            for section in _clean_and_group(f.read()):
+                if not section[0].startswith('user_id,email_address,user_agent,campaign_name,type,event_timestamp'):
+                    continue
+                for line in section[1:]:
+                    rows = list(csv.reader([line], skipinitialspace=True))
+                    if not rows or len(rows[0]) < 6:
+                        continue
+                    x = rows[0]
+                    # source order: user_id, email, user_agent, campaign, type, event_timestamp
+                    data_list.append((_snap_ts(x[5]), x[0], x[1], x[2], x[3], x[4]))
+
+    data_headers = (('Timestamp', 'datetime'), 'User ID', 'Email Address', 'User Agent',
+                    'Campaign Name', 'Type')
+    return data_headers, data_list, context.get_relative_path(source_path)
