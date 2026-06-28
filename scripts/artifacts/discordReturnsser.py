@@ -1,62 +1,45 @@
-import os
+__artifacts_v2__ = {
+    "discordReturnsser": {
+        "name": "Discord - Server Metadata",
+        "description": "Server metadata from a Discord law enforcement return (servers/*.json).",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2021-12-04",
+        "last_update_date": "2026-06-28",
+        "requirements": "none",
+        "category": "Discord Returns",
+        "notes": "",
+        "paths": ('*/servers/*.json',),
+        "output_types": "standard",
+        "html_columns": ["Channels"],
+        "artifact_icon": "server",
+    }
+}
+
 import json
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html, kmlgen
+from scripts.ilapfuncs import artifact_processor
 
-def get_discordReturnsser(files_found, report_folder, seeker, wrap_text):
 
-    for file_found in files_found:
+@artifact_processor
+def discordReturnsser(context):
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-    
-        filename = os.path.basename(file_found)
-        csvname = filename
-        
-        if file_found.endswith('.json'):
-            data_list_dm =[]
-            with open(file_found, 'r', errors='backslashreplace') as f:
-                data = json.load(f)
-                
-            id = data.get('id','')
-            name = data.get('name','')
-            owner_id = data.get('owner_id','')
-            banner = data.get('banner','')
-            preferred_locale = data.get('preferred_locale','')
-            region = data.get('region','')
-            splash = data.get('splash','')
-            threads = data.get('threads','')
-            channels = data.get('channels','')
-            agregator = '<table>'
-            if channels == '':
-                pass
-            else:
-                for key, value in channels.items():
-                    agregator = f'{agregator}<tr><td>{key}</td><td>{value}</td></tr>'
-            agregator = f'{agregator} </table>'
-            description = data.get('description','')
-            icon = data.get('icon','')
-            
-            data_list_dm.append((name,description,agregator,banner,icon,id,owner_id,preferred_locale,region,threads))
-            
-                        
-        
-            if len(data_list_dm) > 1:
-                report = ArtifactHtmlReport(f'Discord - Server Metadata ')
-                report.start_artifact_report(report_folder, f'Discord - Server Metadata - {csvname}')
-                report.add_script()
-                data_headers = ('Name','Description','Channels','Banner','Icon ID','ID','Owner ID','Preferred Locale','Region','Threads')
-                report.write_artifact_data_table(data_headers, data_list_dm, file_found, html_no_escape=['Channels'])
-                report.end_artifact_report()
-                
-                tsvname = f'Discord - Server Metadata - {csvname}'
-                tsv(report_folder, data_headers, data_list_dm, tsvname)
-                
-            else:
-                logfunc(f'No data in Discord - Server Metadata - {csvname}')
-                
-__artifacts__ = {
-        "discordReturnsser": (
-            "Discord Returns",
-            ('*/servers/*.json'),
-            get_discordReturnsser)
-}
+        if not file_found.endswith('.json'):
+            continue
+        source_path = file_found
+        with open(file_found, encoding='utf-8', errors='backslashreplace') as f:
+            data = json.load(f)
+
+        channels = data.get('channels', '')
+        channels_agg = ('<br>'.join(f'{k}: {v}' for k, v in channels.items())
+                        if isinstance(channels, dict) else '')
+        data_list.append((data.get('name', ''), data.get('description', ''), channels_agg,
+                          data.get('banner', ''), data.get('icon', ''), data.get('id', ''),
+                          data.get('owner_id', ''), data.get('preferred_locale', ''),
+                          data.get('region', ''), data.get('threads', '')))
+
+    data_headers = ('Name', 'Description', 'Channels', 'Banner', 'Icon ID', 'ID', 'Owner ID',
+                    'Preferred Locale', 'Region', 'Threads')
+    return data_headers, data_list, context.get_relative_path(source_path)
