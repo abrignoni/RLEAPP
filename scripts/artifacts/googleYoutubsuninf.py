@@ -1,58 +1,68 @@
-# Module Description: Parses Google data from a search warrant
-# Author: @Alexis Brignoni
-# Date: 2023-05-16
-# Artifact version: 0.0.1
-# Requirements: none
-
-import os
-import csv
-
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html
-
-def get_googleYoutubsuninf(files_found, report_folder, seeker, wrap_text):
-    
-    data_list = []
-    reportcount = 0
-    
-    for file_found in files_found:
-        file_found = str(file_found)
-        
-        reportname = file_found.split('/')
-        reportname = reportname[-3]
-        
-        with open(file_found, 'r') as f:
-            delimited = csv.reader(f, delimiter=',')
-            firsrowindicator = 0
-            
-            for item in delimited:
-                if firsrowindicator == 0:
-                    data_headers = item
-                    firsrowindicator = 1
-                elif item == []:
-                    pass
-                else:
-                    data_list.append((item))
-
-        num_entries = len(data_list)
-        if num_entries > 0:
-            report = ArtifactHtmlReport(f'{reportname}')
-            report.start_artifact_report(report_folder, f'YouTube Subs. Info Report {reportcount}')
-            report.add_script()
-            #data_headers = ('HTML File',)
-    
-            report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['HTML File'])
-            report.end_artifact_report()
-            
-            reportcount = reportcount + 1
-            data_list = []
-    
-        else:
-            logfunc(f'No Google data for {reportname}')
- 
-__artifacts__ = {
-        "googleYoutubsuninf": (
-            "Google Returns Youtube Subs Info",
-            (('*/*YoutubeAndYoutubeMusic.BasicSubscriberInfo_*/YouTube and YouTube Music/Data for User */Basic Subscriber Info/Basic Subscriber Info.csv')),
-            get_googleYoutubsuninf)
+__artifacts_v2__ = {
+    "googleYoutubsuninf": {
+        "name": "Google Returns - YouTube Basic Subscriber Info",
+        "description": "YouTube/YouTube Music basic subscriber info from a Google law enforcement "
+                       "return (Basic Subscriber Info/Basic Subscriber Info.csv).",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2023-05-16",
+        "last_update_date": "2026-06-28",
+        "requirements": "none",
+        "category": "Google Returns Youtube Subs Info",
+        "notes": "Dynamic-schema CSV: column headers are read from the file's first row and made "
+                 "LAVA-safe (blanks/duplicates/SQL reserved words). Values are kept as exported "
+                 "(TEXT) since the column set varies per return.",
+        "paths": ('*/*YoutubeAndYoutubeMusic.BasicSubscriberInfo_*/YouTube and YouTube Music/'
+                  'Data for User */Basic Subscriber Info/Basic Subscriber Info.csv',),
+        "output_types": "standard",
+        "artifact_icon": "youtube",
+    }
 }
+
+import csv
+import os
+
+from scripts.ilapfuncs import artifact_processor
+from scripts.lavafuncs import sanitize_sql_name
+
+_RESERVED = {'from', 'to', 'order', 'group', 'where', 'select', 'index', 'join', 'references',
+             'check', 'default', 'add', 'table', 'column', 'create', 'insert', 'update', 'delete',
+             'drop', 'values', 'set', 'primary', 'key', 'unique', 'foreign', 'constraint', 'having',
+             'distinct', 'union', 'using'}
+
+
+def _safe_headers(cells):
+    seen, out = {}, []
+    for i, cell in enumerate(cells):
+        name = str(cell).strip() if cell not in (None, '') else f'Column {i + 1}'
+        if sanitize_sql_name(name) in _RESERVED:
+            name = f'{name} Value'
+        key = name.lower()
+        seen[key] = seen.get(key, -1) + 1
+        if seen[key]:
+            name = f'{name} ({seen[key]})'
+        out.append(name)
+    return out
+
+
+@artifact_processor
+def googleYoutubsuninf(context):
+    headers, data_list, source_path = [], [], ''
+    for file_found in context.get_files_found():
+        file_found = str(file_found)
+        if not file_found.endswith('.csv') or os.path.basename(file_found).startswith('.'):
+            continue
+        source_path = file_found
+        file_headers = None
+        with open(file_found, encoding='utf-8', errors='backslashreplace') as f:
+            for item in csv.reader(f, delimiter=','):
+                if not item:
+                    continue
+                if file_headers is None:
+                    file_headers = _safe_headers(item)
+                    continue
+                row = list(item) + [''] * len(file_headers)
+                data_list.append(tuple(row[:len(file_headers)]))
+        if file_headers:
+            headers = file_headers
+
+    return tuple(headers), data_list, context.get_relative_path(source_path)
