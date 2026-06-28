@@ -1,70 +1,59 @@
-import os
-import datetime
+__artifacts_v2__ = {
+    "airdropRealname": {
+        "name": "AirDrop - Real Name from Hash",
+        "description": "Recovers sender real names from AirDrop partial hashes in the unified log "
+                       "(airdrop.ndjson) by testing a candidate name wordlist.",
+        "author": "Rex",
+        "creation_date": "2022-09-10",
+        "last_update_date": "2026-06-28",
+        "requirements": "none",
+        "category": "Airdrop Real Names",
+        "notes": "Tests SHA-256 of each candidate name (scripts/names/realnames.txt) against the "
+                 "partial hashes AirDrop writes to the unified log. Timestamp is kept as text: the "
+                 "shared gather_hashes_in_file helper truncates the unified-log time to 25 chars, "
+                 "dropping the UTC offset, so it can't be safely typed/normalized to UTC.",
+        "paths": ('*/airdrop.ndjson',),
+        "output_types": "standard",
+        "artifact_icon": "user",
+    }
+}
+
 import hashlib
-import json
 import re
 from pathlib import Path
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, gather_hashes_in_file
+from scripts.ilapfuncs import artifact_processor, logfunc, gather_hashes_in_file
 
 
-def get_airdropRealnames(files_found, report_folder, seeker, wrap_text):
-    # log show ./system_logs.logarchive --style ndjson --predicate 'category = "AirDrop"' > airdrop.ndjson
-
+@artifact_processor
+def airdropRealname(context):
     namelist = []
     data_list = []
+    source_path = ''
 
-    p = Path(__file__).parents[1]
-    my_path = Path(p).joinpath('names')
-    names = Path(my_path).joinpath('realnames.txt')
-
-    with open(names, 'r') as data:
-        for x in data:
-            namelist.append(x)
+    wordlist = Path(__file__).parents[1].joinpath('names', 'realnames.txt')
+    with open(wordlist, encoding='utf-8') as data:
+        for line in data:
+            namelist.append(line)
 
     regex = re.compile(r"realName: (\w{10})")
     target_hashes = {}
-    for file_found in files_found:
+    for file_found in context.get_files_found():
         file_found = str(file_found)
+        if not file_found.endswith('airdrop.ndjson'):
+            continue
+        source_path = file_found
+        target_hashes.update(gather_hashes_in_file(file_found, regex))
 
-        if file_found.endswith('airdrop.ndjson'):
-            target_hashes.update(gather_hashes_in_file(file_found, regex))
-
-        for email in namelist:
-            namecheck = email.strip()
-            logfunc('Testing name ' + str(namecheck) + ' for target...')
-
+        for name in namelist:
+            namecheck = name.strip()
             targettest = hashlib.sha256(namecheck.encode()).hexdigest()
-            starthashcheck = targettest[0:5]
-            endhashcheck = targettest[-5:]
+            key = (targettest[0:5].lower(), targettest[-5:].lower())
+            if key in target_hashes:
+                name_hash = target_hashes.pop(key)
+                name_hash[1] = namecheck
+                data_list.append(tuple(name_hash))
+                logfunc(f'{namecheck} matches hash fragments on {name_hash[0]}')
 
-            if (starthashcheck.lower(), endhashcheck.lower()) in target_hashes:
-                mail_hash = target_hashes.pop((starthashcheck, endhashcheck))
-                mail_hash[1] = namecheck
-                data_list.append(mail_hash)
-                logfunc(namecheck + ' matches hash fragments on ' + mail_hash[0])
-
-    if data_list:
-        report = ArtifactHtmlReport(f'AirDrop - Realname from Hash ')
-        report.start_artifact_report(report_folder, f'AirDrop - Realname from Hash')
-        report.add_script()
-        data_headers = ('Timestamp', 'Realname', 'Event Message', 'Subsystem', 'Category', 'Trace ID')
-        report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Media'])
-        report.end_artifact_report()
-
-        tsvname = f'AirDrop - Realname from Hash'
-        tsv(report_folder, data_headers, data_list, tsvname)
-
-        tlactivity = f'AirDrop - Realname from Hash'
-        timeline(report_folder, tlactivity, data_list, data_headers)
-    else:
-        logfunc(f'No AirDrop - Realname from Hash')
-
-
-__artifacts__ = {
-    "airdropRealname": (
-        "Airdrop Real Names",
-        ('*/airdrop.ndjson'),
-        get_airdropRealnames)
-}
+    data_headers = ('Timestamp', 'Realname', 'Event Message', 'Subsystem', 'Category', 'Trace ID')
+    return data_headers, data_list, context.get_relative_path(source_path)

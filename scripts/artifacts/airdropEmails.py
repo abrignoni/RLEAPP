@@ -1,70 +1,59 @@
-import os
-import datetime
+__artifacts_v2__ = {
+    "airdropEmails": {
+        "name": "AirDrop - Email from Hash",
+        "description": "Recovers sender email addresses from AirDrop partial hashes in the unified "
+                       "log (airdrop.ndjson) by testing a candidate email wordlist.",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2022-03-16",
+        "last_update_date": "2026-06-28",
+        "requirements": "none",
+        "category": "Airdrop Emails",
+        "notes": "Tests SHA-256 of each candidate email (scripts/emails/emails.txt) against the "
+                 "partial hashes AirDrop writes to the unified log. Timestamp is kept as text: the "
+                 "shared gather_hashes_in_file helper truncates the unified-log time to 25 chars, "
+                 "dropping the UTC offset, so it can't be safely typed/normalized to UTC.",
+        "paths": ('*/airdrop.ndjson',),
+        "output_types": "standard",
+        "artifact_icon": "mail",
+    }
+}
+
 import hashlib
-import json
 import re
 from pathlib import Path
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html, kmlgen, gather_hashes_in_file
+from scripts.ilapfuncs import artifact_processor, logfunc, gather_hashes_in_file
 
 
-def get_airdropEmails(files_found, report_folder, seeker, wrap_text):
-    # log show ./system_logs.logarchive --style ndjson --predicate 'category = "AirDrop"' > airdrop.ndjson
-
+@artifact_processor
+def airdropEmails(context):
     emailslist = []
     data_list = []
+    source_path = ''
 
-    p = Path(__file__).parents[1]
-    my_path = Path(p).joinpath('emails')
-    emails = Path(my_path).joinpath('emails.txt')
-
-    with open(emails, 'r') as data:
-        for x in data:
-            emailslist.append(x)
+    wordlist = Path(__file__).parents[1].joinpath('emails', 'emails.txt')
+    with open(wordlist, encoding='utf-8') as data:
+        for line in data:
+            emailslist.append(line)
 
     regex = re.compile(r"Email=\[((\w{5}\.{3}\w{5}(, )?)+)\]")
     target_hashes = {}
-    for file_found in files_found:
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-
-        if file_found.endswith('airdrop.ndjson'):
-            target_hashes.update(gather_hashes_in_file(file_found, regex))
+        if not file_found.endswith('airdrop.ndjson'):
+            continue
+        source_path = file_found
+        target_hashes.update(gather_hashes_in_file(file_found, regex))
 
         for email in emailslist:
             emailcheck = email.strip()
-            logfunc('Testing email ' + str(emailcheck) + ' for target...')
-
             targettest = hashlib.sha256(emailcheck.encode()).hexdigest()
-            starthashcheck = targettest[0:5]
-            endhashcheck = targettest[-5:]
-
-            if (starthashcheck.lower(), endhashcheck.lower()) in target_hashes:
-                mail_hash = target_hashes.pop((starthashcheck, endhashcheck))
+            key = (targettest[0:5].lower(), targettest[-5:].lower())
+            if key in target_hashes:
+                mail_hash = target_hashes.pop(key)
                 mail_hash[1] = emailcheck
-                data_list.append(mail_hash)
-                logfunc(emailcheck + ' matches hash fragments on ' + mail_hash[0])
+                data_list.append(tuple(mail_hash))
+                logfunc(f'{emailcheck} matches hash fragments on {mail_hash[0]}')
 
-    if data_list:
-        report = ArtifactHtmlReport(f'AirDrop - Email from Hash ')
-        report.start_artifact_report(report_folder, f'AirDrop - Email from Hash')
-        report.add_script()
-        data_headers = ('Timestamp', 'Email', 'Event Message', 'Subsystem', 'Category', 'Trace ID')
-        report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Media'])
-        report.end_artifact_report()
-
-        tsvname = f'AirDrop - Email from Hash'
-        tsv(report_folder, data_headers, data_list, tsvname)
-
-        tlactivity = f'AirDrop - Email from Hash'
-        timeline(report_folder, tlactivity, data_list, data_headers)
-    else:
-        logfunc(f'No AirDrop - Email from Hash')
-
-
-__artifacts__ = {
-    "airdropEmails": (
-        "Airdrop Emails",
-        ('*/airdrop.ndjson'),
-        get_airdropEmails)
-}
+    data_headers = ('Timestamp', 'Email', 'Event Message', 'Subsystem', 'Category', 'Trace ID')
+    return data_headers, data_list, context.get_relative_path(source_path)
