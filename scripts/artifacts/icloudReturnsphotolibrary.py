@@ -1,187 +1,129 @@
-import os
-import datetime
-import json
-import shutil
+__artifacts_v2__ = {
+    "icloudReturnsphotolibrary": {
+        "name": "iCloud Returns - Photo Library",
+        "description": "Photo library (Metadata.txt) from an iCloud law enforcement return, with media, EXIF and GPS.",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2021-09-16",
+        "last_update_date": "2026-06-28",
+        "requirements": "Pillow, pillow-heif",
+        "category": "iCloud Returns",
+        "notes": "",
+        "paths": ('*/*/cloudphotolibrary/*',),
+        "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
+        "html_columns": ["Exif"],
+        "artifact_icon": "image",
+    }
+}
+
 import base64
+import io
+import json
+import os
+
 from PIL import Image
 from pillow_heif import register_heif_opener
 
-from pathlib import Path	
+from scripts.ilapfuncs import (artifact_processor, check_in_media, check_in_embedded_media,
+                               convert_unix_ts_to_utc)
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, kmlgen, is_platform_windows, media_to_html
+_EXIF_TAGS = {271: 'Manufacturer', 272: 'Model', 305: 'Software', 274: 'Orientation',
+              306: 'Creation/Changed', 282: 'Resolution X', 283: 'Resolution Y', 316: 'Host device'}
+_GPS_KEYS = ['GPSVersionID', 'GPSLatitudeRef', 'GPSLatitude', 'GPSLongitudeRef', 'GPSLongitude',
+             'GPSAltitudeRef', 'GPSAltitude', 'GPSTimeStamp', 'GPSSatellites', 'GPSStatus',
+             'GPSMeasureMode', 'GPSDOP', 'GPSSpeedRef', 'GPSSpeed', 'GPSTrackRef', 'GPSTrack',
+             'GPSImgDirectionRef', 'GPSImgDirection', 'GPSMapDatum', 'GPSDestLatitudeRef',
+             'GPSDestLatitude', 'GPSDestLongitudeRef', 'GPSDestLongitude', 'GPSDestBearingRef',
+             'GPSDestBearing', 'GPSDestDistanceRef', 'GPSDestDistance', 'GPSProcessingMethod',
+             'GPSAreaInformation', 'GPSDateStamp', 'GPSDifferential']
 
-def get_exif(filename):
-    image = Image.open(filename)
-    image.verify()
-    return image.getexif().get_ifd(0x8825)
 
-def get_geotagging(exif):
-    geo_tagging_info = {}
-    if not exif:
-        #raise ValueError("No EXIF metadata found")
-        return None
-    else:
-        gps_keys = ['GPSVersionID', 'GPSLatitudeRef', 'GPSLatitude', 'GPSLongitudeRef', 'GPSLongitude',
-                    'GPSAltitudeRef', 'GPSAltitude', 'GPSTimeStamp', 'GPSSatellites', 'GPSStatus', 'GPSMeasureMode',
-                    'GPSDOP', 'GPSSpeedRef', 'GPSSpeed', 'GPSTrackRef', 'GPSTrack', 'GPSImgDirectionRef',
-                    'GPSImgDirection', 'GPSMapDatum', 'GPSDestLatitudeRef', 'GPSDestLatitude', 'GPSDestLongitudeRef',
-                    'GPSDestLongitude', 'GPSDestBearingRef', 'GPSDestBearing', 'GPSDestDistanceRef', 'GPSDestDistance',
-                    'GPSProcessingMethod', 'GPSAreaInformation', 'GPSDateStamp', 'GPSDifferential']
-        
-        for k, v in exif.items():
-            try:
-                geo_tagging_info[gps_keys[k]] = str(v)
-            except IndexError:
-                pass
-        return geo_tagging_info
-    
-def get_all_exif(filename):
-    image = Image.open(filename)
-    image.verify()
-    return image.getexif()
+def _geotagging(gps_ifd):
+    info = {}
+    for k, v in (gps_ifd or {}).items():
+        try:
+            info[_GPS_KEYS[k]] = str(v)
+        except IndexError:
+            pass
+    return info
 
-def get_icloudReturnsphotolibrary(files_found, report_folder, seeker, wrap_text):
-    
-    for file_found in files_found:
+
+def _gps_decimal(info):
+    try:
+        def dms(ref_key, val_key):
+            ref = info[ref_key]
+            parts = info[val_key].replace('(', '').replace(')', '').split(', ')
+            dec = float(parts[0]) + float(parts[1]) / 60 + float(parts[2]) / 3600
+            return dec * (-1 if ref in ('W', 'S') else 1)
+        return dms('GPSLatitudeRef', 'GPSLatitude'), dms('GPSLongitudeRef', 'GPSLongitude')
+    except (KeyError, IndexError, ValueError):
+        return '', ''
+
+
+def _exif_summary(image_path):
+    """Return (lat, lon, exif_html) for an image, or ('', '', '') on failure."""
+    try:
+        exif = Image.open(image_path).getexif()
+    except Exception:  # pylint: disable=broad-except
+        return '', '', ''
+    lat, lon = _gps_decimal(_geotagging(exif.get_ifd(0x8825)))
+    summary = ''.join(f'{_EXIF_TAGS.get(tag, tag)}: {value}<br>' for tag, value in exif.items())
+    return lat, lon, summary
+
+
+@artifact_processor
+def icloudReturnsphotolibrary(context):
+    register_heif_opener()
+    media_lookup = {os.path.basename(str(f)): str(f) for f in context.get_files_found()}
+
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        
-        if is_platform_windows():
-            separator = '\\'
-        else:
-            separator = '/'
-            
-        split_path = file_found.split(separator)
-        account = (split_path[-3])
-        
-        filename = os.path.basename(file_found)
-        
-        if filename.startswith('Metadata.txt'):
-            #print(file_found)
-            data_list =[]
-            with open(file_found, "rb") as fp:
-                data = json.load(fp)
-            
-            for deserialized in data:
-                isfields = deserialized.get('fields','Negative')
-                if isfields == 'Negative':
-                    continue
-                else:
-                    filenameEnc = deserialized['fields'].get('filenameEnc','Negative')
-                    isdeleted = deserialized['fields'].get('isDeleted')
-                    isexpunged = deserialized['fields'].get('isExpunged')
-                    originalcreationdate = deserialized['fields'].get('originalCreationDate')
-            
-                    
-                    if (filenameEnc != 'Negative') and (filenameEnc is not None):
-                        if isinstance(filenameEnc, dict):
-                            filenameEnc = filenameEnc['value']
-                        
-                        filenamedec = (base64.b64decode(filenameEnc).decode('ascii'))
-                        
-                        if isinstance(originalcreationdate, dict):
-                            originalcreationdate = originalcreationdate['value']
-                            
-                        originalcreationdatedec = (datetime.datetime.fromtimestamp(int(originalcreationdate)/1000).strftime('%Y-%m-%d %H:%M:%S'))
-                        
-                        if filenamedec.endswith('HEIC'):
-                            register_heif_opener()
-                            
-                            for search in files_found:
-                                searchbase = os.path.basename(search)
-                                if filenamedec == searchbase:
-                                    image = Image.open(search)
-                                    convertedfilepath = os.path.join(report_folder, f'{filenamedec}.jpg')
-                                    image.save(convertedfilepath)
-                                    convertedlist = []
-                                    convertedlist.append(convertedfilepath)
-                                    thumb = media_to_html(f'{filenamedec}.jpg', convertedlist, report_folder)
-                                    convertedlist = []
-                                    
-                                    image_info = get_exif(search)
-                                    results = get_geotagging(image_info)
-                                    
-                                    if results is None:
-                                        latitude = ''
-                                        longitude = ''
-                                    else:
-                                        directionlat = results['GPSLatitudeRef']
-                                        latitude = results['GPSLatitude']
-                                        latitude = (latitude.replace('(','').replace(')','').split(', '))
-                                        latitude = (float(latitude[0]) + float(latitude[1])/60 + float(latitude[2])/(60*60)) * (-1 if directionlat in ['W', 'S'] else 1)
-                                        
-                                        
-                                        directionlon = results['GPSLongitudeRef']
-                                        longitude = results['GPSLongitude']
-                                        longitude = (longitude.replace('(','').replace(')','').split(', '))
-                                        longitude = (float(longitude[0]) + float(longitude[1])/60 + float(longitude[2])/(60*60)) * (-1 if directionlon in ['W', 'S'] else 1)
-                                        
-                                        #datamap = []
-                                        #datamap.append((originalcreationdate,latitude,longitude))
-                                        #kmlactivity = f'{search}'
-                                        #data_headers = ('Timestamp','Latitude','Longitude')
-                                        #print(report_folder)
-                                        #kmlgen(report_folder, kmlactivity, datamap, data_headers)
-                                        
-                                    exifall = get_all_exif(search)
-                                    exifdata = ''
-                                    
-                                    for x, y in exifall.items():
-                                        if x == 271:
-                                            exifdata = exifdata + f'Manufacturer: {y}<br>'
-                                        elif x == 272:
-                                            exifdata = exifdata + f'Model: {y}<br>'
-                                        elif x == 305:
-                                            exifdata = exifdata + f'Software: {y}<br>'
-                                        elif x == 274:
-                                            exifdata = exifdata + f'Orientation: {y}<br>'
-                                        elif x == 306:
-                                            exifdata = exifdata + f'Creation/Changed: {y}<br>'
-                                        elif x == 282:
-                                            exifdata = exifdata + f'Resolution X: {y}<br>'
-                                        elif x == 283:
-                                            exifdata = exifdata + f'Resolution Y: {y}<br>'
-                                        elif x == 316:
-                                            exifdata = exifdata + f'Host device: {y}<br>'
-                                        else:
-                                            exifdata = exifdata + f'{x}: {y}<br>'
-                            
-                            data_list.append((originalcreationdatedec, thumb, filenamedec, latitude, longitude, exifdata, filenameEnc, isdeleted, isexpunged))
-                        elif filenamedec.endswith('txt'):
-                            pass
-                        else:
-                            #print(filenamedec)
-                            thumb = media_to_html(filenamedec, files_found, report_folder)
-                            latitude = ''
-                            longitude = ''
-                            exifdata = ''
-                            
-                            data_list.append((originalcreationdatedec, thumb, filenamedec, latitude, longitude, exifdata, filenameEnc, isdeleted, isexpunged))
-                    
-                
-            if data_list:
-                report = ArtifactHtmlReport(f'iCloud Returns - Photo Library - {account}')
-                report.start_artifact_report(report_folder, f'iCloud Returns - Photo Library - {account}')
-                report.add_script()
-                data_headers = ('Timestamp','Media','Filename','Latitude','Longitude','Exif','Filename base64','Is Deleted','Is Expunged')
-                report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['Media','Exif'])
-                report.end_artifact_report()
-                
-                tsvname = f'iCloud Returns - Photo Library - {account}'
-                tsv(report_folder, data_headers, data_list, tsvname)
-                
-                tlactivity = f'iCloud Returns - Photo Library - {account}'
-                timeline(report_folder, tlactivity, data_list, data_headers)
-                
-                kmlactivity = f'iCloud Returns - Photo Library - {account}'
-                kmlgen(report_folder, kmlactivity, data_list, data_headers)
-                
+        if os.path.basename(file_found) != 'Metadata.txt':
+            continue
+        source_path = file_found
+        with open(file_found, 'rb') as fp:
+            data = json.load(fp)
+
+        for record in data:
+            fields = record.get('fields')
+            if not fields:
+                continue
+            filename_enc = fields.get('filenameEnc')
+            if isinstance(filename_enc, dict):
+                filename_enc = filename_enc.get('value')
+            if not filename_enc:
+                continue
+            try:
+                filename = base64.b64decode(filename_enc).decode('ascii')
+            except (ValueError, UnicodeDecodeError):
+                continue
+            if filename.endswith('txt'):
+                continue
+
+            creation = fields.get('originalCreationDate')
+            if isinstance(creation, dict):
+                creation = creation.get('value')
+            timestamp = convert_unix_ts_to_utc(creation) if creation else ''
+            is_deleted = fields.get('isDeleted')
+            is_expunged = fields.get('isExpunged')
+
+            latitude = longitude = exifdata = ''
+            media_path = media_lookup.get(filename)
+            if filename.upper().endswith('HEIC') and media_path:
+                try:
+                    buf = io.BytesIO()
+                    Image.open(media_path).convert('RGB').save(buf, format='JPEG')
+                    media_ref = check_in_embedded_media(media_path, buf.getvalue(), f'{filename}.jpg')
+                except Exception:  # pylint: disable=broad-except
+                    media_ref = check_in_media(filename, filename)
+                latitude, longitude, exifdata = _exif_summary(media_path)
             else:
-                logfunc(f'No iCloud Returns - Photo Library - {account} data available')
-                
-__artifacts__ = {
-        "icloudReturnsphotolibrary": (
-            "iCloud Returns",
-            ('*/*/cloudphotolibrary/*'),
-            get_icloudReturnsphotolibrary)
-}
+                media_ref = check_in_media(filename, filename)
+
+            data_list.append((timestamp, media_ref, filename, latitude, longitude, exifdata,
+                              filename_enc, is_deleted, is_expunged))
+
+    data_headers = (('Timestamp', 'datetime'), ('Media', 'media'), 'Filename', 'Latitude',
+                    'Longitude', 'Exif', 'Filename base64', 'Is Deleted', 'Is Expunged')
+    return data_headers, data_list, context.get_relative_path(source_path)
