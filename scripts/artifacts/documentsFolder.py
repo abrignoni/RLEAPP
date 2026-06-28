@@ -1,62 +1,44 @@
-# Module Description: PDFs
-# Author: infosec.exchange/@abrignoni
-# Date: 2022-02-15
-# Artifact version: 0.0.1
-# Requirements: none
+__artifacts_v2__ = {
+    "documentsFolder": {
+        "name": "iCloud Documents Folders",
+        "description": "Files in iCloud backup Documents folders, with detected type and a media "
+                       "preview.",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2023-02-15",
+        "last_update_date": "2026-06-28",
+        "requirements": "none",
+        "category": "iCloud Documents Folders",
+        "notes": "Modified Date is the file's on-disk modification time (UTC).",
+        "paths": ('*/backup/*/Documents/**',),
+        "output_types": "standard",
+        "artifact_icon": "folder",
+    }
+}
 
 import os
-import datetime
+from datetime import datetime, timezone
 
 from scripts.filetype import guess_mime, guess_extension
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html
+from scripts.ilapfuncs import artifact_processor, check_in_media
 
 
-def get_documentsFolder(files_found, report_folder, seeker, wrap_text):
-    
+@artifact_processor
+def documentsFolder(context):
     data_list = []
-
-    for file_found in files_found:
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
+        if not os.path.isfile(file_found):
+            continue
         filename = os.path.basename(file_found)
-        
-    
-        modified_time = os.path.getmtime(file_found)
-        utc_modified_date = datetime.datetime.utcfromtimestamp(modified_time)
-        
-        if os.path.isfile(file_found):
-            mime = guess_mime(file_found)
-            ext = guess_extension(file_found)
-            
-            linktofile = media_to_html(file_found, files_found, report_folder)
-            if is_platform_windows:
-                linktofile = linktofile.replace('/?','',1)
-                
-            data_list.append((utc_modified_date, filename, linktofile, ext, mime, file_found))
-        
-    if len(data_list) > 0:
-        description = 'iCloud Documents Folders'
-        note = 'Source location in extraction found in the report for each item.'
-        report = ArtifactHtmlReport(f'iCloud Documents Folders')
-        report.start_artifact_report(report_folder, f'iCloud Documents Folder', description)
-        report.add_script()
-        data_headers = ('Modified Date', 'Filename', 'Media', 'EXT', 'MIME', 'Path')
+        if filename.startswith('.'):
+            continue
+        source_path = file_found
+        modified = datetime.fromtimestamp(os.path.getmtime(file_found), tz=timezone.utc)
+        media = check_in_media(file_found, filename)
+        data_list.append((modified, filename, media, guess_extension(file_found),
+                          guess_mime(file_found), context.get_relative_path(file_found)))
 
-        report.write_artifact_data_table(data_headers, data_list, note, html_no_escape=['Media'])
-        report.end_artifact_report()
-        
-        tsvname = f'iCloud Documents Folders'
-        tsv(report_folder, data_headers, data_list, tsvname)
-        
-        tlactivity = f'iCloud Documents Folders'
-        timeline(report_folder, tlactivity, data_list, data_headers)
-        
-    else:
-        logfunc(f'No iCloud Documents Folders')
-
-__artifacts__ = {
-        "documentsFolder": (
-            "iCloud Documents Folders",
-            ('*/backup/*/Documents/**'),
-            get_documentsFolder)
-}
+    data_headers = (('Modified Date', 'datetime'), 'Filename', ('Media', 'media'), 'EXT', 'MIME',
+                    'Path')
+    return data_headers, data_list, context.get_relative_path(source_path)
