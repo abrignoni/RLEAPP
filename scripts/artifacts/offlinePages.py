@@ -1,45 +1,45 @@
-import datetime
+__artifacts_v2__ = {
+    "offlinePages": {
+        "name": "Offline Pages",
+        "description": "Saved offline web pages (MHTML) with their original web source and a media "
+                       "preview.",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2023-01-25",
+        "last_update_date": "2026-06-28",
+        "requirements": "none",
+        "category": "Offline Pages",
+        "notes": "Timestamp Modified is the file's on-disk modification time (UTC). MIME Date is the "
+                 "raw Date header from the saved page (kept as text; format varies).",
+        "paths": ('*/*.mhtml', '*/*.mht'),
+        "output_types": "standard",
+        "artifact_icon": "globe",
+    }
+}
+
 import email
 import os
+from datetime import datetime, timezone
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, is_platform_windows, media_to_html
+from scripts.ilapfuncs import artifact_processor, check_in_media
 
-def get_offlinePages(files_found, report_folder, seeker, wrap_text):
-    
+
+@artifact_processor
+def offlinePages(context):
     data_list = []
-    
-    for file_found in files_found:
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        
-        modified_time = os.path.getmtime(file_found)
-        utc_modified_date = datetime.datetime.utcfromtimestamp(modified_time)
-        
-        with open(file_found,'r', errors='replace') as fp:
+        if os.path.basename(file_found).startswith('.'):
+            continue
+        source_path = file_found
+        modified = datetime.fromtimestamp(os.path.getmtime(file_found), tz=timezone.utc)
+        with open(file_found, 'r', encoding='utf-8', errors='replace') as fp:
             message = email.message_from_file(fp)
-            sourced = (message['Snapshot-Content-Location'])
-            subjectd = (message['Subject'])
-            dated = (message['Date'])
-            media = media_to_html(file_found, files_found, report_folder)
+        media = check_in_media(file_found, os.path.basename(file_found))
+        data_list.append((modified, media, message['Snapshot-Content-Location'] or '',
+                          message['Subject'] or '', message['Date'] or '',
+                          context.get_relative_path(file_found)))
 
-        data_list.append((utc_modified_date, media, sourced, subjectd, dated, file_found))
-        
-    if len(data_list) > 0:
-        note = 'Source location in extraction found in the report for each item.'
-        report = ArtifactHtmlReport('Offline Pages')
-        report.start_artifact_report(report_folder, f'Offline Pages')
-        report.add_script()
-        data_headers = ('Timestamp Modified', 'File', 'Web Source', 'Subject', 'MIME Date', 'Source in Extraction')
-        report.write_artifact_data_table(data_headers, data_list, note, html_no_escape=['File'])
-        report.end_artifact_report()
-        
-        tsvname = f'Offline Pages'
-        tsv(report_folder, data_headers, data_list, tsvname)
-
-__artifacts__ = {
-        "pages": (
-                "Offline Pages",
-                ('*/*.mhtml', '*/*.mht'),
-                get_offlinePages)
-}
-            
+    data_headers = (('Timestamp Modified', 'datetime'), ('File', 'media'), 'Web Source', 'Subject',
+                    'MIME Date', 'Source in Extraction')
+    return data_headers, data_list, context.get_relative_path(source_path)
