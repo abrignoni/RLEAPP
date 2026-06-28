@@ -1,49 +1,39 @@
-# Module Description: Parses Google data from a search warrant
-# Author: @Alexis Brignoni
-# Date: 2023-05-16
-# Artifact version: 0.0.1
-# Requirements: none
+__artifacts_v2__ = {
+    "googleDeviceconfig": {
+        "name": "Google Returns - Android Device Config",
+        "description": "Android Device Configuration Service profile page from a Google law "
+                       "enforcement return (Android Device Configuration Service/Device-*.html).",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2023-05-16",
+        "last_update_date": "2026-06-28",
+        "requirements": "none",
+        "category": "Google Returns Android Device Config",
+        "notes": "The return ships this as a pre-rendered HTML page; the full document is embedded "
+                 "verbatim in the Device Configuration column (rendered, not escaped).",
+        "paths": ('*/*AndroidDeviceConfigurationService.DeviceAndUserProfile_*/'
+                  'Android Device Configuration Service/Device-*.html',),
+        "output_types": "standard",
+        "html_columns": ["Device Configuration"],
+        "artifact_icon": "settings",
+    }
+}
 
 import os
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html
+from scripts.ilapfuncs import artifact_processor
 
-def get_googleDeviceconfig(files_found, report_folder, seeker, wrap_text):
-    
+
+@artifact_processor
+def googleDeviceconfig(context):
     data_list = []
-    reportcount = 0
-    
-    for file_found in files_found:
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        
-        reportname = file_found.split('/')
-        reportname = reportname[-3]
-        
-        with open(file_found, encoding = 'utf-8', mode = 'r') as f:
-            data = f.read()
+        if not file_found.endswith('.html') or os.path.basename(file_found).startswith('.'):
+            continue
+        source_path = file_found
+        with open(file_found, encoding='utf-8', errors='backslashreplace') as f:
+            data_list.append((f.read(), context.get_relative_path(file_found)))
 
-        data_list.append((data,))
-
-        num_entries = len(data_list)
-        if num_entries > 0:
-            report = ArtifactHtmlReport(f'{reportname}')
-            report.start_artifact_report(report_folder, f'Android Device Config Report {reportcount}')
-            report.add_script()
-            data_headers = ('HTML File',)
-    
-            report.write_artifact_data_table(data_headers, data_list, file_found, html_no_escape=['HTML File'])
-            report.end_artifact_report()
-            
-            reportcount = reportcount + 1
-            data_list = []
-    
-        else:
-            logfunc(f'No Google data for {reportname}')
- 
-__artifacts__ = {
-        "googleDeviceconfig": (
-            "Google Returns Android Device Config",
-            (('*/*AndroidDeviceConfigurationService.DeviceAndUserProfile_*/Android Device Configuration Service/Device-*.html')),
-            get_googleDeviceconfig)
-}
+    data_headers = ('Device Configuration', 'Source File')
+    return data_headers, data_list, context.get_relative_path(source_path)
