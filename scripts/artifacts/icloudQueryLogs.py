@@ -1,85 +1,75 @@
-import os
-import xlrd
-
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
-
-def get_icloudQueryLogs(files_found, report_folder, seeker, wrap_text):
-    
-    for file_found in files_found:
-        file_found = str(file_found)
-        filename = os.path.basename(file_found)
-        
-        if filename.startswith('~'):
-            continue
-        if filename.startswith('.'):
-            continue
-        
-        loc = file_found
-        
-        
-        dth = []
-        list = []
-        data_headers = []
-        data_list =[]
-        
-        #First worksheet
-        
-        wb = xlrd.open_workbook(loc)
-        sheetnames = wb.sheet_names() 
-        sheet = wb.sheet_by_index(0)
-        dsid = sheet.cell_value(2, 0)
-        
-        for i in range(sheet.nrows):
-            
-            if i == 8:
-                #Row is headers
-                idsh = sheet.cell_value(8,0)
-                timestamph = sheet.cell_value(8,1)
-                ciph = sheet.cell_value(8,2)
-                sourceHandleh = sheet.cell_value(8,3)
-                lookupHandleh = sheet.cell_value(8,4)
-                lookupDevicesh = sheet.cell_value(8,5)
-                usrh = sheet.cell_value(8,6)
-                hwvh = sheet.cell_value(8,7)
-                osvh = sheet.cell_value(8,8)
-                
-                data_headers = (timestamph,idsh,ciph,sourceHandleh,lookupHandleh,lookupDevicesh,usrh,hwvh,osvh)
-                                
-            elif i >= 9:
-                #Row data
-                ids = sheet.cell_value(i,0)
-                timestamp = sheet.cell_value(i,1)
-                split_timestamp = timestamp.split(' ')
-                clean_timestamp = f'{split_timestamp[0]}-{split_timestamp[1]}'
-                cip = sheet.cell_value(i,2)
-                sourceHandle = sheet.cell_value(i,3)
-                lookupHandle = sheet.cell_value(i,4)
-                lookupDevices = sheet.cell_value(i,5)
-                usr = sheet.cell_value(i,6)
-                hwv = sheet.cell_value(i,7)
-                osv = sheet.cell_value(i,8)
-                
-                data_list.append((clean_timestamp, ids, cip, sourceHandle, lookupHandle, lookupDevices, usr, hwv, osv))
-                
-            else:
-                continue
-            
-
-        if data_list:
-            description = f'Sheet name: {sheetnames[0]} - {dsid}'
-            report = ArtifactHtmlReport('iCloud - Query Logs')
-            report.start_artifact_report(report_folder, 'iCloud - Query Logs', description)
-            report.add_script()
-            report.write_artifact_data_table(data_headers, data_list, file_found)
-            report.end_artifact_report()
-            
-        else:
-            logfunc('No iCloud - No Query Log data available')
-            
-__artifacts__ = {
-        "icloudQueryLogs": (
-            "iCloud Returns",
-            ('*/LOG/*_IDS_QueryLogs.xlsx'),
-            get_icloudQueryLogs)
+__artifacts_v2__ = {
+    "icloudQueryLogs": {
+        "name": "iCloud - Query Logs",
+        "description": "IDS query logs from an iCloud law enforcement return (xlsx).",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2021-08-18",
+        "last_update_date": "2026-06-27",
+        "requirements": "openpyxl",
+        "category": "iCloud Returns",
+        "notes": "",
+        "paths": ('*/LOG/*_IDS_QueryLogs.xlsx',),
+        "output_types": "standard",
+        "artifact_icon": "search",
+    }
 }
+
+import os
+from datetime import date, time
+
+from openpyxl import load_workbook
+
+from scripts.ilapfuncs import artifact_processor
+from scripts.lavafuncs import sanitize_sql_name
+
+_RESERVED = {'from', 'to', 'order', 'group', 'where', 'select', 'index', 'join', 'references',
+             'check', 'default', 'add', 'table', 'column', 'create', 'insert', 'update', 'delete',
+             'drop', 'values', 'set', 'primary', 'key', 'unique', 'foreign', 'constraint', 'having',
+             'distinct', 'union', 'using'}
+
+
+def _safe_headers(cells):
+    seen, out = {}, []
+    for i, cell in enumerate(cells):
+        name = str(cell).strip() if cell not in (None, '') else f'Column {i + 1}'
+        if sanitize_sql_name(name) in _RESERVED:
+            name = f'{name} Value'
+        key = name.lower()
+        seen[key] = seen.get(key, -1) + 1
+        if seen[key]:
+            name = f'{name} ({seen[key]})'
+        out.append(name)
+    return out
+
+
+def _parse_icloud_xlsx(file_found, header_row):
+    workbook = load_workbook(file_found, read_only=True, data_only=True)
+    sheet = workbook.worksheets[0]
+    headers, rows = [], []
+    for i, row in enumerate(sheet.iter_rows(values_only=True)):
+        if i < header_row:
+            continue
+        cells = [str(c) if isinstance(c, (date, time)) else ('' if c is None else c) for c in row]
+        if i == header_row:
+            headers = _safe_headers(cells)
+        else:
+            rows.append(cells)
+    workbook.close()
+    return headers, rows
+
+
+@artifact_processor
+def icloudQueryLogs(context):
+    headers, data_list, source_path = [], [], ''
+    for file_found in context.get_files_found():
+        file_found = str(file_found)
+        basename = os.path.basename(file_found)
+        if basename.startswith('~') or basename.startswith('.'):
+            continue
+        source_path = file_found
+        sheet_headers, rows = _parse_icloud_xlsx(file_found, 8)
+        if sheet_headers:
+            headers = sheet_headers
+            data_list.extend(rows)
+
+    return tuple(headers), data_list, context.get_relative_path(source_path)
