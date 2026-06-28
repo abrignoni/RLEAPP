@@ -1,165 +1,112 @@
-'''Updated 08/05/2024 Shawn Ramsey'''
+__artifacts_v2__ = {
+    "snapGeolocation": {
+        "name": "Snapchat - Geolocation",
+        "description": "Geolocation (latitude,longitude,timestamp format) from a Snapchat law enforcement return (geo_locations.csv).",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2024-06-13",
+        "last_update_date": "2026-06-27",
+        "requirements": "none",
+        "category": "Snapchat Returns",
+        "notes": "Update by Shawn Ramsey 2024-08-05.",
+        "paths": ('*/geo_locations.csv',),
+        "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
+        "artifact_icon": "map-pin",
+    },
+    "snapGeoAdditional": {
+        "name": "Snapchat - Additional Geolocation",
+        "description": "Geolocation (latitude,longitude,accuracy,timestamp,is_live_location format) from a Snapchat law enforcement return (geo_locations.csv).",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2024-06-13",
+        "last_update_date": "2026-06-27",
+        "requirements": "none",
+        "category": "Snapchat Returns",
+        "notes": "Update by Shawn Ramsey 2024-08-05.",
+        "paths": ('*/geo_locations.csv',),
+        "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
+        "artifact_icon": "map-pin",
+    }
+}
+
 import os
-import datetime
+from datetime import datetime, timezone
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html, kmlgen
+from scripts.ilapfuncs import artifact_processor
 
-def monthletter(month):
-    monthdict = {'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04', 'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08', 'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'}
-    return monthdict[month]
+_MONTHS = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
+           'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12}
 
-def clean_and_group_data(input_data):
-    # Split the input data into lines
-    lines = input_data.split('\n')
-    
-    # Initialize variables to track whether we are in a section to exclude
-    exclude = False
-    grouped_data = []
-    current_section = []
-    
-    for line in lines:
-        # Check if the line contains dashes or equal signs
+
+def _snap_ts(value):
+    parts = (value or '').split(' ')
+    try:
+        return datetime(int(parts[5]), _MONTHS[parts[1]], int(parts[2]),
+                        *(int(x) for x in parts[3].split(':')), tzinfo=timezone.utc)
+    except (IndexError, KeyError, ValueError):
+        return value
+
+
+def _clean_and_group(input_data):
+    sections, current, exclude = [], [], False
+    for line in input_data.split('\n'):
         if line.startswith('---') or line.startswith('==='):
             exclude = not exclude
-            if not exclude:
-                # End of an excluded section, start a new section
-                if current_section:
-                    grouped_data.append(current_section)
-                    current_section = []
+            if not exclude and current:
+                sections.append(current)
+                current = []
             continue
-        
-        # Add the line to current_section if we are not in an excluded section
         if not exclude and line.strip():
-            current_section.append(line.strip())
-            
-    # Add the last section to the grouped data if it exists
-    if current_section:
-        grouped_data.append(current_section)
-        
-    return grouped_data
+            current.append(line.strip())
+    if current:
+        sections.append(current)
+    return sections
 
-def get_snapGeo(files_found, report_folder, seeker, wrap_text):
 
-    for file_found in files_found:
+@artifact_processor
+def snapGeolocation(context):
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        
-        filename = os.path.basename(file_found)
-        one = (os.path.split(file_found))
-        username = (os.path.basename(one[0]))
-        
-        data_list2 = []
-        
-        if filename.startswith('geo_locations.csv'):
-            with open(file_found) as f:
-                input_data = f.read() 
-                
-            # Run the cleaning and grouping function
-            grouped_data = clean_and_group_data(input_data)
+        if not os.path.basename(file_found).startswith('geo_locations.csv'):
+            continue
+        source_path = file_found
+        with open(file_found, encoding='utf-8') as f:
+            for section in _clean_and_group(f.read()):
+                if not section[0].startswith('latitude,longitude,timestamp'):
+                    continue
+                for line in section[1:]:
+                    item = line.strip().split(',')
+                    if len(item) < 3:
+                        continue
+                    lat_parts = item[0].split(' ')
+                    lat = lat_parts[0]
+                    accuracy = lat_parts[2] + ' meters' if len(lat_parts) > 2 else ''
+                    lon = item[1].split(' ')[0]
+                    data_list.append((_snap_ts(item[2]), lat, lon, accuracy))
 
-            
-            for x in grouped_data:
-                data_list = []
-                header = x[0]
-            
-                for y in x[1:]:
-                    item = y.strip().split(',')
-                    data_list.append(item)
+    data_headers = (('Timestamp', 'datetime'), 'Latitude', 'Longitude', 'Accuracy')
+    return data_headers, data_list, context.get_relative_path(source_path)
 
-                # Process the first set of coordinates that we have
-                if header.startswith('latitude,longitude,timestamp'):
-                    header3 = header.strip().split(',')
-                    header3[0]='Timestamp'
-                    header3[1]='Latitude'
-                    header3[2]='Longitude'
-                    header3.append('Accuracy')
-                    data_list3 = data_list
 
-                    for x in data_list3:
-                        timestamp = x[2].split(' ')
-                        year = timestamp[5]
-                        day = timestamp[2]
-                        time = timestamp[3]
-                        month = monthletter(timestamp[1])
-                        timestampfinal = (f'{year}-{month}-{day} {time}')
-                        lat = x[0].split(' ')[0]
-                        lon = x[1].split(' ')[0]
-                        acc = x[0].split(' ')[2] + ' meters'
-                        x[0] = timestampfinal
-                        x[1] = lat
-                        x[2] = lon
-                        x.append(acc)
+@artifact_processor
+def snapGeoAdditional(context):
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
+        file_found = str(file_found)
+        if not os.path.basename(file_found).startswith('geo_locations.csv'):
+            continue
+        source_path = file_found
+        with open(file_found, encoding='utf-8') as f:
+            for section in _clean_and_group(f.read()):
+                if not section[0].startswith('latitude,longitude,accuracy,timestamp,is_live_location'):
+                    continue
+                for line in section[1:]:
+                    item = line.strip().split(',')
+                    if len(item) < 5:
+                        continue
+                    data_list.append((_snap_ts(item[3]), item[0], item[1], item[2], item[4]))
 
-                # Process the second set of coordinates that we have
-                if header.startswith('latitude,longitude,accuracy,timestamp,is_live_location'):
-                    header = header.strip().split(',')
-                    header2 = header
-                    header2[0]='Timestamp'
-                    header2[1]='Latitude'
-                    header2[2]='Longitude'
-                    header2[3]='Accuracy'
-                    header2[4]='Is Live Location'
-                    data_list2 = data_list
-                    
-                    for x in data_list2:
-                        timestamp = x[3].split(' ')
-                        year = timestamp[5]
-                        day = timestamp[2]
-                        time = timestamp[3]
-                        month = monthletter(timestamp[1])
-                        timestampfinal = (f'{year}-{month}-{day} {time}')
-                        lat = x[0]
-                        lon = x[1]
-                        acc = x[2]
-                        x[0] = timestampfinal
-                        x[1] = lat
-                        x[2] = lon
-                        x[3] = acc
-                        
-        if len(data_list3) > 0:
-            report = ArtifactHtmlReport(f'Snapchat - Geolocation')
-            report.start_artifact_report(report_folder, f'Snapchat - Geolocation - {username}')
-            report.add_script()
-            report.write_artifact_data_table(header3, data_list3, file_found, html_no_escape=['Media'])
-            report.end_artifact_report()
-            
-            tsvname = f'Snapchat - Geolocation - {username}'
-            tsv(report_folder, header3, data_list3, tsvname)
-
-            tlactivity = f'Snapchat - Geolocation - {username}'
-            timeline(report_folder, tlactivity, data_list3, header3)
-            
-            kmlactivity = f'Snapchat - Geolocation - {username}'
-            kmlgen(report_folder, kmlactivity, data_list3, header3) 
-            
-        else:
-            logfunc(f'No Snapchat - Geolocation - {username}')
-
-        if len(data_list2) > 0:
-            report = ArtifactHtmlReport(f'Snapchat - Additional Geolocation')
-            report.start_artifact_report(report_folder, f'Snapchat - Additional Geolocation - {username}')
-            report.add_script()
-            #data_headers = ('Timestamp','Username','Name','Registration IP','Country','Phone Number','Carrier')
-            report.write_artifact_data_table(header2, data_list2, file_found, html_no_escape=['Media'])
-            report.end_artifact_report()
-            
-            tsvname = f'Snapchat - Additional Geolocation - {username}'
-            tsv(report_folder, header2, data_list2, tsvname)
-
-            tlactivity = f'Snapchat - Additional Geolocation - {username}'
-            timeline(report_folder, tlactivity, data_list2, header2)
-            
-            kmlactivity = f'Snapchat - Additional Geolocation - {username}'
-            kmlgen(report_folder, kmlactivity, data_list2, header2) 
-            
-        else:
-            logfunc(f'No Snapchat - Geolocation - {username}')
-        
-        data_list2 = []
-    
-__artifacts__ = {
-        "snapGeo": (
-            "Snapchat Returns",
-            ('*/geo_locations.csv'),
-            get_snapGeo)
-}
+    data_headers = (('Timestamp', 'datetime'), 'Latitude', 'Longitude', 'Accuracy',
+                    'Is Live Location')
+    return data_headers, data_list, context.get_relative_path(source_path)
