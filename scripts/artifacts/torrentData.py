@@ -1,123 +1,63 @@
-import sqlite3
-import textwrap
-import bencoding
-import hashlib
-from datetime import datetime
-
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, open_sqlite_db_readonly, kmlgen
-
-def get_TorrentData(files_found, report_folder, seeker, wrap_text):
-    
-    data_list = []
-    
-    for file_found in files_found:
-        file_name = str(file_found)
-        if file_found.endswith('.torrent'):
-            
-            with open(file_found, 'rb') as f:
-                encoded_data = f.read()
-                
-            decodedDict = bencoding.bdecode(encoded_data)
-            info_hash = hashlib.sha1(bencoding.bencode(decodedDict[b"info"])).hexdigest().upper()
-                
-            torrentihas = torrentname = spath = iname = tdown = tup = aggf = agg = ''
-            for key,value in decodedDict.items():
-                #print(key,value)
-                if key == b'info':
-                    for ikey, ivalue in value.items():
-                        if ikey == b'piece length':
-                            pass
-                        if ikey == b'name':
-                            try:
-                                torrentname = (ivalue.decode())
-                            except:
-                                torrentname = ivalue
-                            #print(torrentname)
-                        if ikey == b'files':
-                            aggf = '<table>'
-                            for files in ivalue:
-                                for iikey, iivalue in files.items():
-                                    if iikey == b'length':
-                                        lenghtf = (iivalue)
-                                    if iikey == b'path':
-                                        if len(iivalue) > 1:
-                                            try:
-                                                dirr = (iivalue[0].decode())
-                                                filen = (iivalue[1].decode())
-                                            except:
-                                                dirr = (iivalue[0])
-                                                filen = (iivalue[1])
-                                        else:
-                                            dirr = ''
-                                            try:
-                                                filen = (iivalue[0].decode())
-                                            except:
-                                                filen = (iivalue[0])
-                                                
-                                    #print(f'Path: {dirr}/{filen}')
-                                aggf = aggf + f'<tr><td>{dirr}</td><td>{filen}</td></tr>'
-                            aggf = aggf + f'</table>'    
-                        #print(ikey, ivalue)
-                elif key == b'trackers':
-                    pass
-                elif key == b'pieces':
-                    pass
-                elif key == b'peers':
-                    pass
-                elif key == b'banned_peers':
-                    pass
-                elif key == b'banned_peers6':
-                    pass
-                elif key == b'peers6':
-                    pass
-                elif key == b'mapped_files':
-                    pass
-                elif key == b'piece_priority':
-                    pass
-                elif key == b'file_priority':
-                    pass
-                elif key == b'info-hash':
-                    pass #need to use bencode tools to reverse engineer the number
-                elif key == b'info-hash2':
-                    pass
-                elif key == b'save_path':
-                    spath = value.decode()
-                elif key == b'name':
-                    iname = value.decode()
-                elif key == b'total_downloaded':
-                    tdown = value
-                elif key == b'total_uploaded':
-                    tup = value
-                else:
-                    if (isinstance(value, int)):
-                        value = value
-                    elif (isinstance(value, list)):
-                        value = str(value)
-                    else:
-                        value = value
-                    
-            data_list.append((torrentname,info_hash,aggf))
-    
-    if len(data_list) > 0:
-        report = ArtifactHtmlReport('Torrent Data')
-        report.start_artifact_report(report_folder, 'Torrent Data')
-        report.add_script()
-        data_headers = ('Torrent Name','Info Hash','Path')
-        report.write_artifact_data_table(data_headers, data_list, file_found,html_escape=False)
-        report.end_artifact_report()
-        
-        tsvname = f'Torrent Data'
-        tsv(report_folder, data_headers, data_list, tsvname)
-        
-    else:
-        logfunc('No Torrent Data available')
-        
-
-
-__artifacts__ = {
-        "TorrentData": (
-                "Torrent Data",
-                ('*/*.torrent'),
-                get_TorrentData)
+__artifacts_v2__ = {
+    "torrentData": {
+        "name": "Torrent Data",
+        "description": "Metadata from .torrent files: torrent name, info hash, and the file list.",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2023-09-27",
+        "last_update_date": "2026-06-28",
+        "requirements": "bencoding",
+        "category": "Torrent Data",
+        "notes": "Info Hash is the SHA-1 of the bencoded info dictionary (uppercased).",
+        "paths": ('*/*.torrent',),
+        "output_types": "standard",
+        "html_columns": ["Path"],
+        "artifact_icon": "download-cloud",
+    }
 }
+
+import hashlib
+
+import bencoding
+
+from scripts.ilapfuncs import artifact_processor
+
+
+def _decode(value):
+    if isinstance(value, bytes):
+        try:
+            return value.decode()
+        except UnicodeDecodeError:
+            return value.decode('latin-1', 'replace')
+    return value
+
+
+@artifact_processor
+def torrentData(context):
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
+        file_found = str(file_found)
+        if not file_found.endswith('.torrent'):
+            continue
+        source_path = file_found
+        with open(file_found, 'rb') as f:
+            decoded = bencoding.bdecode(f.read())
+
+        info = decoded.get(b'info', {})
+        info_hash = hashlib.sha1(bencoding.bencode(info)).hexdigest().upper()
+        torrentname = _decode(info.get(b'name', b''))
+
+        rows = []
+        for fileinfo in info.get(b'files', []):
+            length = fileinfo.get(b'length', '')
+            path_parts = fileinfo.get(b'path', [])
+            dirr = _decode(path_parts[0]) if len(path_parts) > 1 else ''
+            filen = _decode(path_parts[-1]) if path_parts else ''
+            rows.append(f'<tr><td>{dirr}</td><td>{filen}</td><td>{length}</td></tr>')
+        path_table = ('<table><tr><th>Directory</th><th>File</th><th>Length</th></tr>'
+                      + ''.join(rows) + '</table>') if rows else ''
+
+        data_list.append((torrentname, info_hash, path_table))
+
+    data_headers = ('Torrent Name', 'Info Hash', 'Path')
+    return data_headers, data_list, context.get_relative_path(source_path)
