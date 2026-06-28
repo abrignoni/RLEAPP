@@ -1,70 +1,83 @@
+__artifacts_v2__ = {
+    "tikToksubsinfo": {
+        "name": "TikTok - Subscriber Info",
+        "description": "Subscriber/registration information from a TikTok law enforcement return "
+                       "((Subscriber information).pdf).",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2021-09-29",
+        "last_update_date": "2026-06-28",
+        "requirements": "PyMuPDF",
+        "category": "TikTok Returns",
+        "notes": "Source File column added so per-subscriber provenance (originally encoded in the "
+                 "report title) survives when multiple returns are merged into one table.",
+        "paths": ('*/*/*(Subscriber information).pdf',),
+        "output_types": "standard",
+        "artifact_icon": "user",
+    }
+}
+
 import os
+from datetime import datetime, timezone
+
 import fitz
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
+from scripts.ilapfuncs import artifact_processor
 
-def get_tikToksubsinfo(files_found, report_folder, seeker, wrap_text):
-    files = 0
-    for file_found in files_found:
+
+def _to_utc(value):
+    value = (value or '').strip()
+    if not value:
+        return value
+    try:
+        dt = datetime.fromisoformat(value.replace('Z', '+00:00'))
+        return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt.astimezone(timezone.utc)
+    except ValueError:
+        return value
+
+
+@artifact_processor
+def tikToksubsinfo(context):
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        
         filename = os.path.basename(file_found)
-        
-        if filename.startswith('~'):
+        if filename.startswith('~') or filename.startswith('.') or not filename.endswith('.pdf'):
             continue
-        if filename.startswith('.'):
-            continue
-        
-        subscriber = filename.split(' ')
-        
-        dth = []
-        listtemp = []
-        data_headers = []
-        data_list =[]
-        
-        with fitz.open(file_found) as doc:
-            text = ""
-            for page in doc:
-                pagedata = page.getText()
-                
-        items = pagedata.split('\n')
-        username = registrationmethod = phone = registrationdate = registrationip = registrationdeviceinfo = ''
-        for x in items:
-            if x == ' ':
-                continue
-            else:
-                value = x.strip()
-                value = value.split(':')
-                if 'username' in value[0]:
-                    username = value[1].strip()
-                elif 'registration method' in value[0]:
-                    registrationmethod = value[1].strip()
-                elif 'phone' in value[0]:
-                    phone = value[1].strip()
-                elif 'registration date' in value[0]:
-                    registrationdate = f'{value[1].strip()}:{value[2]}:{value[3]}'
-                elif 'registration ip' in value[0]:
-                    registrationip = value[1].strip()
-                elif 'registration device info' in value[0]:
-                    registrationdeviceinfo = value[1].strip()
-        
-        data_list.append((registrationdate, username, registrationmethod, phone, registrationip, registrationdeviceinfo))
-        
-        if data_list:
-            report = ArtifactHtmlReport(f'TikTok - Subscriber Info [{subscriber[0]}]')
-            report.start_artifact_report(report_folder, f'TikTok - Subscriber Info [{subscriber[0]}]')
-            report.add_script()
-            data_headers = ('Registration Date','Username','Registration Method','Phone','Registration IP','Registration Device Info' )
-            report.write_artifact_data_table(data_headers, data_list, file_found)
-            report.end_artifact_report()
-            files = files + 1
-        else:
-            logfunc(f'No TikTok - Subscriber [{subscriber[0]}] available')
+        source_path = file_found
 
-__artifacts__ = {
-        "tikToksubsinfo": (
-            "TikTok Returns",
-            ('*/*/*(Subscriber information).pdf'),
-            get_tikToksubsinfo)
-}
+        text = ''
+        with fitz.open(file_found) as doc:
+            for page in doc:
+                text += page.get_text()  # get_text(); getText() was removed in modern PyMuPDF
+
+        username = registrationmethod = phone = ''
+        registrationdate = registrationip = registrationdeviceinfo = ''
+        for line in text.split('\n'):
+            line = line.strip()
+            if ':' not in line:
+                continue
+            key, _, rest = line.partition(':')  # split on FIRST colon so values keep their colons
+            key = key.strip().lower()
+            rest = rest.strip()
+            if 'username' in key:
+                username = rest
+            elif 'registration method' in key:
+                registrationmethod = rest
+            elif 'phone' in key:
+                phone = rest
+            elif 'registration date' in key:
+                registrationdate = rest
+            elif 'registration ip' in key:
+                registrationip = rest
+            elif 'registration device info' in key:
+                registrationdeviceinfo = rest
+
+        data_list.append((_to_utc(registrationdate), username, registrationmethod, phone,
+                          registrationip, registrationdeviceinfo,
+                          context.get_relative_path(file_found)))
+
+    data_headers = (('Registration Date', 'datetime'), 'Username', 'Registration Method',
+                    ('Phone', 'phonenumber'), 'Registration IP', 'Registration Device Info',
+                    'Source File')
+    return data_headers, data_list, context.get_relative_path(source_path)

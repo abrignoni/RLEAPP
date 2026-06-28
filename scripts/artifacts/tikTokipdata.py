@@ -1,57 +1,72 @@
+__artifacts_v2__ = {
+    "tikTokipdata": {
+        "name": "TikTok - IP Data",
+        "description": "IP login/activity data from a TikTok law enforcement return (*- IP Data.xlsx).",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2021-09-29",
+        "last_update_date": "2026-06-28",
+        "requirements": "openpyxl",
+        "category": "TikTok Returns",
+        "notes": "Source File column added so per-subscriber provenance (originally encoded in the "
+                 "report title) survives when multiple returns are merged into one table.",
+        "paths": ('*/*/*- IP Data.xlsx',),
+        "output_types": "standard",
+        "artifact_icon": "globe",
+    }
+}
+
 import os
+from datetime import datetime, timezone
+
 import openpyxl
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
+from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc
 
-def get_tikTokipdata(files_found, report_folder, seeker, wrap_text):
-    
-    for file_found in files_found:
+
+def _to_utc(value):
+    if value is None or value == '':
+        return ''
+    if isinstance(value, datetime):
+        return value.replace(tzinfo=timezone.utc) if value.tzinfo is None else value.astimezone(timezone.utc)
+    s = str(value).strip()
+    if not s:
+        return ''
+    if s.isdigit():
+        return convert_unix_ts_to_utc(int(s))
+    try:
+        dt = datetime.fromisoformat(s.replace('Z', '+00:00'))
+        return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt.astimezone(timezone.utc)
+    except ValueError:
+        return value
+
+
+def _cell(value):
+    return '' if value is None else value
+
+
+@artifact_processor
+def tikTokipdata(context):
+    data_list = []
+    source_path = ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        
         filename = os.path.basename(file_found)
-        
-        if filename.startswith('~'):
+        if filename.startswith('~') or filename.startswith('.') or not filename.endswith('.xlsx'):
             continue
-        if filename.startswith('.'):
-            continue
-        
-        dth = []
-        listtemp = []
-        data_headers = []
-        data_list =[]
-        
-        subscriber = filename.split('-')
-        
-        wb_obj = openpyxl.load_workbook(file_found)
-        sheet_obj = wb_obj.active
-        
-        max_col = sheet_obj.max_column
-        m_row = sheet_obj.max_row
-        
-        # Will print a particular row value
-        for j in range(1, m_row + 1):
-            for i in range(1, max_col + 1):
-                cell_obj = sheet_obj.cell(row = j, column = i)
-                value = (cell_obj.value)
-                listtemp.append(value)
-            data_list.append((listtemp))
-            listtemp = []
-            
-        if data_list:
-            data_list.pop(0) #eliminate headers from excel file
-            report = ArtifactHtmlReport(f'TikTok - IP Data [{subscriber[0]}] ')
-            report.start_artifact_report(report_folder, f'TikTok - IP Data [{subscriber[0]}] ')
-            report.add_script()
-            data_headers = ('Timestamp', 'Active Start Time', 'IP', 'IP Country' )
-            report.write_artifact_data_table(data_headers, data_list, file_found)
-            report.end_artifact_report()
-        else:
-            logfunc(f'No TikTok - IP Data [{subscriber[0]}]  available')
+        source_path = file_found
+        rel = context.get_relative_path(file_found)
+        wb = openpyxl.load_workbook(file_found, read_only=True, data_only=True)
+        try:
+            sheet = wb.active
+            for idx, row in enumerate(sheet.iter_rows(values_only=True)):
+                if idx == 0:
+                    continue  # header row inside the spreadsheet
+                cells = list(row) + ['', '', '', '']
+                data_list.append((_to_utc(cells[0]), _to_utc(cells[1]), _cell(cells[2]),
+                                  _cell(cells[3]), rel))
+        finally:
+            wb.close()
 
-__artifacts__ = {
-        "tikTokipdata": (
-            "TikTok Returns",
-            ('*/*/*- IP Data.xlsx'),
-            get_tikTokipdata)
-}
+    data_headers = (('Timestamp', 'datetime'), ('Active Start Time', 'datetime'), 'IP',
+                    'IP Country', 'Source File')
+    return data_headers, data_list, context.get_relative_path(source_path)
