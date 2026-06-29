@@ -1,318 +1,326 @@
-#Author: Shawn Ramsey
-#Date: 
-#Description:   Parse a Cash App Search Warrant return and produce reports
-#               with information deemed important for follow-up investigations as well as proper analysis
-#               At the completion of this module, multiple datasets will be extracted, counted, and compared
-#               in order to identify overlapping information and associated accounts previously difficult to map.
+_REGEX_NOTE = ("Scans every cell of the return workbook with regexes; the account token comes "
+               "from the file name.")
+_SECTION_NOTE = ("Walks a named header section of the return workbook (reading down/right from the "
+                 "header cell) to surface the account data Cash App reports as labelled tables. "
+                 "The original module parsed this data into an AccountInfo object but never "
+                 "reported it; these artifacts surface it. The account token comes from the file "
+                 "name.")
+
+
+def _meta(name, icon, notes, html_columns=None):
+    meta = {"name": f"CashApp - {name}",
+            "description": f"{name} extracted from a Cash App law enforcement return "
+                           f"(*-for-subject-SQ_CASH-*.xlsx).",
+            "author": "Shawn Ramsey", "creation_date": "2024-02-02",
+            "last_update_date": "2026-06-28", "requirements": "openpyxl",
+            "category": "Cash App Returns", "notes": notes,
+            "paths": ('*/*-for-subject-SQ_CASH-*.xlsx',), "output_types": "standard",
+            "artifact_icon": icon}
+    if html_columns:
+        meta["html_columns"] = html_columns
+    return meta
+
+
+__artifacts_v2__ = {
+    "cashappEmails": _meta("Emails", "mail", _REGEX_NOTE),
+    "cashappIPv4": _meta("IPv4", "globe", _REGEX_NOTE),
+    "cashappIPv6": _meta("IPv6", "globe", _REGEX_NOTE),
+    "cashappPhoneNumbers": _meta("Phone Numbers", "phone", _REGEX_NOTE),
+    "cashappDisplayNames": _meta("Display Name History", "user", _SECTION_NOTE),
+    "cashappPaymentCards": _meta("Payment Source Cards", "credit-card", _SECTION_NOTE),
+    "cashappPaymentBankAccounts": _meta("Payment Source Bank Accounts", "dollar-sign",
+                                        _SECTION_NOTE),
+    "cashappIssuedVirtualCards": _meta("Issued Virtual Cards", "credit-card", _SECTION_NOTE),
+    "cashappIssuedPhysicalCards": _meta("Issued Physical Cards", "credit-card", _SECTION_NOTE),
+    "cashappIssuedBankAccounts": _meta("Issued Bank Accounts", "dollar-sign", _SECTION_NOTE),
+}
 
 import os
-import datetime
-import hashlib
-import json
 import re
-from openpyxl import workbook
+from datetime import datetime, timezone
+
 from openpyxl import load_workbook
-from pathlib import Path
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, media_to_html, kmlgen, gather_hashes_in_file, ipgen
+from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc, ipgen
 
-# Class to hold all of the information for an account
-# Potentially build this out for persistent tracking across cases?
-class AccountInfo:
-    def __init__(self, account_token, name = "", dob = "0000-00-00", ssn = 0):
-        self.account_token = account_token
-        self.name = name
-        self.dob = dob
-        self.ssn = ssn
-        self.display_names = []
-        self.emails = []
-        self.phone_numbers = []
-        self.cashtags = []
-        self.ipv4_list = []
-        self.ipv6_list = []
-        self.cards = []
-        self.banks = []
-        self.issued_virtual_cards = []
-        self.issued_physical_cards = []
-        self.issued_bank_accounts = []
+_ACCOUNT_TOKEN_SUBSTR = "-for-subject-SQ_CASH-"
 
-    def add_display_name(self, display_name):
-        self.display_names.append(display_name)
-    
-    def add_email(self, email, date):
-        self.emails.append((email, date))
-    
-    def add_phone_number(self, phone_number, date):
-        self.phone_numbers.append((phone_number, date))
-    
-    def add_cashtag(self, cashtag, date):
-        self.cashtags.append((cashtag, date))
-    
-    def add_ipv4(self, ipaddress):
-        self.ipv4_list.append(ipaddress)
-    
-    def add_ipv6(self, ipaddress):
-        self.ipv6_list.append(ipaddress)
-    
-    def add_card(self, card_number, brand, zipcode):
-        self.cards.append((card_number, brand, zipcode))
-
-    def add_bank_account(self, bank_account, routing_number):
-        self.banks.append((bank_account, routing_number))
-    
-    def add_issued_virtual_card(self, card_number, issued_date = "N/A"):
-        self.issued_virtual_cards.append((card_number, issued_date))
-
-    def add_issued_physical_card(self, card_number, issued_date = "N/A", address = "N/A"):
-        self.issued_physical_cards.append((card_number, issued_date, address))
-
-    def add_issued_bank_account(self, bank_account, routing_number):
-        self.issued_bank_accounts.append((bank_account, routing_number))
-
-def get_cashappReturns(files_found, report_folder, seeker, wrap_text):
-    # log show ./system_logs.logarchive --style ndjson --predicate 'category = "CashApp"' > cashapp.ndjson
-
-    # Probably needs to be deleted
-    emailslist = []
-    
-    # List for information associated to an account token
-    #account_information_list
-    master_email_list = []
-    master_ipv4_list = []
-    master_ipv6_list = []
-    master_phone_list = []
-
-    # This is the same for every search warrant return that I have obtained and is just before the account token, we can use this to split
-    account_token_substr = "-for-subject-SQ_CASH-"
-
-    # These are the regex's for currently obtained information
-    # These are compiled as they are used often
-    email_regex = re.compile(r"^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$")
-    ipv4_regex = re.compile("^(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
-    ipv6_regex = re.compile("^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$")
-    phone_regex = re.compile("^\\+?[1-9][0-9]{7,14}$")
-
-    #found_emails = {}
+_email_re = re.compile(r"^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@"
+                       r"(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$")
+_ipv4_re = re.compile(r"^(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(?:25[0-5]|2[0-4][0-9]|"
+                      r"[01]?[0-9][0-9]?)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\."
+                      r"(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
+_ipv6_re = re.compile(
+    r"^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|"
+    r"([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|"
+    r"([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}"
+    r"(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|"
+    r"[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|"
+    r"fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}"
+    r"((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|"
+    r"([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}"
+    r"(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$")
+_phone_re = re.compile(r"^\+?[1-9][0-9]{7,14}$")
 
 
-    for file_found in files_found:
+def _token(file_found):
+    idx = file_found.find(_ACCOUNT_TOKEN_SUBSTR)
+    if idx == -1:
+        return os.path.basename(file_found)
+    token = file_found[idx + len(_ACCOUNT_TOKEN_SUBSTR):]
+    return token[:-5] if token.endswith('.xlsx') else token
+
+
+def _to_utc(value):
+    if value is None or value == '':
+        return ''
+    if isinstance(value, datetime):
+        return value.replace(tzinfo=timezone.utc) if value.tzinfo is None else value.astimezone(timezone.utc)
+    text = str(value).strip()
+    if not text:
+        return ''
+    if text.isdigit():
+        return convert_unix_ts_to_utc(int(text))
+    try:
+        dt = datetime.fromisoformat(text.replace('Z', '+00:00'))
+        return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt.astimezone(timezone.utc)
+    except ValueError:
+        return value
+
+
+def _scan(file_found, token):
+    emails, ipv4s, ipv6s, phones = [], [], [], []
+    workbook = load_workbook(file_found, data_only=True)
+    try:
+        for sheet_name in workbook.sheetnames:
+            sheet = workbook[sheet_name]
+            for i in range(1, sheet.max_row + 1):
+                for j in range(1, sheet.max_column + 1):
+                    value = str(sheet.cell(row=i, column=j).value)
+                    if _email_re.match(value):
+                        date = sheet.cell(row=i, column=j - 1).value if j > 1 else None
+                        emails.append((token, _to_utc(date), value))
+                    if _ipv4_re.match(value):
+                        ipv4s.append((token, value))
+                    if _ipv6_re.match(value):
+                        ipv6s.append((token, value))
+                    if _phone_re.match(value):
+                        above = str(sheet.cell(row=i - 1, column=j).value) if i > 1 else ''
+                        if "Full SSN" not in above:
+                            date = sheet.cell(row=i, column=j - 1).value if j > 1 else None
+                            phones.append((token, _to_utc(date), value))
+    finally:
+        workbook.close()
+    return emails, ipv4s, ipv6s, phones
+
+
+def _cell(value):
+    """Render a workbook cell as clean text, trimming the float '.0' that openpyxl puts on
+    integer-valued numeric cells (card/bank/routing numbers, zip codes)."""
+    if value is None:
+        return ''
+    if isinstance(value, float) and value.is_integer():
+        return str(int(value))
+    return str(value).strip()
+
+
+def _walk_display_names(sheet, i, j, token, out):
+    # Values run down the same column from the row below the header until a blank cell.
+    a = 1
+    while sheet.cell(row=i + a, column=j).value is not None:
+        out.append((token, _cell(sheet.cell(row=i + a, column=j).value)))
+        a += 1
+
+
+def _walk_payment_source(sheet, i, j, token, cards, banks):
+    # Card rows (number, brand, zipcode) start 2 rows below the header (row i+1 is the sub-header).
+    a = 2
+    while sheet.cell(row=i + a, column=j).value is not None:
+        cards.append((token,
+                      _cell(sheet.cell(row=i + a, column=j).value),
+                      _cell(sheet.cell(row=i + a, column=j + 1).value),
+                      _cell(sheet.cell(row=i + a, column=j + 2).value)))
+        a += 1
+    # One blank row separates the cards from the "Bank Account Number" sub-section.
+    a += 1
+    if str(sheet.cell(row=i + a, column=j).value) == 'Bank Account Number':
+        a += 1
+        while sheet.cell(row=i + a, column=j).value is not None:
+            banks.append((token,
+                          _cell(sheet.cell(row=i + a, column=j).value),
+                          _cell(sheet.cell(row=i + a, column=j + 1).value)))
+            a += 1
+
+
+def _walk_issued(sheet, i, j, token, virtual, physical, banks):
+    # Virtual card rows (number, issued_date) start 2 rows below the header.
+    a = 2
+    while sheet.cell(row=i + a, column=j).value is not None:
+        virtual.append((token,
+                        _cell(sheet.cell(row=i + a, column=j).value),
+                        _to_utc(sheet.cell(row=i + a, column=j + 1).value)))
+        a += 1
+    # Blank row, then the optional "Physical Card Number" sub-section (number, issued_date, address).
+    a += 1
+    if str(sheet.cell(row=i + a, column=j).value) == 'Physical Card Number':
+        a += 1
+        while sheet.cell(row=i + a, column=j).value is not None:
+            physical.append((token,
+                             _cell(sheet.cell(row=i + a, column=j).value),
+                             _to_utc(sheet.cell(row=i + a, column=j + 1).value),
+                             _cell(sheet.cell(row=i + a, column=j + 2).value)))
+            a += 1
+    # Blank row, then the optional "Bank Account Number" sub-section (account, routing). This
+    # advance runs whether or not a physical-card section was present (matching the original walk).
+    a += 1
+    if str(sheet.cell(row=i + a, column=j).value) == 'Bank Account Number':
+        a += 1
+        while sheet.cell(row=i + a, column=j).value is not None:
+            banks.append((token,
+                          _cell(sheet.cell(row=i + a, column=j).value),
+                          _cell(sheet.cell(row=i + a, column=j + 1).value)))
+            a += 1
+
+
+def _walk_sections(file_found, token):
+    sections = {'display_names': [], 'cards': [], 'banks': [],
+                'virtual_cards': [], 'physical_cards': [], 'issued_banks': []}
+    workbook = load_workbook(file_found, data_only=True)
+    try:
+        for sheet_name in workbook.sheetnames:
+            sheet = workbook[sheet_name]
+            for i in range(1, sheet.max_row + 1):
+                for j in range(1, sheet.max_column + 1):
+                    header = str(sheet.cell(row=i, column=j).value)
+                    if header == 'Display Name History':
+                        _walk_display_names(sheet, i, j, token, sections['display_names'])
+                    elif header == 'Payment Source History':
+                        _walk_payment_source(sheet, i, j, token, sections['cards'],
+                                             sections['banks'])
+                    elif header == 'Issued Instruments':
+                        _walk_issued(sheet, i, j, token, sections['virtual_cards'],
+                                     sections['physical_cards'], sections['issued_banks'])
+    finally:
+        workbook.close()
+    return sections
+
+
+def _xlsx_files(context):
+    for file_found in context.get_files_found():
         file_found = str(file_found)
+        if file_found.endswith('.xlsx') and not os.path.basename(file_found).startswith('.'):
+            yield file_found
 
-        if file_found.endswith('.xlsx'):
-            # Lists that we'll be using in each section
-            email_list = []
-            ipv4_list = []
-            ipv6_list = []
-            phone_list = []
 
-            # List to pass on IP's to ipgen()
-            ipaddress_list = []
-            ipaddress_gen = []
-            #Lets go ahead ahead and pull our Account token to be used for generating page specific reports and tagging IP's, emails, phone numbers, etc to individual accounts
-            account = AccountInfo((file_found[file_found.index(account_token_substr) + len(account_token_substr):]).removesuffix('.xlsx'))
-            account_token = (file_found[file_found.index(account_token_substr) + len(account_token_substr):]).removesuffix('.xlsx')
-            logfunc("Proccessing Cash App Account Token: " + account_token)
+@artifact_processor
+def cashappEmails(context):
+    data_list, source_path = [], ''
+    for file_found in _xlsx_files(context):
+        source_path = file_found
+        emails, _, _, _ = _scan(file_found, _token(file_found))
+        data_list.extend(emails)
+    data_headers = ('Account Token', ('UTC Date Time', 'datetime'), 'Email')
+    return data_headers, data_list, context.get_relative_path(source_path)
 
-            # Lets load our workbook
-            workbook = load_workbook(file_found)
-            sheets = workbook.sheetnames
-            for sheet in sheets:
-                current_sheet = workbook[sheet]
-                for i in range(1, current_sheet.max_row+1):
-                    for j in range(1, current_sheet.max_column+1):
-                        cell_obj = current_sheet.cell(row=i, column=j)  
-                        if re.match(email_regex, str(cell_obj.value)):
-                            email_match = str(cell_obj.value)
-                            date = current_sheet.cell(row=i, column=j-1).value
 
-                            # Lets add this email to our Account Object
-                            account.add_email(email_match, date)
-                            email_list.append((account_token, date, email_match))
-                            #master_email_list.append()
-                            logfunc("I have located an email: " + email_match)
-                        
-                        # Lets look if this is an IPv4
-                        if re.match(ipv4_regex, str(cell_obj.value)):
-                            ipv4_match = str(cell_obj.value)
-                            # Lets add this IPv4 to our Account Object
-                            account.add_ipv4(ipv4_match)
-                            ipaddress_list.append(ipv4_match)
-                            ipv4_list.append((account_token, ipv4_match))
-                            logfunc("I have located an IPv4: " + ipv4_match)
+@artifact_processor
+def cashappIPv4(context):
+    data_list, ip_list, source_path = [], [], ''
+    for file_found in _xlsx_files(context):
+        source_path = file_found
+        token = _token(file_found)
+        _, ipv4s, _, _ = _scan(file_found, token)
+        data_list.extend(ipv4s)
+        for _, ipv4 in ipv4s:
+            ip_list.append((ipv4, 'CashApp', f'CashApp IPv4 Return - {token}', '', None))
+    if ip_list:
+        ipgen(context.get_report_folder(), ip_list)
+    data_headers = ('Account Token', 'IPv4')
+    return data_headers, data_list, context.get_relative_path(source_path)
 
-                        # Lets look if this is an IPv6
-                        if re.match(ipv6_regex, str(cell_obj.value)):
-                            ipv6_match = str(cell_obj.value)
-                            # Lets add this IPv6 to our Account Object
-                            account.add_ipv6(ipv6_match)
-                            ipv6_list.append((account_token, ipv6_match))
-                            logfunc("I have located an IPv6: " + ipv6_match)
-                        
-                        # Lets look if this is a Phone Number
-                        if re.match(phone_regex, str(cell_obj.value)):
-                            phone_match = str(cell_obj.value)
-                            if "Full SSN" not in str(current_sheet.cell(row=i-1, column=j).value):
-                                try:
-                                    date = current_sheet.cell(row=i, column=j-1).value
-                                    # Lets add this phone number to our Account Object
-                                    account.add_phone_number(phone_match, date)
-                                    phone_list.append((account_token, date, phone_match))
-                                    logfunc("I have located a phone number: " + phone_match)
-                                except:
-                                    logfunc("Errored out with: " + str(current_sheet.cell(row=1, column=j).value))
-                        
-                        if str(current_sheet.cell(row=i, column=j).value) == "Display Name History":
-                            a = 1
-                            while (current_sheet.cell(row=i+a, column=j).value is not None):
-                                account.add_display_name(str(current_sheet.cell(row=i+a, column=j).value))
-                                logfunc("Added Display name: " + (str(current_sheet.cell(row=i+a, column=j).value)))
-                                a += 1
 
-                        if str(current_sheet.cell(row=i, column=j).value) == "Payment Source History":
-                            # We're going to skip the Card header for this
-                            a = 2
-                            while (current_sheet.cell(row=i+a, column=j).value is not None):
-                                # Lets add these card details to our Account Object
-                                account.add_card(
-                                    (current_sheet.cell(row=i+a, column=j).value),
-                                    str(current_sheet.cell(row=i+a, column=j+1).value),
-                                    (current_sheet.cell(row=i+a, column=j+2).value)
-                                    )
-                                a += 1
+@artifact_processor
+def cashappIPv6(context):
+    data_list, ip_list, source_path = [], [], ''
+    for file_found in _xlsx_files(context):
+        source_path = file_found
+        token = _token(file_found)
+        _, _, ipv6s, _ = _scan(file_found, token)
+        data_list.extend(ipv6s)
+        for _, ipv6 in ipv6s:
+            ip_list.append((ipv6, 'CashApp', f'CashApp IPv6 Return - {token}', '', None))
+    if ip_list:
+        ipgen(context.get_report_folder(), ip_list)
+    data_headers = ('Account Token', 'IPv6')
+    return data_headers, data_list, context.get_relative_path(source_path)
 
-                            # We'll increase our a by 1 to skip the white space and go to Bank Account Number
-                            # (It looks like there is always a single blank space after the last card number
-                            # and before the Bank Account Number header)
-                            a += 1
-                            if str(current_sheet.cell(row=i+a, column=j).value) == "Bank Account Number":
-                                a += 1
-                                while (current_sheet.cell(row=i+a, column=j).value is not None):
-                                    # Lets add these card details to our Account Object
-                                    account.add_bank_account(
-                                        (current_sheet.cell(row=i+a, column=j).value),
-                                        (current_sheet.cell(row=i+a, column=j+1).value)
-                                        )
-                                    a += 1
 
-                        if str(current_sheet.cell(row=i, column=j).value) == "Issued Instruments":
-                            # We're going to skip the Virtual Card Number header for this
-                            a = 2
-                            while (current_sheet.cell(row=i+a, column=j).value is not None):
-                                # Lets add these card details to our Account Object
-                                account.add_issued_virtual_card(
-                                    (current_sheet.cell(row=i+a, column=j).value),
-                                    (current_sheet.cell(row=i+a, column=j+1).value)
-                                    )
-                                a += 1
+@artifact_processor
+def cashappPhoneNumbers(context):
+    data_list, source_path = [], ''
+    for file_found in _xlsx_files(context):
+        source_path = file_found
+        _, _, _, phones = _scan(file_found, _token(file_found))
+        data_list.extend(phones)
+    data_headers = ('Account Token', ('UTC Date Time', 'datetime'), ('Phone Numbers', 'phonenumber'))
+    return data_headers, data_list, context.get_relative_path(source_path)
 
-                            # We'll increase our a by 1 to skip the white space and go to Physical Card Number
-                            # (It looks like there is always a single blank space after the last card number
-                            # and before the Physical Card Number header)
-                            a += 1
-                            if str(current_sheet.cell(row=i+a, column=j).value) == "Physical Card Number":
-                                a += 1
-                                while (current_sheet.cell(row=i+a, column=j).value is not None):
-                                    # Lets add these card details to our Account Object
-                                    account.add_issued_physical_card(
-                                        (current_sheet.cell(row=i+a, column=j).value),
-                                        (current_sheet.cell(row=i+a, column=j+1).value),
-                                        (current_sheet.cell(row=i+a, column=j+2).value)
-                                        )
-                                    a += 1
 
-                            # We'll increase our a by 1 to skip the white space and go to Bank Account Number
-                            # (It looks like there is always a single blank space after the last card number
-                            # and before the Bank Account Number header)
-                            a += 1
-                            if str(current_sheet.cell(row=i+a, column=j).value) == "Bank Account Number":
-                                a += 1
-                                while (current_sheet.cell(row=i+a, column=j).value is not None):
-                                    # Lets add these card details to our Account Object
-                                    account.add_issued_bank_account(
-                                        (current_sheet.cell(row=i+a, column=j).value),
-                                        (current_sheet.cell(row=i+a, column=j+1).value)
-                                        )
-                                    a += 1
-            if email_list:
-                report = ArtifactHtmlReport(f'CashApp - Emails')
-                report.start_artifact_report(report_folder, f'CashApp - Emails - {account_token}')
-                report.add_script()
-                email_headers = ('Account Token', 'UTC Date Time', 'Email')
-                report.write_artifact_data_table(email_headers, email_list, file_found, html_no_escape=['Media'])
-                report.end_artifact_report()
+@artifact_processor
+def cashappDisplayNames(context):
+    data_list, source_path = [], ''
+    for file_found in _xlsx_files(context):
+        source_path = file_found
+        data_list.extend(_walk_sections(file_found, _token(file_found))['display_names'])
+    data_headers = ('Account Token', 'Display Name')
+    return data_headers, data_list, context.get_relative_path(source_path)
 
-                tsvname = f'CashApp - Emails - {account_token}'
-                tsv(report_folder, email_headers, email_list, tsvname)
 
-                tlactivity = f'CashApp - Emails - {account_token}'
-                timeline(report_folder, tlactivity, email_list, email_headers)
-            else:
-                logfunc(f'No CashApp - Emails - {account_token}')
+@artifact_processor
+def cashappPaymentCards(context):
+    data_list, source_path = [], ''
+    for file_found in _xlsx_files(context):
+        source_path = file_found
+        data_list.extend(_walk_sections(file_found, _token(file_found))['cards'])
+    data_headers = ('Account Token', 'Card Number', 'Card Brand', 'Zip Code')
+    return data_headers, data_list, context.get_relative_path(source_path)
 
-            if ipv4_list:
-                report = ArtifactHtmlReport(f'CashApp - IPv4')
-                report.start_artifact_report(report_folder, f'CashApp - IPv4 - {account_token}')
-                html_report = report.get_report_file_path()
-                report.add_script()
-                ipv4_headers = ('Account Token', 'IPv4')
-                report.write_artifact_data_table(ipv4_headers, ipv4_list, file_found, html_no_escape=['Media'])
-                report.end_artifact_report()
 
-                # Loop through the list and build the IP Address Database
-                a = 0
-                length = len(ipaddress_list)
-                while a < length:
-                    ipaddress_gen.append((ipaddress_list[a], 'CashApp', 'CashApp IPv4 Return - ' + account_token, html_report, None))
-                    a += 1
+@artifact_processor
+def cashappPaymentBankAccounts(context):
+    data_list, source_path = [], ''
+    for file_found in _xlsx_files(context):
+        source_path = file_found
+        data_list.extend(_walk_sections(file_found, _token(file_found))['banks'])
+    data_headers = ('Account Token', 'Bank Account Number', 'Routing Number')
+    return data_headers, data_list, context.get_relative_path(source_path)
 
-                ipgen(report_folder, ipaddress_gen)
 
-                tsvname = f'CashApp - IPv4 - {account_token}'
-                tsv(report_folder, ipv4_headers, ipv4_list, tsvname)
+@artifact_processor
+def cashappIssuedVirtualCards(context):
+    data_list, source_path = [], ''
+    for file_found in _xlsx_files(context):
+        source_path = file_found
+        data_list.extend(_walk_sections(file_found, _token(file_found))['virtual_cards'])
+    data_headers = ('Account Token', 'Virtual Card Number', ('Issued Date', 'datetime'))
+    return data_headers, data_list, context.get_relative_path(source_path)
 
-                tlactivity = f'CashApp - IPv4 - {account_token}'
-                timeline(report_folder, tlactivity, ipv4_list, ipv4_headers)
-            else:
-                logfunc(f'No CashApp - IPv4 - {account_token}')
 
-            if ipv6_list:
-                report = ArtifactHtmlReport(f'CashApp - IPv6')
-                report.start_artifact_report(report_folder, f'CashApp - IPv6 - {account_token}')
-                report.add_script()
-                ipv6_headers = ('Account Token', 'IPv6')
-                report.write_artifact_data_table(ipv6_headers, ipv6_list, file_found, html_no_escape=['Media'])
-                report.end_artifact_report()
+@artifact_processor
+def cashappIssuedPhysicalCards(context):
+    data_list, source_path = [], ''
+    for file_found in _xlsx_files(context):
+        source_path = file_found
+        data_list.extend(_walk_sections(file_found, _token(file_found))['physical_cards'])
+    data_headers = ('Account Token', 'Physical Card Number', ('Issued Date', 'datetime'), 'Address')
+    return data_headers, data_list, context.get_relative_path(source_path)
 
-                ipgen(report_folder, ipaddress_list)
 
-                tsvname = f'CashApp - IPv6 - {account_token}'
-                tsv(report_folder, ipv6_headers, ipv6_list, tsvname)
-
-                tlactivity = f'CashApp - IPv6 - {account_token}'
-                timeline(report_folder, tlactivity, ipv6_list, ipv6_headers)
-            else:
-                logfunc(f'No CashApp - IPv6 - {account_token}')
-
-            if phone_list:
-                report = ArtifactHtmlReport(f'CashApp - Phone Numbers')
-                report.start_artifact_report(report_folder, f'CashApp - Phone Numbers - {account_token}')
-                report.add_script()
-                phone_headers = ('Account Token', 'UTC Date Time', 'Phone Numbers')
-                report.write_artifact_data_table(phone_headers, phone_list, file_found, html_no_escape=['Media'])
-                report.end_artifact_report()
-
-                tsvname = f'CashApp - Phone Numbers - {account_token}'
-                tsv(report_folder, phone_headers, phone_list, tsvname)
-
-                tlactivity = f'CashApp - Phone Numbers - {account_token}'
-                timeline(report_folder, tlactivity, phone_list, phone_headers)
-            else:
-                logfunc(f'No CashApp - Phone Numbers - {account_token}')
-
-__artifacts__ = {
-    "cashappReturns": (
-        "Cash App Returns",
-        ('*/*-for-subject-SQ_CASH-*.xlsx'),
-        get_cashappReturns)
-}
+@artifact_processor
+def cashappIssuedBankAccounts(context):
+    data_list, source_path = [], ''
+    for file_found in _xlsx_files(context):
+        source_path = file_found
+        data_list.extend(_walk_sections(file_found, _token(file_found))['issued_banks'])
+    data_headers = ('Account Token', 'Bank Account Number', 'Routing Number')
+    return data_headers, data_list, context.get_relative_path(source_path)
