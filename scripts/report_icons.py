@@ -884,6 +884,18 @@ icon_mappings = \
     'SQLITE JOURNALING': 'book-open',
     'STRAVA': 'map',
     'SYNCED DEVICES': 'refresh-cw',
+    'SYNCHRONOSS': {
+        'SYNCHRONOSS - MESSAGES (SMS AND MMS)': 'message-square',
+        'SYNCHRONOSS - CALLS': 'phone',
+        'SYNCHRONOSS - MMS MEDIA RECEIVED': 'image',
+        'SYNCHRONOSS - MMS MEDIA SENT': 'image',
+        'SYNCHRONOSS - MMS FOLDER MEDIA (UNLINKED)': 'folder',
+        'SYNCHRONOSS - CONTACTS': 'users',
+        'SYNCHRONOSS - DV ACCESS LOG UPLOADS': 'upload',
+        'SYNCHRONOSS - DV ACCESS LOG SYNC EVENTS': 'refresh-cw',
+        'SYNCHRONOSS - VZMOBILE DEVICE BACKUP': 'smartphone',
+        'default': 'cloud',
+    },
     'SYSDIAGNOSE': {
         'SYSDIAGNOSE - SHUTDOWN LOG PROCESSES': 'loader',
         'SYSDIAGNOSE - SHUTDOWN LOG REBOOTS': 'refresh-cw',
