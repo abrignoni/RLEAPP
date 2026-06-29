@@ -1,160 +1,91 @@
-# Code edited from https://github.com/cheeky4n6monkey/4n6-scripts/blob/master/Google_Takeout_Records/gRecordsActivity_ijson_date.py
-#
-# Author: cheeky4n6monkey@gmail.com
-# License: https://www.gnu.org/licenses/gpl-3.0.en.html
-
-
-import datetime
-import ijson
-import os
-
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, kmlgen
-
-def get_gooReturnsrec(files_found, report_folder, seeker, wrap_text):
-    
-    for file_found in files_found:
-        file_found = str(file_found)
-        if not os.path.basename(file_found) == 'Records.json': # skip -journal and other files
-            continue
-
-        data_list = []
-        count_element = 0
-        count_element_activity = 0
-        count_multiple_activitys = 0
-        folder_dict = {} 
-    
-        with open(file_found, 'r') as f:
-            document = f.read()
-            
-        element_items = ijson.items(document, 'locations.item')
-    
-        for element in element_items: # each element
-            #print("\n" + str(element))
-            count_element += 1
-    
-            if 'activity' in element: # each element which has an activty
-                count_element_activity += 1
-    
-                element_lat = float(element["latitudeE7"]/10000000)
-                element_llg = float(element["longitudeE7"]/10000000)
-                element_accuracy = element["accuracy"]
-    
-                element_alt = "NOT_SPECIFIED"
-                if "altitude" in element: # altitude not always specified
-                    element_alt = float(element["altitude"])
-    
-                element_verticalaccuracy = "NOT_SPECIFIED"
-                if "verticalAccuracy" in element: # verticalAccuracy not always specified
-                    element_verticalaccuracy = element["verticalAccuracy"]
-    
-                element_heading = "NOT_SPECIFIED"
-                if "heading" in element: # heading not always specified
-                    element_heading = element["heading"]
-    
-                element_velocity = "NOT_SPECIFIED"
-                if "velocity" in element: # velocity not always specified
-                    element_velocity = element["velocity"]
-    
-                element_source = element["source"]
-                element_device = str(element["deviceTag"])
-    
-                element_platform = "NOT_SPECIFIED"
-                if "platformType" in element: # altitude not always specified
-                    element_platform = element["platformType"]
-    
-                element_formFactor = "NOT_SPECIFIED"
-                if "formFactor" in element: # formFactor not always specified
-                    element_formFactor = element["formFactor"]
-    
-                element_timestamp_str = element["timestamp"]
-    
-                element_serverTimestamp_str = "NOT_SPECIFIED"
-                if "serverTimestamp" in element: # serverTimestamp not always specified
-                    element_serverTimestamp_str = element["serverTimestamp"]      
-    
-                element_deviceTimestamp_str = "NOT_SPECIFIED"
-                if "deviceTimestamp" in element: # deviceTimestamp not always specified 
-                    element_deviceTimestamp_str = element["deviceTimestamp"]
-
-                if (len(element["activity"]) > 1):
-                    count_multiple_activitys += 1
-                    
-                count_activity = 0
-                for act in element["activity"]: # for each activity in element. multiple (sub)activitys can be in 1 element.
-                    count_activity += 1                    
-                    activity_timestamp_str = "Not found"
-                    if "timestamp" in act: # search for Activity Timestamp
-                        activity_timestamp_str = act["timestamp"]
-    
-                    # For each sub-activity listed, there can be multiple type/confidence pairs
-                    # (sub)activity type can be:
-                    # IN_VEHICLE	The device is in a vehicle, such as a car.
-                    # ON_BICYCLE	The device is on a bicycle.
-                    # ON_FOOT	The device is on a user who is walking or running.
-                    # RUNNING	The device is on a user who is running.
-                    # STILL	The device is still (not moving).
-                    # TILTING	The device angle relative to gravity changed significantly.
-                    # UNKNOWN	Unable to detect the current activity.
-                    # WALKING	The device is on a user who is walking.
-                    #
-                    # confidence    value from 0 to 100 indicating how likely it is that the user is performing this activity.
-                    #
-                    # Source: https://developers.google.com/android/reference/com/google/android/gms/location/DetectedActivity
-                    count_sub = 0
-                    subactivity_str = ""
-                    for subact in act["activity"]:
-                        count_sub += 1
-                        #print("subactivity no. = " + str(count_sub))
-                        #print("type: " + subact["type"])
-                        #print("conf: " + str(subact["confidence"]))
-                        subactivity_str += str(subact["type"] + " [" + str(subact["confidence"]) + "], ")
-                    
-    
-                    # Store each activity & its subactivitys    
-                    folderid = element_timestamp_str.split("T")[0] # eg 2022-02-04T09:56:36.253Z
-                    element_timestamp_c = element_timestamp_str.replace('T', ' ')
-                    element_timestamp_c = element_timestamp_c.replace('Z', '')
-                    
-                    if folderid not in folder_dict.keys(): # add entry 1 if key has not been created before
-                        folder_dict[folderid] = [(element_timestamp_c, element_source, element_device, element_platform, element_formFactor, element_serverTimestamp_str, element_deviceTimestamp_str, element_timestamp_str, element_lat, element_llg, element_alt, element_heading, element_velocity, element_accuracy, element_verticalaccuracy, count_sub, activity_timestamp_str, subactivity_str[:-2])]
-                    else:
-                        # add n-th entry to existing folder
-                        folder_dict[folderid].append((element_timestamp_c, element_source, element_device, element_platform, element_formFactor, element_serverTimestamp_str, element_deviceTimestamp_str, element_timestamp_str, element_lat, element_llg, element_alt, element_heading, element_velocity, element_accuracy, element_verticalaccuracy, count_sub, activity_timestamp_str, subactivity_str[:-2]))
-                        
-                # end for activity in element loop
-        # ends for element loop
-    
-        for x, y in folder_dict.items():
-            for a in y:
-                data_list.append(a)
-                
-        
-    num_entries = len(data_list)
-    if num_entries > 0:
-        report = ArtifactHtmlReport('Google Location History - Records')
-        report.start_artifact_report(report_folder, 'Google Location History - Records')
-        report.add_script()
-        data_headers = ('Timestamp', 'Source', 'Device', 'Platform', 'Form Factor', 'Timestamp Server', 'Timestamp Device', 'Timestamp Element', 'Latitude', 'Longitude', 'Altitude', 'Heading', 'Velocity', 'Accuracy', 'Vertical Accuracy', 'Sub-activity Types', 'Timestamp Activity', 'Detected Activity')
-
-        report.write_artifact_data_table(data_headers, data_list, file_found)
-        report.end_artifact_report()
-        
-        tsvname = f'Google Location History - Records'
-        tsv(report_folder, data_headers, data_list, tsvname)
-        
-        tlactivity = f'Google Location History - Records'
-        timeline(report_folder, tlactivity, data_list, data_headers)
-        
-        kmlactivity = 'Google Location History - Records'
-        kmlgen(report_folder, kmlactivity, data_list, data_headers)
-        
-    else:
-        logfunc('No Google Location History - Records data available')
-            
-__artifacts__ = {
-        "gooReturnsrec": (
-            "Google Returns",
-            ('*/Location History*/Records.json'),
-            get_gooReturnsrec)
+__artifacts_v2__ = {
+    "gooReturnsrec": {
+        "name": "Google Returns - Location History Records",
+        "description": "Location History activity records (Records.json) from a Google return.",
+        "author": "cheeky4n6monkey@gmail.com",
+        "creation_date": "2022-05-29",
+        "last_update_date": "2026-06-28",
+        "requirements": "ijson",
+        "category": "Google Returns",
+        "notes": "Parses the same source as the Takeout 'Google Location History - Records' "
+                 "artifact. Latitude/Longitude are exposed for KML; timestamps normalized to UTC "
+                 "(unspecified values are kept verbatim, e.g. NOT_SPECIFIED / Not found).",
+        "paths": ('*/Location History*/Records.json',),
+        "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
+        "artifact_icon": "map-pin",
+    }
 }
+
+import os
+from datetime import datetime, timezone
+
+import ijson
+
+from scripts.ilapfuncs import artifact_processor
+
+
+def _ts(value):
+    text = str(value or '').strip()
+    if not text or text in ('NOT_SPECIFIED', 'Not found'):
+        return value
+    cleaned = text.replace('T', ' ').replace('Z', '')
+    try:
+        dt = datetime.fromisoformat(cleaned)
+        return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt.astimezone(timezone.utc)
+    except ValueError:
+        return value
+
+
+@artifact_processor
+def gooReturnsrec(context):
+    data_list, source_path = [], ''
+    for file_found in context.get_files_found():
+        file_found = str(file_found)
+        if os.path.basename(file_found) != 'Records.json':
+            continue
+        source_path = file_found
+        folder_dict = {}
+        with open(file_found, encoding='utf-8') as f:
+            document = f.read()
+
+        for element in ijson.items(document, 'locations.item'):
+            if 'activity' not in element:
+                continue
+            element_lat = float(element["latitudeE7"] / 10000000)
+            element_llg = float(element["longitudeE7"] / 10000000)
+            element_accuracy = str(element["accuracy"])
+            element_alt = str(float(element["altitude"])) if "altitude" in element else "NOT_SPECIFIED"
+            element_vacc = str(element["verticalAccuracy"]) if "verticalAccuracy" in element else "NOT_SPECIFIED"
+            element_heading = str(element["heading"]) if "heading" in element else "NOT_SPECIFIED"
+            element_velocity = str(element["velocity"]) if "velocity" in element else "NOT_SPECIFIED"
+            element_source = element["source"]
+            element_device = str(element["deviceTag"])
+            element_platform = element["platformType"] if "platformType" in element else "NOT_SPECIFIED"
+            element_form = element["formFactor"] if "formFactor" in element else "NOT_SPECIFIED"
+            element_ts = element["timestamp"]
+            server_ts = element["serverTimestamp"] if "serverTimestamp" in element else "NOT_SPECIFIED"
+            device_ts = element["deviceTimestamp"] if "deviceTimestamp" in element else "NOT_SPECIFIED"
+
+            for act in element["activity"]:
+                activity_ts = act["timestamp"] if "timestamp" in act else "Not found"
+                subactivity = ''
+                for subact in act["activity"]:
+                    subactivity += f'{subact["type"]} [{subact["confidence"]}], '
+                folderid = element_ts.split("T")[0]
+                element_ts_clean = element_ts.replace('T', ' ').replace('Z', '')
+                row = (_ts(element_ts_clean), element_source, element_device, element_platform,
+                       element_form, _ts(server_ts), _ts(device_ts), _ts(element_ts), element_lat,
+                       element_llg, element_alt, element_heading, element_velocity,
+                       element_accuracy, element_vacc, len(act["activity"]), _ts(activity_ts),
+                       subactivity[:-2])
+                folder_dict.setdefault(folderid, []).append(row)
+
+        for rows in folder_dict.values():
+            data_list.extend(rows)
+
+    data_headers = (('Timestamp', 'datetime'), 'Source', 'Device', 'Platform', 'Form Factor',
+                    ('Timestamp Server', 'datetime'), ('Timestamp Device', 'datetime'),
+                    ('Timestamp Element', 'datetime'), 'Latitude', 'Longitude', 'Altitude',
+                    'Heading', 'Velocity', 'Accuracy', 'Vertical Accuracy', 'Sub-activity Count',
+                    ('Timestamp Activity', 'datetime'), 'Detected Activity')
+    return data_headers, data_list, context.get_relative_path(source_path)
