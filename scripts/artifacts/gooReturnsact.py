@@ -1,52 +1,68 @@
+__artifacts_v2__ = {
+    "gooReturnsact": {
+        "name": "Google Returns - Access Log Activities",
+        "description": "Access Log Activities from a Google law enforcement return "
+                       "(Access Log Activity/Activities*.csv).",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2022-05-29",
+        "last_update_date": "2026-06-28",
+        "requirements": "none",
+        "category": "Google Returns",
+        "notes": "Dynamic-schema CSV: headers are read from the file's first row (with the first "
+                 "column moved to the end, as in the original) and made LAVA-safe. This parses the "
+                 "same source as the Takeout 'Google Access Log Activities' artifact.",
+        "paths": ('*/Access Log Activity/Activities*.csv',),
+        "output_types": "standard",
+        "artifact_icon": "activity",
+    }
+}
+
+import csv
 import os
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows
+from scripts.ilapfuncs import artifact_processor
+from scripts.lavafuncs import sanitize_sql_name
 
-def get_gooReturnsact(files_found, report_folder, seeker, wrap_text):
-    
-    data_list = []
-    for file_found in files_found:
+_RESERVED = {'from', 'to', 'order', 'group', 'where', 'select', 'index', 'join', 'references',
+             'check', 'default', 'add', 'table', 'column', 'create', 'insert', 'update', 'delete',
+             'drop', 'values', 'set', 'primary', 'key', 'unique', 'foreign', 'constraint', 'having',
+             'distinct', 'union', 'using'}
+
+
+def _safe_headers(cells):
+    seen, out = {}, []
+    for i, cell in enumerate(cells):
+        name = str(cell).strip() if cell not in (None, '') else f'Column {i + 1}'
+        if sanitize_sql_name(name) in _RESERVED:
+            name = f'{name} Value'
+        key = name.lower()
+        seen[key] = seen.get(key, -1) + 1
+        if seen[key]:
+            name = f'{name} ({seen[key]})'
+        out.append(name)
+    return out
+
+
+@artifact_processor
+def gooReturnsact(context):
+    headers, data_list, source_path = [], [], ''
+    for file_found in context.get_files_found():
         file_found = str(file_found)
-        
-        with open(file_found, 'r') as file:	
-            lines = file.readlines()
-            header = 0
-        for line in lines:
-            if header == 0:
-                line = line.strip()
-                data_headers = line.split(',')
-                topop = data_headers[0]
-                data_headers.append(data_headers.pop(data_headers.index(topop)))
-                header = 1
-            else:
-                line = line.strip()
-                data = line.split(',')
-                topop = data[0]
-                data.append(data.pop(data.index(topop)))
-                data_list.append(data)
-        
-    if len(data_list) > 0:
-        description = ''
-        report = ArtifactHtmlReport('Google Returns - Activities')
-        report.start_artifact_report(report_folder, 'Google Returns - Activities', description)
-        report.add_script()
-        #data_headers = ('')
+        if not file_found.endswith('.csv') or os.path.basename(file_found).startswith('.'):
+            continue
+        source_path = file_found
+        file_headers = None
+        with open(file_found, encoding='utf-8', errors='backslashreplace') as f:
+            for item in csv.reader(f, delimiter=','):
+                if not item:
+                    continue
+                item = item[1:] + item[:1]  # original moves the first column to the end
+                if file_headers is None:
+                    file_headers = _safe_headers(item)
+                    continue
+                row = item + [''] * len(file_headers)
+                data_list.append(tuple(row[:len(file_headers)]))
+        if file_headers:
+            headers = file_headers
 
-        report.write_artifact_data_table(data_headers, data_list, file_found)
-        report.end_artifact_report()
-        
-        tsvname = f'Google Returns - Activities'
-        tsv(report_folder, data_headers, data_list, tsvname)
-        
-        tlactivity = f'Google Returns - Activities'
-        timeline(report_folder, tlactivity, data_list, data_headers)
-    else:
-        logfunc('No Google Returns - Activities data available')
-
-__artifacts__ = {
-        "gooReturnsact": (
-            "Google Returns",
-            ('*/Access Log Activity/Activities*.csv'),
-            get_gooReturnsact)
-}
+    return tuple(headers), data_list, context.get_relative_path(source_path)
