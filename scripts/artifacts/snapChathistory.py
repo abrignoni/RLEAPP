@@ -4,13 +4,24 @@ __artifacts_v2__ = {
         "description": "Chat history from a Snapchat data archive (chat_history.json).",
         "author": "@AlexisBrignoni",
         "creation_date": "2022-04-05",
-        "last_update_date": "2026-06-28",
+        "last_update_date": "2026-07-03",
         "requirements": "none",
         "category": "Snapchat Archive",
         "notes": "",
         "paths": ('*/chat_history.json',),
         "output_types": "standard",
         "artifact_icon": "message-square",
+        "data_views": {
+            "conversation": {
+                "conversationDiscriminatorColumn": "Other Party",
+                "textColumn": "Text",
+                "directionColumn": "Direction",
+                "directionSentValue": "Sent",
+                "timeColumn": "Timestamp",
+                "senderColumn": "Other Party",
+                "sentMessageStaticLabel": "Local User"
+            }
+        },
     }
 }
 
@@ -62,13 +73,20 @@ def snapChathistory(context):
             for mess in messages:
                 if mess.get('From'):
                     directionality = 'From: ' + mess['From']
+                    direction = 'Received'
+                    other_party = mess['From']
                 elif mess.get('To'):
                     directionality = 'To: ' + mess['To']
+                    direction = 'Sent'
+                    other_party = mess['To']
                 else:
                     directionality = ''
+                    direction = ''
+                    other_party = ''
                 data_list.append((_snap_ts(mess.get('Created', '')), directionality,
-                                  mess.get('Text', ''), mess.get('Media Type', ''), conv_type))
+                                  mess.get('Text', ''), mess.get('Media Type', ''), conv_type,
+                                  direction, other_party))
 
     data_headers = (('Timestamp', 'datetime'), 'Directionality', 'Text', 'Media Type',
-                    'Message Type')
+                    'Message Type', 'Direction', 'Other Party')
     return data_headers, data_list, context.get_relative_path(source_path)
