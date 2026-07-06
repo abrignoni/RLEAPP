@@ -13,18 +13,17 @@ __artifacts_v2__ = {
     }
 }
 
-from datetime import datetime
-import os
 import re
 
 from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, convert_ts_int_to_utc, convert_utc_human_to_timezone
+from scripts.ilapfuncs import logfunc, tsv, timeline, convert_ts_int_to_utc, convert_utc_human_to_timezone
 from scripts.context import Context
 
-def get_sysShutdown(files_found, report_folder, seeker, wrap_text):
+def get_sysShutdown(files_found, report_folder, seeker, wrap_text):  # pylint: disable=unused-argument
     
     data_list_shutdown_log = []
     data_list_shutdown_reboot = []
+    file_found = ''
     
     for file_found in files_found:
         file_found = str(file_found)
@@ -66,10 +65,10 @@ def get_sysShutdown(files_found, report_folder, seeker, wrap_text):
         report.write_artifact_data_table(data_headers, data_list_shutdown_log, file_found)
         report.end_artifact_report()
         
-        tsvname = f'Sysdiagnose - Shutdown Log Processes'
+        tsvname = 'Sysdiagnose - Shutdown Log Processes'
         tsv(report_folder, data_headers, data_list_shutdown_log, tsvname)
         
-        tlactivity = f'Sysdiagnose - Shutdown Log Processes'
+        tlactivity = 'Sysdiagnose - Shutdown Log Processes'
         timeline(report_folder, tlactivity, data_list_shutdown_log, data_headers)
     else:
         logfunc('No Sysdiagnose - Shutdown Log Processes data available')
@@ -84,10 +83,10 @@ def get_sysShutdown(files_found, report_folder, seeker, wrap_text):
         report.write_artifact_data_table(data_headers, data_list_shutdown_reboot, file_found)
         report.end_artifact_report()
         
-        tsvname = f'Sysdiagnose - Shutdown Log Reboots'
+        tsvname = 'Sysdiagnose - Shutdown Log Reboots'
         tsv(report_folder, data_headers, data_list_shutdown_reboot, tsvname)
         
-        tlactivity = f'Sysdiagnose - Shutdown Log Reboots'
+        tlactivity = 'Sysdiagnose - Shutdown Log Reboots'
         timeline(report_folder, tlactivity, data_list_shutdown_reboot, data_headers)
     else:
         logfunc('No Sysdiagnose - Shutdown Log Reboots data available')
