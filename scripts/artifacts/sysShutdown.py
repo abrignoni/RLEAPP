@@ -1,93 +1,99 @@
 __artifacts_v2__ = {
-    "sysShutdown": {
-        "name": "Sysdiagnose - Shutdown Log",
-        "description": "Parses the shutdown.log file from Sysdiagnose logs, based off work by Kaspersky Lab https://github.com/KasperskyLab/iShutdown",
+    "sysShutdownProcesses": {
+        "name": "Sysdiagnose - Shutdown Log Processes",
+        "description": "Parses remaining client processes at shutdown from the shutdown.log file"
+                       " in Sysdiagnose logs, based off work by Kaspersky Lab"
+                       " https://github.com/KasperskyLab/iShutdown",
         "author": "@KevinPagano3",
-        "version": "0.1",
-        "date": "2024-02-13",
+        "creation_date": "2024-02-13",
+        "last_update_date": "2026-07-06",
         "requirements": "none",
         "category": "Sysdiagnose",
         "notes": "",
-        "paths": ('*/shutdown.log'),
-        "function": "get_sysShutdown"
+        "paths": ('*/shutdown.log',),
+        "output_types": "standard",
+        "artifact_icon": "power",
+    },
+    "sysShutdownReboots": {
+        "name": "Sysdiagnose - Shutdown Log Reboots",
+        "description": "Parses reboot events from the shutdown.log file in Sysdiagnose logs,"
+                       " based off work by Kaspersky Lab"
+                       " https://github.com/KasperskyLab/iShutdown",
+        "author": "@KevinPagano3",
+        "creation_date": "2024-02-13",
+        "last_update_date": "2026-07-06",
+        "requirements": "none",
+        "category": "Sysdiagnose",
+        "notes": "",
+        "paths": ('*/shutdown.log',),
+        "output_types": "standard",
+        "artifact_icon": "power",
     }
 }
 
 import re
 
-from scripts.artifact_report import ArtifactHtmlReport
-from scripts.ilapfuncs import logfunc, tsv, timeline, convert_ts_int_to_utc, convert_utc_human_to_timezone
-from scripts.context import Context
+from scripts.ilapfuncs import artifact_processor, convert_ts_int_to_utc
 
-def get_sysShutdown(files_found, report_folder, seeker, wrap_text):  # pylint: disable=unused-argument
-    
-    data_list_shutdown_log = []
-    data_list_shutdown_reboot = []
-    file_found = ''
-    
-    for file_found in files_found:
-        file_found = str(file_found)
 
-        with open(file_found, encoding = 'utf-8', mode = 'r') as f:
-            lines = f.readlines()
-            
-            entry_num = 1
+def _parse_shutdown_log(file_found, source_file):
+    """Parses one shutdown.log, returning (process_rows, reboot_rows)."""
+    process_rows = []
+    reboot_rows = []
+
+    with open(file_found, encoding='utf-8', mode='r') as f:
+        lines = f.readlines()
+
+    entry_num = 1
+    entries = []
+    reboots = 1
+
+    for line in lines:
+        pid_match = re.search(r'remaining client pid: (\d+) \((.*?)\)', line)
+        if pid_match:
+            pid, path = pid_match.groups()
+            entries.append((pid, path))
+
+        sigterm_match = re.search(r'SIGTERM: \[(\d+)\]', line)
+        if sigterm_match:
+            timestamp = int(sigterm_match.group(1))
+            reboot_time = convert_ts_int_to_utc(timestamp)
+            reboot_rows.append((reboot_time, reboots, source_file))
+            reboots += 1
+
+            for pid, path in entries:
+                process_rows.append((reboot_time, entry_num, pid, path, source_file))
+                entry_num += 1
             entries = []
-            reboots = 1
-            
-            for line in lines:
-                pid_match = re.search(r'remaining client pid: (\d+) \((.*?)\)', line)
-                if pid_match:
-                    pid, path = pid_match.groups()
-                    entries.append((pid, path))
 
-                sigterm_match = re.search(r'SIGTERM: \[(\d+)\]', line)
-                if sigterm_match:
-                    timestamp = int(sigterm_match.group(1))
-                    #reboot_time = datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
-                    reboot_time = convert_utc_human_to_timezone(convert_ts_int_to_utc(timestamp),'UTC')
-                    data_list_shutdown_reboot.append((reboot_time,reboots,Context.get_relative_path(file_found)))
-                    reboots += 1
-                    
-                    for pid, path in entries:
-                        data_list_shutdown_log.append((reboot_time,entry_num,pid,path,Context.get_relative_path(file_found)))
-                        
-                        entry_num += 1
-                    entries = []
-           
-    # Shutdown Log Processes Report    
-    if len(data_list_shutdown_log) > 0:
-        report = ArtifactHtmlReport('Sysdiagnose - Shutdown Log Processes')
-        report.start_artifact_report(report_folder, 'Sysdiagnose - Shutdown Log Processes')
-        report.add_script()
-        data_headers = ('Timestamp','Entry Number','PID','Path','Source File')
+    return process_rows, reboot_rows
 
-        report.write_artifact_data_table(data_headers, data_list_shutdown_log, file_found)
-        report.end_artifact_report()
-        
-        tsvname = 'Sysdiagnose - Shutdown Log Processes'
-        tsv(report_folder, data_headers, data_list_shutdown_log, tsvname)
-        
-        tlactivity = 'Sysdiagnose - Shutdown Log Processes'
-        timeline(report_folder, tlactivity, data_list_shutdown_log, data_headers)
-    else:
-        logfunc('No Sysdiagnose - Shutdown Log Processes data available')
-        
-    # Shutdown Log Report    
-    if len(data_list_shutdown_reboot) > 0:
-        report = ArtifactHtmlReport('Sysdiagnose - Shutdown Log Reboots')
-        report.start_artifact_report(report_folder, 'Sysdiagnose - Shutdown Log Reboots')
-        report.add_script()
-        data_headers = ('Timestamp','Reboot Number','Source File')
 
-        report.write_artifact_data_table(data_headers, data_list_shutdown_reboot, file_found)
-        report.end_artifact_report()
-        
-        tsvname = 'Sysdiagnose - Shutdown Log Reboots'
-        tsv(report_folder, data_headers, data_list_shutdown_reboot, tsvname)
-        
-        tlactivity = 'Sysdiagnose - Shutdown Log Reboots'
-        timeline(report_folder, tlactivity, data_list_shutdown_reboot, data_headers)
-    else:
-        logfunc('No Sysdiagnose - Shutdown Log Reboots data available')
-        
+@artifact_processor
+def sysShutdownProcesses(context):
+    data_list = []
+    source_path = ''
+
+    for file_found in context.get_files_found():
+        file_found = str(file_found)
+        source_path = file_found
+        process_rows, _ = _parse_shutdown_log(file_found, context.get_relative_path(file_found))
+        data_list.extend(process_rows)
+
+    data_headers = (('Timestamp', 'datetime'), 'Entry Number', 'PID', 'Path', 'Source File')
+    return data_headers, data_list, source_path
+
+
+@artifact_processor
+def sysShutdownReboots(context):
+    data_list = []
+    source_path = ''
+
+    for file_found in context.get_files_found():
+        file_found = str(file_found)
+        source_path = file_found
+        _, reboot_rows = _parse_shutdown_log(file_found, context.get_relative_path(file_found))
+        data_list.extend(reboot_rows)
+
+    data_headers = (('Timestamp', 'datetime'), 'Reboot Number', 'Source File')
+    return data_headers, data_list, source_path
