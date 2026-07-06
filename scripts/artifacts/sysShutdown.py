@@ -19,6 +19,7 @@ import re
 
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, tsv, timeline, is_platform_windows, convert_ts_int_to_utc, convert_utc_human_to_timezone
+from scripts.context import Context
 
 def get_sysShutdown(files_found, report_folder, seeker, wrap_text):
     
@@ -46,11 +47,11 @@ def get_sysShutdown(files_found, report_folder, seeker, wrap_text):
                     timestamp = int(sigterm_match.group(1))
                     #reboot_time = datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
                     reboot_time = convert_utc_human_to_timezone(convert_ts_int_to_utc(timestamp),'UTC')
-                    data_list_shutdown_reboot.append((reboot_time,reboots,file_found))
+                    data_list_shutdown_reboot.append((reboot_time,reboots,Context.get_relative_path(file_found)))
                     reboots += 1
                     
                     for pid, path in entries:
-                        data_list_shutdown_log.append((reboot_time,entry_num,pid,path,file_found))
+                        data_list_shutdown_log.append((reboot_time,entry_num,pid,path,Context.get_relative_path(file_found)))
                         
                         entry_num += 1
                     entries = []
