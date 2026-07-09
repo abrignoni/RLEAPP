@@ -76,7 +76,6 @@ import shutil
 import json
 from pathlib import Path
 
-from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc, is_platform_windows, artifact_processor, check_in_media
 
 def load_json_from_signed_file(filepath):
