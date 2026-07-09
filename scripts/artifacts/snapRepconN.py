@@ -4,7 +4,7 @@ __artifacts_v2__ = {
         "description": "Reported conversations parsed from a Snapchat law enforcement return (reported_conversations.csv).",
         "author": "@AlexisBrignoni",
         "creation_date": "2024-06-13",
-        "last_update_date": "2026-06-27",
+        "last_update_date": "2026-07-09",
         "requirements": "none",
         "category": "Snapchat Returns",
         "notes": "",
@@ -25,7 +25,14 @@ _MONTHS = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
 
 
 def _snap_ts(value):
-    parts = (value or '').split(' ')
+    # Older returns: "Wed Aug 19 12:00:00 UTC 2021"; newer returns: "2026-04-11 04:02:00 UTC".
+    value = (value or '').strip()
+    if value.endswith(' UTC'):
+        try:
+            return datetime.strptime(value[:-4], '%Y-%m-%d %H:%M:%S').replace(tzinfo=timezone.utc)
+        except ValueError:
+            pass
+    parts = value.split(' ')
     try:
         return datetime(int(parts[5]), _MONTHS[parts[1]], int(parts[2]),
                         *(int(x) for x in parts[3].split(':')), tzinfo=timezone.utc)
@@ -33,51 +40,97 @@ def _snap_ts(value):
         return value
 
 
-def _read_multiline_csv(file_path):
-    rows = []
-    start = False
+def _read_sections(file_path):
+    # The file holds one or more sections, each made of a quoted multi-line
+    # legend, a row of '=' characters, a header row, then data rows. Legend
+    # rows parse as a single cell, so rows with fewer than two cells are not data.
+    sections = []
+    rows = None
+    pending_header = False
     with open(file_path, 'r', newline='', encoding='utf-8') as f:
         for row in csv.reader(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL):
-            if start:
+            if any(cell and set(cell) == {'='} for cell in row):
+                pending_header = True
+                rows = None
+            elif pending_header:
+                rows = []
+                sections.append((row, rows))
+                pending_header = False
+            elif rows is not None and len(row) >= 2:
                 rows.append(row)
-            elif '===========================' in row:
-                start = True
-    return rows
+    return sections
+
+
+def _column(name):
+    if name == 'message_timestamp':
+        return ('Message_timestamp', 'datetime')
+    return name.capitalize()
 
 
 @artifact_processor
 def snapRepconN(context):
-    ts_idx, msg_ts_idx, media_idx = 15, 8, 13
-    data_headers = (('Timestamp', 'datetime'), 'Reporter_user_id', 'Reason', 'Context',
-                    'Reported_user_id', 'Reported_profile_type', 'Conversation_id',
-                    'Reported_message_id', ('Message_timestamp', 'datetime'), 'Message_id',
-                    'Sender_user_id', 'Sender_username', 'Text', 'Media_id', 'Reply_to_message_id',
-                    'Message_type', ('Media', 'media'))
-    non_media = len(data_headers) - 1
+    files_found = [str(f) for f in context.get_files_found()]
 
-    data_list = []
+    # Media files in the return are named by media_id (with or without an extension).
+    media_lookup = {}
+    for path in files_found:
+        name = os.path.basename(path)
+        if name.lower().endswith('.csv'):
+            continue
+        media_lookup.setdefault(name, path)
+        media_lookup.setdefault(os.path.splitext(name)[0], path)
+
+    checked_in = {}
+
+    def _media_refs(media_field):
+        refs = []
+        for token in (t.strip() for t in (media_field or '').split(';')):
+            token = token.split(':')[-1].strip()  # values may come as "media_type:media_id"
+            path = media_lookup.get(token)
+            if not token or not path:
+                continue
+            if path not in checked_in:
+                checked_in[path] = check_in_media(path, os.path.basename(path))
+            if checked_in[path]:
+                refs.append(checked_in[path])
+        return refs
+
+    # Columns are mapped by header name, never by position (the layout changes across
+    # return versions). Known fields are pre-seeded to keep a stable column order;
+    # any new fields Snapchat adds are appended as they appear.
+    field_names = ['reporter_user_id', 'reason', 'context', 'reported_user_id',
+                   'reported_profile_type', 'conversation_id', 'reported_message_id',
+                   'message_timestamp', 'message_id', 'sender_user_id', 'sender_username',
+                   'text', 'media_id', 'reply_to_message_id', 'message_type']
+    records = []
     source_path = ''
-    for file_found in context.get_files_found():
-        file_found = str(file_found)
+    parsed = set()
+    for file_found in files_found:
         if not os.path.basename(file_found).startswith('reported_conversations.csv'):
             continue
+        real_path = os.path.realpath(file_found)
+        if real_path in parsed:  # the same file can match more than one search pattern
+            continue
+        parsed.add(real_path)
         source_path = file_found
-        rows = _read_multiline_csv(file_found)
-        for raw in rows[1:]:
-            if len(raw) <= ts_idx:
-                continue
-            entry = list(raw)
-            entry.insert(0, _snap_ts(entry[ts_idx]))
-            del entry[ts_idx + 1]
-            if len(entry) > msg_ts_idx:
-                entry[msg_ts_idx] = _snap_ts(entry[msg_ts_idx])
-            media_raw = entry[media_idx] if len(entry) > media_idx else ''
-            media_parts = media_raw.split(':')
-            media_val = media_parts[1] if len(media_parts) > 1 else media_raw
-            refs = [r for r in (check_in_media(m.strip(), m.strip())
-                                for m in media_val.split(';') if m.strip()) if r]
-            entry = (entry + [''] * non_media)[:non_media]
-            entry.append(refs)
-            data_list.append(entry)
+        for header, rows in _read_sections(file_found):
+            header = [h.strip().lower() for h in header]
+            for name in header:
+                if name != 'timestamp' and name not in field_names:
+                    field_names.append(name)
+            for raw in rows:
+                if not any(cell.strip() for cell in raw):
+                    continue
+                values = dict(zip(header, raw))
+                timestamp = _snap_ts(values.pop('timestamp', ''))
+                if values.get('message_timestamp'):
+                    values['message_timestamp'] = _snap_ts(values['message_timestamp'])
+                records.append((timestamp, values, _media_refs(values.get('media_id', ''))))
+
+    data_headers = tuple([('Timestamp', 'datetime')]
+                         + [_column(name) for name in field_names]
+                         + [('Media', 'media')])
+    data_list = [[timestamp] + [values.get(name, '') for name in field_names] + [refs if refs else '']
+                 for timestamp, values, refs in records]
 
     return data_headers, data_list, context.get_relative_path(source_path)
