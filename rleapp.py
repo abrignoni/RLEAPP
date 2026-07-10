@@ -12,6 +12,7 @@ import leapp_functions.app.history as history
 
 from scripts.search_files import *
 from scripts.ilapfuncs import *
+from leapp_functions.app.output import validate_output_folder_available
 from scripts.version_info import rleapp_version
 from time import process_time, gmtime, strftime, perf_counter
 from scripts.lavafuncs import *
@@ -39,6 +40,12 @@ def validate_args(args):
         raise argparse.ArgumentError(None, 'OUTPUT path \'{args.output_path}\' does not exist! Run the program again.')
     if not os.path.isdir(os.path.abspath(args.output_path)):
         raise argparse.ArgumentError(None, f'OUTPUT path \'{args.output_path}\' must be a directory! Run the program again.')
+
+    # Validate new folder name for output path
+    output_folder_valid, output_folder_error = validate_output_folder_available(
+        os.path.abspath(args.output_path), args.custom_output_folder)
+    if not output_folder_valid:
+        raise argparse.ArgumentError(None, output_folder_error)
 
     # Validate input_path based on type
     abs_input_path = os.path.abspath(args.input_path)
