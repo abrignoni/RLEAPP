@@ -42,7 +42,7 @@ def generate_report(reportfolderbase, time_in_secs, time_hms, extraction_type, i
     control = None
     side_heading = \
         """
-        <h6 class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+        <h6 class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1">
             {0}
         </h6>
         """
