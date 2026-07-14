@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Snapchat Returns",
         "notes": "",
-        "paths": ('*/ai_conversations.csv',),
+        "paths": ('*/ai_conversations.csv', '*/*.*'),
         "output_types": "standard",
         "artifact_icon": "message-circle",
     }
@@ -18,9 +18,10 @@ __artifacts_v2__ = {
 
 import csv
 import os
+import re
 from datetime import datetime, timezone
 
-from scripts.ilapfuncs import artifact_processor
+from scripts.ilapfuncs import artifact_processor, check_in_media
 
 _DATETIME_COLUMNS = ('timestamp',)
 
@@ -63,12 +64,43 @@ def _read_sections(file_path):
 def snapAiConvN(context):
     # Columns are mapped by header name, never by position, so fields added in
     # future return versions cannot misalign the output.
+    files_found = [str(f) for f in context.get_files_found()]
+
+    # Media files in the return are named by media_id (see snapConvN). Key the
+    # lookup by full name, name-without-extension, and the media_v4 "b~<id>"
+    # token so any return layout links. Note: My AI returns seen so far carry a
+    # different media_id form (e.g. "snap_<id>") and shipped no matching media,
+    # so this path is present for completeness but not yet exercised by data.
+    media_lookup = {}
+    for path in files_found:
+        name = os.path.basename(path)
+        if name.lower().endswith('.csv'):
+            continue
+        media_lookup.setdefault(name, path)
+        media_lookup.setdefault(os.path.splitext(name)[0], path)
+        token = re.search(r'~(b~[^~]+)~v4', name)
+        if token:
+            media_lookup.setdefault(token.group(1), path)
+
+    checked_in = {}
+
+    def _media_refs(media_field):
+        refs = []
+        for token in (t.strip() for t in (media_field or '').split(';')):
+            path = media_lookup.get(token)
+            if not token or not path:
+                continue
+            if path not in checked_in:
+                checked_in[path] = check_in_media(path, os.path.basename(path))
+            if checked_in[path]:
+                refs.append(checked_in[path])
+        return refs
+
     field_names = []
     records = []
     source_path = ''
     parsed = set()
-    for file_found in context.get_files_found():
-        file_found = str(file_found)
+    for file_found in files_found:
         if not os.path.basename(file_found).startswith('ai_conversations.csv'):
             continue
         real_path = os.path.realpath(file_found)
@@ -86,11 +118,12 @@ def snapAiConvN(context):
                     continue
                 values = dict(zip(header, raw))
                 timestamps = [_snap_ts(values.pop(name, '')) for name in _DATETIME_COLUMNS]
-                records.append((timestamps, values))
+                records.append((timestamps, values, _media_refs(values.get('media_id', ''))))
 
     data_headers = tuple([('Timestamp', 'datetime')]
-                         + [name.capitalize() for name in field_names])
-    data_list = [timestamps + [values.get(name, '') for name in field_names]
-                 for timestamps, values in records]
+                         + [name.capitalize() for name in field_names]
+                         + [('Media', 'media')])
+    data_list = [timestamps + [values.get(name, '') for name in field_names] + [refs if refs else '']
+                 for timestamps, values, refs in records]
 
     return data_headers, data_list, context.get_relative_path(source_path)

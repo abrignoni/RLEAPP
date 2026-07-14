@@ -16,6 +16,7 @@ __artifacts_v2__ = {
 
 import csv
 import os
+import re
 from datetime import datetime, timezone
 
 from scripts.ilapfuncs import artifact_processor, check_in_media
@@ -65,7 +66,12 @@ def _read_sections(file_path):
 def snapConvN(context):
     files_found = [str(f) for f in context.get_files_found()]
 
-    # Media files in the return are named by media_id (with or without an extension).
+    # Media files in the return are named by media_id. Newer returns use the
+    # media_v4 scheme
+    # "<type>~media_v4~<date>~<sender>~<recipient>~<state>~b~<id>~v4.<ext>", where
+    # the conversations.csv media_id column holds the "b~<id>" token; older returns
+    # simply name the file "<media_id>.<ext>". Key the lookup by every form so
+    # either layout links.
     media_lookup = {}
     for path in files_found:
         name = os.path.basename(path)
@@ -73,6 +79,9 @@ def snapConvN(context):
             continue
         media_lookup.setdefault(name, path)
         media_lookup.setdefault(os.path.splitext(name)[0], path)
+        token = re.search(r'~(b~[^~]+)~v4', name)
+        if token:
+            media_lookup.setdefault(token.group(1), path)
 
     checked_in = {}
 

@@ -16,6 +16,7 @@ __artifacts_v2__ = {
 
 import csv
 import os
+import re
 from datetime import datetime, timezone
 
 from scripts.ilapfuncs import artifact_processor, check_in_media
@@ -73,6 +74,11 @@ def snapMemN(context):
             continue
         media_lookup.setdefault(name, path)
         media_lookup.setdefault(os.path.splitext(name)[0], path)
+        # Newer returns name media "<type>~media_v4~...~b~<id>~v4.<ext>" and the
+        # CSV media_id column holds only the "b~<id>" token; key by it too.
+        token = re.search(r'~(b~[^~]+)~v4', name)
+        if token:
+            media_lookup.setdefault(token.group(1), path)
 
     checked_in = {}
 
