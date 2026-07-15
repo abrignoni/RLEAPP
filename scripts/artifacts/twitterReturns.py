@@ -101,7 +101,8 @@ def load_json_from_signed_file(filepath):
     return json.loads(json_str)
 
 @artifact_processor
-def tweets(files_found, report_folder, seeker, wrap_text):
+def tweets(context):
+    files_found = context.get_files_found()
     artifact_info = inspect.stack()[0]
     data_list = []
     
@@ -174,7 +175,8 @@ def tweets(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, 'See source path(s) below'
 
 @artifact_processor
-def deltweets(files_found, report_folder, seeker, wrap_text):
+def deltweets(context):
+    files_found = context.get_files_found()
     #artifact_info = inspect.stack()[0]
     data_list = []
     
@@ -248,7 +250,8 @@ def deltweets(files_found, report_folder, seeker, wrap_text):
 
     
 @artifact_processor
-def dmtwitter(files_found, report_folder, seeker, wrap_text):
+def dmtwitter(context):
+    files_found = context.get_files_found()
     artifact_info = inspect.stack()[0]
     data_list = []
 
@@ -291,7 +294,8 @@ def dmtwitter(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, 'See source path(s) below'
 
 @artifact_processor
-def deleteddmtwitter(files_found, report_folder, seeker, wrap_text):
+def deleteddmtwitter(context):
+    files_found = context.get_files_found()
     artifact_info = inspect.stack()[0]
     data_list = []
     
@@ -349,7 +353,8 @@ def deleteddmtwitter(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, 'See source path(s) below'
 
 @artifact_processor
-def blocktwitter(files_found, report_folder, seeker, wrap_text):
+def blocktwitter(context):
+    files_found = context.get_files_found()
     artifact_info = inspect.stack()[0]
     data_list = []
     

@@ -8,7 +8,7 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Google Takeout Archive",
         "notes": "",
-        "paths": ('*/Fit/Daily activity metrics/Daily activity metrics.csv'),
+        "paths": ('*/Fit/Daily activity metrics/Daily activity metrics.csv',),
         "output_types": "standard",  # or ["html", "tsv", "timeline", "lava"]
         "artifact_icon": "activity",
     }
@@ -20,7 +20,8 @@ import csv
 from scripts.ilapfuncs import artifact_processor, get_file_path
 
 @artifact_processor
-def takeout_google_fit(files_found, report_folder, seeker, wrap_text):
+def takeout_google_fit(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Daily activity metrics.csv')
         

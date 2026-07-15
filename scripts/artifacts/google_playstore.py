@@ -70,7 +70,8 @@ import json
 from scripts.ilapfuncs import artifact_processor, get_file_path
 
 @artifact_processor
-def playstore_purchase_history(files_found, report_folder, seeker, wrap_text):
+def playstore_purchase_history(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Purchase History.json')
 
@@ -93,7 +94,8 @@ def playstore_purchase_history(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, file_found
     
 @artifact_processor    
-def playstore_devices(files_found, report_folder, seeker, wrap_text):
+def playstore_devices(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Devices.json')
     
@@ -118,11 +120,12 @@ def playstore_devices(files_found, report_folder, seeker, wrap_text):
         data_list.append((deviceRegistrationTime, userAddedOnDeviceTime, lastTimeDeviceActive, manufacturer, modelName, totalMemoryBytes, carrierName, deviceIpCountry, deviceName, androidSdkVersion))
     
     
-    data_headers = (('Device Registration Timestamp','datetime'),('User Added Timestamp','datetime'),('Last Device Active Timestamp','datetime'),('Device Manufacturer','datetime'),'Device Model','Device RAM (GBs)','Carrier','Device IP Country','Device Code Name','SDK Version')
+    data_headers = (('Device Registration Timestamp','datetime'),('User Added Timestamp','datetime'),('Last Device Active Timestamp','datetime'),'Device Manufacturer','Device Model','Device RAM (GBs)','Carrier','Device IP Country','Device Code Name','SDK Version')
     return data_headers, data_list, file_found
     
 @artifact_processor
-def playstore_library(files_found, report_folder, seeker, wrap_text):
+def playstore_library(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Library.json')
     
@@ -141,7 +144,8 @@ def playstore_library(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, file_found
     
 @artifact_processor
-def playstore_reviews(files_found, report_folder, seeker, wrap_text):
+def playstore_reviews(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Reviews.json')
 
@@ -159,11 +163,12 @@ def playstore_reviews(files_found, report_folder, seeker, wrap_text):
 
         data_list.append((creationTime, title, comment, reviewTitle, starRating, docType))
 
-    data_headers = ('Creation Timestamp','Title','Comment','Review Title','Star Rating','Type')
+    data_headers = (('Creation Timestamp','datetime'),'Title','Comment','Review Title','Star Rating','Type')
     return data_headers, data_list, file_found
     
 @artifact_processor
-def playstore_subscriptions(files_found, report_folder, seeker, wrap_text):
+def playstore_subscriptions(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Subscriptions.json')    
 

@@ -110,7 +110,8 @@ import os
 from scripts.ilapfuncs import artifact_processor, get_file_path
 
 @artifact_processor
-def fitbit_sleep_profile(files_found, report_folder, seeker, wrap_text):
+def fitbit_sleep_profile(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Sleep Profile.csv')
 
@@ -147,7 +148,8 @@ def fitbit_sleep_profile(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, file_found
 
 @artifact_processor
-def fitbit_sleep_score(files_found, report_folder, seeker, wrap_text):             
+def fitbit_sleep_score(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'sleep_score.csv') 
         
@@ -170,12 +172,13 @@ def fitbit_sleep_score(files_found, report_folder, seeker, wrap_text):
 
             data_list.append((timestamp,entry_id,overall_score,composition_score,revitalization_score,duration_score,deep_sleep,resting_hr,restlessness))
     
-    data_headers = ('End Timestamp','Entry ID','Overall Score','Deep & REM Score','Restoration Score','Time Asleep Score','Deep Sleep (Minutes)','Resting Heart Rate','Restlessness (%)')
+    data_headers = (('End Timestamp','datetime'),'Entry ID','Overall Score','Deep & REM Score','Restoration Score','Time Asleep Score','Deep Sleep (Minutes)','Resting Heart Rate','Restlessness (%)')
         
     return data_headers, data_list, file_found
     
 @artifact_processor
-def fitbit_stress_score(files_found, report_folder, seeker, wrap_text):             
+def fitbit_stress_score(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Stress Score.csv')    
 
@@ -185,8 +188,8 @@ def fitbit_stress_score(files_found, report_folder, seeker, wrap_text):
         delimited = csv.reader(f, delimiter=',')
         next(delimited)
         for item in delimited:
-            date_created = item[0].replace('T',' ')
-            date_updated = item[1].replace('T',' ')
+            date_created = item[0].replace('T',' ').replace('Z','')
+            date_updated = item[1].replace('T',' ').replace('Z','')
             stress_score = item[2]
             sleep_points = item[3]
             max_sleep_points = item[4]
@@ -204,7 +207,8 @@ def fitbit_stress_score(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, file_found
 
 @artifact_processor
-def fitbit_profile(files_found, report_folder, seeker, wrap_text):             
+def fitbit_profile(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Profile.csv')    
 
@@ -242,7 +246,8 @@ def fitbit_profile(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, file_found
     
 @artifact_processor
-def fitbit_trackers(files_found, report_folder, seeker, wrap_text):             
+def fitbit_trackers(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Trackers.csv')
     
@@ -269,7 +274,8 @@ def fitbit_trackers(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, file_found
     
 @artifact_processor
-def fitbit_goals(files_found, report_folder, seeker, wrap_text):             
+def fitbit_goals(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Activity Goals.csv')
     
@@ -287,7 +293,7 @@ def fitbit_goals(files_found, report_folder, seeker, wrap_text):
             goal_primary = item[5]
             goal_start = item[6]
             goal_end = item[7]
-            goal_created = item[8].replace('T',' ')
+            goal_created = item[8].replace('T',' ').replace('Z','')
             goal_edited = item[9]
 
             data_list.append((goal_created,goal_start,goal_end,goal_type,goal_frequency,goal_target,goal_result,goal_status,goal_primary))
@@ -297,7 +303,8 @@ def fitbit_goals(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, file_found
     
 @artifact_processor
-def fitbit_oxygen(files_found, report_folder, seeker, wrap_text):             
+def fitbit_oxygen(context):
+    files_found = context.get_files_found()
     data_list = []
     
     for file_found in files_found:
@@ -322,7 +329,8 @@ def fitbit_oxygen(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, "See source file column"
     
 @artifact_processor
-def fitbit_comp_temp(files_found, report_folder, seeker, wrap_text):             
+def fitbit_comp_temp(context):
+    files_found = context.get_files_found()
     data_list = []
     
     for file_found in files_found:
@@ -335,8 +343,8 @@ def fitbit_comp_temp(files_found, report_folder, seeker, wrap_text):
             next(delimited)
             for item in delimited:
                 comp_type = item[0]
-                sleep_start = item[1].replace('T',' ')
-                sleep_end = item[2].replace('T',' ')
+                sleep_start = item[1].replace('T',' ').replace('Z','')
+                sleep_end = item[2].replace('T',' ').replace('Z','')
                 temp_samples = item[3]
                 nightly_temp = item[4]
                 base_rel_sample_sum = item[5]

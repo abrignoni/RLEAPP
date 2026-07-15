@@ -8,7 +8,7 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Google Takeout Archive",
         "notes": "",
-        "paths": ('*/Tasks/Tasks.json'),
+        "paths": ('*/Tasks/Tasks.json',),
         "output_types": "standard",  # or ["html", "tsv", "timeline", "lava"]
         "artifact_icon": "circle-check",
     }
@@ -20,8 +20,9 @@ import os
 from scripts.ilapfuncs import artifact_processor
 
 @artifact_processor
-def google_tasks(files_found, report_folder, seeker, wrap_text):
-    
+def google_tasks(context):
+    files_found = context.get_files_found()
+
     for file_found in files_found:
         file_found = str(file_found)
         if not os.path.basename(file_found) == 'Tasks.json':
