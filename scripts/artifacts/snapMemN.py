@@ -126,7 +126,10 @@ def snapMemN(context):
     data_headers = tuple([('Timestamp', 'datetime')]
                          + [name.capitalize() for name in field_names]
                          + [('Media', 'media')])
-    data_list = [[timestamp] + [values.get(name, '') for name in field_names] + [refs if refs else '']
+    # A single media reference is emitted as a bare id (what the LAVA viewer
+    # resolves); a list is kept only when a record links more than one file.
+    data_list = [[timestamp] + [values.get(name, '') for name in field_names]
+                 + [(refs[0] if len(refs) == 1 else refs) if refs else '']
                  for timestamp, values, refs in records]
 
     return data_headers, data_list, context.get_relative_path(source_path)
