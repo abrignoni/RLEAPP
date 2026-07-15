@@ -13,7 +13,7 @@ __artifacts_v2__ = {
         "author": "@AlexisBrignoni", "creation_date": "2023-12-11",
         "last_update_date": "2026-06-28", "requirements": "none",
         "category": "Snapchat Archive", "notes": "",
-        "paths": ('*/account.json',), "output_types": "standard", "artifact_icon": "smartphone",
+        "paths": ('*/account.json',), "output_types": "standard", "artifact_icon": "device-mobile",
     },
     "snapArchiveDeviceHistory": {
         "name": "Snapchat - Device History",
@@ -29,7 +29,7 @@ __artifacts_v2__ = {
         "author": "@AlexisBrignoni", "creation_date": "2023-12-11",
         "last_update_date": "2026-06-28", "requirements": "none",
         "category": "Snapchat Archive", "notes": "",
-        "paths": ('*/account.json',), "output_types": "standard", "artifact_icon": "log-in",
+        "paths": ('*/account.json',), "output_types": "standard", "artifact_icon": "login-2",
     }
 }
 

@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/YouTube and YouTube Music/subscriptions/subscriptions.csv'),
         "output_types": "standard",
-        "artifact_icon": "youtube",
+        "artifact_icon": "brand-youtube",
     }
 }
 

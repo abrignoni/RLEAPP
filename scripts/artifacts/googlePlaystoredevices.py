@@ -13,7 +13,7 @@ __artifacts_v2__ = {
                  "(TEXT) since the column set varies per return.",
         "paths": ('*/*GooglePlayStore.Devices_*/Google Play Store/Devices.csv',),
         "output_types": "standard",
-        "artifact_icon": "smartphone",
+        "artifact_icon": "device-mobile",
     }
 }
 

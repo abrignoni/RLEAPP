@@ -11,7 +11,7 @@ __artifacts_v2__ = {
         "paths": ('*/*/cloudphotolibrary/*',),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
         "html_columns": ["Exif"],
-        "artifact_icon": "image",
+        "artifact_icon": "photo",
     }
 }
 

@@ -23,7 +23,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/Account/*_AccountDetails.xlsx',),
         "output_types": "standard",
-        "artifact_icon": "sliders",
+        "artifact_icon": "adjustments-alt",
     }
 }
 

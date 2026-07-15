@@ -23,7 +23,7 @@ __artifacts_v2__ = {
         "notes": "Old-format exports store last country/activity-time inside a free-text field; that legacy string slicing is preserved as-is.",
         "paths": ('*/Access Log Activity/Devices*.csv',),
         "output_types": "standard",
-        "artifact_icon": "smartphone",
+        "artifact_icon": "device-mobile",
     }
 }
 

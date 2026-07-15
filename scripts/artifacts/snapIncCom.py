@@ -23,7 +23,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/snap_inc_communications.csv',),
         "output_types": "standard",
-        "artifact_icon": "smartphone",
+        "artifact_icon": "device-mobile",
     },
     "snapIncComAppeals": {
         "name": "Snapchat - In App Appeals",

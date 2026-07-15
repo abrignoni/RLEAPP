@@ -13,7 +13,7 @@ __artifacts_v2__ = {
                  "verbatim as text.",
         "paths": ('*/Search Contributions/Streaming video providers.json',),
         "output_types": "standard",
-        "artifact_icon": "tv",
+        "artifact_icon": "device-tv",
     },
     "takeoutSearchContributionsReviews": {
         "name": "Google Search Contributions - Reviews",
@@ -58,7 +58,7 @@ __artifacts_v2__ = {
                  "verbatim as text.",
         "paths": ('*/Search Contributions/Thumbs.json',),
         "output_types": "standard",
-        "artifact_icon": "thumbs-up",
+        "artifact_icon": "thumb-up",
     }
 }
 

@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/Chrome/Autofill.json'),
         "output_types": "standard",
-        "artifact_icon": "edit-3",
+        "artifact_icon": "pencil-minus",
     }
 }
 

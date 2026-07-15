@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/Chrome/Device Information.json'),
         "output_types": "standard",
-        "artifact_icon": "smartphone",
+        "artifact_icon": "device-mobile",
     }
 }
 

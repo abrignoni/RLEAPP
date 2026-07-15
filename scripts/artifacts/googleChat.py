@@ -11,7 +11,7 @@ __artifacts_v2__ = {
         "paths": ('*/Google Chat/Groups/*/**',),
         "output_types": "standard",
         "html_columns": ["Group Members"],
-        "artifact_icon": "message-square",
+        "artifact_icon": "message",
     }
 }
 

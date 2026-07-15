@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/device_information/devices.json'),
         "output_types": "standard",  # or ["html", "tsv", "timeline", "lava"]
-        "artifact_icon": "instagram",
+        "artifact_icon": "brand-instagram",
     }
 }
 

@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/Tasks/Tasks.json'),
         "output_types": "standard",  # or ["html", "tsv", "timeline", "lava"]
-        "artifact_icon": "check-circle",
+        "artifact_icon": "circle-check",
     }
 }
 

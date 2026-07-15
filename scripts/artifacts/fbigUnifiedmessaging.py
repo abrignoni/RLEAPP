@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/records.html', '*/preservation*.html', '*/linked_media/*.*'),
         "output_types": "standard",
-        "artifact_icon": "message-square",
+        "artifact_icon": "message",
     },
     "fbigThreadParticipants": {
         "name": "Facebook Instagram Returns - Thread Participants",

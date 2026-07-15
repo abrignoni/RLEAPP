@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "notes": "Flat Key/Value table; date/phone values stay as raw text (the Value column is heterogeneous and can't be column-typed).",
         "paths": ('*/records.html', '*/preservation*.html', '*/linked_media/profile_picture_*.jpg'),
         "output_types": "standard",
-        "artifact_icon": "info",
+        "artifact_icon": "info-circle",
     }
 }
 

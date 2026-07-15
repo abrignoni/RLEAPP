@@ -62,7 +62,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": "*/Chrome/Device Information.json",
         "output_types": "standard",
-        "artifact_icon": "smartphone",
+        "artifact_icon": "device-mobile",
     },
     "chrome_extensions": {
         "name": "Chrome - Extensions",
@@ -88,7 +88,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": "*/Chrome/BrowserHistory.json",
         "output_types": "standard",
-        "artifact_icon": "chrome",
+        "artifact_icon": "brand-chrome",
     },
     "chrome_os_settings": {
         "name": "Chrome - OS Settings",
@@ -127,7 +127,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": "*/Chrome/Autofill.json",
         "output_types": "standard",
-        "artifact_icon": "edit-3",
+        "artifact_icon": "pencil-minus",
     },
 }
 

@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/index.html', '*/preservation*.html', '*/linked_media/archived_stories_*'),
         "output_types": "standard",
-        "artifact_icon": "book-open",
+        "artifact_icon": "book",
     }
 }
 

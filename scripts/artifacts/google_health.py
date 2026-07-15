@@ -36,7 +36,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": "*/Stress Score/Stress Score.csv",
         "output_types": "standard",
-        "artifact_icon": "meh",
+        "artifact_icon": "mood-empty",
     },
     "fitbit_profile": {
         "name": "Google Health (Fitbit) - Account Profile",
@@ -62,7 +62,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": "*/Paired Devices/Trackers.csv",
         "output_types": "standard",
-        "artifact_icon": "watch",
+        "artifact_icon": "device-watch",
     },
     "fitbit_goals": {
         "name": "Google Health (Fitbit) - Activity Goals",

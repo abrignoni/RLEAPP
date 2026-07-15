@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/Chrome/BrowserHistory.json'),
         "output_types": "standard",
-        "artifact_icon": "chrome",
+        "artifact_icon": "brand-chrome",
     }
 }
 

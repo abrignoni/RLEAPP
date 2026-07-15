@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/followers_and_following/recent_follow_requests.json'),
         "output_types": "standard",
-        "artifact_icon": "instagram",
+        "artifact_icon": "brand-instagram",
     }
 }
 

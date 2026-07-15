@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/messages/message_requests/*'),
         "output_types": "standard",  # or ["html", "tsv", "timeline", "lava"]
-        "artifact_icon": "instagram",
+        "artifact_icon": "brand-instagram",
         "html_columns": ['Media','Reactions'],
     }
 }
