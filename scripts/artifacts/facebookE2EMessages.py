@@ -33,8 +33,9 @@ from scripts.ilapfuncs import artifact_processor, \
     check_in_media
 
 @artifact_processor
-def get_fb_messages(files_found, _report_folder, _seeker, _wrap_text):
+def get_fb_messages(context):
     """Extracts chat messages from a Facebook Messenger JSON export"""
+    files_found = context.get_files_found()
     data_list = []
     source_path = "messages"
     for file_found in files_found:

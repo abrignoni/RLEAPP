@@ -134,11 +134,11 @@ __artifacts_v2__ = {
 import bs4
 import datetime
 import json
-import textwrap
 from scripts.ilapfuncs import artifact_processor, get_file_path
 
 @artifact_processor
-def chrome_omnibox(files_found, report_folder, seeker, wrap_text):
+def chrome_omnibox(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Omnibox.json')
 
@@ -156,13 +156,14 @@ def chrome_omnibox(files_found, report_folder, seeker, wrap_text):
             for stamp in visit_ts:
                 timestamp = datetime.datetime.utcfromtimestamp((int(stamp)/1000000)-11644473600).strftime('%Y-%m-%d %H:%M:%S')
 
-                data_list.append((timestamp, title, textwrap.fill(url, width=100), hidden))
+                data_list.append((timestamp, title, url, hidden))
 
     data_headers = (('Visit Timestamp','datetime'),'Title','URL','Hidden')
     return data_headers, data_list, file_found
 
 @artifact_processor    
-def chrome_reading_list(files_found, report_folder, seeker, wrap_text):
+def chrome_reading_list(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'ReadingList.html')
 
@@ -184,7 +185,8 @@ def chrome_reading_list(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, file_found
     
 @artifact_processor
-def chrome_search_engines(files_found, report_folder, seeker, wrap_text):
+def chrome_search_engines(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'SearchEngines.json')
 
@@ -196,12 +198,12 @@ def chrome_search_engines(files_found, report_folder, seeker, wrap_text):
         if sEng_date == 0:
             sEng_date = ''
         else:
-            sEng_date = datetime.datetime.fromtimestamp(int(sEng_date)/1000000).strftime('%Y-%m-%d %H:%M:%S.%f')
+            sEng_date = datetime.datetime.utcfromtimestamp(int(sEng_date)/1000000).strftime('%Y-%m-%d %H:%M:%S.%f')
         sEng_lastModified = site.get('last_modified','')
         if sEng_lastModified == 0:
             sEng_lastModified = ''
         else:
-            sEng_lastModified = datetime.datetime.fromtimestamp(int(sEng_lastModified)/1000000).strftime('%Y-%m-%d %H:%M:%S.%f')
+            sEng_lastModified = datetime.datetime.utcfromtimestamp(int(sEng_lastModified)/1000000).strftime('%Y-%m-%d %H:%M:%S.%f')
         sEng_suggestions_url = site.get('suggestions_url','')
         sEng_favicon_url = site.get('favicon_url','')
         sEng_safeAreplace = site.get('safe_for_autoreplace','')
@@ -218,13 +220,14 @@ def chrome_search_engines(files_found, report_folder, seeker, wrap_text):
         sEng_imageurl = site.get('image_url','')
         sEng_starterpackID = site.get('starter_pack_id','')
 
-        data_list.append((sEng_date, sEng_lastModified, sEng_shortName, sEng_kWord, textwrap.fill(sEng_url, width=100), sEng_originUrl, sEng_syncGUID, sEng_favicon_url, sEng_suggestions_url, sEng_ntpurl, sEng_inputEnc, sEng_safeAreplace, sEng_prePopID, sEng_imageurlpostparams, sEng_isActive, sEng_imageurl, sEng_starterpackID))
+        data_list.append((sEng_date, sEng_lastModified, sEng_shortName, sEng_kWord, sEng_url, sEng_originUrl, sEng_syncGUID, sEng_favicon_url, sEng_suggestions_url, sEng_ntpurl, sEng_inputEnc, sEng_safeAreplace, sEng_prePopID, sEng_imageurlpostparams, sEng_isActive, sEng_imageurl, sEng_starterpackID))
 
     data_headers = (('Date Created','datetime'),('Date Last Modified','datetime'),'(Short) Name','Keyword','URL Syntax','API URL', 'Sync GUID', 'Favicon URL', 'Suggestions URL', 'New Tab URL', 'Input Encodings', 'Safe Autoreplace?', 'Pre-populate ID', 'Image URL Post Parameters', 'Is Active?', 'Image URL', 'Starter Pack ID')
     return data_headers, data_list, file_found
 
 @artifact_processor
-def chrome_bookmarks(files_found, report_folder, seeker, wrap_text):
+def chrome_bookmarks(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Bookmarks.html')
 
@@ -284,7 +287,8 @@ def chrome_bookmarks(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, file_found
 
 @artifact_processor
-def chrome_device_info(files_found, report_folder, seeker, wrap_text):
+def chrome_device_info(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Device Information.json')
 
@@ -305,13 +309,14 @@ def chrome_device_info(files_found, report_folder, seeker, wrap_text):
             sync_user_agent = device.get('sync_user_agent','')
             signin_scoped_device_id = device.get('signin_scoped_device_id','')
             
-            data_list.append((last_updated_timestamp,manufacturer,model,client_name,os_type,device_type,chrome_version,sync_user_agent,textwrap.fill(signin_scoped_device_id,width=100)))
+            data_list.append((last_updated_timestamp,manufacturer,model,client_name,os_type,device_type,chrome_version,sync_user_agent,signin_scoped_device_id))
 
     data_headers = (('Last Updated Timestamp','datetime'),'Manufacturer','Model','Client Name','OS Type','Device Type','Chrome Version','User Agent','Device ID')
     return data_headers, data_list, file_found
 
 @artifact_processor
-def chrome_extensions(files_found, report_folder, seeker, wrap_text):
+def chrome_extensions(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Extensions.json')
 
@@ -332,7 +337,8 @@ def chrome_extensions(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, file_found
     
 @artifact_processor
-def chrome_history(files_found, report_folder, seeker, wrap_text):
+def chrome_history(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'BrowserHistory.json')
 
@@ -347,7 +353,7 @@ def chrome_history(files_found, report_folder, seeker, wrap_text):
     for site in data['Browser History']:
         url = site['url']
         title = site['title']
-        timestamp = datetime.datetime.fromtimestamp(int(site['time_usec'])/1000000).strftime('%Y-%m-%d %H:%M:%S.%f')
+        timestamp = datetime.datetime.utcfromtimestamp(int(site['time_usec'])/1000000).strftime('%Y-%m-%d %H:%M:%S.%f')
         page_transition = site['page_transition']
 
         data_list.append((timestamp, title, url, page_transition))
@@ -356,7 +362,8 @@ def chrome_history(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, file_found
     
 @artifact_processor
-def chrome_arc_packages(files_found, report_folder, seeker, wrap_text):
+def chrome_arc_packages(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'OS Settings.json')
 
@@ -368,7 +375,7 @@ def chrome_arc_packages(files_found, report_folder, seeker, wrap_text):
         if chromeARC_lastBack == 0:
             chromeARC_lastBack = ''
         else:
-            chromeARC_lastBack = datetime.datetime.fromtimestamp(int(chromeARC_lastBack)/1000000).strftime('%Y-%m-%d %H:%M:%S.%f')
+            chromeARC_lastBack = datetime.datetime.utcfromtimestamp(int(chromeARC_lastBack)/1000000).strftime('%Y-%m-%d %H:%M:%S.%f')
         chromeARC_name = package.get('package_name','')
         chromeARC_ver = package.get('package_version','')
         chromeARC_bkID = package.get('last_backup_android_id','')
@@ -379,7 +386,8 @@ def chrome_arc_packages(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, file_found
         
 @artifact_processor
-def chrome_os_settings(files_found, report_folder, seeker, wrap_text):
+def chrome_os_settings(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'OS Settings.json')
     
@@ -407,7 +415,8 @@ def chrome_os_settings(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, file_found
     
 @artifact_processor
-def chrome_autofill(files_found, report_folder, seeker, wrap_text):
+def chrome_autofill(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Autofill.json')
 
@@ -419,11 +428,10 @@ def chrome_autofill(files_found, report_folder, seeker, wrap_text):
             chromeautofill_name = site['name']
             chromeautofill_value = site['value']
             chromeautofill_usage = site['usage_timestamp']
-            count = len(chromeautofill_usage)
 
             for stamp in chromeautofill_usage:
-                timestamp = datetime.datetime.fromtimestamp((int(stamp)/1000000)-11644473600).strftime('%Y-%m-%d %H:%M:%S')
-                data_list.append((timestamp, chromeautofill_name, textwrap.fill(chromeautofill_value, width=100)))
+                timestamp = datetime.datetime.utcfromtimestamp((int(stamp)/1000000)-11644473600).strftime('%Y-%m-%d %H:%M:%S')
+                data_list.append((timestamp, chromeautofill_name, chromeautofill_value))
 
     data_headers = (('Usage Timestamp','datetime'),'Field Type', 'Typed Value')
-    return data_headers, data_list, file_found        
+    return data_headers, data_list, file_found

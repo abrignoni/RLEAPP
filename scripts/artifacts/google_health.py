@@ -110,12 +110,11 @@ import os
 from scripts.ilapfuncs import artifact_processor, get_file_path
 
 @artifact_processor
-def fitbit_sleep_profile(files_found, report_folder, seeker, wrap_text):
+def fitbit_sleep_profile(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Sleep Profile.csv')
 
-    has_header = True
-    
     with open(file_found, 'r', encoding='utf-8') as f:
         delimited = csv.reader(f, delimiter=',')
         next(delimited)
@@ -147,12 +146,11 @@ def fitbit_sleep_profile(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, file_found
 
 @artifact_processor
-def fitbit_sleep_score(files_found, report_folder, seeker, wrap_text):             
+def fitbit_sleep_score(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'sleep_score.csv') 
         
-    has_header = True
-    
     with open(file_found, 'r', encoding='utf-8') as f:
         delimited = csv.reader(f, delimiter=',')
         next(delimited)
@@ -170,30 +168,26 @@ def fitbit_sleep_score(files_found, report_folder, seeker, wrap_text):
 
             data_list.append((timestamp,entry_id,overall_score,composition_score,revitalization_score,duration_score,deep_sleep,resting_hr,restlessness))
     
-    data_headers = ('End Timestamp','Entry ID','Overall Score','Deep & REM Score','Restoration Score','Time Asleep Score','Deep Sleep (Minutes)','Resting Heart Rate','Restlessness (%)')
+    data_headers = (('End Timestamp','datetime'),'Entry ID','Overall Score','Deep & REM Score','Restoration Score','Time Asleep Score','Deep Sleep (Minutes)','Resting Heart Rate','Restlessness (%)')
         
     return data_headers, data_list, file_found
     
 @artifact_processor
-def fitbit_stress_score(files_found, report_folder, seeker, wrap_text):             
+def fitbit_stress_score(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Stress Score.csv')    
 
-    has_header = True
-    
     with open(file_found, 'r', encoding='utf-8') as f:
         delimited = csv.reader(f, delimiter=',')
         next(delimited)
         for item in delimited:
-            date_created = item[0].replace('T',' ')
-            date_updated = item[1].replace('T',' ')
+            date_created = item[0].replace('T',' ').replace('Z','')
+            date_updated = item[1].replace('T',' ').replace('Z','')
             stress_score = item[2]
             sleep_points = item[3]
-            max_sleep_points = item[4]
             responsiveness_points = item[5]
-            max_responsiveness_points = item[6]
             exertion_points = item[7]
-            max_exertion_points = item[8]
             status = item[9]
             calculation_failed = item[10]
 
@@ -204,20 +198,17 @@ def fitbit_stress_score(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, file_found
 
 @artifact_processor
-def fitbit_profile(files_found, report_folder, seeker, wrap_text):             
+def fitbit_profile(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Profile.csv')    
 
-    has_header = True
-    
     with open(file_found, 'r', encoding='utf-8') as f:
         delimited = csv.reader(f, delimiter=',')
         next(delimited)
         for item in delimited:
             user_id = item[0]
             full_name = item[1]
-            first_name = item[2]
-            last_name = item[3]
             display_name = item[5]
             username = item[6]
             email_address = item[7]
@@ -242,18 +233,16 @@ def fitbit_profile(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, file_found
     
 @artifact_processor
-def fitbit_trackers(files_found, report_folder, seeker, wrap_text):             
+def fitbit_trackers(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Trackers.csv')
-    
-    has_header = True
     
     with open(file_found, 'r', encoding='utf-8') as f:
         delimited = csv.reader(f, delimiter=',')
         next(delimited)
         for item in delimited:
             tracker_id = item[0]
-            date_added = item[1]
             last_sync = item[2].replace('T',' ').replace('Z','')
             battery_level = item[3]
             tracker_name = item[12]
@@ -269,11 +258,10 @@ def fitbit_trackers(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, file_found
     
 @artifact_processor
-def fitbit_goals(files_found, report_folder, seeker, wrap_text):             
+def fitbit_goals(context):
+    files_found = context.get_files_found()
     data_list = []
     file_found = get_file_path(files_found, 'Activity Goals.csv')
-    
-    has_header = True
     
     with open(file_found, 'r', encoding='utf-8') as f:
         delimited = csv.reader(f, delimiter=',')
@@ -287,8 +275,7 @@ def fitbit_goals(files_found, report_folder, seeker, wrap_text):
             goal_primary = item[5]
             goal_start = item[6]
             goal_end = item[7]
-            goal_created = item[8].replace('T',' ')
-            goal_edited = item[9]
+            goal_created = item[8].replace('T',' ').replace('Z','')
 
             data_list.append((goal_created,goal_start,goal_end,goal_type,goal_frequency,goal_target,goal_result,goal_status,goal_primary))
     
@@ -297,16 +284,14 @@ def fitbit_goals(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, file_found
     
 @artifact_processor
-def fitbit_oxygen(files_found, report_folder, seeker, wrap_text):             
+def fitbit_oxygen(context):
+    files_found = context.get_files_found()
     data_list = []
     
     for file_found in files_found:
         file_found = str(file_found)
         filename = os.path.basename(file_found)
-        source_file = os.path.dirname(file_found) + '\\Daily SpO2 - *.csv'
             
-        has_header = True
-        
         with open(file_found, 'r', encoding='utf-8') as f:
             delimited = csv.reader(f, delimiter=',')
             next(delimited)
@@ -322,21 +307,21 @@ def fitbit_oxygen(files_found, report_folder, seeker, wrap_text):
     return data_headers, data_list, "See source file column"
     
 @artifact_processor
-def fitbit_comp_temp(files_found, report_folder, seeker, wrap_text):             
+def fitbit_comp_temp(context):
+    files_found = context.get_files_found()
     data_list = []
     
     for file_found in files_found:
         file_found = str(file_found)
         filename = os.path.basename(file_found)
-        source_file = os.path.dirname(file_found) + '\\Computed Temperature - *.csv'
         
         with open(file_found, 'r', encoding='utf-8') as f:
             delimited = csv.reader(f, delimiter=',')
             next(delimited)
             for item in delimited:
                 comp_type = item[0]
-                sleep_start = item[1].replace('T',' ')
-                sleep_end = item[2].replace('T',' ')
+                sleep_start = item[1].replace('T',' ').replace('Z','')
+                sleep_end = item[2].replace('T',' ').replace('Z','')
                 temp_samples = item[3]
                 nightly_temp = item[4]
                 base_rel_sample_sum = item[5]
