@@ -115,8 +115,6 @@ def fitbit_sleep_profile(context):
     data_list = []
     file_found = get_file_path(files_found, 'Sleep Profile.csv')
 
-    has_header = True
-    
     with open(file_found, 'r', encoding='utf-8') as f:
         delimited = csv.reader(f, delimiter=',')
         next(delimited)
@@ -153,8 +151,6 @@ def fitbit_sleep_score(context):
     data_list = []
     file_found = get_file_path(files_found, 'sleep_score.csv') 
         
-    has_header = True
-    
     with open(file_found, 'r', encoding='utf-8') as f:
         delimited = csv.reader(f, delimiter=',')
         next(delimited)
@@ -182,8 +178,6 @@ def fitbit_stress_score(context):
     data_list = []
     file_found = get_file_path(files_found, 'Stress Score.csv')    
 
-    has_header = True
-    
     with open(file_found, 'r', encoding='utf-8') as f:
         delimited = csv.reader(f, delimiter=',')
         next(delimited)
@@ -192,11 +186,8 @@ def fitbit_stress_score(context):
             date_updated = item[1].replace('T',' ').replace('Z','')
             stress_score = item[2]
             sleep_points = item[3]
-            max_sleep_points = item[4]
             responsiveness_points = item[5]
-            max_responsiveness_points = item[6]
             exertion_points = item[7]
-            max_exertion_points = item[8]
             status = item[9]
             calculation_failed = item[10]
 
@@ -212,16 +203,12 @@ def fitbit_profile(context):
     data_list = []
     file_found = get_file_path(files_found, 'Profile.csv')    
 
-    has_header = True
-    
     with open(file_found, 'r', encoding='utf-8') as f:
         delimited = csv.reader(f, delimiter=',')
         next(delimited)
         for item in delimited:
             user_id = item[0]
             full_name = item[1]
-            first_name = item[2]
-            last_name = item[3]
             display_name = item[5]
             username = item[6]
             email_address = item[7]
@@ -251,14 +238,11 @@ def fitbit_trackers(context):
     data_list = []
     file_found = get_file_path(files_found, 'Trackers.csv')
     
-    has_header = True
-    
     with open(file_found, 'r', encoding='utf-8') as f:
         delimited = csv.reader(f, delimiter=',')
         next(delimited)
         for item in delimited:
             tracker_id = item[0]
-            date_added = item[1]
             last_sync = item[2].replace('T',' ').replace('Z','')
             battery_level = item[3]
             tracker_name = item[12]
@@ -279,8 +263,6 @@ def fitbit_goals(context):
     data_list = []
     file_found = get_file_path(files_found, 'Activity Goals.csv')
     
-    has_header = True
-    
     with open(file_found, 'r', encoding='utf-8') as f:
         delimited = csv.reader(f, delimiter=',')
         next(delimited)
@@ -294,7 +276,6 @@ def fitbit_goals(context):
             goal_start = item[6]
             goal_end = item[7]
             goal_created = item[8].replace('T',' ').replace('Z','')
-            goal_edited = item[9]
 
             data_list.append((goal_created,goal_start,goal_end,goal_type,goal_frequency,goal_target,goal_result,goal_status,goal_primary))
     
@@ -310,10 +291,7 @@ def fitbit_oxygen(context):
     for file_found in files_found:
         file_found = str(file_found)
         filename = os.path.basename(file_found)
-        source_file = os.path.dirname(file_found) + '\\Daily SpO2 - *.csv'
             
-        has_header = True
-        
         with open(file_found, 'r', encoding='utf-8') as f:
             delimited = csv.reader(f, delimiter=',')
             next(delimited)
@@ -336,7 +314,6 @@ def fitbit_comp_temp(context):
     for file_found in files_found:
         file_found = str(file_found)
         filename = os.path.basename(file_found)
-        source_file = os.path.dirname(file_found) + '\\Computed Temperature - *.csv'
         
         with open(file_found, 'r', encoding='utf-8') as f:
             delimited = csv.reader(f, delimiter=',')

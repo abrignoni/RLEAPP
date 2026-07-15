@@ -22,6 +22,7 @@ from scripts.ilapfuncs import artifact_processor
 @artifact_processor
 def google_tasks(context):
     files_found = context.get_files_found()
+    file_found = ''
 
     for file_found in files_found:
         file_found = str(file_found)
@@ -49,7 +50,6 @@ def google_tasks(context):
         
         for x in data['items']:
             tasklist_title = x.get('title','')
-            tasklist_updated = x.get('updated','')
 
             if x.get('items','') != '':
                 for parent_task in x['items']:

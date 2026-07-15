@@ -428,11 +428,10 @@ def chrome_autofill(context):
             chromeautofill_name = site['name']
             chromeautofill_value = site['value']
             chromeautofill_usage = site['usage_timestamp']
-            count = len(chromeautofill_usage)
 
             for stamp in chromeautofill_usage:
                 timestamp = datetime.datetime.utcfromtimestamp((int(stamp)/1000000)-11644473600).strftime('%Y-%m-%d %H:%M:%S')
                 data_list.append((timestamp, chromeautofill_name, chromeautofill_value))
 
     data_headers = (('Usage Timestamp','datetime'),'Field Type', 'Typed Value')
-    return data_headers, data_list, file_found        
+    return data_headers, data_list, file_found

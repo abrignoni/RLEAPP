@@ -176,8 +176,6 @@ def playstore_subscriptions(context):
         data = json.loads(f.read())
 
     for x in data:
-        price = x['subscription'].get('price','')
-        docType = x['subscription']['doc'].get('documentType','')
         title = x['subscription']['doc'].get('title','')
         renewalDate = x['subscription'].get('renewalDate','')
         renewalDate = renewalDate.replace('T', ' ').replace('Z', '')

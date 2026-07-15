@@ -69,14 +69,10 @@ __artifacts_v2__ = {
     
 import os
 from datetime import datetime, timezone
-import csv
-import codecs
-import inspect
-import shutil
 import json
 from pathlib import Path
 
-from scripts.ilapfuncs import logfunc, is_platform_windows, artifact_processor, check_in_media
+from scripts.ilapfuncs import artifact_processor, check_in_media
 
 def load_json_from_signed_file(filepath):
     with open(filepath, 'r', encoding='utf-8') as f:
@@ -103,7 +99,6 @@ def load_json_from_signed_file(filepath):
 @artifact_processor
 def tweets(context):
     files_found = context.get_files_found()
-    artifact_info = inspect.stack()[0]
     data_list = []
     
     for file_found in files_found:
@@ -141,18 +136,7 @@ def tweets(context):
                 retweeted = (items['tweet'].get('retweeted'))
                 
                 entities = (items['tweet'].get('entities'))
-                favoritecount = (items['tweet'].get('favorite_count'))
-                inreplytostatusid = (items['tweet'].get('in_reply_to_status_id_str'))
-                inreplytouserid = (items['tweet'].get('in_reply_to_user_id'))
-                truncated = (items['tweet'].get('truncated'))
-                retweetecount = (items['tweet'].get('retweet_count'))
             
-                favorited = (items['tweet'].get('favorited'))
-            
-                lang = (items['tweet'].get('lang'))
-                inreplytoscreenname = (items['tweet'].get('in_reply_to_screen_name'))
-                inreplytouseridstr = (items['tweet'].get('in_reply_to_user_id_str'))
-                
                 media_item = ''
                 
                 for tentative_media in files_found:
@@ -160,7 +144,6 @@ def tweets(context):
                         media_path = Path(tentative_media )
                         
                         filenamem = (media_path.name)
-                        filepath = str(media_path.parents[1])
                         
                         #logfunc(f'{filename}-{artifact_info}')
                         media_item = check_in_media(tentative_media, filenamem)
@@ -215,17 +198,6 @@ def deltweets(context):
                 retweeted = (items['tweet'].get('retweeted'))
                 
                 entities = (items['tweet'].get('entities'))
-                favoritecount = (items['tweet'].get('favorite_count'))
-                inreplytostatusid = (items['tweet'].get('in_reply_to_status_id_str'))
-                inreplytouserid = (items['tweet'].get('in_reply_to_user_id'))
-                truncated = (items['tweet'].get('truncated'))
-                retweetecount = (items['tweet'].get('retweet_count'))
-                
-                favorited = (items['tweet'].get('favorited'))
-                
-                lang = (items['tweet'].get('lang'))
-                inreplytoscreenname = (items['tweet'].get('in_reply_to_screen_name'))
-                inreplytouseridstr = (items['tweet'].get('in_reply_to_user_id_str'))
                 
                 media_item = ''
                 
@@ -234,7 +206,6 @@ def deltweets(context):
                         media_path = Path(tentative_media )
                         
                         filenamem = (media_path.name)
-                        filepath = str(media_path.parents[1])
                         
                         #logfunc(f'{tentative_media}-{filenamem}')
                         media_item = check_in_media(tentative_media, filenamem)
@@ -252,7 +223,6 @@ def deltweets(context):
 @artifact_processor
 def dmtwitter(context):
     files_found = context.get_files_found()
-    artifact_info = inspect.stack()[0]
     data_list = []
 
     for file_found in files_found:
@@ -296,7 +266,6 @@ def dmtwitter(context):
 @artifact_processor
 def deleteddmtwitter(context):
     files_found = context.get_files_found()
-    artifact_info = inspect.stack()[0]
     data_list = []
     
     for file_found in files_found:
@@ -340,7 +309,6 @@ def deleteddmtwitter(context):
                             media_path = Path(tentative_media )
                             
                             filenamem = (media_path.name)
-                            filepath = str(media_path.parents[1])
                             
                             #logfunc(f'{tentative_media}-{filenamem}')
                             media_item = check_in_media(tentative_media, filenamem)
@@ -355,7 +323,6 @@ def deleteddmtwitter(context):
 @artifact_processor
 def blocktwitter(context):
     files_found = context.get_files_found()
-    artifact_info = inspect.stack()[0]
     data_list = []
     
     for file_found in files_found:
@@ -384,5 +351,4 @@ def blocktwitter(context):
     
     data_headers = ('Account ID','User Link','File Source')
     
-    return data_headers, data_list, 'See source path(s) below'            
-                
+    return data_headers, data_list, 'See source path(s) below'
