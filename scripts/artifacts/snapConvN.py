@@ -121,15 +121,31 @@ def snapConvN(context):
                     continue
                 values = dict(zip(header, raw))
                 timestamp = _snap_ts(values.pop('timestamp', ''))
-                records.append((timestamp, values, _media_refs(values.get('media_id', ''))))
+                refs = _media_refs(values.get('media_id', ''))
+                # A single media reference is emitted as a bare id (what the LAVA
+                # viewer resolves); a list is kept only for multi-media messages.
+                media = (refs[0] if len(refs) == 1 else refs) if refs else ''
+                records.append((timestamp, values, media))
 
-    data_headers = tuple([('Timestamp', 'datetime')]
-                         + [name.capitalize() for name in field_names]
-                         + [('Media', 'media')])
-    # A single media reference is emitted as a bare id (what the LAVA viewer
-    # resolves); a list is kept only when a message links more than one file.
-    data_list = [[timestamp] + [values.get(name, '') for name in field_names]
-                 + [(refs[0] if len(refs) == 1 else refs) if refs else '']
-                 for timestamp, values, refs in records]
+    # Promote Media and the key participant/content columns to just after
+    # message_type for readability; the rest keep their return (file) order.
+    # Falls back to appending them last if message_type is absent in a return.
+    promoted = [c for c in ('sender_username', 'recipient_username', 'text') if c in field_names]
+    ordered = []
+    for name in field_names:
+        if name in promoted:
+            continue
+        ordered.append(name)
+        if name == 'message_type':
+            ordered += ['__media__'] + promoted
+    if '__media__' not in ordered:
+        ordered += ['__media__'] + promoted
+
+    data_headers = tuple([('Timestamp', 'datetime')] + [
+        ('Media', 'media') if name == '__media__' else name.capitalize() for name in ordered])
+    data_list = [
+        [timestamp] + [media if name == '__media__' else values.get(name, '')
+                       for name in ordered]
+        for timestamp, values, media in records]
 
     return data_headers, data_list, context.get_relative_path(source_path)
