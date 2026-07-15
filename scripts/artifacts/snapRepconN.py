@@ -133,13 +133,13 @@ def snapRepconN(context):
                     values['message_timestamp'] = _snap_ts(values['message_timestamp'])
                 records.append((timestamp, values, _media_refs(values.get('media_id', ''))))
 
-    data_headers = tuple([('Timestamp', 'datetime')]
-                         + [_column(name) for name in field_names]
-                         + [('Media', 'media')])
+    # Media is placed right after Timestamp for readability.
+    data_headers = tuple([('Timestamp', 'datetime'), ('Media', 'media')]
+                         + [_column(name) for name in field_names])
     # A single media reference is emitted as a bare id (what the LAVA viewer
     # resolves); a list is kept only when a record links more than one file.
-    data_list = [[timestamp] + [values.get(name, '') for name in field_names]
-                 + [(refs[0] if len(refs) == 1 else refs) if refs else '']
+    data_list = [[timestamp, (refs[0] if len(refs) == 1 else refs) if refs else '']
+                 + [values.get(name, '') for name in field_names]
                  for timestamp, values, refs in records]
 
     return data_headers, data_list, context.get_relative_path(source_path)
