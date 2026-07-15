@@ -23,7 +23,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": "*/Google Play Store/Devices.json",
         "output_types": "standard",
-        "artifact_icon": "smartphone",
+        "artifact_icon": "device-mobile",
     },
     "playstore_library": {
         "name": "Google Play Store - Library",
@@ -49,7 +49,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": "*/Google Play Store/Reviews.json",
         "output_types": "standard",
-        "artifact_icon": "edit-3",
+        "artifact_icon": "pencil-minus",
     },
     "playstore_subscriptions": {
         "name": "Google Play Store - Subscriptions",

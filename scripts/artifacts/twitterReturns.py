@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/*_tweets_media/*.*','*/*-tweets*.txt',),
         "output_types": "standard",
-        "artifact_icon": "twitter",
+        "artifact_icon": "brand-twitter",
     },
     "deltweets": {
         "name": "Deleted Tweets",
@@ -23,7 +23,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/*_deleted_tweets_media/*.*','*/*deleted-tweets*.txt',),
         "output_types": "standard",
-        "artifact_icon": "twitter",
+        "artifact_icon": "brand-twitter",
     },
     "dmtwitter": {
         "name": "Twitter DMs",
@@ -36,7 +36,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/*_direct_messages_media/*.*','*/*direct-messages*.txt',),
         "output_types": "standard",
-        "artifact_icon": "twitter",
+        "artifact_icon": "brand-twitter",
     },
     "deleteddmtwitter": {
         "name": "Deleted Twitter DMs",
@@ -49,7 +49,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/*_deleted_direct_messages_media/*.*','*/*-deleted-direct-messages*.txt',),
         "output_types": "standard",
-        "artifact_icon": "twitter",
+        "artifact_icon": "brand-twitter",
     },
     "blocktwitter": {
         "name": "Blocked Twitter",
@@ -62,7 +62,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/*-block*.txt',),
         "output_types": "standard",
-        "artifact_icon": "twitter",
+        "artifact_icon": "brand-twitter",
     }
 }
 

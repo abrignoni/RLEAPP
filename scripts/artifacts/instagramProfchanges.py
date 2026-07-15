@@ -11,7 +11,7 @@ __artifacts_v2__ = {
         "paths": ('*/account_information/profile_changes.json'),
         "output_types": "standard",
         "html_columns": ["Items"],
-        "artifact_icon": "instagram",
+        "artifact_icon": "brand-instagram",
     }
 }
 

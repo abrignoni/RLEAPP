@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "notes": "Transaction Timestamp is preserved as the raw source value (Takeout CSV format is locale-dependent; not normalized to UTC).",
         "paths": ('*/Google Pay/Google transactions/transactions_*.csv'),
         "output_types": "standard",
-        "artifact_icon": "dollar-sign",
+        "artifact_icon": "currency-dollar",
     }
 }
 

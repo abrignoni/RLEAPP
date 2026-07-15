@@ -11,7 +11,7 @@ __artifacts_v2__ = {
         "paths": ('*/*.torrent',),
         "output_types": "standard",
         "html_columns": ["Path"],
-        "artifact_icon": "download-cloud",
+        "artifact_icon": "cloud-download",
     }
 }
 

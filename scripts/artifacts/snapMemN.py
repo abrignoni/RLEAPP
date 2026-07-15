@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/memories.csv', '*/*.*'),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
-        "artifact_icon": "image",
+        "artifact_icon": "photo",
     }
 }
 

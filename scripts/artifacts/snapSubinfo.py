@@ -30,7 +30,7 @@ __artifacts_v2__ = {
         "author": "@AlexisBrignoni", "creation_date": "2024-06-13",
         "last_update_date": "2026-07-09", "requirements": "none",
         "category": "Snapchat Returns", "notes": "",
-        "paths": ('*/subscriber_info.csv',), "output_types": "standard", "artifact_icon": "info",
+        "paths": ('*/subscriber_info.csv',), "output_types": "standard", "artifact_icon": "info-circle",
     },
     "snapSubPrivacy": {
         "name": "Snapchat - Privacy Settings",
@@ -46,7 +46,7 @@ __artifacts_v2__ = {
         "author": "@AlexisBrignoni", "creation_date": "2024-06-13",
         "last_update_date": "2026-07-09", "requirements": "none",
         "category": "Snapchat Returns", "notes": "",
-        "paths": ('*/subscriber_info.csv',), "output_types": "standard", "artifact_icon": "smile",
+        "paths": ('*/subscriber_info.csv',), "output_types": "standard", "artifact_icon": "mood-smile",
     }
 }
 

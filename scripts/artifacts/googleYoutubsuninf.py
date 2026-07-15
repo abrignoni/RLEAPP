@@ -14,7 +14,7 @@ __artifacts_v2__ = {
         "paths": ('*/*YoutubeAndYoutubeMusic.BasicSubscriberInfo_*/YouTube and YouTube Music/'
                   'Data for User */Basic Subscriber Info/Basic Subscriber Info.csv',),
         "output_types": "standard",
-        "artifact_icon": "youtube",
+        "artifact_icon": "brand-youtube",
     }
 }
 

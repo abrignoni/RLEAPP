@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/comments/post_comments.json'),
         "output_types": "standard",
-        "artifact_icon": "instagram",
+        "artifact_icon": "brand-instagram",
     }
 }
 

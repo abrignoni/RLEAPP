@@ -24,7 +24,7 @@ __artifacts_v2__ = {
         "paths": ('*/package/subscriber-data-*.pdf',),
         "output_types": "standard",
         "html_columns": ['Profile Pic URL'],
-        "artifact_icon": "image"
+        "artifact_icon": "photo"
     },
     "kik_subscriber_events": {
         "name": "Kik - Subscriber Events",
@@ -63,7 +63,7 @@ __artifacts_v2__ = {
         "notes": "Located at package/content/data-text.csv",
         "paths": ('*/package/content/data-text.csv',),
         "output_types": "standard",
-        "artifact_icon": "message-square"
+        "artifact_icon": "message"
     },
     "kik_chat_media": {
         "name": "Kik - Chat Messages (Media)",
@@ -76,7 +76,7 @@ __artifacts_v2__ = {
         "notes": "Located at package/content/data-media.csv. Filenames in medias/ folder are Base64-encoded.",
         "paths": ('*/package/content/data-media.csv', '*/package/content/medias/*'),
         "output_types": "standard",
-        "artifact_icon": "image"
+        "artifact_icon": "photo"
     },
     "kik_chat_sent": {
         "name": "Kik - Sent Chats (Log)",
@@ -89,7 +89,7 @@ __artifacts_v2__ = {
         "notes": "Located at package/logs/chat_sent.csv",
         "paths": ('*/package/logs/chat_sent.csv',),
         "output_types": "standard",
-        "artifact_icon": "message-square"
+        "artifact_icon": "message"
     },
     "kik_chat_sent_received": {
         "name": "Kik - Sent and Received Chats (Log)",
@@ -102,7 +102,7 @@ __artifacts_v2__ = {
         "notes": "Located at package/logs/chat_sent_received.csv",
         "paths": ('*/package/logs/chat_sent_received.csv',),
         "output_types": "standard",
-        "artifact_icon": "message-square"
+        "artifact_icon": "message"
     },
     "kik_chat_platform_sent": {
         "name": "Kik - Platform Chat Sent (Log)",
@@ -115,7 +115,7 @@ __artifacts_v2__ = {
         "notes": "Located at package/logs/chat_platform_sent.csv",
         "paths": ('*/package/logs/chat_platform_sent.csv',),
         "output_types": "standard",
-        "artifact_icon": "message-square"
+        "artifact_icon": "message"
     },
     "kik_chat_platform_sent_received": {
         "name": "Kik - Platform Chat Sent and Received (Log)",
@@ -128,7 +128,7 @@ __artifacts_v2__ = {
         "notes": "Located at package/logs/chat_platform_sent_received.csv",
         "paths": ('*/package/logs/chat_platform_sent_received.csv',),
         "output_types": "standard",
-        "artifact_icon": "message-square"
+        "artifact_icon": "message"
     },
     "kik_group_receive": {
         "name": "Kik - Group Messages Received (Log)",
@@ -193,7 +193,7 @@ __artifacts_v2__ = {
         "notes": "Located at package/logs/binds.csv",
         "paths": ('*/package/logs/binds.csv',),
         "output_types": "standard",
-        "artifact_icon": "smartphone"
+        "artifact_icon": "device-mobile"
     },
 }
 

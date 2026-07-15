@@ -13,7 +13,7 @@ __artifacts_v2__ = {
         "paths": ('*/*MyActivity.MyActivity_*/My Activity/Image Search/MyActivity.html',),
         "output_types": "standard",
         "html_columns": ["Image Search Activity"],
-        "artifact_icon": "image",
+        "artifact_icon": "photo",
     }
 }
 

@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/ads_and_content/posts_viewed.json'),
         "output_types": "standard",
-        "artifact_icon": "instagram",
+        "artifact_icon": "brand-instagram",
     }
 }
 

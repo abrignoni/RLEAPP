@@ -11,7 +11,7 @@ __artifacts_v2__ = {
         "paths": ('*/records.html', '*/preservation*.html', '*/linked_media/*.*'),
         "output_types": "standard",
         "html_columns": ["Caption", "Comments", "Location"],
-        "artifact_icon": "image",
+        "artifact_icon": "photo",
     }
 }
 

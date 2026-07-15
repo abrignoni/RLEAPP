@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/records.html', '*/preservation*.html'),
         "output_types": "standard",
-        "artifact_icon": "thumbs-up",
+        "artifact_icon": "thumb-up",
     }
 }
 

@@ -11,7 +11,7 @@ __artifacts_v2__ = {
                  "the rows map (KML).",
         "paths": ('*.pdf',),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
-        "artifact_icon": "log-in",
+        "artifact_icon": "login-2",
     },
     "chaseAccountInfo": {
         "name": "Chase - Account Information",

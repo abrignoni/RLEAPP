@@ -11,7 +11,7 @@ __artifacts_v2__ = {
         "paths": ('*/messages/2*.csv',),
         "output_types": "standard",
         "html_columns": ['Recipients'],
-        "artifact_icon": "message-square",
+        "artifact_icon": "message",
     },
     "synchronoss_calls": {
         "name": "Synchronoss - Calls",
@@ -41,7 +41,7 @@ __artifacts_v2__ = {
         ),
         "output_types": "standard",
         "html_columns": ['Recipients'],
-        "artifact_icon": "image",
+        "artifact_icon": "photo",
     },
     "synchronoss_mms_sent": {
         "name": "Synchronoss - MMS Media Sent",
@@ -58,7 +58,7 @@ __artifacts_v2__ = {
         ),
         "output_types": "standard",
         "html_columns": ['Recipients'],
-        "artifact_icon": "image",
+        "artifact_icon": "photo",
     },
     "synchronoss_mms_unlinked": {
         "name": "Synchronoss - MMS Folder Media (Unlinked)",
@@ -122,7 +122,7 @@ __artifacts_v2__ = {
                  "Sync rows show device activity without a specific file upload.",
         "paths": ('*[Dd][Vv] [Aa]ccess [Ll]ogs*.csv',),
         "output_types": "standard",
-        "artifact_icon": "refresh-cw",
+        "artifact_icon": "refresh",
     },
     "synchronoss_vzmobile": {
         "name": "Synchronoss - VZMOBILE Device Backup",
@@ -136,7 +136,7 @@ __artifacts_v2__ = {
                  "Files are PNG device backups. Date folder = upload date per Synchronoss FAQ.",
         "paths": ('*/VZMOBILE/*/*/**',),
         "output_types": "standard",
-        "artifact_icon": "smartphone",
+        "artifact_icon": "device-mobile",
     },
 }
 

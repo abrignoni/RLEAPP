@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/content/posts_1.json', '*/media/*'),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
-        "artifact_icon": "instagram",
+        "artifact_icon": "brand-instagram",
     }
 }
 

@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "notes": "",
         "paths": ('*/story.csv', '*/*.*'),
         "output_types": "standard",
-        "artifact_icon": "book-open",
+        "artifact_icon": "book",
     }
 }
 
