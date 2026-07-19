@@ -20,6 +20,7 @@ import os
 import mammoth
 
 from scripts.ilapfuncs import artifact_processor
+from scripts.html_safe import safe_source
 
 
 @artifact_processor
@@ -34,7 +35,7 @@ def accPinger(context):
         source_path = file_found
         with open(file_found, 'rb') as docx_file:
             result = mammoth.convert_to_html(docx_file)
-        data_list.append((result.value,))
+        data_list.append((safe_source(result.value),))
 
     data_headers = ('User Data',)
     return data_headers, data_list, context.get_relative_path(source_path)

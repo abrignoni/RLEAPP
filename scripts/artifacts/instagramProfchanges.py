@@ -19,6 +19,7 @@ import os
 import json
 
 from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc
+from scripts.html_safe import esc
 
 
 @artifact_processor
@@ -45,7 +46,7 @@ def instagramProfchanges(context):
                         for c, d in z.items():
                             if d and 'timestamp' in c:
                                 d = convert_unix_ts_to_utc(d)
-                            aggregator += f'{y} - {c} - {d} <br>'
+                            aggregator += f'{esc(y)} - {esc(c)} - {esc(d)} <br>'
                 data_list.append((title, aggregator))
 
     data_headers = ('Title', 'Items')

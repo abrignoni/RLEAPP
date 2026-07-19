@@ -9,7 +9,7 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Google Returns My Activity Image Search",
         "notes": "The return ships this as a pre-rendered HTML page; the full document is embedded "
-                 "verbatim in the Image Search Activity column (rendered, not escaped).",
+                 "verbatim in the Image Search Activity column (shown as escaped source text, not rendered).",
         "paths": ('*/*MyActivity.MyActivity_*/My Activity/Image Search/MyActivity.html',),
         "output_types": "standard",
         "html_columns": ["Image Search Activity"],
@@ -20,6 +20,7 @@ __artifacts_v2__ = {
 import os
 
 from scripts.ilapfuncs import artifact_processor
+from scripts.html_safe import safe_source
 
 
 @artifact_processor
@@ -32,7 +33,7 @@ def googleMyactisearch(context):
             continue
         source_path = file_found
         with open(file_found, encoding='utf-8', errors='backslashreplace') as f:
-            data_list.append((f.read(), context.get_relative_path(file_found)))
+            data_list.append((safe_source(f.read()), context.get_relative_path(file_found)))
 
     data_headers = ('Image Search Activity', 'Source File')
     return data_headers, data_list, context.get_relative_path(source_path)

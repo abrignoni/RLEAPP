@@ -9,7 +9,7 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Google Returns Android Device Config",
         "notes": "The return ships this as a pre-rendered HTML page; the full document is embedded "
-                 "verbatim in the Device Configuration column (rendered, not escaped).",
+                 "verbatim in the Device Configuration column (shown as escaped source text, not rendered).",
         "paths": ('*/*AndroidDeviceConfigurationService.DeviceAndUserProfile_*/'
                   'Android Device Configuration Service/Device-*.html',),
         "output_types": "standard",
@@ -21,6 +21,7 @@ __artifacts_v2__ = {
 import os
 
 from scripts.ilapfuncs import artifact_processor
+from scripts.html_safe import safe_source
 
 
 @artifact_processor
@@ -33,7 +34,7 @@ def googleDeviceconfig(context):
             continue
         source_path = file_found
         with open(file_found, encoding='utf-8', errors='backslashreplace') as f:
-            data_list.append((f.read(), context.get_relative_path(file_found)))
+            data_list.append((safe_source(f.read()), context.get_relative_path(file_found)))
 
     data_headers = ('Device Configuration', 'Source File')
     return data_headers, data_list, context.get_relative_path(source_path)

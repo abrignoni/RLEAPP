@@ -147,6 +147,7 @@ import re
 from datetime import datetime, timezone
 
 from scripts.ilapfuncs import artifact_processor, logfunc, check_in_media, convert_unix_ts_to_utc
+from scripts.html_safe import safe_join
 
 
 def _register_media(file_path, name):
@@ -336,7 +337,7 @@ def synchronoss_messages(context):
         if msg_type not in ('sms', 'mms'):
             continue
         source_path = row.get('source_path', '')
-        recipients_fmt = '<br>'.join(
+        recipients_fmt = safe_join(
             r.strip() for r in row.get('Recipients', '').split(';') if r.strip()
         )
         data_list.append((
@@ -451,7 +452,7 @@ def _synchronoss_mms_media(context, direction):
         date_folder = msg_date[:10] if msg_date else ''   # YYYY-MM-DD
         folder_files = date_media.get(date_folder, {})
 
-        recipients_fmt = '<br>'.join(
+        recipients_fmt = safe_join(
             r.strip() for r in row.get('Recipients', '').split(';') if r.strip()
         )
 

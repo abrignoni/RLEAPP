@@ -21,6 +21,7 @@ from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 
 from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc, check_in_media
+from scripts.html_safe import esc
 
 
 def _fbig_ts(value):
@@ -43,7 +44,7 @@ def _row(fields):
     return (_fbig_ts(fields.get('taken', '')), fields.get('thumb'), fields.get('lmf', ''),
             fields.get('url', ''), fields.get('source', ''), fields.get('filter', ''),
             fields.get('pub', ''), fields.get('sba', ''), fields.get('carid', ''),
-            fields.get('caption', ''), fields.get('comments', ''), fields.get('location', ''))
+            esc(fields.get('caption', '')), esc(fields.get('comments', '')), esc(fields.get('location', '')))
 
 
 @artifact_processor

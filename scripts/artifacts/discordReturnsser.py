@@ -18,6 +18,7 @@ __artifacts_v2__ = {
 import json
 
 from scripts.ilapfuncs import artifact_processor
+from scripts.html_safe import safe_join
 
 
 @artifact_processor
@@ -33,7 +34,7 @@ def discordReturnsser(context):
             data = json.load(f)
 
         channels = data.get('channels', '')
-        channels_agg = ('<br>'.join(f'{k}: {v}' for k, v in channels.items())
+        channels_agg = (safe_join(f'{k}: {v}' for k, v in channels.items())
                         if isinstance(channels, dict) else '')
         data_list.append((data.get('name', ''), data.get('description', ''), channels_agg,
                           data.get('banner', ''), data.get('icon', ''), data.get('id', ''),

@@ -19,6 +19,7 @@ import os
 import json
 
 from scripts.ilapfuncs import artifact_processor, utf8_in_extended_ascii, check_in_media, convert_unix_ts_to_utc
+from scripts.html_safe import esc
 
 @artifact_processor
 def instagramMessages(context):
@@ -78,7 +79,7 @@ def instagramMessages(context):
                         actor = utf8_in_extended_ascii(actor)[1]
                             
                         counter = counter + 1
-                        agregator_reac = agregator_reac + f'<td>{reaction}<br>{actor}</td>'
+                        agregator_reac = agregator_reac + f'<td>{esc(reaction)}<br>{esc(actor)}</td>'
                         #hacer uno que no tenga html
                         if counter == 2:
                             counter = 0
@@ -92,7 +93,7 @@ def instagramMessages(context):
                 content = utf8_in_extended_ascii(content)[1]
                 if share_info:
                     content = (content + '\n' + share_info).strip()
-                type = x.get('type', '')
+                msg_type = x.get('type', '')
                 is_unsent = x.get('is_unsent', '')
                 
                 photos = x.get('photos', '')
@@ -113,7 +114,7 @@ def instagramMessages(context):
                             if ref:
                                 media_items.append(ref)
                         
-                data_list.append((timestamp, names, sender_name, content, media_items, agregator_reac, is_unsent, type, context.get_relative_path(file_found)))
+                data_list.append((timestamp, names, sender_name, content, media_items, agregator_reac, is_unsent, msg_type, context.get_relative_path(file_found)))
     
     data_headers = (('Timestamp','datetime'), 'Participants', 'Sender', 'Content', ('Media','media'), 'Reactions', 'Is unsent', 'Type','Source File')
     return data_headers, data_list, 'See source path(s) below'
