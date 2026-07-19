@@ -203,6 +203,7 @@ import re
 from datetime import datetime, timedelta, timezone
 
 from scripts.ilapfuncs import artifact_processor, check_in_media, logfunc
+from scripts.html_safe import safe_url
 
 try:
     from pdfminer.high_level import extract_text as pdf_extract_text
@@ -404,7 +405,7 @@ def kik_subscriber_pics(context):
             orig_md5 = pic_orig_md5s[i].upper() if i < len(pic_orig_md5s) else ''
             scaled_md5 = pic_scaled_md5s[i].upper() if i < len(pic_scaled_md5s) else ''
             data_list.append((
-                f'<a href="{url}" style="color:#4dabf7;">{url}</a>',
+                safe_url(url),
                 orig_md5, scaled_md5, rel_source
             ))
 

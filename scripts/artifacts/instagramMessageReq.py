@@ -19,6 +19,7 @@ import os
 import json
 
 from scripts.ilapfuncs import artifact_processor, utf8_in_extended_ascii, check_in_media, convert_unix_ts_to_utc
+from scripts.html_safe import esc
 
 @artifact_processor
 def instagramMessageReq(context):
@@ -86,7 +87,7 @@ def instagramMessageReq(context):
                         actor = utf8_in_extended_ascii(actor)[1]
                             
                         counter = counter + 1
-                        agregator_reac = agregator_reac + f'<td>{reaction}<br>{actor}</td>'
+                        agregator_reac = agregator_reac + f'<td>{esc(reaction)}<br>{esc(actor)}</td>'
                         #hacer uno que no tenga html
                         if counter == 2:
                             counter = 0
@@ -100,7 +101,7 @@ def instagramMessageReq(context):
                 content = utf8_in_extended_ascii(content)[1]
                 if share_info:
                     content = (content + '\n' + share_info).strip()
-                type = x.get('type', '')
+                msg_type = x.get('type', '')
                 is_unsent = x.get('is_unsent', '')
                 
                 photos = x.get('photos', '')
@@ -121,7 +122,7 @@ def instagramMessageReq(context):
                             if ref:
                                 media_items.append(ref)
                 
-                data_list.append((timestamp, title, names, sender_name, content, media_items, agregator_reac, is_unsent, type, thread_type, is_still_participant, context.get_relative_path(file_found)))
+                data_list.append((timestamp, title, names, sender_name, content, media_items, agregator_reac, is_unsent, msg_type, thread_type, is_still_participant, context.get_relative_path(file_found)))
     
     data_headers = (('Timestamp', 'datetime'), 'Party Account Name', 'Participants', 'Sender Account Name', 'Content', ('Media','media'), 'Reactions', 'Is Unsent', 'Type', 'Thread Type', 'Is Still Participant','Source File')
     return data_headers, data_list, 'See source path(s) below'

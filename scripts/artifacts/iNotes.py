@@ -21,6 +21,7 @@ import json
 import os
 
 from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc, check_in_media
+from scripts.html_safe import safe_source
 
 
 @artifact_processor
@@ -57,7 +58,7 @@ def iNotes(context):
                 notapath = match
                 if 'content' not in match:
                     with open(match, encoding='utf-8', errors='backslashreplace') as g:
-                        note_text = g.read().replace('\n', '<br>')
+                        note_text = safe_source(g.read())
 
             data_list.append((created, modified, note_text, recordname, refs,
                               '' if deleted is None else deleted,

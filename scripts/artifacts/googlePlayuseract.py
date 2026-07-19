@@ -9,7 +9,7 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Google Returns Play User Act",
         "notes": "The return ships this activity as a pre-rendered HTML page; the full document is "
-                 "embedded verbatim in the User Activity column (rendered, not escaped).",
+                 "embedded verbatim in the User Activity column (shown as escaped source text, not rendered).",
         "paths": ('*/*GooglePlayStore.UserActivity_*/Google Play Store/User Activity.html',),
         "output_types": "standard",
         "html_columns": ["User Activity"],
@@ -20,6 +20,7 @@ __artifacts_v2__ = {
 import os
 
 from scripts.ilapfuncs import artifact_processor
+from scripts.html_safe import safe_source
 
 
 @artifact_processor
@@ -32,7 +33,7 @@ def googlePlayuseract(context):
             continue
         source_path = file_found
         with open(file_found, encoding='utf-8', errors='backslashreplace') as f:
-            data_list.append((f.read(), context.get_relative_path(file_found)))
+            data_list.append((safe_source(f.read()), context.get_relative_path(file_found)))
 
     data_headers = ('User Activity', 'Source File')
     return data_headers, data_list, context.get_relative_path(source_path)

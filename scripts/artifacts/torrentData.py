@@ -20,6 +20,7 @@ import hashlib
 import bencoding
 
 from scripts.ilapfuncs import artifact_processor
+from scripts.html_safe import esc
 
 
 def _decode(value):
@@ -53,7 +54,7 @@ def torrentData(context):
             path_parts = fileinfo.get(b'path', [])
             dirr = _decode(path_parts[0]) if len(path_parts) > 1 else ''
             filen = _decode(path_parts[-1]) if path_parts else ''
-            rows.append(f'<tr><td>{dirr}</td><td>{filen}</td><td>{length}</td></tr>')
+            rows.append(f'<tr><td>{esc(dirr)}</td><td>{esc(filen)}</td><td>{esc(length)}</td></tr>')
         path_table = ('<table><tr><th>Directory</th><th>File</th><th>Length</th></tr>'
                       + ''.join(rows) + '</table>') if rows else ''
 

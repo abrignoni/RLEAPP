@@ -37,6 +37,7 @@ import os
 from datetime import datetime, timezone
 
 from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc, check_in_media
+from scripts.html_safe import esc
 
 
 def utf8_in_extended_ascii(input_string, *, raise_on_unexpected=False):
@@ -225,7 +226,7 @@ def kikAbuseReport(context):
                     report_from = parts[2] if len(parts) > 2 else ''
                     timestamp = (parts[4].strip('(') + ' ' + parts[5]) if len(parts) > 5 else ''
                 else:
-                    aggregator = aggregator + line + '<br>'
+                    aggregator = aggregator + esc(line) + '<br>'
             if aggregator != '':
                 data_list.append((_ts(timestamp), report_from, aggregator))
     data_headers = (('Timestamp', 'datetime'), 'Report From', 'Data')

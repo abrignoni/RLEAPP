@@ -21,6 +21,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from scripts.ilapfuncs import artifact_processor, check_in_media
+from scripts.html_safe import safe_join
 
 _MONTHS = {'January': 1, 'February': 2, 'March': 3, 'April': 4, 'May': 5, 'June': 6,
            'July': 7, 'August': 8, 'September': 9, 'October': 10, 'November': 11, 'December': 12}
@@ -76,7 +77,7 @@ def googleChat(context):
                 group_data = json.load(fg)
             for member in group_data.get('members', []):
                 members.append(member.get('name', '') + ' - ' + member.get('email', ''))
-        members_html = '<br>'.join(members)
+        members_html = safe_join(members)
 
         for chat_message in data.get('messages', []):
             created_date = chat_message.get('created_date', '')

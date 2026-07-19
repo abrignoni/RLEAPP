@@ -21,6 +21,7 @@ from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 
 from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc, check_in_media
+from scripts.html_safe import safe_join
 
 _SKIP_LABELS = ('Ncmec Reports Definition', 'NCMEC Cybertips', 'Media uploaded in this cybertip')
 
@@ -71,7 +72,7 @@ def fbigNcmec(context):
                 if label == 'CyberTip ID':
                     if started:
                         data_list.append((_fbig_ts(time_val), cybertip_id, resid,
-                                          '<br>'.join(agg_parts), media_refs))
+                                          safe_join(agg_parts), media_refs))
                         cybertip_id = time_val = resid = ''
                         agg_parts = []
                         media_refs = []
@@ -91,7 +92,7 @@ def fbigNcmec(context):
                     agg_parts.append(f'{label} {value}')
             if started:
                 data_list.append((_fbig_ts(time_val), cybertip_id, resid,
-                                  '<br>'.join(agg_parts), media_refs))
+                                  safe_join(agg_parts), media_refs))
 
     data_headers = (('Time', 'datetime'), 'CyberTip ID', 'Responsible ID', 'Data',
                     ('Media', 'media'))

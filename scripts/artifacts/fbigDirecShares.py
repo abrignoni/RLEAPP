@@ -21,6 +21,7 @@ from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 
 from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc, check_in_media
+from scripts.html_safe import safe_join
 
 
 def _fbig_ts(value):
@@ -72,7 +73,7 @@ def fbigDirecShares(context):
                     thumb = check_in_media(media_name, media_name)
                 elif label == 'Id':
                     if started:
-                        data_list.append((_fbig_ts(timestamp), thumb, '<br>'.join(agg_parts), media_name))
+                        data_list.append((_fbig_ts(timestamp), thumb, safe_join(agg_parts), media_name))
                         timestamp = thumb = media_name = ''
                         agg_parts = []
                     started = True
@@ -80,7 +81,7 @@ def fbigDirecShares(context):
                 else:
                     agg_parts.append(f'{label}: {value}')
             if started:
-                data_list.append((_fbig_ts(timestamp), thumb, '<br>'.join(agg_parts), media_name))
+                data_list.append((_fbig_ts(timestamp), thumb, safe_join(agg_parts), media_name))
 
     data_headers = (('Timestamp', 'datetime'), ('Thumb', 'media'), 'Data', 'Filename')
     return data_headers, data_list, context.get_relative_path(source_path)

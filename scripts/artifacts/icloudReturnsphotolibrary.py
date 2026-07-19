@@ -25,6 +25,7 @@ from pillow_heif import register_heif_opener
 
 from scripts.ilapfuncs import (artifact_processor, check_in_media, check_in_embedded_media,
                                convert_unix_ts_to_utc)
+from scripts.html_safe import esc
 
 _EXIF_TAGS = {271: 'Manufacturer', 272: 'Model', 305: 'Software', 274: 'Orientation',
               306: 'Creation/Changed', 282: 'Resolution X', 283: 'Resolution Y', 316: 'Host device'}
@@ -66,7 +67,7 @@ def _exif_summary(image_path):
     except Exception:  # pylint: disable=broad-except
         return '', '', ''
     lat, lon = _gps_decimal(_geotagging(exif.get_ifd(0x8825)))
-    summary = ''.join(f'{_EXIF_TAGS.get(tag, tag)}: {value}<br>' for tag, value in exif.items())
+    summary = ''.join(f'{esc(_EXIF_TAGS.get(tag, tag))}: {esc(value)}<br>' for tag, value in exif.items())
     return lat, lon, summary
 
 
