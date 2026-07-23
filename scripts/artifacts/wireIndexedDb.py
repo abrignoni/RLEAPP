@@ -72,8 +72,13 @@ __artifacts_v2__ = {
         "last_update_date": "2026-07-23",
         "requirements": "none",
         "category": "Wire",
-        "notes": "",
-        "paths": ('*/https_app.wire.com_0.indexeddb.leveldb/*',),
+        "notes": "Recovered thumbnails are decrypted from the on-disk asset "
+                 "caches when present.",
+        "paths": (
+            '*/https_app.wire.com_0.indexeddb.leveldb/*',
+            '*/Service Worker/CacheStorage/*/*/*_0',
+            '*/Cache_Data/f_*',
+        ),
         "output_types": ["html", "tsv", "timeline", "lava"],
         "artifact_icon": "message-circle",
         "data_views": {
@@ -85,7 +90,7 @@ __artifacts_v2__ = {
                 "directionSentValue": 1,
                 "timeColumn": "Timestamp",
                 "senderColumn": "Sender",
-                "mediaColumn": "Attachment",
+                "mediaColumn": "Media",
             }
         },
     },
@@ -94,15 +99,20 @@ __artifacts_v2__ = {
         "description": "Files, images, audio and video shared in Wire "
                        "conversations (asset-add events): filename, MIME type, "
                        "size, sender, conversation and the server asset "
-                       "key/token references.",
+                       "key/token references. Where the asset is still in an "
+                       "on-disk cache, the decrypted thumbnail is embedded.",
         "author": "@AlexisBrignoni",
         "creation_date": "2026-07-23",
         "last_update_date": "2026-07-23",
         "requirements": "none",
         "category": "Wire",
         "notes": "Wire assets are end-to-end encrypted and stored server-side; "
-                 "only metadata and asset references are present locally.",
-        "paths": ('*/https_app.wire.com_0.indexeddb.leveldb/*',),
+                 "only recoverable (cached) assets show a decrypted image.",
+        "paths": (
+            '*/https_app.wire.com_0.indexeddb.leveldb/*',
+            '*/Service Worker/CacheStorage/*/*/*_0',
+            '*/Cache_Data/f_*',
+        ),
         "output_types": ["html", "tsv", "timeline", "lava"],
         "artifact_icon": "paperclip",
     },
@@ -189,8 +199,9 @@ import os
 import re
 from datetime import datetime, timezone
 
-from scripts.ilapfuncs import artifact_processor, logfunc
+from scripts.ilapfuncs import artifact_processor, logfunc, check_in_embedded_media
 from scripts.ccl.indexeddb_to_json import load_indexeddb
+from scripts.ccl.wire_assets import build_asset_index, recover_assets
 
 
 # --------------------------------------------------------------------------- #
@@ -651,11 +662,33 @@ def _event_text(etype, d, users, self_ids):
     return etype, d.get("content") or "", ""
 
 
+def _recovered_media(context, stores):
+    """Return media_for(event_data) -> checked-in media ref for a recoverable
+    (cached, decryptable) asset, else ''. Prefers the full asset, falls back to
+    its preview thumbnail (e.g. for videos whose body was not cached)."""
+    recovered = recover_assets(context.get_files_found(), build_asset_index(stores))
+
+    def media_for(d):
+        if not isinstance(d, dict):
+            return ""
+        for key in (d.get("key"), d.get("preview_key")):
+            desc = recovered.get(key)
+            if desc:
+                return check_in_embedded_media(
+                    desc["source"], desc["plain"],
+                    desc["name"] or f"{key}.{desc['ext']}",
+                    force_type=desc["ctype"], force_extension=desc["ext"])
+        return ""
+
+    return media_for
+
+
 @artifact_processor
 def wireMessages(context):
     stores, dirs = _load(context)
     users = _build_users(stores)
     self_ids = _self_user_ids(stores)
+    media_for = _recovered_media(context, stores)
 
     # conversation id -> friendly name
     conv_names = {}
@@ -696,6 +729,7 @@ def wireMessages(context):
             kind,
             text or "",
             attachment,
+            media_for(d) if etype == "conversation.asset-add" else "",
             v.get("id", ""),
             sender_id,
             cid,
@@ -707,8 +741,8 @@ def wireMessages(context):
 
     data_headers = (
         ("Timestamp", "datetime"), "Account", "Conversation", "Sender",
-        "Outgoing", "Message Type", "Message", "Attachment", "Message ID",
-        "Sender ID", "Conversation ID", "Status",
+        "Outgoing", "Message Type", "Message", "Attachment", ("Media", "media"),
+        "Message ID", "Sender ID", "Conversation ID", "Status",
     )
     return data_headers, rows, _source(context, dirs)
 
@@ -718,6 +752,7 @@ def wireAttachments(context):
     stores, dirs = _load(context)
     users = _build_users(stores)
     self_ids = _self_user_ids(stores)
+    media_for = _recovered_media(context, stores)
 
     conv_names = {}
     for _rec, v in _dedupe_by_id(stores.get("conversations", [])):
@@ -742,6 +777,7 @@ def wireAttachments(context):
             _account_label(users, self_ids, rec.get("db_name")),
             conv_names.get(cid, cid),
             _display_name(users, v.get("from"), self_ids),
+            media_for(d),
             info.get("name", ""),
             d.get("content_type", ""),
             size,
@@ -756,9 +792,9 @@ def wireAttachments(context):
 
     data_headers = (
         ("Timestamp", "datetime"), "Account", "Conversation", "Sender",
-        "Filename", "Content Type", "Size (bytes)", "Asset Key", "Asset Token",
-        "Asset Domain", "Encrypted (OTR key)", "SHA-256 present", "Message ID",
-        "Conversation ID",
+        ("Recovered Media", "media"), "Filename", "Content Type", "Size (bytes)",
+        "Asset Key", "Asset Token", "Asset Domain", "Encrypted (OTR key)",
+        "SHA-256 present", "Message ID", "Conversation ID",
     )
     return data_headers, data_list, _source(context, dirs)
 
