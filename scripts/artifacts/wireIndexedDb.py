@@ -135,6 +135,22 @@ __artifacts_v2__ = {
         "output_types": ["html", "tsv", "timeline", "lava"],
         "artifact_icon": "slash",
     },
+    "wireProteusSessions": {
+        "name": "Wire Proteus Sessions",
+        "description": "Proteus end-to-end sessions the account established, one "
+                       "per contact device (domain@user@client). Evidence of "
+                       "which users and which of their devices were messaged "
+                       "securely. Session key bytes are not exported.",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2026-07-23",
+        "last_update_date": "2026-07-23",
+        "requirements": "none",
+        "category": "Wire",
+        "notes": "",
+        "paths": ('*/https_app.wire.com_0.indexeddb.leveldb/*',),
+        "output_types": ["html", "tsv", "lava"],
+        "artifact_icon": "shield",
+    },
     "wireKeyMaterialInventory": {
         "name": "Wire Key Material Inventory",
         "description": "Inventory (counts only) of the cryptographic key-material "
@@ -263,6 +279,14 @@ def _ms_to_dt(value):
         return value
 
 
+def _unix_to_dt(value):
+    """Parse an epoch-seconds number to an aware UTC datetime."""
+    try:
+        return datetime.fromtimestamp(float(value), tz=timezone.utc)
+    except (ValueError, TypeError, OSError, OverflowError):
+        return value
+
+
 def _clean_key(raw):
     """Strip the '<IdbKey ...>' wrapper the CCL reader puts on serialized keys."""
     if not isinstance(raw, str):
@@ -378,12 +402,16 @@ def wireAccountInfo(context):
             if uid not in local_clients or _completeness(v) > _completeness(local_clients[uid]["value"]):
                 local_clients[uid] = rec
 
-    # client-id per account from mls_credentials keys
+    # client-id and MLS-identity creation time per account from mls_credentials
     cred_clients = {}
+    cred_created = {}
     for rec in stores.get("mls_credentials", []):
         m = _MLS_CRED_RE.search(str(rec.get("key") or ""))
         if m:
             cred_clients.setdefault(m.group(1), m.group(2))
+            v = rec.get("value")
+            if isinstance(v, dict) and v.get("created_at") is not None:
+                cred_created.setdefault(m.group(1), v.get("created_at"))
 
     data_list = []
     for uid in sorted(self_ids):
@@ -402,6 +430,7 @@ def wireAccountInfo(context):
             c.get("type", ""),
             _iso_to_dt(c.get("time")),
             _iso_to_dt(c.get("last_active")),
+            _unix_to_dt(cred_created.get(uid)) if cred_created.get(uid) else "",
             (c.get("meta") or {}).get("is_verified"),
             u.get("email", ""),
             _domain_of(u) or "",
@@ -413,7 +442,8 @@ def wireAccountInfo(context):
         "Handle", "Display Name", "User ID", "Local Client (Device) ID",
         "Device Model", "Device Label", "Device Class", "Device Type",
         ("Device Registered", "datetime"), ("Device Last Active", "datetime"),
-        "Device Verified", "Email", "Domain", "Team ID", "Supported Protocols",
+        ("MLS Identity Created", "datetime"), "Device Verified", "Email",
+        "Domain", "Team ID", "Supported Protocols",
     )
     return data_headers, data_list, _source(context, dirs)
 
@@ -741,6 +771,43 @@ def wireBlacklistedConversations(context):
         ))
 
     data_headers = ("Account", "Conversation ID", "Domain", "Known Name")
+    return data_headers, data_list, _source(context, dirs)
+
+
+@artifact_processor
+def wireProteusSessions(context):
+    stores, dirs = _load(context)
+    users = _build_users(stores)
+    self_ids = _self_user_ids(stores)
+
+    # Proteus session keys look like "<domain>@<user_id>@<client_id>".
+    pair_re = re.compile(r"([A-Za-z0-9.\-]+)@([0-9a-f-]{36})@([0-9a-f]+)")
+
+    data_list = []
+    seen = set()
+    for rec in stores.get("proteus_sessions", []):
+        key = str(rec.get("key") or "")
+        m = pair_re.search(key)
+        if not m:
+            continue
+        domain, uid, client_id = m.group(1), m.group(2), m.group(3)
+        account = _account_label(users, self_ids, rec.get("db_name"))
+        sig = (account, uid, client_id)
+        if sig in seen:
+            continue
+        seen.add(sig)
+        data_list.append((
+            account,
+            _display_name(users, uid, self_ids),
+            uid,
+            client_id,
+            domain,
+        ))
+
+    data_headers = (
+        "Account", "Contact", "Contact User ID", "Contact Client (Device) ID",
+        "Domain",
+    )
     return data_headers, data_list, _source(context, dirs)
 
 
