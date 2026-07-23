@@ -1,0 +1,1 @@
+{"leapp": "rleapp", "format_version": 1, "plugins": ["wireAccountInfo", "wireUsers", "wireDevices", "wireConversations", "wireMessages", "wireAttachments", "wireCachedAssets", "wireBlacklistedConversations", "wireKeyMaterialInventory"]}
