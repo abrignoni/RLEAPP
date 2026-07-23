@@ -135,6 +135,23 @@ __artifacts_v2__ = {
         "output_types": ["html", "tsv", "timeline", "lava"],
         "artifact_icon": "slash",
     },
+    "wireCalls": {
+        "name": "Wire Calls",
+        "description": "Voice and video calls recorded in the Wire IndexedDB "
+                       "(conversation voice-channel events): call end time, "
+                       "conversation, initiator, duration and end reason.",
+        "author": "@AlexisBrignoni",
+        "creation_date": "2026-07-23",
+        "last_update_date": "2026-07-23",
+        "requirements": "none",
+        "category": "Wire",
+        "notes": "Duration is taken from the voice-channel-deactivate event "
+                 "(milliseconds). End-reason labels follow the Wire AVS reason "
+                 "enum and are shown alongside the raw code.",
+        "paths": ('*/https_app.wire.com_0.indexeddb.leveldb/*',),
+        "output_types": ["html", "tsv", "timeline", "lava"],
+        "artifact_icon": "phone",
+    },
     "wireProteusSessions": {
         "name": "Wire Proteus Sessions",
         "description": "Proteus end-to-end sessions the account established, one "
@@ -179,6 +196,14 @@ from scripts.ccl.indexeddb_to_json import load_indexeddb
 # --------------------------------------------------------------------------- #
 # Reference data
 # --------------------------------------------------------------------------- #
+
+# Wire AVS call end-reason enum -> label (raw code is always shown too).
+CALL_END_REASON = {
+    0: "Completed (normal)", 1: "Error", 2: "Timeout", 3: "Lost media",
+    4: "Canceled", 5: "Answered elsewhere", 6: "I/O error", 7: "Still ongoing",
+    8: "Timeout (connection)", 9: "Datachannel", 10: "Rejected",
+    11: "Outdated client", 12: "No one joined", 13: "Everyone left",
+}
 
 # Wire conversation "type" enum -> human label.
 CONV_TYPE = {
@@ -285,6 +310,21 @@ def _unix_to_dt(value):
         return datetime.fromtimestamp(float(value), tz=timezone.utc)
     except (ValueError, TypeError, OSError, OverflowError):
         return value
+
+
+def _fmt_duration_ms(ms):
+    """Format a millisecond duration as 'Hh Mm Ss'."""
+    try:
+        secs = int(float(ms) // 1000)
+    except (ValueError, TypeError):
+        return ""
+    h, rem = divmod(secs, 3600)
+    m, s = divmod(rem, 60)
+    if h:
+        return f"{h}h {m}m {s}s"
+    if m:
+        return f"{m}m {s}s"
+    return f"{s}s"
 
 
 def _clean_key(raw):
@@ -601,6 +641,13 @@ def _event_text(etype, d, users, self_ids):
             _display_name(users, u, self_ids) for u in left), ""
     if etype in ("conversation.one2one-creation", "conversation.group-creation"):
         return "conversation-created", d.get("name") or "(conversation created)", ""
+    if etype == "conversation.voice-channel-activate":
+        return "call", "\U0001F4DE call started", ""
+    if etype == "conversation.voice-channel-deactivate":
+        txt = "\U0001F4DE call ended"
+        if d.get("duration"):
+            txt += f" · {_fmt_duration_ms(d.get('duration'))}"
+        return "call", txt, ""
     return etype, d.get("content") or "", ""
 
 
@@ -772,6 +819,56 @@ def wireBlacklistedConversations(context):
 
     data_headers = ("Account", "Conversation ID", "Domain", "Known Name")
     return data_headers, data_list, _source(context, dirs)
+
+
+@artifact_processor
+def wireCalls(context):
+    stores, dirs = _load(context)
+    users = _build_users(stores)
+    self_ids = _self_user_ids(stores)
+
+    conv_names = {}
+    for _rec, v in _dedupe_by_id(stores.get("conversations", [])):
+        if v.get("id"):
+            conv_names[v["id"]] = v.get("name") or v["id"]
+
+    call_types = ("conversation.voice-channel-activate",
+                  "conversation.voice-channel-deactivate")
+
+    rows = []
+    for rec in stores.get("events", []):
+        v = rec.get("value")
+        if not isinstance(v, dict) or v.get("type") not in call_types:
+            continue
+        d = v.get("data") or {}
+        ended = v.get("type") == "conversation.voice-channel-deactivate"
+        reason = d.get("reason")
+        cid = v.get("conversation") or ""
+        from_id = v.get("from") or ""
+        rows.append((
+            _iso_to_dt(v.get("time")),
+            _account_label(users, self_ids, rec.get("db_name")),
+            conv_names.get(cid, cid),
+            _display_name(users, from_id, self_ids),
+            "Ended" if ended else "Started",
+            _fmt_duration_ms(d.get("duration")) if d.get("duration") else "",
+            d.get("duration") if d.get("duration") is not None else "",
+            CALL_END_REASON.get(reason, "") if ended else "",
+            reason if reason is not None else "",
+            v.get("id", ""),
+            from_id,
+            cid,
+        ))
+
+    rows.sort(key=lambda r: (r[0] if isinstance(r[0], datetime)
+                             else datetime.min.replace(tzinfo=timezone.utc)))
+
+    data_headers = (
+        ("Timestamp", "datetime"), "Account", "Conversation", "Initiated/Ended By",
+        "Event", "Duration", "Duration (ms)", "End Reason", "Reason Code",
+        "Call Event ID", "From User ID", "Conversation ID",
+    )
+    return data_headers, rows, _source(context, dirs)
 
 
 @artifact_processor
