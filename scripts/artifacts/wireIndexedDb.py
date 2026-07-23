@@ -726,10 +726,10 @@ def wireMessages(context):
             conv_names.get(cid, cid),
             _display_name(users, sender_id, self_ids),
             1 if sender_id in self_ids else 0,
+            media_for(d) if etype == "conversation.asset-add" else "",
             kind,
             text or "",
             attachment,
-            media_for(d) if etype == "conversation.asset-add" else "",
             v.get("id", ""),
             sender_id,
             cid,
@@ -741,7 +741,7 @@ def wireMessages(context):
 
     data_headers = (
         ("Timestamp", "datetime"), "Account", "Conversation", "Sender",
-        "Outgoing", "Message Type", "Message", "Attachment", ("Media", "media"),
+        "Outgoing", ("Media", "media"), "Message Type", "Message", "Attachment",
         "Message ID", "Sender ID", "Conversation ID", "Status",
     )
     return data_headers, rows, _source(context, dirs)
