@@ -2,9 +2,13 @@
 
 a = Analysis(
     ['../../rleappGUI.py'],
-    pathex=['scripts/artifacts'],
+    pathex=['../scripts/artifacts'],
     binaries=[],
-    datas=[('../', 'scripts'), ('../../assets', 'assets')],
+    datas=[
+        ('../', 'scripts'),
+        ('../../assets', 'assets'),
+        ('../../leapp_functions', 'leapp_functions')
+        ],
     hiddenimports=[
         'bencoding',
         'fitz',
@@ -12,6 +16,7 @@ a = Analysis(
         'mailbox',
         'mammoth',
         'openpyxl',
+        'PIL._tkinter_finder',
         'pillow_heif',
         'pypdf',
         'requests',
@@ -23,38 +28,24 @@ a = Analysis(
     excludes=[],
     noarchive=False,
 )
+
 pyz = PYZ(a.pure)
 
 exe = EXE(
     pyz,
     a.scripts,
+    a.binaries,
+    a.datas,
     [],
-    exclude_binaries=True,
     name='rleappGUI',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    console=False,
+    upx_exclude=[],
+    runtime_tmpdir=None,
+    console=True,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
-    codesign_identity=None,
-    entitlements_file=None,
-)
-coll = COLLECT(
-    exe,
-    a.binaries,
-    a.datas,
-    strip=False,
-    upx=True,
-    upx_exclude=[],
-    name='rleappGUI',
-)
-app = BUNDLE(
-    coll,
-    name='rleappGUI.app',
-    icon='../../assets/icon.icns',
-    bundle_identifier='4n6.brigs.RLEAPP',
-    version='2026.2.0',
 )
