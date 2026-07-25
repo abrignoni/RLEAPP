@@ -1,6 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-
 a = Analysis(
     ['../../rleappGUI.py'],
     pathex=['scripts/artifacts'],
@@ -57,5 +56,5 @@ app = BUNDLE(
     name='rleappGUI.app',
     icon='../../assets/icon.icns',
     bundle_identifier='4n6.brigs.RLEAPP',
-    version='2.2.0',
+    version='2026.2.0',
 )
