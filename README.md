@@ -6,7 +6,7 @@ If you want to contribute hit me up on twitter: https://twitter.com/AlexisBrigno
 
 ## Requirements
 
-**Python 3.9 or above** (older versions of 3.x will also work with the exception of one or two modules)
+**Python 3.10 or above**
 
 ### Dependencies
 
