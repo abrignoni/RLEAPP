@@ -35,6 +35,13 @@ jobs:
         if: steps.changed-files-py.outputs.any_changed == 'true'
         run: python -m pip install -r requirements.txt
 
+      # Artifact name/description fields ship to the HTML report and the LAVA manifest
+      # and get quoted in casework, so they must not assert what the data means in the
+      # real world. See the script's docstring for the allowlist workflow.
+      - name: Guard against unsupported claim language
+        if: steps.changed-files-py.outputs.any_changed == 'true'
+        run: python admin/scripts/check_claim_language.py
+
       # Fails only on warnings this pull request introduces. rleapp.py and
       # rleappGUI.py carry pre-existing warnings that are structural rather than
       # fixable -- wildcard imports are how those modules are put together -- so
