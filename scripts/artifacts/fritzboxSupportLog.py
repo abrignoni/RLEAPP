@@ -80,7 +80,6 @@ __artifacts_v2__ = {
 }
 
 import re
-import os
 from datetime import datetime, timezone, timedelta
 from scripts.ilapfuncs import artifact_processor, logfunc
 
@@ -149,7 +148,7 @@ def get_timezone(dt, tz_name):
 # Helper to split the log output
 def split_log(log_file) -> dict:
     """Function to split the Supportdata Log txt file in section parts"""
-    global _PARSED_LOG, _LOG_DICT, _TITLE_DICT # pylint: disable=global-statement
+    global _PARSED_LOG, _LOG_DICT # pylint: disable=global-statement
     if _PARSED_LOG:
         return
     if not log_file:
