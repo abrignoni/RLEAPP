@@ -31,6 +31,7 @@ __artifacts_v2__ = {
 import json
 from datetime import datetime, timezone
 
+from scripts.html_safe import safe_join
 from scripts.ilapfuncs import artifact_processor
 
 
@@ -117,7 +118,10 @@ def semanticLocationsMonthActivity(context):
                 agg_parts.append(f'{end_lat},{end_lon}')
                 for pt in waypoints:
                     agg_parts.append(f"{pt['latE7'] / 1e7},{pt['lngE7'] / 1e7}")
-            agg = '<br>'.join(agg_parts)
+            # safe_join keeps the <br> separator (tool-owned) and escapes each
+            # value. The coordinates are numeric -- every one goes through / 1e7 --
+            # so nothing changes in the output; it stops depending on that.
+            agg = safe_join(agg_parts, '<br>')
 
             parking = seg.get('parkingEvent', {})
             if parking:
