@@ -45,7 +45,7 @@ THREE RULES
     A literal remote URL appears in a markup-bearing string, or an `href=`/`src=`
     attribute is completed by an interpolation. A dynamic destination cannot be shown
     to be report-relative by reading the source, so it fails unless it comes from
-    `safe_local_link()`.
+    `safe_local_path()` or `safe_local_link()`.
 
 `unguarded-html-columns`
     A module declares `html_columns` but never references an escaper. This catches the
@@ -125,35 +125,9 @@ LOCAL_LINK_NAMES = frozenset({
 
 # Pre-existing violations. Delete an entry when its violation is fixed; a stale entry
 # fails the run. See the module docstring before adding one.
-BASELINE = {
-    # media_to_html() assigns `source` four times before emitting it -- the raw match,
-    # a relative path, a copied path, then safe_local_path(). A name is treated as safe
-    # only when *every* assignment to it is, because this check does not order
-    # assignments. The function is in fact correct: the last write is safe_local_path()
-    # and nothing reads `source` before it. Rewriting it to bind the escaped value to
-    # its own name would clear this honestly.
-    ('scripts/ilapfuncs.py', 'remote-destination', 'media_to_html'),
-    ('scripts/ilapfuncs.py', 'unescaped-interpolation', 'media_to_html'),
-
-    # Both Instagram artifacts build <table>/<tr> accumulators out of evidence values
-    # without escaping them. Real.
-    ('scripts/artifacts/instagramMessages.py', 'unescaped-interpolation',
-     'instagramMessages'),
-    ('scripts/artifacts/instagramMessageReq.py', 'unescaped-interpolation',
-     'instagramMessageReq'),
-
-    # kikAbuseReport() appends esc(line), so the value reaching the cell is escaped.
-    # The accumulator it appends to has mixed assignments, which this check cannot
-    # order -- same limitation as media_to_html above.
-    ('scripts/artifacts/kikReturns.py', 'unescaped-interpolation', 'kikAbuseReport'),
-
-    # semanticLocbymonth joins waypoint coordinates with <br> into an html_columns cell
-    # and escapes nothing. The values go through arithmetic so they are numeric in
-    # practice, but nothing enforces that. Dropping html_columns would remove the sink.
-    ('scripts/artifacts/semanticLocbymonth.py', 'unescaped-interpolation',
-     'semanticLocationsMonthActivity'),
-    ('scripts/artifacts/semanticLocbymonth.py', 'unguarded-html-columns', '<module>'),
-}
+#
+# Empty: every finding this core had is now fixed rather than carried.
+BASELINE = set()
 
 # Reviewed exceptions expected to stay. Every entry needs a comment saying why.
 ALLOWLIST = set()
@@ -295,6 +269,12 @@ def _resolve(node, assignments, names, seen):
     if isinstance(node, ast.JoinedStr):
         return all(_resolve(v.value, assignments, names, seen)
                    for v in node.values if isinstance(v, ast.FormattedValue))
+    # `agg = agg + f'<td>{esc(v)}</td>'` -- the accumulator shape most of these
+    # builders use. A concatenation is safe when both sides are, and the
+    # self-reference on the left terminates through `seen`.
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+        return (_resolve(node.left, assignments, names, seen)
+                and _resolve(node.right, assignments, names, seen))
     if isinstance(node, ast.Call):
         if call_name(node) in names:
             return True
