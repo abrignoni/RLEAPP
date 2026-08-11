@@ -40,16 +40,41 @@ jobs:
           # wheels; that leg is exploratory until a run proves it.
           python-version: '3.14'
 
-      - name: Install dependencies
-        # pyinstaller is installed after the requirements, in its own command:
-        # requirements.txt pins packaging==20.1, and resolving pyinstaller in the
-        # same command drags it back to 4.5.1 (the last release satisfied by that
-        # pin), which imports pkg_resources and cannot run on Python 3.14. The
-        # separate install lets pip upgrade packaging for the build environment.
+      - name: Provide OpenSSL for the cryptography source build (arm64 only)
+        # pdfminer.six depends on cryptography, which publishes no win_arm64
+        # wheels, so on Windows-on-ARM pip builds it from source: Rust is on the
+        # runner already, OpenSSL is not. Step taken verbatim from iLEAPP's
+        # test_builds.yml, which hit the same wall.
+        if: matrix.arch == 'arm64'
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install "pyinstaller>=6.22"
+          $vcpkg = 'vcpkg'
+          if (-not (Get-Command vcpkg -ErrorAction SilentlyContinue)) {
+            git clone --depth 1 https://github.com/microsoft/vcpkg C:\vcpkg-local
+            & C:\vcpkg-local\bootstrap-vcpkg.bat
+            $vcpkg = 'C:\vcpkg-local\vcpkg.exe'
+          }
+          & $vcpkg install openssl:arm64-windows-static-md
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          $roots = @('C:\vcpkg-local', $env:VCPKG_INSTALLATION_ROOT) | Where-Object { $_ }
+          $installed = $roots | ForEach-Object { Join-Path $_ 'installed\arm64-windows-static-md' } | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $installed) { Write-Error 'vcpkg OpenSSL install dir not found'; exit 1 }
+          "OPENSSL_DIR=$installed" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "OPENSSL_STATIC=1" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Install dependencies
+        # Requirements install alone in this step: a pwsh multi-line run does not
+        # stop on a failed command, so bundling more commands after it lets a
+        # failed install pass silently and surface later as a missing-module
+        # crash in the frozen exe (seen on the arm64 leg, run 31444496033).
+        run: pip install -r requirements.txt
+
+      - name: Install PyInstaller
+        # Separate from the requirements on purpose: requirements.txt pins
+        # packaging==20.1, and resolving pyinstaller in the same command drags it
+        # back to 4.5.1 (the last release satisfied by that pin), which imports
+        # pkg_resources and cannot run on Python 3.14. Installing afterwards lets
+        # pip upgrade packaging for the build environment.
+        run: pip install "pyinstaller>=6.22"
 
       - name: Build CLI and GUI with PyInstaller
         working-directory: scripts/pyinstaller
@@ -109,15 +134,19 @@ jobs:
           python -c "import tkinter" || { echo "tkinter unavailable in this Python"; exit 1; }
 
       - name: Install dependencies
-        # pyinstaller is installed after the requirements, in its own command:
-        # requirements.txt pins packaging==20.1, and resolving pyinstaller in the
-        # same command drags it back to 4.5.1 (the last release satisfied by that
-        # pin), which imports pkg_resources and cannot run on Python 3.14. The
-        # separate install lets pip upgrade packaging for the build environment.
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install "pyinstaller>=6.22"
+        # Requirements install alone in this step: a pwsh multi-line run does not
+        # stop on a failed command, so bundling more commands after it lets a
+        # failed install pass silently and surface later as a missing-module
+        # crash in the frozen exe (seen on the arm64 leg, run 31444496033).
+        run: pip install -r requirements.txt
+
+      - name: Install PyInstaller
+        # Separate from the requirements on purpose: requirements.txt pins
+        # packaging==20.1, and resolving pyinstaller in the same command drags it
+        # back to 4.5.1 (the last release satisfied by that pin), which imports
+        # pkg_resources and cannot run on Python 3.14. Installing afterwards lets
+        # pip upgrade packaging for the build environment.
+        run: pip install "pyinstaller>=6.22"
 
       - name: Build CLI and GUI with PyInstaller
         working-directory: scripts/pyinstaller
