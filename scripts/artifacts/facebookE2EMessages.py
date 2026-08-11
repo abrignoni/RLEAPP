@@ -45,16 +45,27 @@ def get_fb_messages(context):
         if filename.endswith('.json'):
 
             with open(file_found, "r", encoding='utf-8') as fp:
-                deserialized = json.load(fp)
+                try:
+                    deserialized = json.load(fp)
+                except (json.JSONDecodeError, UnicodeDecodeError):
+                    continue
 
+            # the glob matches every JSON in a return package; only process
+            # files with the Messenger export shape
+            if not isinstance(deserialized, dict):
+                continue
             participants = deserialized.get('participants')
+            messages = deserialized.get('messages')
+            if not isinstance(participants, list) or not participants \
+                    or not isinstance(messages, list):
+                continue
             owner = participants[0]
             without_owner = [p for p in participants if p != owner]
             without_owner = ", ".join(without_owner)
 
             thread = deserialized.get('threadName')
 
-            for x in deserialized['messages']:
+            for x in messages:
                 sender_name = x.get('senderName', '')
                 unsent = x.get('isUnsent', '')
                 timestamp = x.get('timestamp', '')
