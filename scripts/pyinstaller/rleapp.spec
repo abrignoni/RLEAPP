@@ -8,7 +8,10 @@ a = Analysis(
    ['..\\..\\rleapp.py'],
    pathex=['..\\scripts\\artifacts'],
    binaries=[],
-   datas=[('..\\', '.\\scripts')],
+   datas=[
+      ('..\\', '.\\scripts'),
+      ('..\\..\\leapp_functions', '.\\leapp_functions'),
+      ('..\\..\\assets', '.\\assets')],
    hiddenimports=[
       # Artifacts are bundled as data files and imported from disk at runtime,
       # so PyInstaller's import-graph analysis never sees what they import.

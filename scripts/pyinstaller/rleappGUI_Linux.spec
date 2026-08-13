@@ -9,8 +9,7 @@ a = Analysis(
     datas=[
         ('../', 'scripts'),
         ('../../assets', 'assets'),
-        ('../../leapp_functions', 'leapp_functions')
-        ],
+        ('../../leapp_functions', 'leapp_functions')],
     hiddenimports=[
         # Artifacts are bundled as data files and imported from disk at runtime,
         # so PyInstaller's import-graph analysis never sees what they import.
