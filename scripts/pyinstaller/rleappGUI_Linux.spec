@@ -29,7 +29,6 @@ a = Analysis(
         'mailbox',
         'mammoth',
         'openpyxl',
-        'PIL._tkinter_finder',
         'pillow_heif',
         'pypdf',
         'requests',
