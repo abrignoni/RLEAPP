@@ -3,7 +3,7 @@ __artifacts_v2__ = {
         "name": "Roblox - IP Addresses",
         "description": "IP address log from a Roblox law enforcement return "
                        "('IP address of the account' CSV).",
-        "author": "@AlexisBrignoni, Claude",
+        "author": "@AlexisBrignoni",
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
@@ -21,7 +21,7 @@ __artifacts_v2__ = {
                        "the Roblox user' CSV). convo_type values observed include "
                        "chat/game/public, chat/game/private, chat/app and "
                        "chat/unfiltered_threads; values are reported as delivered.",
-        "author": "@AlexisBrignoni, Claude",
+        "author": "@AlexisBrignoni",
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
@@ -41,7 +41,7 @@ __artifacts_v2__ = {
         "description": "Private messages from a Roblox law enforcement return ('Messages of "
                        "the Roblox user' CSV), with subject, body, author and recipient as "
                        "delivered.",
-        "author": "@AlexisBrignoni, Claude",
+        "author": "@AlexisBrignoni",
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
@@ -58,7 +58,7 @@ __artifacts_v2__ = {
         "name": "Roblox - Friend List",
         "description": "Friend list from a Roblox law enforcement return ('Friend list of "
                        "the Roblox user' CSV).",
-        "author": "@AlexisBrignoni, Claude",
+        "author": "@AlexisBrignoni",
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
@@ -79,7 +79,7 @@ __artifacts_v2__ = {
                        "directions are present in one file; the provider does not document "
                        "which column follows which, so userid and followeruserid are "
                        "reported as stored.",
-        "author": "@AlexisBrignoni, Claude",
+        "author": "@AlexisBrignoni",
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
@@ -97,7 +97,7 @@ __artifacts_v2__ = {
         "name": "Roblox - Group Wall Posts",
         "description": "Group wall posts from a Roblox law enforcement return ('Group wall "
                        "posts of the Roblox user' CSV).",
-        "author": "@AlexisBrignoni, Claude",
+        "author": "@AlexisBrignoni",
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
@@ -114,7 +114,7 @@ __artifacts_v2__ = {
         "description": "Device information from a Roblox law enforcement return ('Device "
                        "information of the Roblox user' CSV): device name, OS and OS "
                        "version per browser tracker id (btid).",
-        "author": "@AlexisBrignoni, Claude",
+        "author": "@AlexisBrignoni",
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
@@ -128,7 +128,7 @@ __artifacts_v2__ = {
         "name": "Roblox - Device IDs",
         "description": "Device identifiers from a Roblox law enforcement return ('Device ID "
                        "of the Roblox user' CSV).",
-        "author": "@AlexisBrignoni, Claude",
+        "author": "@AlexisBrignoni",
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
@@ -142,7 +142,7 @@ __artifacts_v2__ = {
         "name": "Roblox - Browser Tracker ID",
         "description": "Browser tracker id (BTID) record from a Roblox law enforcement "
                        "return ('BTID of the Roblox user' CSV).",
-        "author": "@AlexisBrignoni, Claude",
+        "author": "@AlexisBrignoni",
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
@@ -159,7 +159,7 @@ __artifacts_v2__ = {
         "description": "ad_id values from a Roblox law enforcement return. Delivered as a "
                        "single-column CSV whose header is 'ad_id'; in the reviewed sample "
                        "the file was named after the subject user id.",
-        "author": "@AlexisBrignoni, Claude",
+        "author": "@AlexisBrignoni",
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
@@ -177,7 +177,7 @@ __artifacts_v2__ = {
         "description": "User generated content list from a Roblox law enforcement return "
                        "('User generated content of the Roblox user' CSV): one row per "
                        "asset with type, name, description and creator fields as delivered.",
-        "author": "@AlexisBrignoni, Claude",
+        "author": "@AlexisBrignoni",
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
@@ -200,7 +200,7 @@ __artifacts_v2__ = {
                        "enforcement return: the per-type *_metadata.csv lists inside the "
                        "asset dump joined to the hash-named payload files delivered next to "
                        "them. Image payloads are embedded as media.",
-        "author": "@AlexisBrignoni, Claude",
+        "author": "@AlexisBrignoni",
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
@@ -228,7 +228,7 @@ __artifacts_v2__ = {
         "description": "Customer support tickets from a Roblox law enforcement return, "
                        "delivered as per-ticket JSON in Zendesk ticket-export format (one "
                        "file per ticket, named by ticket id).",
-        "author": "@AlexisBrignoni, Claude",
+        "author": "@AlexisBrignoni",
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
@@ -248,7 +248,7 @@ __artifacts_v2__ = {
                        "enforcement return (Zendesk ticket-export JSON), including the "
                        "per-comment ip_address, location and latitude/longitude metadata "
                        "the export carries.",
-        "author": "@AlexisBrignoni, Claude",
+        "author": "@AlexisBrignoni",
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
@@ -268,7 +268,7 @@ __artifacts_v2__ = {
                        "('Information of the account' and 'Block list of the Roblox user'). "
                        "The files are embedded for viewing; their contents are not parsed "
                        "into rows.",
-        "author": "@AlexisBrignoni, Claude",
+        "author": "@AlexisBrignoni",
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
