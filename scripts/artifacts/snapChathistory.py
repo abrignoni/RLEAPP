@@ -83,10 +83,23 @@ def snapChathistory(context):
                     directionality = ''
                     direction = ''
                     other_party = ''
-                data_list.append((_snap_ts(mess.get('Created', '')), directionality,
-                                  mess.get('Text', ''), mess.get('Media Type', ''), conv_type,
-                                  direction, other_party))
+                data_list.append((
+                    _snap_ts(mess.get('Created', '')),
+                    direction,
+                    other_party,
+                    mess.get('Text', ''),
+                    directionality,
+                    mess.get('Media Type', ''),
+                    conv_type,
+                ))
 
-    data_headers = (('Timestamp', 'datetime'), 'Directionality', 'Text', 'Media Type',
-                    'Message Type', 'Direction', 'Other Party')
+    data_headers = (
+        ('Timestamp', 'datetime'),
+        'Direction',
+        'Other Party',
+        'Text',
+        'Directionality',
+        'Media Type',
+        'Message Type',
+    )
     return data_headers, data_list, context.get_relative_path(source_path)

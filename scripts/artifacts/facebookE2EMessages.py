@@ -88,8 +88,8 @@ def get_fb_messages(context):
                     out = 0
                     without_sender = [p for p in participants if p != sender_name]
                     receiver = ", ".join(without_sender)
-                data_list.append((time_utc, thread, sender_name, receiver, message, attach_file, out, unsent))
+                data_list.append((time_utc, out, sender_name, thread, message, attach_file, receiver, unsent))
 
-    data_headers = (('Timestamp', 'datetime'), "Thread", "Sender", "Receiver", "Message", ('Attachment File', 'media'), "Outgoing", "Unsent")
+    data_headers = (('Timestamp', 'datetime'), "Outgoing", "Sender", "Thread", "Message", ('Attachment File', 'media'), "Receiver", "Unsent")
 
     return data_headers, data_list, source_path
