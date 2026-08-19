@@ -154,7 +154,7 @@ def chrome_omnibox(context):
             #count = len(visit_ts)
 
             for stamp in visit_ts:
-                timestamp = datetime.datetime.utcfromtimestamp((int(stamp)/1000000)-11644473600).strftime('%Y-%m-%d %H:%M:%S')
+                timestamp = datetime.datetime.fromtimestamp((int(stamp)/1000000)-11644473600, datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
 
                 data_list.append((timestamp, title, url, hidden))
 
@@ -177,7 +177,7 @@ def chrome_reading_list(context):
         url = n.get('href','')
         title = n.text
         add_date = n.get('add_date','')
-        add_date = datetime.datetime.utcfromtimestamp((int(add_date)/1000000)).strftime('%Y-%m-%d %H:%M:%S')
+        add_date = datetime.datetime.fromtimestamp(int(add_date)/1000000, datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
             
         data_list.append((add_date,title,url))
         
@@ -198,12 +198,12 @@ def chrome_search_engines(context):
         if sEng_date == 0:
             sEng_date = ''
         else:
-            sEng_date = datetime.datetime.utcfromtimestamp(int(sEng_date)/1000000).strftime('%Y-%m-%d %H:%M:%S.%f')
+            sEng_date = datetime.datetime.fromtimestamp(int(sEng_date)/1000000, datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S.%f')
         sEng_lastModified = site.get('last_modified','')
         if sEng_lastModified == 0:
             sEng_lastModified = ''
         else:
-            sEng_lastModified = datetime.datetime.utcfromtimestamp(int(sEng_lastModified)/1000000).strftime('%Y-%m-%d %H:%M:%S.%f')
+            sEng_lastModified = datetime.datetime.fromtimestamp(int(sEng_lastModified)/1000000, datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S.%f')
         sEng_suggestions_url = site.get('suggestions_url','')
         sEng_favicon_url = site.get('favicon_url','')
         sEng_safeAreplace = site.get('safe_for_autoreplace','')
@@ -252,15 +252,15 @@ def chrome_bookmarks(context):
                 add_date = ''
             else:
                 if len(add_date) == 13:
-                    add_date = datetime.datetime.utcfromtimestamp(int(add_date)/1000).strftime('%Y-%m-%d %H:%M:%S')  
+                    add_date = datetime.datetime.fromtimestamp(int(add_date)/1000, datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')  
                 else:
-                    add_date = datetime.datetime.utcfromtimestamp((int(add_date)/1000000)-11644473600).strftime('%Y-%m-%d %H:%M:%S')
+                    add_date = datetime.datetime.fromtimestamp((int(add_date)/1000000)-11644473600, datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
             
             last_modified = n.get('last_modified','')
             if last_modified == '0' or len(last_modified) == 0:
                 last_modified = ''
             else:    
-                last_modified = datetime.datetime.utcfromtimestamp(int(last_modified)/1000).strftime('%Y-%m-%d %H:%M:%S')
+                last_modified = datetime.datetime.fromtimestamp(int(last_modified)/1000, datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
             
             data_list.append((add_date,last_modified,title,'',''))
             add_date = ''
@@ -272,14 +272,14 @@ def chrome_bookmarks(context):
             title = n.text
             add_date = n.get('add_date','')
             if len(add_date) == 13:
-                add_date = datetime.datetime.utcfromtimestamp(int(add_date)/1000).strftime('%Y-%m-%d %H:%M:%S')  
+                add_date = datetime.datetime.fromtimestamp(int(add_date)/1000, datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')  
             else:
-                add_date = datetime.datetime.utcfromtimestamp((int(add_date)/1000000)-11644473600).strftime('%Y-%m-%d %H:%M:%S')
+                add_date = datetime.datetime.fromtimestamp((int(add_date)/1000000)-11644473600, datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
             last_modified = n.get('last_modified','')
             if last_modified == '0' or len(last_modified) == 0:
                 last_modified = ''
             else:    
-                last_modified = datetime.datetime.utcfromtimestamp(int(last_modified)/1000).strftime('%Y-%m-%d %H:%M:%S')  
+                last_modified = datetime.datetime.fromtimestamp(int(last_modified)/1000, datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')  
             
             data_list.append((add_date,last_modified,title,url,folder_name))
 
@@ -298,7 +298,7 @@ def chrome_device_info(context):
     if 'Device Info' in data:
         for device in data['Device Info']:
             last_updated_timestamp = device.get('last_updated_timestamp','')
-            last_updated_timestamp = datetime.datetime.utcfromtimestamp((int(last_updated_timestamp)/1000)).strftime('%Y-%m-%d %H:%M:%S')
+            last_updated_timestamp = datetime.datetime.fromtimestamp(int(last_updated_timestamp)/1000, datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
             
             manufacturer = device.get('manufacturer','')
             model = device.get('model','')
@@ -353,7 +353,7 @@ def chrome_history(context):
     for site in data['Browser History']:
         url = site['url']
         title = site['title']
-        timestamp = datetime.datetime.utcfromtimestamp(int(site['time_usec'])/1000000).strftime('%Y-%m-%d %H:%M:%S.%f')
+        timestamp = datetime.datetime.fromtimestamp(int(site['time_usec'])/1000000, datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S.%f')
         page_transition = site['page_transition']
 
         data_list.append((timestamp, title, url, page_transition))
@@ -375,7 +375,7 @@ def chrome_arc_packages(context):
         if chromeARC_lastBack == 0:
             chromeARC_lastBack = ''
         else:
-            chromeARC_lastBack = datetime.datetime.utcfromtimestamp(int(chromeARC_lastBack)/1000000).strftime('%Y-%m-%d %H:%M:%S.%f')
+            chromeARC_lastBack = datetime.datetime.fromtimestamp(int(chromeARC_lastBack)/1000000, datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S.%f')
         chromeARC_name = package.get('package_name','')
         chromeARC_ver = package.get('package_version','')
         chromeARC_bkID = package.get('last_backup_android_id','')
@@ -430,7 +430,7 @@ def chrome_autofill(context):
             chromeautofill_usage = site['usage_timestamp']
 
             for stamp in chromeautofill_usage:
-                timestamp = datetime.datetime.utcfromtimestamp((int(stamp)/1000000)-11644473600).strftime('%Y-%m-%d %H:%M:%S')
+                timestamp = datetime.datetime.fromtimestamp((int(stamp)/1000000)-11644473600, datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
                 data_list.append((timestamp, chromeautofill_name, chromeautofill_value))
 
     data_headers = (('Usage Timestamp','datetime'),'Field Type', 'Typed Value')
