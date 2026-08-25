@@ -57,6 +57,15 @@ jobs:
         if: steps.changed-files-py.outputs.any_changed == 'true'
         run: python admin/scripts/check_html_safety.py
 
+      # The seeker stages evidence under <report folder>/data, so every files_found entry
+      # is an absolute path on the examiner's machine. artifact_processor normalizes only
+      # the third element of the return tuple; a path put in a data row or handed to
+      # write_artifact_data_table is published verbatim. The column is never empty and the
+      # row count is always right, so nothing else catches it. See the script's docstring.
+      - name: Guard report output against local filesystem paths
+        if: steps.changed-files-py.outputs.any_changed == 'true'
+        run: python admin/scripts/check_report_local_paths.py
+
       # Fails only on warnings this pull request introduces. rleapp.py and
       # rleappGUI.py carry pre-existing warnings that are structural rather than
       # fixable -- wildcard imports are how those modules are put together -- so
