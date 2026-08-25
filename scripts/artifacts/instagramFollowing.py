@@ -23,13 +23,15 @@ from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc
 def instagramFollowing(context):
     files_found = context.get_files_found()
     data_list = []
+    source_paths = set()
     for file_found in files_found:
         file_found = str(file_found)
-        
+
         filename = os.path.basename(file_found)
-        
+
         if filename.startswith('following.json'):
-            
+            source_paths.add(file_found)
+
             with open(file_found, "r", encoding="utf-8") as fp:
                 deserialized = json.load(fp)
         
@@ -42,4 +44,4 @@ def instagramFollowing(context):
                 data_list.append((timestamp, value, href, context.get_relative_path(file_found)))
     
     data_headers = (('Timestamp', 'datetime'),'Following', 'Profile URL', 'Source File')
-    return data_headers, data_list, 'See source path(s) below'
+    return data_headers, data_list, '\n'.join(sorted(source_paths))

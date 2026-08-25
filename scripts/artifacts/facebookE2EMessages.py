@@ -37,7 +37,7 @@ def get_fb_messages(context):
     """Extracts chat messages from a Facebook Messenger JSON export"""
     files_found = context.get_files_found()
     data_list = []
-    source_path = "messages"
+    source_paths = set()
     for file_found in files_found:
         file_found = str(file_found)
         filename = os.path.basename(file_found)
@@ -59,6 +59,8 @@ def get_fb_messages(context):
             if not isinstance(participants, list) or not participants \
                     or not isinstance(messages, list):
                 continue
+
+            source_paths.add(file_found)
             owner = participants[0]
             without_owner = [p for p in participants if p != owner]
             without_owner = ", ".join(without_owner)
@@ -92,4 +94,4 @@ def get_fb_messages(context):
 
     data_headers = (('Timestamp', 'datetime'), "Outgoing", "Sender", "Thread", "Message", ('Attachment File', 'media'), "Receiver", "Unsent")
 
-    return data_headers, data_list, source_path
+    return data_headers, data_list, '\n'.join(sorted(source_paths))

@@ -287,11 +287,13 @@ def fitbit_goals(context):
 def fitbit_oxygen(context):
     files_found = context.get_files_found()
     data_list = []
-    
+    source_paths = set()
+
     for file_found in files_found:
         file_found = str(file_found)
         filename = os.path.basename(file_found)
-            
+        source_paths.add(file_found)
+
         with open(file_found, 'r', encoding='utf-8') as f:
             delimited = csv.reader(f, delimiter=',')
             next(delimited)
@@ -304,17 +306,19 @@ def fitbit_oxygen(context):
                 data_list.append((timestamp,average_value,lower_bound,upper_bound,filename))
                 
     data_headers = (('Timestamp','datetime'),'Average Value','Lower Bound','Upper Bound','Source File')
-    return data_headers, data_list, "See source file column"
-    
+    return data_headers, data_list, '\n'.join(sorted(source_paths))
+
 @artifact_processor
 def fitbit_comp_temp(context):
     files_found = context.get_files_found()
     data_list = []
-    
+    source_paths = set()
+
     for file_found in files_found:
         file_found = str(file_found)
         filename = os.path.basename(file_found)
-        
+        source_paths.add(file_found)
+
         with open(file_found, 'r', encoding='utf-8') as f:
             delimited = csv.reader(f, delimiter=',')
             next(delimited)
@@ -332,4 +336,4 @@ def fitbit_comp_temp(context):
                 data_list.append((sleep_start,sleep_end,comp_type,temp_samples,nightly_temp,base_rel_sample_sum,base_rel_sample_sum_square,base_rel_nightly_stand_dev,base_rel_sample_stand_dev,filename))
                 
     data_headers = (('Sleep Start Timestamp','datetime'),('Sleep End Timestamp','datetime'),'Type','Temperature Sample Count','Nightly Temperature (C)','Baseline Relative Sample Sum','Baseline Relative Sample (Sum of Squares)','Baseline Relative Nightly Standard Deviation','Baseline Relative Sample Standard Deviation','Source File')
-    return data_headers, data_list, "See source file column"
+    return data_headers, data_list, '\n'.join(sorted(source_paths))

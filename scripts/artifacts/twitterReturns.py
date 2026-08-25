@@ -100,6 +100,7 @@ def load_json_from_signed_file(filepath):
 def tweets(context):
     files_found = context.get_files_found()
     data_list = []
+    source_paths = set()
     
     for file_found in files_found:
         file_found = str(file_found)
@@ -115,6 +116,7 @@ def tweets(context):
             pass
             
         elif lastpart.startswith('tweets'):
+            source_paths.add(file_found)
             #logfunc(file_found)
             filenametweets = file_found
             data = load_json_from_signed_file(filenametweets)
@@ -155,13 +157,14 @@ def tweets(context):
     data_headers = (('Timestamp', 'datetime'), 'ID Str', 'Full Text', ('Image', 'media'),
                 'Tweet ID', 'Edit Info Initial', 'Retweeted', 'Entities', 'File Source')
     
-    return data_headers, data_list, 'See source path(s) below'
+    return data_headers, data_list, '\n'.join(sorted(source_paths))
 
 @artifact_processor
 def deltweets(context):
     files_found = context.get_files_found()
     #artifact_info = inspect.stack()[0]
     data_list = []
+    source_paths = set()
     
     for file_found in files_found:
         file_found = str(file_found)
@@ -177,6 +180,7 @@ def deltweets(context):
             pass
             
         elif lastpart.startswith('deleted-tweets'):
+            source_paths.add(file_found)
             #logfunc(file_found)
             filenametweets = file_found
             data = load_json_from_signed_file(filenametweets)
@@ -217,13 +221,14 @@ def deltweets(context):
     data_headers = (('Timestamp', 'datetime'), 'ID Str', 'Full Text', ('Image', 'media'),
                 'Tweet ID', 'Edit Info Initial', 'Retweeted', 'Entities', 'File Source')
     
-    return data_headers, data_list, 'See source path(s) below'
+    return data_headers, data_list, '\n'.join(sorted(source_paths))
 
     
 @artifact_processor
 def dmtwitter(context):
     files_found = context.get_files_found()
     data_list = []
+    source_paths = set()
 
     for file_found in files_found:
         file_found = str(file_found)
@@ -239,6 +244,7 @@ def dmtwitter(context):
             pass
 
         elif lastpart.startswith('direct-messages'):
+            source_paths.add(file_found)
             #logfunc(file_found)
             filenametweets = file_found
             data = load_json_from_signed_file(filenametweets)
@@ -261,12 +267,13 @@ def dmtwitter(context):
 
     data_headers = (('Timestamp', 'datetime'),'Sender ID','Recipient ID','Text','Conversation ID','Media URLs','Reactions','File Source')
 
-    return data_headers, data_list, 'See source path(s) below'
+    return data_headers, data_list, '\n'.join(sorted(source_paths))
 
 @artifact_processor
 def deleteddmtwitter(context):
     files_found = context.get_files_found()
     data_list = []
+    source_paths = set()
     
     for file_found in files_found:
         file_found = str(file_found)
@@ -282,6 +289,7 @@ def deleteddmtwitter(context):
             pass
             
         elif lastpart.startswith('deleted-direct-messages'):
+            source_paths.add(file_found)
             #logfunc(file_found)
             filenametweets = file_found
             data = load_json_from_signed_file(filenametweets)
@@ -318,12 +326,13 @@ def deleteddmtwitter(context):
                     
     data_headers = (('Timestamp', 'datetime'),'Sender ID','Recipient ID','Text',('Image', 'media'),'Conversation ID','Media URLs','Reactions','File Source')
     
-    return data_headers, data_list, 'See source path(s) below'
+    return data_headers, data_list, '\n'.join(sorted(source_paths))
 
 @artifact_processor
 def blocktwitter(context):
     files_found = context.get_files_found()
     data_list = []
+    source_paths = set()
     
     for file_found in files_found:
         file_found = str(file_found)
@@ -339,6 +348,7 @@ def blocktwitter(context):
             pass
             
         elif lastpart.startswith('block'):
+            source_paths.add(file_found)
             #logfunc(file_found)
             filenametweets = file_found
             data = load_json_from_signed_file(filenametweets)
@@ -351,4 +361,4 @@ def blocktwitter(context):
     
     data_headers = ('Account ID','User Link','File Source')
     
-    return data_headers, data_list, 'See source path(s) below'
+    return data_headers, data_list, '\n'.join(sorted(source_paths))
