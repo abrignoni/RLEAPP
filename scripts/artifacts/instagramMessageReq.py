@@ -25,13 +25,15 @@ from scripts.html_safe import esc
 def instagramMessageReq(context):
     files_found = context.get_files_found()
     data_list = []
+    source_paths = set()
     for file_found in files_found:
         file_found = str(file_found)
-        
+
         filename = os.path.basename(file_found)
-        
+
         if filename.startswith('message_1.json'):
-            
+            source_paths.add(file_found)
+
             with open(file_found, "r", encoding="utf-8") as fp:
                 deserialized = json.load(fp)
         
@@ -125,4 +127,4 @@ def instagramMessageReq(context):
                 data_list.append((timestamp, title, names, sender_name, content, media_items, agregator_reac, is_unsent, msg_type, thread_type, is_still_participant, context.get_relative_path(file_found)))
     
     data_headers = (('Timestamp', 'datetime'), 'Party Account Name', 'Participants', 'Sender Account Name', 'Content', ('Media','media'), 'Reactions', 'Is Unsent', 'Type', 'Thread Type', 'Is Still Participant','Source File')
-    return data_headers, data_list, 'See source path(s) below'
+    return data_headers, data_list, '\n'.join(sorted(source_paths))
