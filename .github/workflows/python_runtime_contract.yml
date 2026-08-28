@@ -17,6 +17,9 @@ on:
       - 'rleapp.py'
       - 'rleappGUI.py'
 
+permissions:
+  contents: read
+
 jobs:
   runtime-contract:
     runs-on: ubuntu-latest
