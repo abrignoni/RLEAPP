@@ -101,12 +101,16 @@ __artifacts_v2__ = {
         "author": "@OneSixForensics",
         "creation_date": "2026-06-24",
         "last_update_date": "2026-07-09",
-        "requirements": "none",
+        "requirements": "openpyxl",
         "category": "Synchronoss",
-        "notes": "Located alongside the zip as 'Dv Access logs mdn <LCID> <Month> <Year>.csv'. "
+        "notes": "Delivered alongside the zip, in one of two shapes: monthly "
+                 "'Dv Access logs mdn <LCID> <Month> <Year>.csv' files, or (2026-format "
+                 "returns) a single '<LCID>.xlsx' workbook covering the whole account. "
+                 "Both are read. The workbook carries no 'DV' in its name, so it is "
+                 "identified by its column headers rather than its filename. "
                  "Upload rows contain a SHA-256 checksum in the querystring. "
                  "Cross-reference checksums with CyberTip file hashes.",
-        "paths": ('*[Dd][Vv] [Aa]ccess [Ll]ogs*.csv',),
+        "paths": ('*[Dd][Vv] [Aa]ccess [Ll]ogs*.csv', '*.xlsx'),
         "output_types": "standard",
         "artifact_icon": "upload",
     },
@@ -116,13 +120,41 @@ __artifacts_v2__ = {
         "author": "@OneSixForensics",
         "creation_date": "2026-06-24",
         "last_update_date": "2026-07-09",
-        "requirements": "none",
+        "requirements": "openpyxl",
         "category": "Synchronoss",
-        "notes": "Located alongside the zip as 'Dv Access logs mdn <LCID> <Month> <Year>.csv'. "
+        "notes": "Delivered alongside the zip as monthly "
+                 "'Dv Access logs mdn <LCID> <Month> <Year>.csv' files or, in 2026-format "
+                 "returns, a single '<LCID>.xlsx' workbook. Both are read. "
                  "Sync rows show device activity without a specific file upload.",
-        "paths": ('*[Dd][Vv] [Aa]ccess [Ll]ogs*.csv',),
+        "paths": ('*[Dd][Vv] [Aa]ccess [Ll]ogs*.csv', '*.xlsx'),
         "output_types": "standard",
         "artifact_icon": "refresh",
+    },
+    "synchronoss_quarantined": {
+        "name": "Synchronoss - Quarantined Media (CyberTip)",
+        "description": "Preserved content that Synchronoss quarantined on upload and reported "
+                       "to NCMEC, correlated to the DV access log upload event that produced it",
+        "author": "@OneSixForensics, Claude",
+        "creation_date": "2026-09-02",
+        "last_update_date": "2026-09-02",
+        "requirements": "openpyxl",
+        "category": "Synchronoss",
+        "notes": "Delivered alongside the zip as '<LCID>-<container>-quarantined.zip', which "
+                 "extracts to files named '<container>_<sha256>.zip_file_<N>'. Despite the "
+                 "name these are NOT split-archive parts: each is a complete standalone media "
+                 "file whose SHA-256 is its own filename, and the '.zip_file_<N>' suffix is only "
+                 "a sequence number. The hash is verified against the file's contents here, and "
+                 "used to join the file to its upload event in the DV access log — the "
+                 "'<LCID>_<checksum>' correlation described in Synchronoss' 'Interpreting DV "
+                 "Access Logs'. Files are typed and rendered inline by magic bytes; nothing on "
+                 "disk is renamed.",
+        "paths": (
+            '*[Qq]uarantined*.zip_file_*',
+            '*[Dd][Vv] [Aa]ccess [Ll]ogs*.csv',
+            '*.xlsx',
+        ),
+        "output_types": "standard",
+        "artifact_icon": "alert-triangle",
     },
     "synchronoss_vzmobile": {
         "name": "Synchronoss - VZMOBILE Device Backup",
@@ -141,10 +173,14 @@ __artifacts_v2__ = {
 }
 
 import csv
+import hashlib
 import json
 import os
 import re
 from datetime import datetime, timezone
+
+from openpyxl import load_workbook
+from openpyxl.utils.exceptions import InvalidFileException
 
 from scripts.ilapfuncs import artifact_processor, logfunc, check_in_media, convert_unix_ts_to_utc
 from scripts.html_safe import safe_join
@@ -217,6 +253,12 @@ def _ts_utc(value):
     seconds/milliseconds. Values in any other format are returned unchanged
     as plain text rather than guessed at — never fabricate a timestamp.
     """
+    if isinstance(value, datetime):
+        # openpyxl hands back a datetime for date-formatted cells. Source times are
+        # UTC per the Synchronoss FAQ, so a naive value is stamped, not shifted.
+        if value.tzinfo is None:
+            return value.replace(tzinfo=timezone.utc)
+        return value.astimezone(timezone.utc)
     if not value or not isinstance(value, str):
         return value
     text = value.strip()
@@ -264,6 +306,30 @@ def _open_csv(file_found):
                 rows.append({k.strip(): v for k, v in row.items()})
     except (OSError, csv.Error, UnicodeError) as e:
         logfunc(f'Synchronoss CSV read error ({file_found}): {e}')
+    return headers, rows
+
+
+def _open_xlsx(file_found):
+    """
+    Return (headers, rows) for the first worksheet of a workbook, mirroring
+    _open_csv so both delivery shapes of the DV access log feed the same code.
+    Row dicts are keyed by the header text of their column.
+    """
+    headers, rows = [], []
+    try:
+        workbook = load_workbook(file_found, read_only=True, data_only=True)
+    except (OSError, InvalidFileException, KeyError, ValueError) as e:
+        logfunc(f'Synchronoss workbook read error ({file_found}): {e}')
+        return headers, rows
+    try:
+        sheet = workbook.worksheets[0]
+        for i, row in enumerate(sheet.iter_rows(values_only=True)):
+            if i == 0:
+                headers = [str(c).strip() if c is not None else '' for c in row]
+                continue
+            rows.append({h: ('' if v is None else v) for h, v in zip(headers, row)})
+    finally:
+        workbook.close()
     return headers, rows
 
 
@@ -656,27 +722,50 @@ def synchronoss_contacts(context):
     return data_headers, data_list, context.get_relative_path(source_path)
 
 
+_DV_COLUMNS = ('server_ts', 'remoteipaddress', 'clientidentifier', 'querystring', 'lcid')
+
+
 def _parse_dv_log(context):
     """
-    Parse all DV access log CSVs and return a list of row dicts.
-    Handles quoted remoteipaddress fields with multiple IPs.
-    Extracts user IP vs CDN IPs and checksum from querystring.
+    Parse the DV access log and return a list of row dicts.
+
+    The log is delivered in either of two shapes: the monthly
+    'Dv Access logs mdn <LCID> <Month> <Year>.csv' files, or a single
+    '<LCID>.xlsx' workbook covering the whole account (seen on 2026-format
+    returns). Both carry the same five columns.
+
+    The workbook's filename holds no 'DV' marker — it is just the account
+    number — so workbooks are accepted on their column headers instead. That
+    keeps an unrelated spreadsheet elsewhere in the return from being read as
+    an access log.
+
+    Handles quoted remoteipaddress fields with multiple IPs. Extracts user IP
+    vs CDN IPs and the checksum from the querystring.
     """
     all_rows = []
     for _, cf in _dedupe(context.get_files_found()):
-        if 'dv access' not in os.path.basename(cf).lower():
+        basename = os.path.basename(cf).lower()
+        if basename.endswith('.csv'):
+            if 'dv access' not in basename:
+                continue
+            _, rows = _open_csv(cf)
+        elif basename.endswith('.xlsx'):
+            headers, rows = _open_xlsx(cf)
+            if not set(_DV_COLUMNS).issubset({h.lower() for h in headers}):
+                continue
+        else:
             continue
         rel = context.get_relative_path(cf)
-        _, rows = _open_csv(cf)
         for row in rows:
             row['source_file'] = rel
             row['source_path'] = cf
-            user_ip, cdn_ips = _extract_user_ip(row.get('remoteipaddress', ''))
+            user_ip, cdn_ips = _extract_user_ip(str(row.get('remoteipaddress', '') or ''))
             row['user_ip'] = user_ip
             row['cdn_ips'] = cdn_ips
-            row['checksum'] = _extract_checksum(row.get('querystring', ''))
+            row['checksum'] = _extract_checksum(str(row.get('querystring', '') or ''))
         all_rows.extend(rows)
-    all_rows.sort(key=lambda r: r.get('server_ts', ''))
+    # str() so a date-typed workbook cell cannot raise against a plain CSV string.
+    all_rows.sort(key=lambda r: str(r.get('server_ts', '')))
     return all_rows
 
 
@@ -740,6 +829,113 @@ def synchronoss_dv_sync(context):
             row.get('lcid', ''),
             row.get('source_file', ''),
         ))
+
+    return data_headers, data_list, context.get_relative_path(source_path)
+
+
+_QUARANTINE_NAME_RE = re.compile(
+    r'^(?P<container>[0-9a-f]+)_(?P<sha256>[0-9a-f]{64})\.zip_file_(?P<seq>\d+)$',
+    re.IGNORECASE)
+
+
+def _sha256_file(path):
+    """Stream a file's SHA-256. Read-only — the source is never modified."""
+    digest = hashlib.sha256()
+    try:
+        with open(path, 'rb') as fh:
+            for chunk in iter(lambda: fh.read(1024 * 1024), b''):
+                digest.update(chunk)
+    except OSError as e:
+        logfunc(f'Synchronoss quarantine hash error ({path}): {e}')
+        return ''
+    return digest.hexdigest()
+
+
+@artifact_processor
+def synchronoss_quarantined(context):
+    """
+    Quarantined / preserved content — the files Synchronoss flagged on upload and
+    reported to NCMEC, delivered as '<LCID>-<container>-quarantined.zip'.
+
+    Extracted members are named '<container>_<sha256>.zip_file_<N>'. That suffix
+    makes them look like the parts of a split archive; they are not. Each member is
+    a complete standalone media file. On a live return all 41 members carried their
+    own media magic bytes, ranged 127 KB to 8.9 MB (split volumes would be uniform),
+    and every filename hash matched its own contents. Concatenating them as archive
+    volumes would corrupt the evidence, so each is read on its own.
+
+    The filename hash is re-verified against the bytes on disk, then joined to the
+    DV access log on the querystring checksum — the '<LCID>_<checksum>' correlation
+    described in Synchronoss' 'Interpreting DV Access Logs'. That puts the reported
+    file, its upload time, the user's IP and the uploading device on one row.
+
+    Members carry no usable extension; the framework's magic-byte mime detection
+    renders them inline regardless, and nothing on disk is renamed.
+    """
+    # checksum -> its upload events, earliest first (_parse_dv_log sorts ascending)
+    uploads = {}
+    for row in _parse_dv_log(context):
+        checksum = row.get('checksum', '')
+        if checksum:
+            uploads.setdefault(checksum.lower(), []).append(row)
+
+    data_headers = (
+        ('Upload Timestamp (UTC)', 'datetime'), 'User IP', 'Device', ('Media', 'media'),
+        'Detected Type', 'Size (bytes)', 'SHA-256', 'Hash Verified', 'DV Correlation',
+        'Sequence', 'Filename', 'Source File'
+    )
+    data_list = []
+    source_path = ''
+
+    for raw, cf in _dedupe(context.get_files_found()):
+        basename = os.path.basename(cf)
+        match = _QUARANTINE_NAME_RE.match(basename)
+        if not match:
+            continue
+        source_path = cf
+        claimed = match.group('sha256').lower()
+
+        actual = _sha256_file(cf)
+        if not actual:
+            verified = 'not verified — file unreadable'
+        elif actual == claimed:
+            verified = 'yes — content matches filename hash'
+        else:
+            # Never silently trust the name: a mismatch means the delivered file is
+            # not the file the CyberTip names, which the examiner has to see.
+            verified = f'NO — content hashes to {actual}'
+
+        try:
+            size = os.path.getsize(cf)
+        except OSError:
+            size = ''
+
+        detected = _detect_media_type(cf)
+        detected = f'{detected} (by magic bytes)' if detected else 'unknown (magic bytes)'
+
+        events = uploads.get(claimed, [])
+        if events:
+            first = events[0]
+            timestamp = _ts_utc(first.get('server_ts', ''))
+            user_ip = first.get('user_ip', '')
+            device = first.get('clientidentifier', '')
+            correlation = 'matched DV upload event'
+            if len(events) > 1:
+                correlation = (f'matched DV upload event '
+                               f'({len(events)} events; earliest shown)')
+        else:
+            timestamp, user_ip, device = '', '', ''
+            correlation = 'no matching upload event in DV access log'
+
+        data_list.append((
+            timestamp, user_ip, device,
+            _register_media(raw, basename),
+            detected, size, claimed, verified, correlation,
+            int(match.group('seq')), basename,
+            context.get_relative_path(cf),
+        ))
+
+    data_list.sort(key=lambda r: r[9])
 
     return data_headers, data_list, context.get_relative_path(source_path)
 
