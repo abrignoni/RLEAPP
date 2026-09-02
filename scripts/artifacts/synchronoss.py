@@ -110,7 +110,7 @@ __artifacts_v2__ = {
                  "identified by its column headers rather than its filename. "
                  "Upload rows contain a SHA-256 checksum in the querystring. "
                  "Cross-reference checksums with CyberTip file hashes.",
-        "paths": ('*[Dd][Vv] [Aa]ccess [Ll]ogs*.csv', '*.xlsx'),
+        "paths": ('*[Dd][Vv]*[Aa]ccess*[Ll]ogs*.csv', '*.xlsx'),
         "output_types": "standard",
         "artifact_icon": "upload",
     },
@@ -126,7 +126,7 @@ __artifacts_v2__ = {
                  "'Dv Access logs mdn <LCID> <Month> <Year>.csv' files or, in 2026-format "
                  "returns, a single '<LCID>.xlsx' workbook. Both are read. "
                  "Sync rows show device activity without a specific file upload.",
-        "paths": ('*[Dd][Vv] [Aa]ccess [Ll]ogs*.csv', '*.xlsx'),
+        "paths": ('*[Dd][Vv]*[Aa]ccess*[Ll]ogs*.csv', '*.xlsx'),
         "output_types": "standard",
         "artifact_icon": "refresh",
     },
@@ -150,7 +150,7 @@ __artifacts_v2__ = {
                  "disk is renamed.",
         "paths": (
             '*[Qq]uarantined*.zip_file_*',
-            '*[Dd][Vv] [Aa]ccess [Ll]ogs*.csv',
+            '*[Dd][Vv]*[Aa]ccess*[Ll]ogs*.csv',
             '*.xlsx',
         ),
         "output_types": "standard",
@@ -177,7 +177,7 @@ import hashlib
 import json
 import os
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from openpyxl import load_workbook
 from openpyxl.utils.exceptions import InvalidFileException
@@ -244,6 +244,13 @@ def _clean_path(path):
     return p
 
 
+_CLF_MONTHS = {'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
+               'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12}
+
+_CLF_TS_RE = re.compile(
+    r'^\[?(\d{1,2})/([A-Za-z]{3})/(\d{4}):(\d{2}):(\d{2}):(\d{2})\s*([+-]\d{4})?\]?$')
+
+
 def _ts_utc(value):
     """
     Convert a source timestamp string to an aware-UTC datetime.
@@ -253,6 +260,21 @@ def _ts_utc(value):
     seconds/milliseconds. Values in any other format are returned unchanged
     as plain text rather than guessed at — never fabricate a timestamp.
     """
+    if isinstance(value, str):
+        clf = _CLF_TS_RE.match(value.strip())
+        if clf:
+            # Apache/CLF form used by some DV exports: [02/Jun/2026:14:23:11 +0000].
+            # Month is mapped explicitly rather than via %b, which is locale-sensitive.
+            day, mon, year, hh, mm, ss, offset = clf.groups()
+            month = _CLF_MONTHS.get(mon.lower())
+            if month:
+                tz = timezone.utc
+                if offset:
+                    sign = -1 if offset[0] == '-' else 1
+                    tz = timezone(sign * timedelta(hours=int(offset[1:3]),
+                                                   minutes=int(offset[3:5])))
+                return datetime(int(year), month, int(day), int(hh), int(mm), int(ss),
+                                tzinfo=tz).astimezone(timezone.utc)
     if isinstance(value, datetime):
         # openpyxl hands back a datetime for date-formatted cells. Source times are
         # UTC per the Synchronoss FAQ, so a naive value is stamped, not shifted.
@@ -722,7 +744,22 @@ def synchronoss_contacts(context):
     return data_headers, data_list, context.get_relative_path(source_path)
 
 
-_DV_COLUMNS = ('server_ts', 'remoteipaddress', 'clientidentifier', 'querystring', 'lcid')
+# Providers have shipped the access log under several column and filename spellings.
+# The four non-timestamp columns have been stable; the timestamp column has not.
+_DV_CORE_COLUMNS = ('remoteipaddress', 'clientidentifier', 'querystring', 'lcid')
+_DV_TS_COLUMNS = ('server_ts', 'logtimestamp')
+
+
+def _is_dv_filename(basename):
+    """True for any separator spelling of 'Dv Access Logs' (space, underscore, none)."""
+    return 'dvaccesslogs' in re.sub(r'[^a-z0-9]', '', basename.lower())
+
+
+def _dv_headers_match(headers):
+    """Accept a workbook as an access log on its columns, since its filename may
+    carry no marker at all (some returns name it for the account only)."""
+    lower = {h.lower() for h in headers}
+    return set(_DV_CORE_COLUMNS).issubset(lower) and bool(lower & set(_DV_TS_COLUMNS))
 
 
 def _parse_dv_log(context):
@@ -746,12 +783,12 @@ def _parse_dv_log(context):
     for _, cf in _dedupe(context.get_files_found()):
         basename = os.path.basename(cf).lower()
         if basename.endswith('.csv'):
-            if 'dv access' not in basename:
+            if not _is_dv_filename(basename):
                 continue
             _, rows = _open_csv(cf)
         elif basename.endswith('.xlsx'):
             headers, rows = _open_xlsx(cf)
-            if not set(_DV_COLUMNS).issubset({h.lower() for h in headers}):
+            if not _dv_headers_match(headers):
                 continue
         else:
             continue
@@ -759,6 +796,12 @@ def _parse_dv_log(context):
         for row in rows:
             row['source_file'] = rel
             row['source_path'] = cf
+            # Normalise the timestamp column so downstream code has one name.
+            if not row.get('server_ts'):
+                for alt in _DV_TS_COLUMNS:
+                    if row.get(alt):
+                        row['server_ts'] = row[alt]
+                        break
             user_ip, cdn_ips = _extract_user_ip(str(row.get('remoteipaddress', '') or ''))
             row['user_ip'] = user_ip
             row['cdn_ips'] = cdn_ips
