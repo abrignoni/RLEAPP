@@ -100,14 +100,25 @@ __artifacts_v2__ = {
         "description": "Parses file upload events from Synchronoss DV access logs — rows with file checksums",
         "author": "@OneSixForensics",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-07-09",
+        "last_update_date": "2026-09-03",
         "requirements": "openpyxl",
         "category": "Synchronoss",
-        "notes": "Delivered alongside the zip, in one of two shapes: monthly "
-                 "'Dv Access logs mdn <LCID> <Month> <Year>.csv' files, or (2026-format "
-                 "returns) a single '<LCID>.xlsx' workbook covering the whole account. "
-                 "Both are read. The workbook carries no 'DV' in its name, so it is "
-                 "identified by its column headers rather than its filename. "
+        "notes": "Delivered alongside the zip. Three shapes have been seen on real returns "
+                 "and all are read, merged together when a return carries more than one: "
+                 "monthly 'Dv Access logs mdn <LCID> <Month> <Year>.csv' files; a single "
+                 "'<LCID>.xlsx' workbook covering the whole account; and a single "
+                 "'<LCID>_Dv_Access_Logs.xlsx' workbook, which also names its timestamp "
+                 "column 'logtimestamp' rather than 'server_ts' and writes Apache/CLF "
+                 "timestamps such as '[02/Jun/2026:14:23:11 +0000]' rather than "
+                 "'YYYY-MM-DD HH:MM:SS'. That third shape is not defensive coding: it came "
+                 "off a second production return in September 2026, and the CLF offset is "
+                 "honoured rather than assumed to be UTC. A workbook may carry no 'DV' in "
+                 "its name at all, so workbooks are identified by their column headers; the "
+                 "four non-timestamp columns have been stable across every shape seen, the "
+                 "timestamp column has not. Which shape a return carries appears to vary by "
+                 "production rather than by date, so an older case is not safe merely "
+                 "because it once parsed. Header matching and the row keys are both lower "
+                 "case, so a workbook that capitalises its column titles reads normally. "
                  "Upload rows contain a SHA-256 checksum in the querystring. "
                  "Cross-reference checksums with CyberTip file hashes.",
         "paths": ('*[Dd][Vv]*[Aa]ccess*[Ll]ogs*.csv', '*.xlsx'),
@@ -119,13 +130,18 @@ __artifacts_v2__ = {
         "description": "Parses sync/conflict-resolve events from Synchronoss DV access logs",
         "author": "@OneSixForensics",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-07-09",
+        "last_update_date": "2026-09-03",
         "requirements": "openpyxl",
         "category": "Synchronoss",
-        "notes": "Delivered alongside the zip as monthly "
-                 "'Dv Access logs mdn <LCID> <Month> <Year>.csv' files or, in 2026-format "
-                 "returns, a single '<LCID>.xlsx' workbook. Both are read. "
-                 "Sync rows show device activity without a specific file upload.",
+        "notes": "Delivered alongside the zip in any of three shapes, all read and merged: "
+                 "monthly 'Dv Access logs mdn <LCID> <Month> <Year>.csv' files, a single "
+                 "'<LCID>.xlsx' workbook, or a '<LCID>_Dv_Access_Logs.xlsx' workbook that "
+                 "names its timestamp column 'logtimestamp' and uses Apache/CLF timestamps. "
+                 "See the Uploads artifact's notes for the detail. Sync rows show device "
+                 "activity without a specific file upload. A workbook cell may hold a number "
+                 "or a date rather than text, so text columns are converted before use: a "
+                 "single such cell in the querystring column previously failed this whole "
+                 "artifact rather than one row.",
         "paths": ('*[Dd][Vv]*[Aa]ccess*[Ll]ogs*.csv', '*.xlsx'),
         "output_types": "standard",
         "artifact_icon": "refresh",
@@ -331,11 +347,19 @@ def _open_csv(file_found):
     return headers, rows
 
 
-def _open_xlsx(file_found):
+def _open_xlsx(file_found, accept=None):
     """
     Return (headers, rows) for the first worksheet of a workbook, mirroring
     _open_csv so both delivery shapes of the DV access log feed the same code.
-    Row dicts are keyed by the header text of their column.
+
+    Header keys are lower-cased, and row dicts are keyed by that lower-cased
+    header. A workbook written for a person to read may capitalise its column
+    titles, and every read downstream is lower case; keying rows by the text as
+    written let such a file pass the header check and then read back empty.
+
+    `accept` is called with the headers before any body row is read, and a false
+    result abandons the file. An unrelated workbook elsewhere in the return then
+    costs one row rather than a full read of a spreadsheet that is discarded.
     """
     headers, rows = [], []
     try:
@@ -347,7 +371,9 @@ def _open_xlsx(file_found):
         sheet = workbook.worksheets[0]
         for i, row in enumerate(sheet.iter_rows(values_only=True)):
             if i == 0:
-                headers = [str(c).strip() if c is not None else '' for c in row]
+                headers = [str(c).strip().lower() if c is not None else '' for c in row]
+                if accept is not None and not accept(headers):
+                    return headers, rows
                 continue
             rows.append({h: ('' if v is None else v) for h, v in zip(headers, row)})
     finally:
@@ -787,8 +813,10 @@ def _parse_dv_log(context):
                 continue
             _, rows = _open_csv(cf)
         elif basename.endswith('.xlsx'):
-            headers, rows = _open_xlsx(cf)
-            if not _dv_headers_match(headers):
+            # Headers are checked before the body is read, so a workbook that is
+            # not an access log is abandoned after one row.
+            _, rows = _open_xlsx(cf, accept=_dv_headers_match)
+            if not rows:
                 continue
         else:
             continue
@@ -802,10 +830,17 @@ def _parse_dv_log(context):
                     if row.get(alt):
                         row['server_ts'] = row[alt]
                         break
-            user_ip, cdn_ips = _extract_user_ip(str(row.get('remoteipaddress', '') or ''))
+            # Write the text columns back as text. A workbook cell can arrive as a
+            # number or a date, and a consumer that calls a string method on the raw
+            # cell (synchronoss_dv_sync does, on querystring) would fail the whole
+            # artifact on one such cell. server_ts is left alone: _ts_utc handles a
+            # datetime itself, and stringifying it here would lose that.
+            for column in ('remoteipaddress', 'querystring', 'clientidentifier', 'lcid'):
+                row[column] = str(row.get(column, '') or '')
+            user_ip, cdn_ips = _extract_user_ip(row['remoteipaddress'])
             row['user_ip'] = user_ip
             row['cdn_ips'] = cdn_ips
-            row['checksum'] = _extract_checksum(str(row.get('querystring', '') or ''))
+            row['checksum'] = _extract_checksum(row['querystring'])
         all_rows.extend(rows)
     # str() so a date-typed workbook cell cannot raise against a plain CSV string.
     all_rows.sort(key=lambda r: str(r.get('server_ts', '')))

@@ -1,0 +1,48 @@
+{
+  "metadata": {
+    "module_name": "synchronoss",
+    "artifact_name": "Synchronoss - MMS Media Sent",
+    "function_name": "synchronoss_mms_sent",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 9,
+    "number_of_rows": 1,
+    "total_data_size_bytes": 129,
+    "media_checkins": 1,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin\\test\\cases\\data\\synchronoss\\testdata.synchronoss.synchronoss_mms_sent.caseSYNTH001.zip",
+    "start_time": "2026-09-03T15:25:15.613161+00:00",
+    "end_time": "2026-09-03T15:25:15.639400+00:00",
+    "run_time_seconds": 0.0006706714630126953,
+    "last_commit": {
+      "hash": "c763d3878121d5da3d7fdafabadeef7e2da6cd0d",
+      "author_name": "OneSixForensics",
+      "author_email": "kyle@onesixforensics.com",
+      "date": "2026-09-02T17:23:29-06:00",
+      "message": "Handle the third spelling of the DV access log"
+    }
+  },
+  "headers": [
+    "Date (UTC)",
+    "Direction",
+    "Sender",
+    "Recipients",
+    "Media",
+    "Filename",
+    "Link Status",
+    "Message ID",
+    "Source File"
+  ],
+  "data": [
+    [
+      1764561600,
+      "out",
+      "",
+      "+12085551111",
+      "mock_hash_for_image000000.jpg",
+      "image000000.jpg",
+      "linked",
+      "1764561600000:d7",
+      "SYNTH001LCIDHASH\\messages\\20251201.csv"
+    ]
+  ]
+}

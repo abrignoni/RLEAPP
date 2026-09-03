@@ -1,0 +1,98 @@
+{
+  "metadata": {
+    "module_name": "synchronoss",
+    "artifact_name": "Synchronoss - DV Access Log Sync Events",
+    "function_name": "synchronoss_dv_sync",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 7,
+    "number_of_rows": 7,
+    "total_data_size_bytes": 710,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin\\test\\cases\\data\\synchronoss\\testdata.synchronoss.synchronoss_dv_sync.caseSYNTH001.zip",
+    "start_time": "2026-09-03T15:25:17.113595+00:00",
+    "end_time": "2026-09-03T15:25:17.145851+00:00",
+    "run_time_seconds": 0.007430315017700195,
+    "last_commit": {
+      "hash": "c763d3878121d5da3d7fdafabadeef7e2da6cd0d",
+      "author_name": "OneSixForensics",
+      "author_email": "kyle@onesixforensics.com",
+      "date": "2026-09-02T17:23:29-06:00",
+      "message": "Handle the third spelling of the DV access log"
+    }
+  },
+  "headers": [
+    "Timestamp (UTC)",
+    "User IP",
+    "CDN IPs",
+    "Device",
+    "Operation",
+    "LCID",
+    "Source File"
+  ],
+  "data": [
+    [
+      1764554700,
+      "174.21.5.9",
+      "",
+      "SAMSUNG/SM-F966U",
+      "conflictSolve",
+      "SYNTH001LCIDHASH",
+      "Dv Access logs mdn SYNTH001LCIDHASH December 2025.csv"
+    ],
+    [
+      1764554760,
+      "",
+      "",
+      "HF",
+      "conflictSolve",
+      "SYNTH001LCIDHASH",
+      "Dv Access logs mdn SYNTH001LCIDHASH December 2025.csv"
+    ],
+    [
+      1767611100,
+      "10.0.0.5",
+      "",
+      "SAMSUNG/SM-F966U",
+      "conflictSolve",
+      "SYNTH001LCIDHASH",
+      "SYNTH001LCIDHASH.xlsx"
+    ],
+    [
+      1773213000,
+      "174.21.5.9",
+      "",
+      "SAMSUNG/SM-F966U",
+      "conflictSolve",
+      "SYNTH001LCIDHASH",
+      "SYNTH001LCIDHASH_TitleCase_Dv_Access_Logs.xlsx"
+    ],
+    [
+      1773213300,
+      "174.21.5.9",
+      "",
+      "SAMSUNG/SM-F966U",
+      "20260311",
+      "SYNTH001LCIDHASH",
+      "SYNTH001LCIDHASH_TitleCase_Dv_Access_Logs.xlsx"
+    ],
+    [
+      1780410300,
+      "174.21.5.9",
+      "",
+      "SAMSUNG/SM-F966U",
+      "conflictSolve",
+      "SYNTH001LCIDHASH",
+      "SYNTH001LCIDHASH_Dv_Access_Logs.xlsx"
+    ],
+    [
+      1780410360,
+      "174.21.5.9",
+      "",
+      "SAMSUNG/SM-F966U",
+      "20260602",
+      "SYNTH001LCIDHASH",
+      "SYNTH001LCIDHASH_Dv_Access_Logs.xlsx"
+    ]
+  ]
+}

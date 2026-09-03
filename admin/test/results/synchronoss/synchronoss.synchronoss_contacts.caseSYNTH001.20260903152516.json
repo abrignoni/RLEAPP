@@ -1,0 +1,91 @@
+{
+  "metadata": {
+    "module_name": "synchronoss",
+    "artifact_name": "Synchronoss - Contacts",
+    "function_name": "synchronoss_contacts",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 11,
+    "number_of_rows": 4,
+    "total_data_size_bytes": 374,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin\\test\\cases\\data\\synchronoss\\testdata.synchronoss.synchronoss_contacts.caseSYNTH001.zip",
+    "start_time": "2026-09-03T15:25:16.352033+00:00",
+    "end_time": "2026-09-03T15:25:16.376439+00:00",
+    "run_time_seconds": 0.00031876564025878906,
+    "last_commit": {
+      "hash": "c763d3878121d5da3d7fdafabadeef7e2da6cd0d",
+      "author_name": "OneSixForensics",
+      "author_email": "kyle@onesixforensics.com",
+      "date": "2026-09-02T17:23:29-06:00",
+      "message": "Handle the third spelling of the DV access log"
+    }
+  },
+  "headers": [
+    "First Name",
+    "Last Name",
+    "Phone Number",
+    "Phone Type",
+    "Created",
+    "Deleted",
+    "Source",
+    "ICE",
+    "Favorite",
+    "Item GUID",
+    "Source File"
+  ],
+  "data": [
+    [
+      "Alice",
+      "Active",
+      "+1 714-487-1148",
+      "Mobile",
+      "Sat Jun  2 23:19:50 2018",
+      "",
+      "cloud",
+      "False",
+      "True",
+      "g1",
+      "contacts_20251201.txt"
+    ],
+    [
+      "Alice",
+      "Active",
+      "+1 208-555-0101",
+      "Home",
+      "Sat Jun  2 23:19:50 2018",
+      "",
+      "cloud",
+      "False",
+      "True",
+      "g1",
+      "contacts_20251201.txt"
+    ],
+    [
+      "Bob",
+      "Deleted",
+      "+1 208-555-0202",
+      "Mobile",
+      "Sun Jan  6 10:00:00 2019",
+      "Wed May 22 12:59:18 2019",
+      "cloud",
+      "False",
+      "False",
+      "g2",
+      "contacts_20251201.txt"
+    ],
+    [
+      "Carol",
+      "NoPhone",
+      "",
+      "",
+      "Mon Mar  4 08:00:00 2019",
+      "",
+      "cloud",
+      "True",
+      "False",
+      "g3",
+      "contacts_20251201.txt"
+    ]
+  ]
+}

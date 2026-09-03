@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "module_name": "synchronoss",
+    "artifact_name": "Synchronoss - VZMOBILE Device Backup",
+    "function_name": "synchronoss_vzmobile",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 5,
+    "number_of_rows": 3,
+    "total_data_size_bytes": 429,
+    "media_checkins": 3,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin\\test\\cases\\data\\synchronoss\\testdata.synchronoss.synchronoss_vzmobile.caseSYNTH001.zip",
+    "start_time": "2026-09-03T15:25:17.829262+00:00",
+    "end_time": "2026-09-03T15:25:17.854777+00:00",
+    "run_time_seconds": 0.0005061626434326172,
+    "last_commit": {
+      "hash": "c763d3878121d5da3d7fdafabadeef7e2da6cd0d",
+      "author_name": "OneSixForensics",
+      "author_email": "kyle@onesixforensics.com",
+      "date": "2026-09-02T17:23:29-06:00",
+      "message": "Handle the third spelling of the DV access log"
+    }
+  },
+  "headers": [
+    "Upload Date",
+    "Device",
+    "Media",
+    "Filename",
+    "Source File"
+  ],
+  "data": [
+    [
+      "2025-12-01",
+      "My Samsung SM-F966U",
+      "mock_hash_for_backup000001.png",
+      "backup000001.png",
+      "SYNTH001LCIDHASH\\VZMOBILE\\2025-12-01\\My Samsung SM-F966U\\backup000001.png"
+    ],
+    [
+      "2025-12-01",
+      "My Samsung SM-F966U",
+      "mock_hash_for_backup000002.png",
+      "backup000002.png",
+      "SYNTH001LCIDHASH\\VZMOBILE\\2025-12-01\\My Samsung SM-F966U\\backup000002.png"
+    ],
+    [
+      "2025-12-01",
+      "My Samsung SM-F966U",
+      "mock_hash_for_noext_image",
+      "noext_image",
+      "SYNTH001LCIDHASH\\VZMOBILE\\2025-12-01\\My Samsung SM-F966U\\noext_image"
+    ]
+  ]
+}
