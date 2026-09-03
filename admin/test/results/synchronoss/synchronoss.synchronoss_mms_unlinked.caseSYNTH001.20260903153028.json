@@ -10,15 +10,15 @@
     "media_checkins": 1,
     "media_embedded_checkins": 0,
     "input_zip_path": "admin\\test\\cases\\data\\synchronoss\\testdata.synchronoss.synchronoss_mms_unlinked.caseSYNTH001.zip",
-    "start_time": "2026-09-03T15:25:15.985579+00:00",
-    "end_time": "2026-09-03T15:25:16.017698+00:00",
-    "run_time_seconds": 0.0014989376068115234,
+    "start_time": "2026-09-03T15:30:28.218027+00:00",
+    "end_time": "2026-09-03T15:30:28.248226+00:00",
+    "run_time_seconds": 0.0014715194702148438,
     "last_commit": {
-      "hash": "c763d3878121d5da3d7fdafabadeef7e2da6cd0d",
+      "hash": "7129b305ef022db95ef5b676fd4fff49a0f61e0d",
       "author_name": "OneSixForensics",
       "author_email": "kyle@onesixforensics.com",
-      "date": "2026-09-02T17:23:29-06:00",
-      "message": "Handle the third spelling of the DV access log"
+      "date": "2026-09-03T09:26:59-06:00",
+      "message": "Fix the workbook reader's case, cell types and cost, and add a fixture"
     }
   },
   "headers": [
@@ -36,7 +36,7 @@
       "mock_hash_for_0",
       "0",
       ".jpg (by magic bytes)",
-      "SYNTH001LCIDHASH\\messages\\attachments\\mms\\in\\2025-12-01\\0"
+      "SYNTH001LCIDHASH/messages/attachments/mms/in/2025-12-01/0"
     ]
   ]
 }

@@ -10,15 +10,15 @@
     "media_checkins": 0,
     "media_embedded_checkins": 0,
     "input_zip_path": "admin\\test\\cases\\data\\synchronoss\\testdata.synchronoss.synchronoss_messages.caseSYNTH001.zip",
-    "start_time": "2026-09-03T15:25:14.504768+00:00",
-    "end_time": "2026-09-03T15:25:14.530381+00:00",
-    "run_time_seconds": 0.0007054805755615234,
+    "start_time": "2026-09-03T15:30:26.782568+00:00",
+    "end_time": "2026-09-03T15:30:26.808028+00:00",
+    "run_time_seconds": 0.0006763935089111328,
     "last_commit": {
-      "hash": "c763d3878121d5da3d7fdafabadeef7e2da6cd0d",
+      "hash": "7129b305ef022db95ef5b676fd4fff49a0f61e0d",
       "author_name": "OneSixForensics",
       "author_email": "kyle@onesixforensics.com",
-      "date": "2026-09-02T17:23:29-06:00",
-      "message": "Handle the third spelling of the DV access log"
+      "date": "2026-09-03T09:26:59-06:00",
+      "message": "Fix the workbook reader's case, cell types and cost, and add a fixture"
     }
   },
   "headers": [
@@ -42,7 +42,7 @@
       "Hey there \ud83d\udc4b",
       "null.txt",
       "1764547997000:d1",
-      "SYNTH001LCIDHASH\\messages\\20251201.csv"
+      "SYNTH001LCIDHASH/messages/20251201.csv"
     ],
     [
       1764548040,
@@ -53,7 +53,7 @@
       "Reply emoji \ud83d\ude00",
       "null.txt",
       "1764548040000:d2",
-      "SYNTH001LCIDHASH\\messages\\20251201.csv"
+      "SYNTH001LCIDHASH/messages/20251201.csv"
     ],
     [
       1764550800,
@@ -64,7 +64,7 @@
       "",
       "smil;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg",
       "1764550800000:d3",
-      "SYNTH001LCIDHASH\\messages\\20251201.csv"
+      "SYNTH001LCIDHASH/messages/20251201.csv"
     ],
     [
       1764551100,
@@ -75,7 +75,7 @@
       "",
       "smil;recording000000.amr",
       "1764551100000:d4",
-      "SYNTH001LCIDHASH\\messages\\20251201.csv"
+      "SYNTH001LCIDHASH/messages/20251201.csv"
     ],
     [
       1764554400,
@@ -86,7 +86,7 @@
       "",
       "smil;bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.jpg",
       "1764554400000:d5",
-      "SYNTH001LCIDHASH\\messages\\20251201.csv"
+      "SYNTH001LCIDHASH/messages/20251201.csv"
     ],
     [
       1764558000,
@@ -97,7 +97,7 @@
       "",
       "smil;0",
       "1764558000000:d6",
-      "SYNTH001LCIDHASH\\messages\\20251201.csv"
+      "SYNTH001LCIDHASH/messages/20251201.csv"
     ],
     [
       1764561600,
@@ -108,7 +108,7 @@
       "",
       "image000000.jpg",
       "1764561600000:d7",
-      "SYNTH001LCIDHASH\\messages\\20251201.csv"
+      "SYNTH001LCIDHASH/messages/20251201.csv"
     ],
     [
       1764568800,
@@ -119,7 +119,7 @@
       "",
       "null.smi;0;1",
       "1764568800000:d10",
-      "SYNTH001LCIDHASH\\messages\\20251201.csv"
+      "SYNTH001LCIDHASH/messages/20251201.csv"
     ],
     [
       1764569400,
@@ -130,7 +130,7 @@
       "",
       "smil.xml;text000001.txt",
       "1764569400000:d11",
-      "SYNTH001LCIDHASH\\messages\\20251201.csv"
+      "SYNTH001LCIDHASH/messages/20251201.csv"
     ],
     [
       1764572400,
@@ -141,7 +141,7 @@
       "",
       "smil;9999999999999999999999999999999999999999999999999999999999999999.jpg",
       "1764572400000:d14",
-      "SYNTH001LCIDHASH\\messages\\20251201.csv"
+      "SYNTH001LCIDHASH/messages/20251201.csv"
     ],
     [
       1764669600,
@@ -152,7 +152,7 @@
       "",
       "smil;dup.jpg",
       "1764669600000:d13",
-      "SYNTH001LCIDHASH\\messages\\20251202.csv"
+      "SYNTH001LCIDHASH/messages/20251202.csv"
     ],
     [
       1764752400,
@@ -163,7 +163,7 @@
       "",
       "smil;dup.jpg",
       "1764752400000:d12",
-      "SYNTH001LCIDHASH\\messages\\20251201.csv"
+      "SYNTH001LCIDHASH/messages/20251201.csv"
     ]
   ]
 }

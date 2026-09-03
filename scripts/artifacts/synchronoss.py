@@ -252,6 +252,17 @@ def _detect_media_type(filepath):
 # Helpers
 # ---------------------------------------------------------------------------
 
+def _rel(context, path):
+    """Extraction-relative path, always with forward slashes.
+
+    A reported path is an evidence reference and must not change with the operating
+    system the tool ran on. get_relative_path yields backslashes on Windows, which
+    makes the same return produce different report values, and different recorded
+    test baselines, on Windows and on Linux.
+    """
+    return str(context.get_relative_path(path)).replace('\\', '/')
+
+
 def _clean_path(path):
     """Strip Windows extended-length path prefix if present (\\\\?\\)."""
     p = str(path)
@@ -393,7 +404,7 @@ def _parse_all_message_csvs(context):
     for _, cf in _dedupe(context.get_files_found()):
         if not pattern.search(os.path.basename(cf)):
             continue
-        rel = context.get_relative_path(cf)
+        rel = _rel(context, cf)
         _, rows = _open_csv(cf)
         for row in rows:
             row['source_file'] = rel
@@ -466,7 +477,7 @@ def synchronoss_messages(context):
             row.get('source_file', ''),
         ))
 
-    return data_headers, data_list, context.get_relative_path(source_path)
+    return data_headers, data_list, _rel(context, source_path)
 
 
 @artifact_processor
@@ -499,7 +510,7 @@ def synchronoss_calls(context):
             row.get('source_file', ''),
         ))
 
-    return data_headers, data_list, context.get_relative_path(source_path)
+    return data_headers, data_list, _rel(context, source_path)
 
 
 def _synchronoss_mms_media(context, direction):
@@ -520,7 +531,7 @@ def _synchronoss_mms_media(context, direction):
     for raw, cf in _dedupe(context.get_files_found()):
         basename = os.path.basename(cf)
         if csv_pattern.search(basename):
-            rel = context.get_relative_path(cf)
+            rel = _rel(context, cf)
             _, rows = _open_csv(cf)
             for row in rows:
                 row['source_file'] = rel
@@ -627,7 +638,7 @@ def _synchronoss_mms_media(context, direction):
                 row.get('source_file', ''),
             ))
 
-    return data_headers, data_list, context.get_relative_path(source_path)
+    return data_headers, data_list, _rel(context, source_path)
 
 
 @artifact_processor
@@ -701,11 +712,11 @@ def synchronoss_mms_unlinked(context):
             det = _detect_media_type(cf)
             detected = (det + ' (by magic bytes)') if det else 'unknown (magic bytes)'
         data_list.append((date_folder, direction, media_cell, basename, detected,
-                          context.get_relative_path(cf)))
+                          _rel(context, cf)))
 
     data_list.sort(key=lambda r: (r[1], r[0], r[3]))
 
-    return data_headers, data_list, context.get_relative_path(source_path)
+    return data_headers, data_list, _rel(context, source_path)
 
 
 @artifact_processor
@@ -729,7 +740,7 @@ def synchronoss_contacts(context):
         if 'contacts_' not in basename or not basename.endswith('.txt'):
             continue
         source_path = cf
-        rel = context.get_relative_path(cf)
+        rel = _rel(context, cf)
         try:
             with open(cf, 'r', encoding='utf-8-sig', errors='replace') as fh:
                 data = json.load(fh)
@@ -767,7 +778,7 @@ def synchronoss_contacts(context):
                     source, ice, favorite, guid, rel,
                 ))
 
-    return data_headers, data_list, context.get_relative_path(source_path)
+    return data_headers, data_list, _rel(context, source_path)
 
 
 # Providers have shipped the access log under several column and filename spellings.
@@ -820,7 +831,7 @@ def _parse_dv_log(context):
                 continue
         else:
             continue
-        rel = context.get_relative_path(cf)
+        rel = _rel(context, cf)
         for row in rows:
             row['source_file'] = rel
             row['source_path'] = cf
@@ -875,7 +886,7 @@ def synchronoss_dv_uploads(context):
             row.get('source_file', ''),
         ))
 
-    return data_headers, data_list, context.get_relative_path(source_path)
+    return data_headers, data_list, _rel(context, source_path)
 
 
 @artifact_processor
@@ -908,7 +919,7 @@ def synchronoss_dv_sync(context):
             row.get('source_file', ''),
         ))
 
-    return data_headers, data_list, context.get_relative_path(source_path)
+    return data_headers, data_list, _rel(context, source_path)
 
 
 _QUARANTINE_NAME_RE = re.compile(
@@ -1010,12 +1021,12 @@ def synchronoss_quarantined(context):
             _register_media(raw, basename),
             detected, size, claimed, verified, correlation,
             int(match.group('seq')), basename,
-            context.get_relative_path(cf),
+            _rel(context, cf),
         ))
 
     data_list.sort(key=lambda r: r[9])
 
-    return data_headers, data_list, context.get_relative_path(source_path)
+    return data_headers, data_list, _rel(context, source_path)
 
 
 @artifact_processor
@@ -1059,10 +1070,10 @@ def synchronoss_vzmobile(context):
             device,
             media_cell,
             filename,
-            context.get_relative_path(cf),
+            _rel(context, cf),
         ))
 
     # Sort by upload date then device then filename
     data_list.sort(key=lambda r: (r[0], r[1], r[3]))
 
-    return data_headers, data_list, context.get_relative_path(source_path)
+    return data_headers, data_list, _rel(context, source_path)

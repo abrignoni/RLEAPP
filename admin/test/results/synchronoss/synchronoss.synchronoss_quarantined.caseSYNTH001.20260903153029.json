@@ -10,15 +10,15 @@
     "media_checkins": 4,
     "media_embedded_checkins": 0,
     "input_zip_path": "admin\\test\\cases\\data\\synchronoss\\testdata.synchronoss.synchronoss_quarantined.caseSYNTH001.zip",
-    "start_time": "2026-09-03T15:25:17.457621+00:00",
-    "end_time": "2026-09-03T15:25:17.497873+00:00",
-    "run_time_seconds": 0.011309623718261719,
+    "start_time": "2026-09-03T15:30:29.591256+00:00",
+    "end_time": "2026-09-03T15:30:29.630471+00:00",
+    "run_time_seconds": 0.011165618896484375,
     "last_commit": {
-      "hash": "c763d3878121d5da3d7fdafabadeef7e2da6cd0d",
+      "hash": "7129b305ef022db95ef5b676fd4fff49a0f61e0d",
       "author_name": "OneSixForensics",
       "author_email": "kyle@onesixforensics.com",
-      "date": "2026-09-02T17:23:29-06:00",
-      "message": "Handle the third spelling of the DV access log"
+      "date": "2026-09-03T09:26:59-06:00",
+      "message": "Fix the workbook reader's case, cell types and cost, and add a fixture"
     }
   },
   "headers": [
@@ -48,7 +48,7 @@
       "matched DV upload event",
       1,
       "770d2225305340cea852d92626230d0b_9f045cd488940c8d9570ed6e522a738c093022030e77bb1b1f80bcfb5e444ec8.zip_file_1",
-      "SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined\\SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined\\770d2225305340cea852d92626230d0b_9f045cd488940c8d9570ed6e522a738c093022030e77bb1b1f80bcfb5e444ec8.zip_file_1"
+      "SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined/SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined/770d2225305340cea852d92626230d0b_9f045cd488940c8d9570ed6e522a738c093022030e77bb1b1f80bcfb5e444ec8.zip_file_1"
     ],
     [
       1767518400,
@@ -62,7 +62,7 @@
       "matched DV upload event",
       2,
       "770d2225305340cea852d92626230d0b_c707582f09f9b4e261889285cf51ff85883a564a9513debd849cbaa02bbf8286.zip_file_2",
-      "SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined\\SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined\\770d2225305340cea852d92626230d0b_c707582f09f9b4e261889285cf51ff85883a564a9513debd849cbaa02bbf8286.zip_file_2"
+      "SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined/SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined/770d2225305340cea852d92626230d0b_c707582f09f9b4e261889285cf51ff85883a564a9513debd849cbaa02bbf8286.zip_file_2"
     ],
     [
       "",
@@ -76,7 +76,7 @@
       "no matching upload event in DV access log",
       3,
       "770d2225305340cea852d92626230d0b_2157e8b4aae77f6bf80cc8fc9ec02a2b204a6ce9030fe52d074e831ab1729a5c.zip_file_3",
-      "SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined\\SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined\\770d2225305340cea852d92626230d0b_2157e8b4aae77f6bf80cc8fc9ec02a2b204a6ce9030fe52d074e831ab1729a5c.zip_file_3"
+      "SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined/SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined/770d2225305340cea852d92626230d0b_2157e8b4aae77f6bf80cc8fc9ec02a2b204a6ce9030fe52d074e831ab1729a5c.zip_file_3"
     ],
     [
       "",
@@ -90,7 +90,7 @@
       "no matching upload event in DV access log",
       4,
       "770d2225305340cea852d92626230d0b_dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.zip_file_4",
-      "SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined\\SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined\\770d2225305340cea852d92626230d0b_dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.zip_file_4"
+      "SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined/SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined/770d2225305340cea852d92626230d0b_dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.zip_file_4"
     ]
   ]
 }
