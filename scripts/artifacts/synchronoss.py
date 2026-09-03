@@ -522,7 +522,6 @@ def _synchronoss_mms_media(context, direction):
     # path because check_in_media resolves against the seeker's files_found /
     # file_infos by that exact string.
     csv_rows = []
-    media_lookup = {}  # basename -> a raw full path (may be overwritten if non-unique)
     name_paths = {}    # basename -> [all raw full paths with that name across folders]
 
     csv_pattern = re.compile(r'\d{8}\.csv$', re.IGNORECASE)
@@ -538,7 +537,6 @@ def _synchronoss_mms_media(context, direction):
                 row['source_path'] = cf
             csv_rows.extend(rows)
         elif mms_path_fragment in cf.replace('\\', '/'):
-            media_lookup[basename] = raw
             name_paths.setdefault(basename, []).append(raw)
 
     csv_rows.sort(key=lambda r: r.get('Date', ''))
@@ -553,10 +551,19 @@ def _synchronoss_mms_media(context, direction):
         return ''
 
     # Build lookup: date_folder -> {filename -> raw_full_path}
+    #
+    # Built from name_paths, which holds every path for a name, rather than from
+    # a dict of one path per name would hold only one. Names are not unique across folders
+    # (image000000.jpg and "0" are pervasive, and dup.jpg is the probe for it): taking
+    # one path per name means only whichever the seeker happened to return last gets a
+    # date-folder entry, so a message resolves or fails to resolve depending on file
+    # ordering. That differs between platforms - the same return linked a message on
+    # Windows and failed to link it on Linux - and a message must resolve against the
+    # copy in its own date folder regardless.
     date_media = {}
-    for fname, fpath in media_lookup.items():
-        date_folder = _date_from_path(fpath)
-        date_media.setdefault(date_folder, {})[fname] = fpath
+    for fname, fpaths in name_paths.items():
+        for fpath in fpaths:
+            date_media.setdefault(_date_from_path(fpath), {})[fname] = fpath
 
     data_headers = (
         ('Date (UTC)', 'datetime'), 'Direction', ('Sender', 'phonenumber'),

@@ -10,15 +10,15 @@
     "media_checkins": 3,
     "media_embedded_checkins": 0,
     "input_zip_path": "admin\\test\\cases\\data\\synchronoss\\testdata.synchronoss.synchronoss_vzmobile.caseSYNTH001.zip",
-    "start_time": "2026-09-03T15:30:29.961970+00:00",
-    "end_time": "2026-09-03T15:30:29.986979+00:00",
-    "run_time_seconds": 0.00046753883361816406,
+    "start_time": "2026-09-03T15:34:33.133628+00:00",
+    "end_time": "2026-09-03T15:34:33.163323+00:00",
+    "run_time_seconds": 0.0005598068237304688,
     "last_commit": {
-      "hash": "7129b305ef022db95ef5b676fd4fff49a0f61e0d",
+      "hash": "eeee5f96c0e8c993f5ab52028cb0307d4ac94f8d",
       "author_name": "OneSixForensics",
       "author_email": "kyle@onesixforensics.com",
-      "date": "2026-09-03T09:26:59-06:00",
-      "message": "Fix the workbook reader's case, cell types and cost, and add a fixture"
+      "date": "2026-09-03T09:30:43-06:00",
+      "message": "Report extraction-relative paths with forward slashes on every platform"
     }
   },
   "headers": [
