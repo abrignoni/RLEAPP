@@ -6,7 +6,7 @@ device extraction: there is no public image it appears on, it cannot be produced
 throwaway account, and it is subscriber PII end to end. The quarantine container it
 carries is the content that triggered the NCMEC CyberTip, so it cannot be sanitised or
 shared in any form. A format-faithful synthetic return is therefore the only fixture this
-module can have, and ground truth is known for every row it emits.
+module can have, and the known values are recorded for every row it emits.
 
 The shape is faithful to real returns, including the parts that have broken the parser:
 
@@ -134,7 +134,7 @@ with open(mk("contacts_20251201.txt"),"w",encoding="utf-8") as f: json.dump(cont
 # --- DV access log --------------------------------------------------------
 dv_hdr=["server_ts","remoteipaddress","clientidentifier","querystring","lcid"]
 # Every DV row emitted, in column order [ts, remoteip, clientid, querystring, lcid],
-# so the upload/sync ground truth below is counted from what was written rather
+# so the upload/sync known values below are counted from what was written rather
 # than restated by hand and left to drift.
 DV_ALL = []
 dv=[
@@ -253,7 +253,7 @@ wb2 = Workbook(); ws2 = wb2.active
 ws2.append(["case", "examiner", "notes"]); ws2.append(["SYNTH", "nobody", "not a DV log"])
 wb2.save(mk("case_notes.xlsx"))
 
-# --- ground truth ------------------------------------------------------------
+# --- known values ------------------------------------------------------------
 # Stated independently of the parser, then checked against what was actually
 # emitted. A known-values line that is only printed drifts silently as probes are
 # added -- this file's did -- and once it has drifted the fixture is no longer
@@ -287,11 +287,11 @@ actual = {
 mismatches = {k: (EXPECTED[k], actual[k]) for k in EXPECTED if EXPECTED[k] != actual[k]}
 if mismatches:
     raise SystemExit(
-        "generator ground truth is stale, fix EXPECTED or the data: "
+        "generator known values are stale, fix EXPECTED or the data: "
         + ", ".join(f"{k}: declared {d}, emitted {a}" for k, (d, a) in mismatches.items()))
 
 print("Synthetic return generated at:", BASE)
-print(f"Ground truth (asserted): {actual['sms_mms_rows']} SMS/MMS msgs, "
+print(f"Known values (asserted): {actual['sms_mms_rows']} SMS/MMS msgs, "
       f"{actual['call_rows']} calls, {actual['contacts']} contacts"
       " (1 deleted, 1 no-phone),")
 print(f"  DV: {actual['dv_uploads']} uploads + {actual['dv_sync']} sync across 5 files")
