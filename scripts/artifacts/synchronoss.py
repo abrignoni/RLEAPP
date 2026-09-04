@@ -31,10 +31,21 @@ __artifacts_v2__ = {
         "description": "Parses received MMS media with inline display, linked to message CSV metadata",
         "author": "@OneSixForensics",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-07-09",
+        "last_update_date": "2026-09-03",
         "requirements": "none",
         "category": "Synchronoss",
-        "notes": "Media at <LCID>/messages/attachments/mms/in/YYYY-MM-DD/",
+        "notes": "Media at <LCID>/messages/attachments/mms/in/YYYY-MM-DD/. "
+                 "Link Status records how each attachment token resolved. 'linked' means a file of "
+                 "that name in the message's own date folder, or -- when that name occurs in only one "
+                 "folder in the return -- that single copy. Attachment names repeat across date "
+                 "folders in these returns (image000000.jpg and the extensionless '0' recur daily), so "
+                 "where a name is in more than one folder and none is the message's own date, the "
+                 "token is reported as not linked, with the number of folders carrying the name, "
+                 "rather than linked to another date's copy. 'referenced -- file not in daily folder' "
+                 "means the token names media that is not in the return at all; per Synchronoss, "
+                 "flagged files are quarantined out of the daily folder, so absence here is expected "
+                 "for reported content and is not on its own a finding about the file. Direction is "
+                 "constant in this artifact by construction, since the artifact selects one direction.",
         "paths": (
             '*/messages/2*.csv',
             '*/messages/attachments/mms/in/*/*',
@@ -48,10 +59,21 @@ __artifacts_v2__ = {
         "description": "Parses sent MMS media with inline display, linked to message CSV metadata",
         "author": "@OneSixForensics",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-07-09",
+        "last_update_date": "2026-09-03",
         "requirements": "none",
         "category": "Synchronoss",
-        "notes": "Media at <LCID>/messages/attachments/mms/out/YYYY-MM-DD/",
+        "notes": "Media at <LCID>/messages/attachments/mms/out/YYYY-MM-DD/. "
+                 "Link Status records how each attachment token resolved. 'linked' means a file of "
+                 "that name in the message's own date folder, or -- when that name occurs in only one "
+                 "folder in the return -- that single copy. Attachment names repeat across date "
+                 "folders in these returns (image000000.jpg and the extensionless '0' recur daily), so "
+                 "where a name is in more than one folder and none is the message's own date, the "
+                 "token is reported as not linked, with the number of folders carrying the name, "
+                 "rather than linked to another date's copy. 'referenced -- file not in daily folder' "
+                 "means the token names media that is not in the return at all; per Synchronoss, "
+                 "flagged files are quarantined out of the daily folder, so absence here is expected "
+                 "for reported content and is not on its own a finding about the file. Direction is "
+                 "constant in this artifact by construction, since the artifact selects one direction.",
         "paths": (
             '*/messages/2*.csv',
             '*/messages/attachments/mms/out/*/*',
@@ -513,6 +535,46 @@ def synchronoss_calls(context):
     return data_headers, data_list, _rel(context, source_path)
 
 
+def _date_from_media_path(path):
+    """Return the date-folder name from an MMS media path, e.g.
+    '.../mms/in/2025-12-01/image000000.jpg' -> '2025-12-01'."""
+    parts = _clean_path(path).replace('\\', '/').split('/')
+    for i, part in enumerate(parts):
+        if part in ('in', 'out') and i + 1 < len(parts):
+            return parts[i + 1]
+    return ''
+
+
+def _index_mms_media(media_paths):
+    """
+    Index MMS media files, returning (name_paths, date_media):
+
+        name_paths   basename    -> [every raw path carrying that name]
+        date_media   date folder -> {basename: the raw path in that folder}
+
+    date_media is built from every path recorded for a name, not from a dict
+    holding one path per name. Names are not unique across date folders --
+    image000000.jpg and the extensionless "0" are pervasive in real returns --
+    so keeping a single path per name leaves only whichever one the seeker
+    returned last with a date-folder entry, and a message then resolves or
+    fails to resolve depending on the order the files arrive in. That order
+    differs between platforms: the same return linked a message on Windows and
+    reported it unlinked on Linux, and the unlinked wording named a date folder
+    that did hold a copy, so the report stated something false rather than
+    merely leaving it out. Indexing every path makes the result independent of
+    file order; admin/test/scripts/test_synchronoss_media_order.py holds that
+    invariant, because a fixture cannot -- it is the ordering that varies.
+    """
+    name_paths = {}
+    for raw in media_paths:
+        name_paths.setdefault(os.path.basename(raw), []).append(raw)
+    date_media = {}
+    for fname, fpaths in name_paths.items():
+        for fpath in fpaths:
+            date_media.setdefault(_date_from_media_path(fpath), {})[fname] = fpath
+    return name_paths, date_media
+
+
 def _synchronoss_mms_media(context, direction):
     """
     Shared implementation for MMS received and sent media artifacts.
@@ -522,7 +584,7 @@ def _synchronoss_mms_media(context, direction):
     # path because check_in_media resolves against the seeker's files_found /
     # file_infos by that exact string.
     csv_rows = []
-    name_paths = {}    # basename -> [all raw full paths with that name across folders]
+    media_paths = []   # raw full paths of every media file under this direction
 
     csv_pattern = re.compile(r'\d{8}\.csv$', re.IGNORECASE)
     mms_path_fragment = f'/mms/{direction}/'
@@ -537,33 +599,11 @@ def _synchronoss_mms_media(context, direction):
                 row['source_path'] = cf
             csv_rows.extend(rows)
         elif mms_path_fragment in cf.replace('\\', '/'):
-            name_paths.setdefault(basename, []).append(raw)
+            media_paths.append(raw)
 
     csv_rows.sort(key=lambda r: r.get('Date', ''))
 
-    # Build date-folder to date string mapping from media paths
-    # Path: .../mms/in/2025-12-01/filename
-    def _date_from_path(path):
-        parts = _clean_path(path).replace('\\', '/').split('/')
-        for i, part in enumerate(parts):
-            if part in ('in', 'out') and i + 1 < len(parts):
-                return parts[i + 1]
-        return ''
-
-    # Build lookup: date_folder -> {filename -> raw_full_path}
-    #
-    # Built from name_paths, which holds every path for a name, rather than from
-    # a dict of one path per name would hold only one. Names are not unique across folders
-    # (image000000.jpg and "0" are pervasive, and dup.jpg is the probe for it): taking
-    # one path per name means only whichever the seeker happened to return last gets a
-    # date-folder entry, so a message resolves or fails to resolve depending on file
-    # ordering. That differs between platforms - the same return linked a message on
-    # Windows and failed to link it on Linux - and a message must resolve against the
-    # copy in its own date folder regardless.
-    date_media = {}
-    for fname, fpaths in name_paths.items():
-        for fpath in fpaths:
-            date_media.setdefault(_date_from_path(fpath), {})[fname] = fpath
+    name_paths, date_media = _index_mms_media(media_paths)
 
     data_headers = (
         ('Date (UTC)', 'datetime'), 'Direction', ('Sender', 'phonenumber'),
@@ -830,6 +870,13 @@ def _parse_dv_log(context):
             if not _is_dv_filename(basename):
                 continue
             _, rows = _open_csv(cf)
+            # Same reason the workbook reader lower-cases its headers: this CSV is
+            # identified by filename, not by its columns, so a capitalised title row
+            # is accepted and then read blank by the lower-case reads below. Scoped
+            # to this branch on purpose -- _open_csv is shared with messages, calls
+            # and both MMS artifacts, which key rows on 'Type', 'Date', 'Direction',
+            # 'Sender', 'Body', 'Attachments' and 'Message ID'.
+            rows = [{k.lower(): v for k, v in row.items()} for row in rows]
         elif basename.endswith('.xlsx'):
             # Headers are checked before the body is read, so a workbook that is
             # not an access log is abandoned after one row.

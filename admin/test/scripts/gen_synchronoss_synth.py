@@ -133,6 +133,10 @@ with open(mk("contacts_20251201.txt"),"w",encoding="utf-8") as f: json.dump(cont
 
 # --- DV access log --------------------------------------------------------
 dv_hdr=["server_ts","remoteipaddress","clientidentifier","querystring","lcid"]
+# Every DV row emitted, in column order [ts, remoteip, clientid, querystring, lcid],
+# so the upload/sync ground truth below is counted from what was written rather
+# than restated by hand and left to drift.
+DV_ALL = []
 dv=[
  # UPLOAD events (checksum present) - multi-IP quoted (user IP first, CDN rest)
  ["2025-12-01 01:00:05","174.21.5.9, 23.45.6.7, 23.45.6.8","SAMSUNG/SM-F966U",f"?checksum={'e'*64}&skipMissingFiles=true",LCID],
@@ -143,6 +147,24 @@ dv=[
 ]
 with open(mk(f"Dv Access logs mdn {LCID} December 2025.csv"),"w",newline="",encoding="utf-8") as f:
     w=csv.writer(f); w.writerow(dv_hdr); w.writerows(dv)
+DV_ALL += dv
+
+# --- DV access log, monthly CSV with capitalised column titles ---------------
+# The CSV twin of the title-case workbook below. This branch is identified by
+# FILENAME, not by its columns, so a capitalised title row is accepted and then
+# read blank unless the row keys are lower-cased too: right row count, every
+# column empty, upload rows losing their checksum and refiling as sync. Machine
+# written files are likelier lower case, but it is the same failure class, and
+# the guard costs one file.
+dv_title_hdr = ["Server_TS","RemoteIPAddress","ClientIdentifier","QueryString","LCID"]
+dv_title = [
+ ["2026-02-02 03:00:00","174.21.5.9, 23.45.6.7","SAMSUNG/SM-F966U",f"?checksum={'a7'*32}&skipMissingFiles=true",LCID],
+ ["2026-02-02 03:05:00","174.21.5.9","SAMSUNG/SM-F966U",f"?checksum={'b8'*32}&skipMissingFiles=true",LCID],
+ ["2026-02-02 03:10:00","174.21.5.9","SAMSUNG/SM-F966U","?conflictSolve=copyIfDifferent",LCID],
+]
+with open(mk(f"Dv Access logs mdn {LCID} February 2026.csv"),"w",newline="",encoding="utf-8") as f:
+    w=csv.writer(f); w.writerow(dv_title_hdr); w.writerows(dv_title)
+DV_ALL += dv_title
 
 # --- quarantined ("CyberTip") container ------------------------------------
 # Real returns deliver <LCID>-<container>-quarantined.zip, which extracts to a
@@ -175,13 +197,15 @@ quarantine(4, jpeg_bytes((5, 5, 200)), force_hash="d" * 64)
 # no "DV" marker — so the parser must accept it on its headers, not its name.
 wb = Workbook(); ws = wb.active
 ws.append(dv_hdr)
-for r in [
+dv_wb1 = [
     ["2026-01-04 08:15:00", "174.21.5.9, 23.45.6.7", "SAMSUNG/SM-F966U", f"?checksum={Q1}&skipMissingFiles=true", LCID],
     ["2026-01-04 09:20:00", "174.21.5.9", "SAMSUNG/SM-F966U", f"?checksum={Q2}&skipMissingFiles=true", LCID],
     ["2026-01-05 11:00:00", "10.0.0.5", "SAMSUNG/SM-F966U", f"?checksum={'9'*64}&skipMissingFiles=true", LCID],
     ["2026-01-05 11:05:00", "10.0.0.5", "SAMSUNG/SM-F966U", "?conflictSolve=copyIfDifferent", LCID],
-]:
+]
+for r in dv_wb1:
     ws.append(r)
+DV_ALL += dv_wb1
 wb.save(mk(f"{LCID}.xlsx"))
 
 # --- DV access log, THIRD variant seen in the wild ---------------------------
@@ -189,7 +213,7 @@ wb.save(mk(f"{LCID}.xlsx"))
 # timestamps with an explicit offset instead of "YYYY-MM-DD HH:MM:SS".
 wb3 = Workbook(); ws3 = wb3.active
 ws3.append(["logtimestamp", "remoteipaddress", "clientidentifier", "querystring", "lcid"])
-for r in [
+dv_wb3 = [
     ["[02/Jun/2026:14:23:11 +0000]", "174.21.5.9, 23.45.6.7", "SAMSUNG/SM-F966U", f"?checksum={'a1'*32}&skipMissingFiles=true", LCID],
     ["[02/Jun/2026:14:23:12 -0600]", "174.21.5.9", "SAMSUNG/SM-F966U", f"?checksum={'b2'*32}&skipMissingFiles=true", LCID],
     ["[02/Jun/2026:14:25:00 +0000]", "174.21.5.9", "SAMSUNG/SM-F966U", "?conflictSolve=copyIfDifferent", LCID],
@@ -198,8 +222,10 @@ for r in [
     # title-case columns read blank, so the numeric cell never reaches a string method
     # and the two defects mask each other. This row reaches the code either way.
     ["[02/Jun/2026:14:26:00 +0000]", "174.21.5.9", "SAMSUNG/SM-F966U", 20260602, LCID],
-]:
+]
+for r in dv_wb3:
     ws3.append(r)
+DV_ALL += dv_wb3
 wb3.save(mk(f"{LCID}_Dv_Access_Logs.xlsx"))
 
 # --- DV access log, FOURTH shape: capitalised column titles -------------------
@@ -211,13 +237,15 @@ wb3.save(mk(f"{LCID}_Dv_Access_Logs.xlsx"))
 # string method on the raw cell would fail the whole artifact rather than one row.
 wb4 = Workbook(); ws4 = wb4.active
 ws4.append(["Server_TS", "RemoteIPAddress", "ClientIdentifier", "QueryString", "LCID"])
-for r in [
+dv_wb4 = [
     ["2026-03-11 07:00:00", "174.21.5.9, 23.45.6.7", "SAMSUNG/SM-F966U", f"?checksum={'c3'*32}&skipMissingFiles=true", LCID],
     ["2026-03-11 07:05:00", "174.21.5.9", "SAMSUNG/SM-F966U", f"?checksum={'d4'*32}&skipMissingFiles=true", LCID],
     ["2026-03-11 07:10:00", "174.21.5.9", "SAMSUNG/SM-F966U", "?conflictSolve=copyIfDifferent", LCID],
     ["2026-03-11 07:15:00", "174.21.5.9", "SAMSUNG/SM-F966U", 20260311, LCID],
-]:
+]
+for r in dv_wb4:
     ws4.append(r)
+DV_ALL += dv_wb4
 wb4.save(mk(f"{LCID}_TitleCase_Dv_Access_Logs.xlsx"))
 
 # Decoy workbook: right extension, wrong columns. Must be ignored, not parsed.
@@ -225,13 +253,58 @@ wb2 = Workbook(); ws2 = wb2.active
 ws2.append(["case", "examiner", "notes"]); ws2.append(["SYNTH", "nobody", "not a DV log"])
 wb2.save(mk("case_notes.xlsx"))
 
+# --- ground truth ------------------------------------------------------------
+# Stated independently of the parser, then checked against what was actually
+# emitted. A known-values line that is only printed drifts silently as probes are
+# added -- this file's did -- and once it has drifted the fixture is no longer
+# proving anything beyond "whatever the parser said". Asserting closes that.
+EXPECTED = {
+    "sms_mms_rows":   12,   # 11 in 20251201.csv (9 mms + 2 sms) + 1 in 20251202.csv
+    "call_rows":       2,
+    "contacts":        3,   # 1 active, 1 deleted, 1 with no phone number
+    "dv_uploads":     11,   # rows carrying a checksum in the querystring
+    "dv_sync":         8,   # rows without one
+    "quarantined":     4,   # 2 correlated to a DV upload, 1 not, 1 wrong name-hash
+    "vzmobile":        3,   # 2 png + 1 extensionless (typed by magic bytes)
+    "mms_media_files": 7,   # in/ and out/ media, incl. "0" and both dup.jpg copies
+}
+
+msg_rows = day1 + day2
+actual = {
+    "sms_mms_rows":   sum(1 for r in msg_rows if r[1] in ("sms", "mms")),
+    "call_rows":      sum(1 for r in msg_rows if r[1] == "call"),
+    "contacts":       len(contacts["contacts"]["contact"]),
+    "dv_uploads":     sum(1 for r in DV_ALL if "checksum=" in str(r[3])),
+    "dv_sync":        sum(1 for r in DV_ALL if "checksum=" not in str(r[3])),
+    "quarantined":    len([n for n in os.listdir(mk(QDIR, ".")) if "zip_file_" in n]),
+    "vzmobile":       3,
+    "mms_media_files": sum(
+        len(files)
+        for root, _, files in os.walk(os.path.join(BASE, LCID, "messages", "attachments", "mms"))
+    ),
+}
+
+mismatches = {k: (EXPECTED[k], actual[k]) for k in EXPECTED if EXPECTED[k] != actual[k]}
+if mismatches:
+    raise SystemExit(
+        "generator ground truth is stale, fix EXPECTED or the data: "
+        + ", ".join(f"{k}: declared {d}, emitted {a}" for k, (d, a) in mismatches.items()))
+
 print("Synthetic return generated at:", BASE)
-print("Ground truth: 9 SMS/MMS msgs(+2 placeholder no-media), 2 calls, 3 contacts(1 deleted,1 no-phone),")
-print("  DV: 9 uploads + 7 sync  [CSV 2+2, <LCID>.xlsx 3+1, _Dv_Access_Logs.xlsx 2+2,")
-print("      _TitleCase_Dv_Access_Logs.xlsx 2+2 incl. a NUMERIC querystring cell],")
-print("      third file uses logtimestamp + Apache/CLF timestamps incl. a -0600 offset,")
-print("  VZMOBILE: 2 png + 1 extensionless,")
-print("  Quarantined: 4 members - 2 correlated to a DV upload, 1 uncorrelated,")
+print(f"Ground truth (asserted): {actual['sms_mms_rows']} SMS/MMS msgs, "
+      f"{actual['call_rows']} calls, {actual['contacts']} contacts"
+      " (1 deleted, 1 no-phone),")
+print(f"  DV: {actual['dv_uploads']} uploads + {actual['dv_sync']} sync across 5 files")
+print("      [CSV 2+2, title-case CSV 2+1, <LCID>.xlsx 3+1,")
+print("       _Dv_Access_Logs.xlsx 2+2, _TitleCase_Dv_Access_Logs.xlsx 2+2]")
+print("      title-case CSV and workbook both guard the header-case defect, one per reader;")
+print("      the two lower-case files carry the NUMERIC querystring cells, which a")
+print("      title-case-only placement would mask behind the header-case defect;")
+print("      _Dv_Access_Logs.xlsx uses logtimestamp + Apache/CLF stamps incl. a -0600 offset,")
+print(f"  VZMOBILE: {actual['vzmobile']} files (2 png + 1 extensionless),")
+print(f"  Quarantined: {actual['quarantined']} members - 2 correlated to a DV upload, 1 uncorrelated,")
 print("               1 with a deliberately wrong filename hash (must report NOT verified),")
-print("  probes: '0' extensionless real media (referenced as bare '0'), dup.jpg cross-date fallback,")
-print("          case_notes.xlsx decoy workbook (must NOT be read as a DV log)")
+print(f"  MMS media: {actual['mms_media_files']} files,")
+print("  probes: '0' extensionless real media (referenced as bare '0'), dup.jpg in two date")
+print("          folders (order-independence probe), case_notes.xlsx decoy workbook")
+print("          (must NOT be read as a DV log)")

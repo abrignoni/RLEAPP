@@ -5,20 +5,20 @@
     "function_name": "synchronoss_dv_uploads",
     "case_number": "caseSYNTH001",
     "number_of_columns": 7,
-    "number_of_rows": 9,
-    "total_data_size_bytes": 1422,
+    "number_of_rows": 11,
+    "total_data_size_bytes": 1769,
     "media_checkins": 0,
     "media_embedded_checkins": 0,
-    "input_zip_path": "admin\\test\\cases\\data\\synchronoss\\testdata.synchronoss.synchronoss_dv_uploads.caseSYNTH001.zip",
-    "start_time": "2026-09-03T15:34:31.998979+00:00",
-    "end_time": "2026-09-03T15:34:32.034246+00:00",
-    "run_time_seconds": 0.00835275650024414,
+    "input_zip_path": "admin/test/cases/data/synchronoss/testdata.synchronoss.synchronoss_dv_uploads.caseSYNTH001.zip",
+    "start_time": "2026-09-04T03:39:53.270937+00:00",
+    "end_time": "2026-09-04T03:39:53.298997+00:00",
+    "run_time_seconds": 0.0075566768646240234,
     "last_commit": {
-      "hash": "eeee5f96c0e8c993f5ab52028cb0307d4ac94f8d",
+      "hash": "e610a63f92df487f3d5cc95c61ceb34278d6fb1d",
       "author_name": "OneSixForensics",
       "author_email": "kyle@onesixforensics.com",
-      "date": "2026-09-03T09:30:43-06:00",
-      "message": "Report extraction-relative paths with forward slashes on every platform"
+      "date": "2026-09-03T09:34:48-06:00",
+      "message": "Resolve MMS media per date folder regardless of seeker file order"
     }
   },
   "headers": [
@@ -75,6 +75,24 @@
       "9999999999999999999999999999999999999999999999999999999999999999",
       "SYNTH001LCIDHASH",
       "SYNTH001LCIDHASH.xlsx"
+    ],
+    [
+      1770001200,
+      "174.21.5.9",
+      "23.45.6.7",
+      "SAMSUNG/SM-F966U",
+      "a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7",
+      "SYNTH001LCIDHASH",
+      "Dv Access logs mdn SYNTH001LCIDHASH February 2026.csv"
+    ],
+    [
+      1770001500,
+      "174.21.5.9",
+      "",
+      "SAMSUNG/SM-F966U",
+      "b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8",
+      "SYNTH001LCIDHASH",
+      "Dv Access logs mdn SYNTH001LCIDHASH February 2026.csv"
     ],
     [
       1773212400,

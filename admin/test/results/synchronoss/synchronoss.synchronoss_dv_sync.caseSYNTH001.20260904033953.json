@@ -5,20 +5,20 @@
     "function_name": "synchronoss_dv_sync",
     "case_number": "caseSYNTH001",
     "number_of_columns": 7,
-    "number_of_rows": 7,
-    "total_data_size_bytes": 710,
+    "number_of_rows": 8,
+    "total_data_size_bytes": 828,
     "media_checkins": 0,
     "media_embedded_checkins": 0,
-    "input_zip_path": "admin\\test\\cases\\data\\synchronoss\\testdata.synchronoss.synchronoss_dv_sync.caseSYNTH001.zip",
-    "start_time": "2026-09-03T15:34:32.394714+00:00",
-    "end_time": "2026-09-03T15:34:32.427802+00:00",
-    "run_time_seconds": 0.007829427719116211,
+    "input_zip_path": "admin/test/cases/data/synchronoss/testdata.synchronoss.synchronoss_dv_sync.caseSYNTH001.zip",
+    "start_time": "2026-09-04T03:39:53.157606+00:00",
+    "end_time": "2026-09-04T03:39:53.187566+00:00",
+    "run_time_seconds": 0.008606672286987305,
     "last_commit": {
-      "hash": "eeee5f96c0e8c993f5ab52028cb0307d4ac94f8d",
+      "hash": "e610a63f92df487f3d5cc95c61ceb34278d6fb1d",
       "author_name": "OneSixForensics",
       "author_email": "kyle@onesixforensics.com",
-      "date": "2026-09-03T09:30:43-06:00",
-      "message": "Report extraction-relative paths with forward slashes on every platform"
+      "date": "2026-09-03T09:34:48-06:00",
+      "message": "Resolve MMS media per date folder regardless of seeker file order"
     }
   },
   "headers": [
@@ -57,6 +57,15 @@
       "conflictSolve",
       "SYNTH001LCIDHASH",
       "SYNTH001LCIDHASH.xlsx"
+    ],
+    [
+      1770001800,
+      "174.21.5.9",
+      "",
+      "SAMSUNG/SM-F966U",
+      "conflictSolve",
+      "SYNTH001LCIDHASH",
+      "Dv Access logs mdn SYNTH001LCIDHASH February 2026.csv"
     ],
     [
       1773213000,
