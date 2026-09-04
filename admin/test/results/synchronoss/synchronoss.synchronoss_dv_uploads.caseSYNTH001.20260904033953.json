@@ -1,0 +1,134 @@
+{
+  "metadata": {
+    "module_name": "synchronoss",
+    "artifact_name": "Synchronoss - DV Access Log Uploads",
+    "function_name": "synchronoss_dv_uploads",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 7,
+    "number_of_rows": 11,
+    "total_data_size_bytes": 1769,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/synchronoss/testdata.synchronoss.synchronoss_dv_uploads.caseSYNTH001.zip",
+    "start_time": "2026-09-04T03:39:53.270937+00:00",
+    "end_time": "2026-09-04T03:39:53.298997+00:00",
+    "run_time_seconds": 0.0075566768646240234,
+    "last_commit": {
+      "hash": "e610a63f92df487f3d5cc95c61ceb34278d6fb1d",
+      "author_name": "OneSixForensics",
+      "author_email": "kyle@onesixforensics.com",
+      "date": "2026-09-03T09:34:48-06:00",
+      "message": "Resolve MMS media per date folder regardless of seeker file order"
+    }
+  },
+  "headers": [
+    "Timestamp (UTC)",
+    "User IP",
+    "CDN IPs",
+    "Device",
+    "File Checksum (SHA-256)",
+    "LCID",
+    "Source File"
+  ],
+  "data": [
+    [
+      1764550805,
+      "174.21.5.9",
+      "23.45.6.7, 23.45.6.8",
+      "SAMSUNG/SM-F966U",
+      "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "SYNTH001LCIDHASH",
+      "Dv Access logs mdn SYNTH001LCIDHASH December 2025.csv"
+    ],
+    [
+      1764554410,
+      "174.21.5.9",
+      "",
+      "SAMSUNG/SM-F966U",
+      "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "SYNTH001LCIDHASH",
+      "Dv Access logs mdn SYNTH001LCIDHASH December 2025.csv"
+    ],
+    [
+      1767514500,
+      "174.21.5.9",
+      "23.45.6.7",
+      "SAMSUNG/SM-F966U",
+      "9f045cd488940c8d9570ed6e522a738c093022030e77bb1b1f80bcfb5e444ec8",
+      "SYNTH001LCIDHASH",
+      "SYNTH001LCIDHASH.xlsx"
+    ],
+    [
+      1767518400,
+      "174.21.5.9",
+      "",
+      "SAMSUNG/SM-F966U",
+      "c707582f09f9b4e261889285cf51ff85883a564a9513debd849cbaa02bbf8286",
+      "SYNTH001LCIDHASH",
+      "SYNTH001LCIDHASH.xlsx"
+    ],
+    [
+      1767610800,
+      "10.0.0.5",
+      "",
+      "SAMSUNG/SM-F966U",
+      "9999999999999999999999999999999999999999999999999999999999999999",
+      "SYNTH001LCIDHASH",
+      "SYNTH001LCIDHASH.xlsx"
+    ],
+    [
+      1770001200,
+      "174.21.5.9",
+      "23.45.6.7",
+      "SAMSUNG/SM-F966U",
+      "a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7",
+      "SYNTH001LCIDHASH",
+      "Dv Access logs mdn SYNTH001LCIDHASH February 2026.csv"
+    ],
+    [
+      1770001500,
+      "174.21.5.9",
+      "",
+      "SAMSUNG/SM-F966U",
+      "b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8",
+      "SYNTH001LCIDHASH",
+      "Dv Access logs mdn SYNTH001LCIDHASH February 2026.csv"
+    ],
+    [
+      1773212400,
+      "174.21.5.9",
+      "23.45.6.7",
+      "SAMSUNG/SM-F966U",
+      "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+      "SYNTH001LCIDHASH",
+      "SYNTH001LCIDHASH_TitleCase_Dv_Access_Logs.xlsx"
+    ],
+    [
+      1773212700,
+      "174.21.5.9",
+      "",
+      "SAMSUNG/SM-F966U",
+      "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+      "SYNTH001LCIDHASH",
+      "SYNTH001LCIDHASH_TitleCase_Dv_Access_Logs.xlsx"
+    ],
+    [
+      1780410191,
+      "174.21.5.9",
+      "23.45.6.7",
+      "SAMSUNG/SM-F966U",
+      "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "SYNTH001LCIDHASH",
+      "SYNTH001LCIDHASH_Dv_Access_Logs.xlsx"
+    ],
+    [
+      1780431792,
+      "174.21.5.9",
+      "",
+      "SAMSUNG/SM-F966U",
+      "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+      "SYNTH001LCIDHASH",
+      "SYNTH001LCIDHASH_Dv_Access_Logs.xlsx"
+    ]
+  ]
+}

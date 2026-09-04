@@ -1,0 +1,42 @@
+{
+  "metadata": {
+    "module_name": "synchronoss",
+    "artifact_name": "Synchronoss - MMS Folder Media (Unlinked)",
+    "function_name": "synchronoss_mms_unlinked",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 6,
+    "number_of_rows": 1,
+    "total_data_size_bytes": 106,
+    "media_checkins": 1,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/synchronoss/testdata.synchronoss.synchronoss_mms_unlinked.caseSYNTH001.zip",
+    "start_time": "2026-09-04T03:39:53.371172+00:00",
+    "end_time": "2026-09-04T03:39:53.397698+00:00",
+    "run_time_seconds": 0.0015628337860107422,
+    "last_commit": {
+      "hash": "e610a63f92df487f3d5cc95c61ceb34278d6fb1d",
+      "author_name": "OneSixForensics",
+      "author_email": "kyle@onesixforensics.com",
+      "date": "2026-09-03T09:34:48-06:00",
+      "message": "Resolve MMS media per date folder regardless of seeker file order"
+    }
+  },
+  "headers": [
+    "Upload Date",
+    "Direction",
+    "Media",
+    "Filename",
+    "Detected Type",
+    "Source File"
+  ],
+  "data": [
+    [
+      "2025-12-01",
+      "in",
+      "mock_hash_for_0",
+      "0",
+      ".jpg (by magic bytes)",
+      "SYNTH001LCIDHASH/messages/attachments/mms/in/2025-12-01/0"
+    ]
+  ]
+}

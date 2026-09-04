@@ -558,7 +558,11 @@ def main(module_name, artifact_name=None, case_number=None, allow_empty=False):
                             "total_data_size_bytes": calculate_data_size(processed_data),
                             "media_checkins": media_checkins_count,
                             "media_embedded_checkins": media_embedded_checkins_count,
-                            "input_zip_path": str(zip_path),
+                            # as_posix() so a baseline recorded on Windows and one
+                            # recorded on Linux hold the same string. Nothing compares
+                            # this field today, but these are the first committed
+                            # baselines and the convention gets copied.
+                            "input_zip_path": Path(zip_path).as_posix(),
                             "start_time": start_datetime.isoformat(),
                             "end_time": end_datetime.isoformat(),
                             "run_time_seconds": run_time,

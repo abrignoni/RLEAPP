@@ -31,10 +31,21 @@ __artifacts_v2__ = {
         "description": "Parses received MMS media with inline display, linked to message CSV metadata",
         "author": "@OneSixForensics",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-07-09",
+        "last_update_date": "2026-09-03",
         "requirements": "none",
         "category": "Synchronoss",
-        "notes": "Media at <LCID>/messages/attachments/mms/in/YYYY-MM-DD/",
+        "notes": "Media at <LCID>/messages/attachments/mms/in/YYYY-MM-DD/. "
+                 "Link Status records how each attachment token resolved. 'linked' means a file of "
+                 "that name in the message's own date folder, or -- when that name occurs in only one "
+                 "folder in the return -- that single copy. Attachment names repeat across date "
+                 "folders in these returns (image000000.jpg and the extensionless '0' recur daily), so "
+                 "where a name is in more than one folder and none is the message's own date, the "
+                 "token is reported as not linked, with the number of folders carrying the name, "
+                 "rather than linked to another date's copy. 'referenced -- file not in daily folder' "
+                 "means the token names media that is not in the return at all; per Synchronoss, "
+                 "flagged files are quarantined out of the daily folder, so absence here is expected "
+                 "for reported content and is not on its own a finding about the file. Direction is "
+                 "constant in this artifact by construction, since the artifact selects one direction.",
         "paths": (
             '*/messages/2*.csv',
             '*/messages/attachments/mms/in/*/*',
@@ -48,10 +59,21 @@ __artifacts_v2__ = {
         "description": "Parses sent MMS media with inline display, linked to message CSV metadata",
         "author": "@OneSixForensics",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-07-09",
+        "last_update_date": "2026-09-03",
         "requirements": "none",
         "category": "Synchronoss",
-        "notes": "Media at <LCID>/messages/attachments/mms/out/YYYY-MM-DD/",
+        "notes": "Media at <LCID>/messages/attachments/mms/out/YYYY-MM-DD/. "
+                 "Link Status records how each attachment token resolved. 'linked' means a file of "
+                 "that name in the message's own date folder, or -- when that name occurs in only one "
+                 "folder in the return -- that single copy. Attachment names repeat across date "
+                 "folders in these returns (image000000.jpg and the extensionless '0' recur daily), so "
+                 "where a name is in more than one folder and none is the message's own date, the "
+                 "token is reported as not linked, with the number of folders carrying the name, "
+                 "rather than linked to another date's copy. 'referenced -- file not in daily folder' "
+                 "means the token names media that is not in the return at all; per Synchronoss, "
+                 "flagged files are quarantined out of the daily folder, so absence here is expected "
+                 "for reported content and is not on its own a finding about the file. Direction is "
+                 "constant in this artifact by construction, since the artifact selects one direction.",
         "paths": (
             '*/messages/2*.csv',
             '*/messages/attachments/mms/out/*/*',
@@ -100,13 +122,28 @@ __artifacts_v2__ = {
         "description": "Parses file upload events from Synchronoss DV access logs — rows with file checksums",
         "author": "@OneSixForensics",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-07-09",
-        "requirements": "none",
+        "last_update_date": "2026-09-03",
+        "requirements": "openpyxl",
         "category": "Synchronoss",
-        "notes": "Located alongside the zip as 'Dv Access logs mdn <LCID> <Month> <Year>.csv'. "
+        "notes": "Delivered alongside the zip. Three shapes have been seen on real returns "
+                 "and all are read, merged together when a return carries more than one: "
+                 "monthly 'Dv Access logs mdn <LCID> <Month> <Year>.csv' files; a single "
+                 "'<LCID>.xlsx' workbook covering the whole account; and a single "
+                 "'<LCID>_Dv_Access_Logs.xlsx' workbook, which also names its timestamp "
+                 "column 'logtimestamp' rather than 'server_ts' and writes Apache/CLF "
+                 "timestamps such as '[02/Jun/2026:14:23:11 +0000]' rather than "
+                 "'YYYY-MM-DD HH:MM:SS'. That third shape is not defensive coding: it came "
+                 "off a second production return in September 2026, and the CLF offset is "
+                 "honoured rather than assumed to be UTC. A workbook may carry no 'DV' in "
+                 "its name at all, so workbooks are identified by their column headers; the "
+                 "four non-timestamp columns have been stable across every shape seen, the "
+                 "timestamp column has not. Which shape a return carries appears to vary by "
+                 "production rather than by date, so an older case is not safe merely "
+                 "because it once parsed. Header matching and the row keys are both lower "
+                 "case, so a workbook that capitalises its column titles reads normally. "
                  "Upload rows contain a SHA-256 checksum in the querystring. "
                  "Cross-reference checksums with CyberTip file hashes.",
-        "paths": ('*[Dd][Vv] [Aa]ccess [Ll]ogs*.csv',),
+        "paths": ('*[Dd][Vv]*[Aa]ccess*[Ll]ogs*.csv', '*.xlsx'),
         "output_types": "standard",
         "artifact_icon": "upload",
     },
@@ -115,14 +152,47 @@ __artifacts_v2__ = {
         "description": "Parses sync/conflict-resolve events from Synchronoss DV access logs",
         "author": "@OneSixForensics",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-07-09",
-        "requirements": "none",
+        "last_update_date": "2026-09-03",
+        "requirements": "openpyxl",
         "category": "Synchronoss",
-        "notes": "Located alongside the zip as 'Dv Access logs mdn <LCID> <Month> <Year>.csv'. "
-                 "Sync rows show device activity without a specific file upload.",
-        "paths": ('*[Dd][Vv] [Aa]ccess [Ll]ogs*.csv',),
+        "notes": "Delivered alongside the zip in any of three shapes, all read and merged: "
+                 "monthly 'Dv Access logs mdn <LCID> <Month> <Year>.csv' files, a single "
+                 "'<LCID>.xlsx' workbook, or a '<LCID>_Dv_Access_Logs.xlsx' workbook that "
+                 "names its timestamp column 'logtimestamp' and uses Apache/CLF timestamps. "
+                 "See the Uploads artifact's notes for the detail. Sync rows show device "
+                 "activity without a specific file upload. A workbook cell may hold a number "
+                 "or a date rather than text, so text columns are converted before use: a "
+                 "single such cell in the querystring column previously failed this whole "
+                 "artifact rather than one row.",
+        "paths": ('*[Dd][Vv]*[Aa]ccess*[Ll]ogs*.csv', '*.xlsx'),
         "output_types": "standard",
         "artifact_icon": "refresh",
+    },
+    "synchronoss_quarantined": {
+        "name": "Synchronoss - Quarantined Media (CyberTip)",
+        "description": "Preserved content that Synchronoss quarantined on upload and reported "
+                       "to NCMEC, correlated to the DV access log upload event that produced it",
+        "author": "@OneSixForensics, Claude",
+        "creation_date": "2026-09-02",
+        "last_update_date": "2026-09-02",
+        "requirements": "openpyxl",
+        "category": "Synchronoss",
+        "notes": "Delivered alongside the zip as '<LCID>-<container>-quarantined.zip', which "
+                 "extracts to files named '<container>_<sha256>.zip_file_<N>'. Despite the "
+                 "name these are NOT split-archive parts: each is a complete standalone media "
+                 "file whose SHA-256 is its own filename, and the '.zip_file_<N>' suffix is only "
+                 "a sequence number. The hash is verified against the file's contents here, and "
+                 "used to join the file to its upload event in the DV access log — the "
+                 "'<LCID>_<checksum>' correlation described in Synchronoss' 'Interpreting DV "
+                 "Access Logs'. Files are typed and rendered inline by magic bytes; nothing on "
+                 "disk is renamed.",
+        "paths": (
+            '*[Qq]uarantined*.zip_file_*',
+            '*[Dd][Vv]*[Aa]ccess*[Ll]ogs*.csv',
+            '*.xlsx',
+        ),
+        "output_types": "standard",
+        "artifact_icon": "alert-triangle",
     },
     "synchronoss_vzmobile": {
         "name": "Synchronoss - VZMOBILE Device Backup",
@@ -141,10 +211,14 @@ __artifacts_v2__ = {
 }
 
 import csv
+import hashlib
 import json
 import os
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+
+from openpyxl import load_workbook
+from openpyxl.utils.exceptions import InvalidFileException
 
 from scripts.ilapfuncs import artifact_processor, logfunc, check_in_media, convert_unix_ts_to_utc
 from scripts.html_safe import safe_join
@@ -200,12 +274,30 @@ def _detect_media_type(filepath):
 # Helpers
 # ---------------------------------------------------------------------------
 
+def _rel(context, path):
+    """Extraction-relative path, always with forward slashes.
+
+    A reported path is an evidence reference and must not change with the operating
+    system the tool ran on. get_relative_path yields backslashes on Windows, which
+    makes the same return produce different report values, and different recorded
+    test baselines, on Windows and on Linux.
+    """
+    return str(context.get_relative_path(path)).replace('\\', '/')
+
+
 def _clean_path(path):
     """Strip Windows extended-length path prefix if present (\\\\?\\)."""
     p = str(path)
     if p.startswith('\\\\?\\'):
         return p[4:]
     return p
+
+
+_CLF_MONTHS = {'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
+               'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12}
+
+_CLF_TS_RE = re.compile(
+    r'^\[?(\d{1,2})/([A-Za-z]{3})/(\d{4}):(\d{2}):(\d{2}):(\d{2})\s*([+-]\d{4})?\]?$')
 
 
 def _ts_utc(value):
@@ -217,6 +309,27 @@ def _ts_utc(value):
     seconds/milliseconds. Values in any other format are returned unchanged
     as plain text rather than guessed at — never fabricate a timestamp.
     """
+    if isinstance(value, str):
+        clf = _CLF_TS_RE.match(value.strip())
+        if clf:
+            # Apache/CLF form used by some DV exports: [02/Jun/2026:14:23:11 +0000].
+            # Month is mapped explicitly rather than via %b, which is locale-sensitive.
+            day, mon, year, hh, mm, ss, offset = clf.groups()
+            month = _CLF_MONTHS.get(mon.lower())
+            if month:
+                tz = timezone.utc
+                if offset:
+                    sign = -1 if offset[0] == '-' else 1
+                    tz = timezone(sign * timedelta(hours=int(offset[1:3]),
+                                                   minutes=int(offset[3:5])))
+                return datetime(int(year), month, int(day), int(hh), int(mm), int(ss),
+                                tzinfo=tz).astimezone(timezone.utc)
+    if isinstance(value, datetime):
+        # openpyxl hands back a datetime for date-formatted cells. Source times are
+        # UTC per the Synchronoss FAQ, so a naive value is stamped, not shifted.
+        if value.tzinfo is None:
+            return value.replace(tzinfo=timezone.utc)
+        return value.astimezone(timezone.utc)
     if not value or not isinstance(value, str):
         return value
     text = value.strip()
@@ -267,6 +380,40 @@ def _open_csv(file_found):
     return headers, rows
 
 
+def _open_xlsx(file_found, accept=None):
+    """
+    Return (headers, rows) for the first worksheet of a workbook, mirroring
+    _open_csv so both delivery shapes of the DV access log feed the same code.
+
+    Header keys are lower-cased, and row dicts are keyed by that lower-cased
+    header. A workbook written for a person to read may capitalise its column
+    titles, and every read downstream is lower case; keying rows by the text as
+    written let such a file pass the header check and then read back empty.
+
+    `accept` is called with the headers before any body row is read, and a false
+    result abandons the file. An unrelated workbook elsewhere in the return then
+    costs one row rather than a full read of a spreadsheet that is discarded.
+    """
+    headers, rows = [], []
+    try:
+        workbook = load_workbook(file_found, read_only=True, data_only=True)
+    except (OSError, InvalidFileException, KeyError, ValueError) as e:
+        logfunc(f'Synchronoss workbook read error ({file_found}): {e}')
+        return headers, rows
+    try:
+        sheet = workbook.worksheets[0]
+        for i, row in enumerate(sheet.iter_rows(values_only=True)):
+            if i == 0:
+                headers = [str(c).strip().lower() if c is not None else '' for c in row]
+                if accept is not None and not accept(headers):
+                    return headers, rows
+                continue
+            rows.append({h: ('' if v is None else v) for h, v in zip(headers, row)})
+    finally:
+        workbook.close()
+    return headers, rows
+
+
 def _parse_all_message_csvs(context):
     """
     Read all daily message CSVs and return a list of row dicts.
@@ -279,7 +426,7 @@ def _parse_all_message_csvs(context):
     for _, cf in _dedupe(context.get_files_found()):
         if not pattern.search(os.path.basename(cf)):
             continue
-        rel = context.get_relative_path(cf)
+        rel = _rel(context, cf)
         _, rows = _open_csv(cf)
         for row in rows:
             row['source_file'] = rel
@@ -352,7 +499,7 @@ def synchronoss_messages(context):
             row.get('source_file', ''),
         ))
 
-    return data_headers, data_list, context.get_relative_path(source_path)
+    return data_headers, data_list, _rel(context, source_path)
 
 
 @artifact_processor
@@ -385,7 +532,47 @@ def synchronoss_calls(context):
             row.get('source_file', ''),
         ))
 
-    return data_headers, data_list, context.get_relative_path(source_path)
+    return data_headers, data_list, _rel(context, source_path)
+
+
+def _date_from_media_path(path):
+    """Return the date-folder name from an MMS media path, e.g.
+    '.../mms/in/2025-12-01/image000000.jpg' -> '2025-12-01'."""
+    parts = _clean_path(path).replace('\\', '/').split('/')
+    for i, part in enumerate(parts):
+        if part in ('in', 'out') and i + 1 < len(parts):
+            return parts[i + 1]
+    return ''
+
+
+def _index_mms_media(media_paths):
+    """
+    Index MMS media files, returning (name_paths, date_media):
+
+        name_paths   basename    -> [every raw path carrying that name]
+        date_media   date folder -> {basename: the raw path in that folder}
+
+    date_media is built from every path recorded for a name, not from a dict
+    holding one path per name. Names are not unique across date folders --
+    image000000.jpg and the extensionless "0" are pervasive in real returns --
+    so keeping a single path per name leaves only whichever one the seeker
+    returned last with a date-folder entry, and a message then resolves or
+    fails to resolve depending on the order the files arrive in. That order
+    differs between platforms: the same return linked a message on Windows and
+    reported it unlinked on Linux, and the unlinked wording named a date folder
+    that did hold a copy, so the report stated something false rather than
+    merely leaving it out. Indexing every path makes the result independent of
+    file order; admin/test/scripts/test_synchronoss_media_order.py holds that
+    invariant, because a fixture cannot -- it is the ordering that varies.
+    """
+    name_paths = {}
+    for raw in media_paths:
+        name_paths.setdefault(os.path.basename(raw), []).append(raw)
+    date_media = {}
+    for fname, fpaths in name_paths.items():
+        for fpath in fpaths:
+            date_media.setdefault(_date_from_media_path(fpath), {})[fname] = fpath
+    return name_paths, date_media
 
 
 def _synchronoss_mms_media(context, direction):
@@ -397,8 +584,7 @@ def _synchronoss_mms_media(context, direction):
     # path because check_in_media resolves against the seeker's files_found /
     # file_infos by that exact string.
     csv_rows = []
-    media_lookup = {}  # basename -> a raw full path (may be overwritten if non-unique)
-    name_paths = {}    # basename -> [all raw full paths with that name across folders]
+    media_paths = []   # raw full paths of every media file under this direction
 
     csv_pattern = re.compile(r'\d{8}\.csv$', re.IGNORECASE)
     mms_path_fragment = f'/mms/{direction}/'
@@ -406,32 +592,18 @@ def _synchronoss_mms_media(context, direction):
     for raw, cf in _dedupe(context.get_files_found()):
         basename = os.path.basename(cf)
         if csv_pattern.search(basename):
-            rel = context.get_relative_path(cf)
+            rel = _rel(context, cf)
             _, rows = _open_csv(cf)
             for row in rows:
                 row['source_file'] = rel
                 row['source_path'] = cf
             csv_rows.extend(rows)
         elif mms_path_fragment in cf.replace('\\', '/'):
-            media_lookup[basename] = raw
-            name_paths.setdefault(basename, []).append(raw)
+            media_paths.append(raw)
 
     csv_rows.sort(key=lambda r: r.get('Date', ''))
 
-    # Build date-folder to date string mapping from media paths
-    # Path: .../mms/in/2025-12-01/filename
-    def _date_from_path(path):
-        parts = _clean_path(path).replace('\\', '/').split('/')
-        for i, part in enumerate(parts):
-            if part in ('in', 'out') and i + 1 < len(parts):
-                return parts[i + 1]
-        return ''
-
-    # Build lookup: date_folder -> {filename -> raw_full_path}
-    date_media = {}
-    for fname, fpath in media_lookup.items():
-        date_folder = _date_from_path(fpath)
-        date_media.setdefault(date_folder, {})[fname] = fpath
+    name_paths, date_media = _index_mms_media(media_paths)
 
     data_headers = (
         ('Date (UTC)', 'datetime'), 'Direction', ('Sender', 'phonenumber'),
@@ -513,7 +685,7 @@ def _synchronoss_mms_media(context, direction):
                 row.get('source_file', ''),
             ))
 
-    return data_headers, data_list, context.get_relative_path(source_path)
+    return data_headers, data_list, _rel(context, source_path)
 
 
 @artifact_processor
@@ -587,11 +759,11 @@ def synchronoss_mms_unlinked(context):
             det = _detect_media_type(cf)
             detected = (det + ' (by magic bytes)') if det else 'unknown (magic bytes)'
         data_list.append((date_folder, direction, media_cell, basename, detected,
-                          context.get_relative_path(cf)))
+                          _rel(context, cf)))
 
     data_list.sort(key=lambda r: (r[1], r[0], r[3]))
 
-    return data_headers, data_list, context.get_relative_path(source_path)
+    return data_headers, data_list, _rel(context, source_path)
 
 
 @artifact_processor
@@ -615,7 +787,7 @@ def synchronoss_contacts(context):
         if 'contacts_' not in basename or not basename.endswith('.txt'):
             continue
         source_path = cf
-        rel = context.get_relative_path(cf)
+        rel = _rel(context, cf)
         try:
             with open(cf, 'r', encoding='utf-8-sig', errors='replace') as fh:
                 data = json.load(fh)
@@ -653,30 +825,90 @@ def synchronoss_contacts(context):
                     source, ice, favorite, guid, rel,
                 ))
 
-    return data_headers, data_list, context.get_relative_path(source_path)
+    return data_headers, data_list, _rel(context, source_path)
+
+
+# Providers have shipped the access log under several column and filename spellings.
+# The four non-timestamp columns have been stable; the timestamp column has not.
+_DV_CORE_COLUMNS = ('remoteipaddress', 'clientidentifier', 'querystring', 'lcid')
+_DV_TS_COLUMNS = ('server_ts', 'logtimestamp')
+
+
+def _is_dv_filename(basename):
+    """True for any separator spelling of 'Dv Access Logs' (space, underscore, none)."""
+    return 'dvaccesslogs' in re.sub(r'[^a-z0-9]', '', basename.lower())
+
+
+def _dv_headers_match(headers):
+    """Accept a workbook as an access log on its columns, since its filename may
+    carry no marker at all (some returns name it for the account only)."""
+    lower = {h.lower() for h in headers}
+    return set(_DV_CORE_COLUMNS).issubset(lower) and bool(lower & set(_DV_TS_COLUMNS))
 
 
 def _parse_dv_log(context):
     """
-    Parse all DV access log CSVs and return a list of row dicts.
-    Handles quoted remoteipaddress fields with multiple IPs.
-    Extracts user IP vs CDN IPs and checksum from querystring.
+    Parse the DV access log and return a list of row dicts.
+
+    The log is delivered in either of two shapes: the monthly
+    'Dv Access logs mdn <LCID> <Month> <Year>.csv' files, or a single
+    '<LCID>.xlsx' workbook covering the whole account (seen on 2026-format
+    returns). Both carry the same five columns.
+
+    The workbook's filename holds no 'DV' marker — it is just the account
+    number — so workbooks are accepted on their column headers instead. That
+    keeps an unrelated spreadsheet elsewhere in the return from being read as
+    an access log.
+
+    Handles quoted remoteipaddress fields with multiple IPs. Extracts user IP
+    vs CDN IPs and the checksum from the querystring.
     """
     all_rows = []
     for _, cf in _dedupe(context.get_files_found()):
-        if 'dv access' not in os.path.basename(cf).lower():
+        basename = os.path.basename(cf).lower()
+        if basename.endswith('.csv'):
+            if not _is_dv_filename(basename):
+                continue
+            _, rows = _open_csv(cf)
+            # Same reason the workbook reader lower-cases its headers: this CSV is
+            # identified by filename, not by its columns, so a capitalised title row
+            # is accepted and then read blank by the lower-case reads below. Scoped
+            # to this branch on purpose -- _open_csv is shared with messages, calls
+            # and both MMS artifacts, which key rows on 'Type', 'Date', 'Direction',
+            # 'Sender', 'Body', 'Attachments' and 'Message ID'.
+            rows = [{k.lower(): v for k, v in row.items()} for row in rows]
+        elif basename.endswith('.xlsx'):
+            # Headers are checked before the body is read, so a workbook that is
+            # not an access log is abandoned after one row.
+            _, rows = _open_xlsx(cf, accept=_dv_headers_match)
+            if not rows:
+                continue
+        else:
             continue
-        rel = context.get_relative_path(cf)
-        _, rows = _open_csv(cf)
+        rel = _rel(context, cf)
         for row in rows:
             row['source_file'] = rel
             row['source_path'] = cf
-            user_ip, cdn_ips = _extract_user_ip(row.get('remoteipaddress', ''))
+            # Normalise the timestamp column so downstream code has one name.
+            if not row.get('server_ts'):
+                for alt in _DV_TS_COLUMNS:
+                    if row.get(alt):
+                        row['server_ts'] = row[alt]
+                        break
+            # Write the text columns back as text. A workbook cell can arrive as a
+            # number or a date, and a consumer that calls a string method on the raw
+            # cell (synchronoss_dv_sync does, on querystring) would fail the whole
+            # artifact on one such cell. server_ts is left alone: _ts_utc handles a
+            # datetime itself, and stringifying it here would lose that.
+            for column in ('remoteipaddress', 'querystring', 'clientidentifier', 'lcid'):
+                row[column] = str(row.get(column, '') or '')
+            user_ip, cdn_ips = _extract_user_ip(row['remoteipaddress'])
             row['user_ip'] = user_ip
             row['cdn_ips'] = cdn_ips
-            row['checksum'] = _extract_checksum(row.get('querystring', ''))
+            row['checksum'] = _extract_checksum(row['querystring'])
         all_rows.extend(rows)
-    all_rows.sort(key=lambda r: r.get('server_ts', ''))
+    # str() so a date-typed workbook cell cannot raise against a plain CSV string.
+    all_rows.sort(key=lambda r: str(r.get('server_ts', '')))
     return all_rows
 
 
@@ -708,7 +940,7 @@ def synchronoss_dv_uploads(context):
             row.get('source_file', ''),
         ))
 
-    return data_headers, data_list, context.get_relative_path(source_path)
+    return data_headers, data_list, _rel(context, source_path)
 
 
 @artifact_processor
@@ -741,7 +973,114 @@ def synchronoss_dv_sync(context):
             row.get('source_file', ''),
         ))
 
-    return data_headers, data_list, context.get_relative_path(source_path)
+    return data_headers, data_list, _rel(context, source_path)
+
+
+_QUARANTINE_NAME_RE = re.compile(
+    r'^(?P<container>[0-9a-f]+)_(?P<sha256>[0-9a-f]{64})\.zip_file_(?P<seq>\d+)$',
+    re.IGNORECASE)
+
+
+def _sha256_file(path):
+    """Stream a file's SHA-256. Read-only — the source is never modified."""
+    digest = hashlib.sha256()
+    try:
+        with open(path, 'rb') as fh:
+            for chunk in iter(lambda: fh.read(1024 * 1024), b''):
+                digest.update(chunk)
+    except OSError as e:
+        logfunc(f'Synchronoss quarantine hash error ({path}): {e}')
+        return ''
+    return digest.hexdigest()
+
+
+@artifact_processor
+def synchronoss_quarantined(context):
+    """
+    Quarantined / preserved content — the files Synchronoss flagged on upload and
+    reported to NCMEC, delivered as '<LCID>-<container>-quarantined.zip'.
+
+    Extracted members are named '<container>_<sha256>.zip_file_<N>'. That suffix
+    makes them look like the parts of a split archive; they are not. Each member is
+    a complete standalone media file. On a live return all 41 members carried their
+    own media magic bytes, ranged 127 KB to 8.9 MB (split volumes would be uniform),
+    and every filename hash matched its own contents. Concatenating them as archive
+    volumes would corrupt the evidence, so each is read on its own.
+
+    The filename hash is re-verified against the bytes on disk, then joined to the
+    DV access log on the querystring checksum — the '<LCID>_<checksum>' correlation
+    described in Synchronoss' 'Interpreting DV Access Logs'. That puts the reported
+    file, its upload time, the user's IP and the uploading device on one row.
+
+    Members carry no usable extension; the framework's magic-byte mime detection
+    renders them inline regardless, and nothing on disk is renamed.
+    """
+    # checksum -> its upload events, earliest first (_parse_dv_log sorts ascending)
+    uploads = {}
+    for row in _parse_dv_log(context):
+        checksum = row.get('checksum', '')
+        if checksum:
+            uploads.setdefault(checksum.lower(), []).append(row)
+
+    data_headers = (
+        ('Upload Timestamp (UTC)', 'datetime'), 'User IP', 'Device', ('Media', 'media'),
+        'Detected Type', 'Size (bytes)', 'SHA-256', 'Hash Verified', 'DV Correlation',
+        'Sequence', 'Filename', 'Source File'
+    )
+    data_list = []
+    source_path = ''
+
+    for raw, cf in _dedupe(context.get_files_found()):
+        basename = os.path.basename(cf)
+        match = _QUARANTINE_NAME_RE.match(basename)
+        if not match:
+            continue
+        source_path = cf
+        claimed = match.group('sha256').lower()
+
+        actual = _sha256_file(cf)
+        if not actual:
+            verified = 'not verified — file unreadable'
+        elif actual == claimed:
+            verified = 'yes — content matches filename hash'
+        else:
+            # Never silently trust the name: a mismatch means the delivered file is
+            # not the file the CyberTip names, which the examiner has to see.
+            verified = f'NO — content hashes to {actual}'
+
+        try:
+            size = os.path.getsize(cf)
+        except OSError:
+            size = ''
+
+        detected = _detect_media_type(cf)
+        detected = f'{detected} (by magic bytes)' if detected else 'unknown (magic bytes)'
+
+        events = uploads.get(claimed, [])
+        if events:
+            first = events[0]
+            timestamp = _ts_utc(first.get('server_ts', ''))
+            user_ip = first.get('user_ip', '')
+            device = first.get('clientidentifier', '')
+            correlation = 'matched DV upload event'
+            if len(events) > 1:
+                correlation = (f'matched DV upload event '
+                               f'({len(events)} events; earliest shown)')
+        else:
+            timestamp, user_ip, device = '', '', ''
+            correlation = 'no matching upload event in DV access log'
+
+        data_list.append((
+            timestamp, user_ip, device,
+            _register_media(raw, basename),
+            detected, size, claimed, verified, correlation,
+            int(match.group('seq')), basename,
+            _rel(context, cf),
+        ))
+
+    data_list.sort(key=lambda r: r[9])
+
+    return data_headers, data_list, _rel(context, source_path)
 
 
 @artifact_processor
@@ -785,10 +1124,10 @@ def synchronoss_vzmobile(context):
             device,
             media_cell,
             filename,
-            context.get_relative_path(cf),
+            _rel(context, cf),
         ))
 
     # Sort by upload date then device then filename
     data_list.sort(key=lambda r: (r[0], r[1], r[3]))
 
-    return data_headers, data_list, context.get_relative_path(source_path)
+    return data_headers, data_list, _rel(context, source_path)

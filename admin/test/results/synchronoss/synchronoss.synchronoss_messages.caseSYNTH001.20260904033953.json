@@ -1,0 +1,169 @@
+{
+  "metadata": {
+    "module_name": "synchronoss",
+    "artifact_name": "Synchronoss - Messages (SMS and MMS)",
+    "function_name": "synchronoss_messages",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 9,
+    "number_of_rows": 12,
+    "total_data_size_bytes": 1500,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/synchronoss/testdata.synchronoss.synchronoss_messages.caseSYNTH001.zip",
+    "start_time": "2026-09-04T03:39:53.350116+00:00",
+    "end_time": "2026-09-04T03:39:53.370353+00:00",
+    "run_time_seconds": 0.000606536865234375,
+    "last_commit": {
+      "hash": "e610a63f92df487f3d5cc95c61ceb34278d6fb1d",
+      "author_name": "OneSixForensics",
+      "author_email": "kyle@onesixforensics.com",
+      "date": "2026-09-03T09:34:48-06:00",
+      "message": "Resolve MMS media per date folder regardless of seeker file order"
+    }
+  },
+  "headers": [
+    "Date (UTC)",
+    "Type",
+    "Direction",
+    "Sender",
+    "Recipients",
+    "Body",
+    "Attachments",
+    "Message ID",
+    "Source File"
+  ],
+  "data": [
+    [
+      1764547997,
+      "sms",
+      "in",
+      "+12085551111",
+      "+12085550000",
+      "Hey there \ud83d\udc4b",
+      "null.txt",
+      "1764547997000:d1",
+      "SYNTH001LCIDHASH/messages/20251201.csv"
+    ],
+    [
+      1764548040,
+      "sms",
+      "out",
+      "",
+      "+12085551111",
+      "Reply emoji \ud83d\ude00",
+      "null.txt",
+      "1764548040000:d2",
+      "SYNTH001LCIDHASH/messages/20251201.csv"
+    ],
+    [
+      1764550800,
+      "mms",
+      "in",
+      "+12085552222",
+      "+12085550000",
+      "",
+      "smil;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg",
+      "1764550800000:d3",
+      "SYNTH001LCIDHASH/messages/20251201.csv"
+    ],
+    [
+      1764551100,
+      "mms",
+      "in",
+      "+12085552222",
+      "+12085550000",
+      "",
+      "smil;recording000000.amr",
+      "1764551100000:d4",
+      "SYNTH001LCIDHASH/messages/20251201.csv"
+    ],
+    [
+      1764554400,
+      "mms",
+      "in",
+      "+12085553333",
+      "+12085550000<br>+12085554444<br>+12085555555",
+      "",
+      "smil;bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.jpg",
+      "1764554400000:d5",
+      "SYNTH001LCIDHASH/messages/20251201.csv"
+    ],
+    [
+      1764558000,
+      "mms",
+      "in",
+      "+12085552222",
+      "+12085550000",
+      "",
+      "smil;0",
+      "1764558000000:d6",
+      "SYNTH001LCIDHASH/messages/20251201.csv"
+    ],
+    [
+      1764561600,
+      "mms",
+      "out",
+      "",
+      "+12085551111",
+      "",
+      "image000000.jpg",
+      "1764561600000:d7",
+      "SYNTH001LCIDHASH/messages/20251201.csv"
+    ],
+    [
+      1764568800,
+      "mms",
+      "in",
+      "+12085552222",
+      "+12085550000",
+      "",
+      "null.smi;0;1",
+      "1764568800000:d10",
+      "SYNTH001LCIDHASH/messages/20251201.csv"
+    ],
+    [
+      1764569400,
+      "mms",
+      "in",
+      "+12085552222",
+      "+12085550000",
+      "",
+      "smil.xml;text000001.txt",
+      "1764569400000:d11",
+      "SYNTH001LCIDHASH/messages/20251201.csv"
+    ],
+    [
+      1764572400,
+      "mms",
+      "in",
+      "+12085552222",
+      "+12085550000",
+      "",
+      "smil;9999999999999999999999999999999999999999999999999999999999999999.jpg",
+      "1764572400000:d14",
+      "SYNTH001LCIDHASH/messages/20251201.csv"
+    ],
+    [
+      1764669600,
+      "mms",
+      "in",
+      "+12085551111",
+      "+12085550000",
+      "",
+      "smil;dup.jpg",
+      "1764669600000:d13",
+      "SYNTH001LCIDHASH/messages/20251202.csv"
+    ],
+    [
+      1764752400,
+      "mms",
+      "in",
+      "+12085559999",
+      "+12085550000",
+      "",
+      "smil;dup.jpg",
+      "1764752400000:d12",
+      "SYNTH001LCIDHASH/messages/20251201.csv"
+    ]
+  ]
+}
