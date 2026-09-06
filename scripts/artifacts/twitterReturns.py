@@ -1,7 +1,9 @@
 __artifacts_v2__ = {
     "tweets": {
         "name": "Tweets",
-        "description": "Processes tweets from a twitter return",
+        "description": "Tweets from the tweets file of a Twitter return, with time, text, the "
+                       "image where the tweets media folder holds it, tweet id, edit info, "
+                       "retweet flag and entities.",
         "author": "@AlexisBrignoni",
         "creation_date": "2025-06-23",
         "last_update_date": "2025-06-23",
@@ -14,7 +16,9 @@ __artifacts_v2__ = {
     },
     "deltweets": {
         "name": "Deleted Tweets",
-        "description": "Processes tweets from a twitter return",
+        "description": "Deleted tweets from the deleted-tweets file of a Twitter return, with "
+                       "time, text, the image where the deleted-tweets media folder holds it, "
+                       "tweet id, edit info, retweet flag and entities.",
         "author": "@AlexisBrignoni",
         "creation_date": "2025-06-24",
         "last_update_date": "2025-06-24",
@@ -27,7 +31,9 @@ __artifacts_v2__ = {
     },
     "dmtwitter": {
         "name": "Twitter DMs",
-        "description": "Processes direct messages from a twitter return",
+        "description": "Direct messages from the direct-messages file of a Twitter return, with "
+                       "time, sender and recipient ids, text, conversation id, media URLs and "
+                       "reactions.",
         "author": "@AlexisBrignoni",
         "creation_date": "2025-06-25",
         "last_update_date": "2025-06-25",
@@ -40,7 +46,10 @@ __artifacts_v2__ = {
     },
     "deleteddmtwitter": {
         "name": "Deleted Twitter DMs",
-        "description": "Processes direct messages from a twitter return",
+        "description": "Deleted direct messages from the deleted-direct-messages file of a "
+                       "Twitter return, with time, sender and recipient ids, text, the image "
+                       "where the deleted direct messages media folder holds it, conversation id, "
+                       "media URLs and reactions.",
         "author": "@AlexisBrignoni",
         "creation_date": "2025-07-01",
         "last_update_date": "2025-07-01",
@@ -53,7 +62,8 @@ __artifacts_v2__ = {
     },
     "blocktwitter": {
         "name": "Blocked Twitter",
-        "description": "Processes direct messages from a twitter return",
+        "description": "Accounts listed in the block file of a Twitter return, with the account "
+                       "id and user link.",
         "author": "@AlexisBrignoni",
         "creation_date": "2025-07-02",
         "last_update_date": "2025-07-02",

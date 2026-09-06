@@ -1,7 +1,9 @@
 __artifacts_v2__ = {
     "takeoutSavedLinksDefault": {
         "name": "Saved Links - Default List",
-        "description": "Collections of saved links (images, places, web pages, etc.) from Google Search and Maps.",
+        "description": "Entries of the Default list in the Saved folder of a Google Takeout, "
+                       "links saved from Google Search and Maps with their title, note, URL and "
+                       "comment.",
         "author": "@KevinPagano3",
         "creation_date": "2021-09-25",
         "last_update_date": "2026-06-27",
@@ -14,7 +16,8 @@ __artifacts_v2__ = {
     },
     "takeoutSavedLinksFavImages": {
         "name": "Saved Links - Favorite Images",
-        "description": "Collections of saved links (images, places, web pages, etc.) from Google Search and Maps.",
+        "description": "Entries of the Favorite images list in the Saved folder of a Google "
+                       "Takeout, with their title, note, URL and comment.",
         "author": "@KevinPagano3",
         "creation_date": "2021-09-25",
         "last_update_date": "2026-06-27",
@@ -27,7 +30,8 @@ __artifacts_v2__ = {
     },
     "takeoutSavedLinksFavPages": {
         "name": "Saved Links - Favorite Pages",
-        "description": "Collections of saved links (images, places, web pages, etc.) from Google Search and Maps.",
+        "description": "Entries of the Favorite pages list in the Saved folder of a Google "
+                       "Takeout, with their title, note, URL and comment.",
         "author": "@KevinPagano3",
         "creation_date": "2021-09-25",
         "last_update_date": "2026-06-27",
@@ -40,7 +44,8 @@ __artifacts_v2__ = {
     },
     "takeoutSavedLinksWantToGo": {
         "name": "Saved Links - Want To Go",
-        "description": "Collections of saved links (images, places, web pages, etc.) from Google Search and Maps.",
+        "description": "Entries of the Want to go list in the Saved folder of a Google Takeout, "
+                       "with their title, note, URL and comment.",
         "author": "@KevinPagano3",
         "creation_date": "2021-09-25",
         "last_update_date": "2026-06-27",

@@ -92,7 +92,8 @@ __artifacts_v2__ = {
     },
     "chrome_os_settings": {
         "name": "Chrome - OS Settings",
-        "description": "Parses OS Settings from Google Takeout",
+        "description": "Preference names with the user's gender and birth year from the Chrome OS "
+                       "Settings.json of a Google Takeout.",
         "author": "@stark4n6 & @upintheairsheep",
         "creation_date": "2023-08-18",
         "last_update_date": "2026-06-22",
@@ -105,7 +106,9 @@ __artifacts_v2__ = {
     },
     "chrome_arc_packages": {
         "name": "Chrome - ARC Packages",
-        "description": "Parses OS Settings from Google Takeout",
+        "description": "Android (ARC) packages backed up from a Chrome OS device, from the Chrome "
+                       "OS Settings.json of a Google Takeout, with package name, version, last "
+                       "backup time and Android id.",
         "author": "@stark4n6 & @upintheairsheep",
         "creation_date": "2023-08-18",
         "last_update_date": "2026-06-22",
