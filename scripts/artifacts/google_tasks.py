@@ -22,20 +22,21 @@ from scripts.ilapfuncs import artifact_processor
 @artifact_processor
 def google_tasks(context):
     files_found = context.get_files_found()
-    file_found = ''
+    data_list = []
+    source_paths = []
 
     for file_found in files_found:
         file_found = str(file_found)
         if not os.path.basename(file_found) == 'Tasks.json':
             continue
+        source_paths.append(file_found)
 
         with open(file_found, encoding = 'utf-8', mode = 'r') as f:
             data = json.loads(f.read())
-        
+
         parent_dict = {}
         id_list = []
         title_list = []
-        data_list = []
         task_id = ''
         task_title = ''
         task_parent_title = ''
@@ -85,4 +86,4 @@ def google_tasks(context):
     
     data_headers = (('Task Created','datetime'),('Task Updated','datetime'),('Task Due','datetime'),'Task Status','Task List Name','Parent Task Name','Task Name','Notes','Task Type','Parent Task ID','Task ID','Favorited')
 
-    return data_headers, data_list, file_found
+    return data_headers, data_list, '\n'.join(source_paths)
