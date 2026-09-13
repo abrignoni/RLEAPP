@@ -73,5 +73,5 @@ app = BUNDLE(
     name='rleappGUI.app',
     icon='../../assets/icon.icns',
     bundle_identifier='4n6.brigs.RLEAPP',
-    version='2026.3.1-dev',
+    version='2026.4.0',
 )
