@@ -31,7 +31,7 @@ __artifacts_v2__ = {
         "description": "Parses received MMS media with inline display, linked to message CSV metadata",
         "author": "@OneSixForensics",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-09-03",
+        "last_update_date": "2026-09-04",
         "requirements": "none",
         "category": "Synchronoss",
         "notes": "Media at <LCID>/messages/attachments/mms/in/YYYY-MM-DD/. "
@@ -41,10 +41,10 @@ __artifacts_v2__ = {
                  "folders in these returns (image000000.jpg and the extensionless '0' recur daily), so "
                  "where a name is in more than one folder and none is the message's own date, the "
                  "token is reported as not linked, with the number of folders carrying the name, "
-                 "rather than linked to another date's copy. 'referenced -- file not in daily folder' "
-                 "means the token names media that is not in the return at all; per Synchronoss, "
-                 "flagged files are quarantined out of the daily folder, so absence here is expected "
-                 "for reported content and is not on its own a finding about the file. Direction is "
+                 "rather than linked to another date's copy. 'referenced -- no file of this name in the "
+                 "MMS media folders' means exactly that and nothing more: per Synchronoss, flagged "
+                 "files are quarantined out of the daily folder, so absence is expected for reported "
+                 "content, but absence alone does not establish why any one file is missing. Direction is "
                  "constant in this artifact by construction, since the artifact selects one direction.",
         "paths": (
             '*/messages/2*.csv',
@@ -59,7 +59,7 @@ __artifacts_v2__ = {
         "description": "Parses sent MMS media with inline display, linked to message CSV metadata",
         "author": "@OneSixForensics",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-09-03",
+        "last_update_date": "2026-09-04",
         "requirements": "none",
         "category": "Synchronoss",
         "notes": "Media at <LCID>/messages/attachments/mms/out/YYYY-MM-DD/. "
@@ -69,10 +69,10 @@ __artifacts_v2__ = {
                  "folders in these returns (image000000.jpg and the extensionless '0' recur daily), so "
                  "where a name is in more than one folder and none is the message's own date, the "
                  "token is reported as not linked, with the number of folders carrying the name, "
-                 "rather than linked to another date's copy. 'referenced -- file not in daily folder' "
-                 "means the token names media that is not in the return at all; per Synchronoss, "
-                 "flagged files are quarantined out of the daily folder, so absence here is expected "
-                 "for reported content and is not on its own a finding about the file. Direction is "
+                 "rather than linked to another date's copy. 'referenced -- no file of this name in the "
+                 "MMS media folders' means exactly that and nothing more: per Synchronoss, flagged "
+                 "files are quarantined out of the daily folder, so absence is expected for reported "
+                 "content, but absence alone does not establish why any one file is missing. Direction is "
                  "constant in this artifact by construction, since the artifact selects one direction.",
         "paths": (
             '*/messages/2*.csv',
@@ -668,10 +668,13 @@ def _synchronoss_mms_media(context, direction):
                                f'date folders, none matching message date '
                                f'{date_folder or "?"}; manual review required')
             else:
-                # Media-looking token with no file present — likely quarantined/removed.
+                # Media-looking token with no file of that name anywhere under this
+                # direction. Quarantine is the common cause, but the cell states what
+                # was observed and leaves the cause to the notes: this string is what
+                # lands in front of an examiner, and it cannot tell the two apart.
                 media_cell = ''
-                link_status = ('referenced — file not in daily folder; '
-                               'possibly quarantined/removed')
+                link_status = ('referenced — no file of this name in the '
+                               'MMS media folders')
 
             data_list.append((
                 _ts_utc(msg_date),
