@@ -26,8 +26,6 @@ __artifacts_v2__ = {
                 "conversationLabelColumn": "Conversation",
                 "textColumn": "Body",
                 "directionColumn": "Direction",
-                # Not 'Sent': the LAVA writer rewrites any conversation view value equal to a
-                # column name into that column's SQL name, and 'Sent' is the time column here.
                 "directionSentValue": "Outgoing",
                 "timeColumn": "Sent",
                 "senderColumn": "Author",
