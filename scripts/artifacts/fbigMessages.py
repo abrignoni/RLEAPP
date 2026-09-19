@@ -8,8 +8,8 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Facebook - Instagram Returns",
         "notes": "One row per message record of every Thread block in the Unified Messages section of records.html and every preservation_N.html; Snapshot File names the file, and a message that appears in two snapshots is reported once per snapshot. "
-                 "Direction is 'Sent' when the numeric Instagram id in the message's Author equals the request parameter Target (the account's numeric identifier per the provider's embedded definitions) and 'Received' otherwise; it is blank when Target is not numeric or the Author carries no id. On the return this was built against, the messages whose Author id equalled Target were exactly the messages whose Author username equalled the account's Vanity Name, in all three snapshots. "
-                 "Thread ID is the identifier printed at the head of the Thread block, parentheses removed. "
+                 "Direction is 'Outgoing' when the numeric Instagram id in the message's Author equals the request parameter Target (the account's numeric identifier per the provider's embedded definitions) and 'Incoming' otherwise; it is blank when Target is not numeric or the Author carries no id. On the return this was built against, the messages whose Author id equalled Target were exactly the messages whose Author username equalled the account's Vanity Name, in all three snapshots. "
+                 "Thread ID is the identifier printed at the head of the Thread block, parentheses removed. Conversation is that identifier followed by the snapshot file in parentheses, and it is what LAVA's conversation view groups on, so each snapshot's copy of a thread is its own conversation. Grouped by Thread ID alone, the two threads the tested return carried in all three snapshots showed every message three times. "
                  "Body is reported as stored; per the provider's definition it is the text of the communication or a description of the content type sent. On the tested return the Body of a message carrying an attachment or a share was a sentence of the form '<name> sent a ...' on every such message in two snapshots and on 2,549 of 2,587 in the third. "
                  "Media renders every linked_media file named by the message's Attachments blocks; the attachment columns join one value per attachment with ' | ' when a message carries more than one (19 messages of one snapshot on the tested return). Attachment Name (as stored) is the text the provider prints at the head of each Attachments block (an identifier in parentheses, preceded on some records by a file name, on the tested return; the provider does not define it). "
                  "Share Date Created is kept as text because the provider printed 'Unknown' on most share records of the tested return. Call Missed and Call Duration come from a Call Record block; the provider defines Duration as the length of the call in seconds. Subscription Event Type and Users come from a Subscription Event block (an account joining or leaving the thread). "
@@ -21,11 +21,13 @@ __artifacts_v2__ = {
         "artifact_icon": "message",
         "data_views": {
             "conversation": {
-                "conversationDiscriminatorColumn": "Thread ID",
-                "conversationLabelColumn": "Thread ID",
+                "conversationDiscriminatorColumn": "Conversation",
+                "conversationLabelColumn": "Conversation",
                 "textColumn": "Body",
                 "directionColumn": "Direction",
-                "directionSentValue": "Sent",
+                # Not 'Sent': the LAVA writer rewrites any data_views value equal to a column
+                # name into that column's SQL name, and 'Sent' is the time column here.
+                "directionSentValue": "Outgoing",
                 "timeColumn": "Sent",
                 "senderColumn": "Author",
                 "mediaColumn": "Media",
@@ -109,7 +111,7 @@ def _direction(author, target_id):
     author_id = mr.account_id(author)
     if not target_id or not author_id:
         return ''
-    return 'Sent' if author_id == target_id else 'Received'
+    return 'Outgoing' if author_id == target_id else 'Incoming'
 
 
 def _attachments(message):
@@ -156,9 +158,10 @@ def fbigUnifiedMessages(context):
                     mr.parse_ts(mr.text(message, 'Sent')),
                     _direction(author, rec.target_id),
                     username or author,
-                    thread_id,
+                    f'{thread_id} ({rec.name})',
                     mr.text(message, 'Body'),
                     _register(context, files) or None,
+                    thread_id,
                     _joined(attachments, 'Type'), _joined(attachments, 'Size'),
                     _joined(attachments, 'Product Type'), _joined(attachments, 'URL'),
                     _joined(attachments, 'Name'), '\n'.join(files),
@@ -171,8 +174,8 @@ def fbigUnifiedMessages(context):
                     ' | '.join(mr.text(e, 'Users') for e in events),
                     mr.text(message, 'Disappearing Message'), mr.text(message, 'Disappearing Duration'),
                     author_id, rec.name))
-    data_headers = (('Sent', 'datetime'), 'Direction', 'Author', 'Thread ID', 'Body', ('Media', 'media'),
-                    'Attachment Type', 'Attachment Size', 'Attachment Product Type', 'Attachment URL',
+    data_headers = (('Sent', 'datetime'), 'Direction', 'Author', 'Conversation', 'Body', ('Media', 'media'),
+                    'Thread ID', 'Attachment Type', 'Attachment Size', 'Attachment Product Type', 'Attachment URL',
                     'Attachment Name (as stored)', 'Linked Media File', 'Share Date Created (as stored)',
                     'Share Text', 'Share URL', 'Call Missed', 'Call Duration', 'Subscription Event Type',
                     'Subscription Event Users', 'Disappearing Message', 'Disappearing Duration',
