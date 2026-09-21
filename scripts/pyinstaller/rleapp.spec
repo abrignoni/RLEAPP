@@ -32,7 +32,6 @@ a = Analysis(
       'openpyxl',
       'pillow_heif',
       'pypdf',
-      'requests',
       'simplekml',
       'xlrd',
       ],
