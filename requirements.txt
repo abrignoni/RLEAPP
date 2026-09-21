@@ -9,7 +9,6 @@ PyCryptodome
 simplekml
 xmltodict
 xlrd==1.2.0
-PyMuPDF
 openpyxl
 pypdf
 ijson

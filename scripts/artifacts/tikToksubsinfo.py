@@ -5,11 +5,15 @@ __artifacts_v2__ = {
                        "((Subscriber information).pdf).",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-09-29",
-        "last_update_date": "2026-06-28",
-        "requirements": "PyMuPDF",
+        "last_update_date": "2026-09-21",
+        "requirements": "pypdf",
         "category": "TikTok Returns",
         "notes": "Source File column added so per-subscriber provenance (originally encoded in the "
-                 "report title) survives when multiple returns are merged into one table.",
+                 "report title) survives when multiple returns are merged into one table. The PDF's "
+                 "text is read with pypdf, and each field is taken from a line holding its label, a "
+                 "colon and the value. A field whose label and value are not extracted onto the same "
+                 "line is left blank. Checked only on constructed PDFs made with ReportLab and with "
+                 "Chrome's print to PDF, not on a real TikTok return.",
         "paths": ('*/*/*(Subscriber information).pdf',),
         "output_types": "standard",
         "artifact_icon": "user",
@@ -19,7 +23,7 @@ __artifacts_v2__ = {
 import os
 from datetime import datetime, timezone
 
-import fitz
+from pypdf import PdfReader
 
 from scripts.ilapfuncs import artifact_processor
 
@@ -47,9 +51,8 @@ def tikToksubsinfo(context):
         source_path = file_found
 
         text = ''
-        with fitz.open(file_found) as doc:
-            for page in doc:
-                text += page.get_text()  # get_text(); getText() was removed in modern PyMuPDF
+        for page in PdfReader(file_found).pages:
+            text += (page.extract_text() or '') + '\n'
 
         username = registrationmethod = phone = ''
         registrationdate = registrationip = registrationdeviceinfo = ''
