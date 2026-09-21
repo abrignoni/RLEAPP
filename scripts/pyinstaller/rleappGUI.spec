@@ -25,7 +25,6 @@ a = Analysis(
       *collect_submodules('pdfminer'),
       'bs4',
       'bencoding',
-      'fitz',
       'ijson',
       'mailbox',
       'mammoth',

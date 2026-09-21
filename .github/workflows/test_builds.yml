@@ -36,8 +36,8 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          # Latest supported Python. PyMuPDF and pillow-heif may lack win_arm64
-          # wheels; that leg is exploratory until a run proves it.
+          # Latest supported Python. pillow-heif may lack win_arm64 wheels; that
+          # leg is exploratory until a run proves it.
           python-version: '3.14'
 
       - name: Provide OpenSSL for the cryptography source build (arm64 only)
