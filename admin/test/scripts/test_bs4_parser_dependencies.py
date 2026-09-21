@@ -4,17 +4,19 @@ BeautifulSoup takes the parser as a string. A module that asks for 'lxml'
 therefore imports cleanly on a machine without lxml and fails only when it
 parses, with bs4.FeatureNotFound. The runtime-contract job cannot see that: it
 installs requirements.txt and imports every module, and the import succeeds.
-scripts/meta_records.py asked for 'lxml' while requirements.txt did not list it,
-so every Meta return artifact failed on a clean install and in the 2026.4.1
-builds.
+RLEAPP 2026.4.1 shipped exactly this. Its Meta return reader asked for 'lxml',
+requirements.txt did not list it, and every Meta return artifact failed on a
+clean install and in the release builds.
 
 A call that names no parser, or a feature several builders share ('html',
 'permissive'), gets whichever builder happens to be installed, so one input can
 parse differently on two machines. Those calls are refused too.
 
-The parser names and the library behind each are the builder features of the
-pinned beautifulsoup4 4.8.2 (bs4/builder/_htmlparser.py, _lxml.py and
+The parser names and the library behind each were read from the builder
+modules of beautifulsoup4 4.8.2 (bs4/builder/_htmlparser.py, _lxml.py and
 _html5lib.py). Features that more than one library provides are left out.
+
+The same file runs in all five LEAPP cores.
 """
 import ast
 import pathlib
@@ -23,6 +25,9 @@ import unittest
 import warnings
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[3]
+
+# The code a release ships: the entry points beside the repo root and these packages.
+SHIPPED_PACKAGES = ('scripts', 'leapp_functions')
 
 # Parser name -> the distribution that provides it (None: the standard library).
 PARSER_LIBRARY = {
@@ -47,19 +52,30 @@ def declared_distributions(requirements_text):
     return names
 
 
+def _soup_names(tree):
+    """Every name the module binds BeautifulSoup to, including 'import ... as'."""
+    names = {'BeautifulSoup'}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.module == 'bs4':
+            names.update(alias.asname for alias in node.names
+                         if alias.name == 'BeautifulSoup' and alias.asname)
+    return names
+
+
 def bs4_calls(source, filename='<module>'):
     """(line, parser) for each BeautifulSoup call: the parser is the literal name,
     '' when the call names none, or None when it is not a string literal."""
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', SyntaxWarning)
         tree = ast.parse(source, filename)
+    soup_names = _soup_names(tree)
     found = []
     for node in ast.walk(tree):
         if not isinstance(node, ast.Call):
             continue
         func = node.func
-        name = func.id if isinstance(func, ast.Name) else func.attr if isinstance(func, ast.Attribute) else None
-        if name != 'BeautifulSoup':
+        if not ((isinstance(func, ast.Name) and func.id in soup_names)
+                or (isinstance(func, ast.Attribute) and func.attr == 'BeautifulSoup')):
             continue
         if len(node.args) > 1:
             arg = node.args[1]
@@ -95,8 +111,10 @@ def problems(sources, declared):
 
 
 def shipped_sources():
-    """Every module the tool ships: scripts/ and the entry points beside it."""
-    paths = sorted((REPO_ROOT / 'scripts').rglob('*.py')) + sorted(REPO_ROOT.glob('*.py'))
+    """Every module a release ships: the entry points and the shipped packages."""
+    paths = sorted(REPO_ROOT.glob('*.py'))
+    for package in SHIPPED_PACKAGES:
+        paths += sorted((REPO_ROOT / package).rglob('*.py'))
     return {p.relative_to(REPO_ROOT).as_posix(): p.read_bytes() for p in paths}
 
 
@@ -117,6 +135,10 @@ class Bs4ParserDependencies(unittest.TestCase):
     def test_the_standard_library_parser_needs_nothing_declared(self):
         source = "import bs4\nsoup = bs4.BeautifulSoup(data, features='html.parser')\n"
         self.assertEqual(problems({'m.py': source}, set()), [])
+
+    def test_a_call_through_an_alias_is_checked(self):
+        source = "from bs4 import BeautifulSoup as Soup\nsoup = Soup(data, 'lxml')\n"
+        self.assertEqual(len(problems({'m.py': source}, {'beautifulsoup4'})), 1)
 
     def test_a_call_that_leaves_the_parser_to_the_machine_is_refused(self):
         for call in ('BeautifulSoup(data)', "BeautifulSoup(data, 'html')", 'BeautifulSoup(data, parser)'):
