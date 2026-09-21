@@ -175,7 +175,7 @@ class Records:
         self.path = str(path)
         self.name = os.path.basename(self.path)
         with open(self.path, 'rb') as handle:
-            soup = BeautifulSoup(handle.read(), 'lxml')
+            soup = BeautifulSoup(handle.read(), 'html.parser')
         self.sections = {}
         self.definitions = {}
         self.order = []
