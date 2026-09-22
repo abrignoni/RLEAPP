@@ -269,6 +269,44 @@ __artifacts_v2__ = {
         "output_types": "standard",
         "artifact_icon": "note",
     },
+    "facebookArchiveMessages": {
+        "name": "Facebook Archive - Messages",
+        "description": "Messenger threads from a Facebook Download Your Information export",
+        "author": "@AlexisBrignoni, Claude",
+        "creation_date": "2026-09-22",
+        "last_update_date": "2026-09-22",
+        "requirements": "none",
+        "category": "Facebook Archive",
+        "notes": "Read from the message_1.json thread files under your_facebook_activity/messages in a "
+                 "Facebook Download Your Information (DYI) export, covering the inbox, filtered_threads, "
+                 "e2ee_cutover and archived_threads folders. This is the DYI message shape (participants "
+                 "as name objects, title, and messages with sender_name, timestamp_ms and content), "
+                 "which is distinct from the camelCase Messenger export that the Facebook Messenger "
+                 "module reads. The Facebook and Instagram DYI message trees have the same layout and "
+                 "are told apart by the your_facebook_activity path, so this artifact reads only the "
+                 "Facebook side. Timestamp is Unix milliseconds. Sender and message text are repaired "
+                 "from the export's Latin-1-escaped UTF-8. Thread is the thread title where present, "
+                 "otherwise the thread folder name. Participants lists the thread's members. Media "
+                 "renders the photos, videos, gifs, audio, files and stickers a message carries, "
+                 "resolved from each item's uri relative to the export root and checked in from disk. "
+                 "Reactions joins each reaction with the actor who left it. Direction is not asserted "
+                 "because the export does not mark which participant is the account owner. Field "
+                 "mapping was done against a private sample; no sample data is recorded for it.",
+        "paths": ('*/your_facebook_activity/messages/*',),
+        "output_types": "standard",
+        "artifact_icon": "brand-messenger",
+        "html_columns": ['Media', 'Reactions'],
+        "data_views": {
+            "conversation": {
+                "conversationDiscriminatorColumn": "Thread",
+                "conversationLabelColumn": "Thread",
+                "timeColumn": "Timestamp",
+                "senderColumn": "Sender",
+                "textColumn": "Message",
+                "mediaColumn": "Media",
+            }
+        },
+    },
     "facebookArchivePayments": {
         "name": "Facebook Archive - Payment History",
         "description": "Payment history from a Facebook Download Your Information export",
@@ -293,7 +331,9 @@ import json
 import os
 
 from scripts.ilapfuncs import (artifact_processor, utf8_in_extended_ascii,
-                               convert_unix_ts_to_utc)
+                               convert_unix_ts_to_utc, check_in_media)
+
+_MSG_MEDIA_KEYS = ('photos', 'videos', 'gifs', 'audio_files', 'files')
 
 
 def _load(file_found):
@@ -657,3 +697,71 @@ def facebookArchivePayments(context):
         else:
             data_list.append((currency, '', context.get_relative_path(file_found)))
     return data_headers, data_list, file_found
+
+
+def _thread_media(message, export_root):
+    """Resolve a DYI message's media items to on-disk paths and check them in."""
+    refs = []
+    items = []
+    for key in _MSG_MEDIA_KEYS:
+        for item in message.get(key) or []:
+            if isinstance(item, dict) and item.get('uri'):
+                items.append(item['uri'])
+    sticker = message.get('sticker')
+    if isinstance(sticker, dict) and sticker.get('uri'):
+        items.append(sticker['uri'])
+    for uri in items:
+        media_path = os.path.join(export_root, uri.replace('/', os.sep))
+        if os.path.exists(media_path):
+            ref = check_in_media(media_path, os.path.basename(media_path))
+            if ref:
+                refs.append(ref)
+    return '<br>'.join(refs)
+
+
+def _reactions(message):
+    out = []
+    for reaction in message.get('reactions') or []:
+        if isinstance(reaction, dict):
+            out.append(f"{_fix(reaction.get('actor', ''))}: {_fix(reaction.get('reaction', ''))}")
+    return '<br>'.join(out)
+
+
+@artifact_processor
+def facebookArchiveMessages(context):
+    data_headers = (
+        ('Timestamp', 'datetime'), 'Sender', 'Thread', 'Message', ('Media', 'media'),
+        'Participants', 'Reactions', 'Source File')
+    data_list = []
+    source_paths = []
+    for file_found in context.get_files_found():
+        file_found = str(file_found)
+        normalized = file_found.replace('\\', '/')
+        if os.path.basename(normalized) != 'message_1.json':
+            continue
+        marker = '/your_facebook_activity/'
+        if marker not in normalized:
+            continue
+        loaded = _load(file_found)
+        if not isinstance(loaded, dict):
+            continue
+        messages = loaded.get('messages')
+        if not isinstance(messages, list):
+            continue
+        export_root = file_found[:file_found.replace('\\', '/').index(marker)]
+        participants = ', '.join(
+            _fix(p.get('name', '')) for p in loaded.get('participants') or []
+            if isinstance(p, dict))
+        thread = _fix(loaded.get('title', '')) or os.path.basename(os.path.dirname(normalized))
+        rows = 0
+        for message in messages:
+            timestamp = message.get('timestamp_ms')
+            data_list.append((
+                convert_unix_ts_to_utc(timestamp / 1000) if timestamp else '',
+                _fix(message.get('sender_name', '')), thread, _fix(message.get('content', '')),
+                _thread_media(message, export_root), participants, _reactions(message),
+                context.get_relative_path(file_found)))
+            rows += 1
+        if rows:
+            source_paths.append(file_found)
+    return data_headers, data_list, '\n'.join(source_paths)
