@@ -332,6 +332,7 @@ import os
 
 from scripts.ilapfuncs import (artifact_processor, utf8_in_extended_ascii,
                                convert_unix_ts_to_utc, check_in_media)
+from scripts.html_safe import esc
 
 _MSG_MEDIA_KEYS = ('photos', 'videos', 'gifs', 'audio_files', 'files')
 
@@ -700,7 +701,11 @@ def facebookArchivePayments(context):
 
 
 def _thread_media(message, export_root):
-    """Resolve a DYI message's media items to on-disk paths and check them in."""
+    """Resolve a DYI message's media items to on-disk paths and check them in.
+
+    Returns a list of checked-in media references, which the report renders as a
+    media column without interpolating anything unescaped into markup.
+    """
     refs = []
     items = []
     for key in _MSG_MEDIA_KEYS:
@@ -716,14 +721,15 @@ def _thread_media(message, export_root):
             ref = check_in_media(media_path, os.path.basename(media_path))
             if ref:
                 refs.append(ref)
-    return '<br>'.join(refs)
+    return refs
 
 
 def _reactions(message):
     out = []
     for reaction in message.get('reactions') or []:
         if isinstance(reaction, dict):
-            out.append(f"{_fix(reaction.get('actor', ''))}: {_fix(reaction.get('reaction', ''))}")
+            out.append(f"{esc(_fix(reaction.get('actor', '')))}: "
+                       f"{esc(_fix(reaction.get('reaction', '')))}")
     return '<br>'.join(out)
 
 
