@@ -8,7 +8,8 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Instagram Archive",
         "notes": "",
-        "paths": ('*/login_and_account_creation/login_activity.json'),
+        "paths": ('*/login_and_account_creation/login_activity.json',
+                  '*/login_and_profile_creation/login_activity.json'),
         "output_types": "standard",
         "artifact_icon": "brand-instagram",
     }
