@@ -1,0 +1,78 @@
+{
+  "metadata": {
+    "module_name": "coinbaseComplianceReport",
+    "artifact_name": "Coinbase Compliance Report - Billing Addresses",
+    "function_name": "coinbaseCRBillingAddresses",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 11,
+    "number_of_rows": 3,
+    "total_data_size_bytes": 326,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/coinbaseComplianceReport/testdata.coinbaseComplianceReport.coinbaseCRBillingAddresses.caseSYNTH001.zip",
+    "start_time": "2026-09-23T20:05:51.856501+00:00",
+    "end_time": "2026-09-23T20:05:51.865227+00:00",
+    "run_time_seconds": 0.0008692741394042969,
+    "last_commit": {
+      "hash": "Uncommitted",
+      "author_name": "N/A",
+      "author_email": "N/A",
+      "date": "2026-09-23T16:05:51.860735",
+      "message": "File not yet committed to git"
+    }
+  },
+  "headers": [
+    "User ID",
+    "ADDRESS 1",
+    "ADDRESS 2",
+    "ADDRESS 3",
+    "CITY",
+    "STATE",
+    "POSTAL CODE",
+    "COUNTRY",
+    "Other Columns (as produced)",
+    "CSV Record",
+    "Source File"
+  ],
+  "data": [
+    [
+      "SYNTHUSER000000000000000A",
+      "100 Synthetic Way",
+      "",
+      "",
+      "Testville",
+      "KY",
+      "40000",
+      "US",
+      "",
+      41,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "100 Synthetic Way",
+      "",
+      "",
+      "Testville",
+      "KY",
+      "40000",
+      "US",
+      "",
+      41,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "100 Synthetic Way",
+      "",
+      "",
+      "Testville",
+      "KY",
+      "40000",
+      "US",
+      "",
+      41,
+      "0000bbbb/compliance_report.csv"
+    ]
+  ]
+}

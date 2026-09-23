@@ -1,0 +1,89 @@
+{
+  "metadata": {
+    "module_name": "coinbaseComplianceReport",
+    "artifact_name": "Coinbase Compliance Report - Other Sections",
+    "function_name": "coinbaseCROtherSections",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 5,
+    "number_of_rows": 8,
+    "total_data_size_bytes": 866,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/coinbaseComplianceReport/testdata.coinbaseComplianceReport.coinbaseCROtherSections.caseSYNTH001.zip",
+    "start_time": "2026-09-23T20:05:51.880572+00:00",
+    "end_time": "2026-09-23T20:05:51.887252+00:00",
+    "run_time_seconds": 0.0008118152618408203,
+    "last_commit": {
+      "hash": "Uncommitted",
+      "author_name": "N/A",
+      "author_email": "N/A",
+      "date": "2026-09-23T16:05:51.884204",
+      "message": "File not yet committed to git"
+    }
+  },
+  "headers": [
+    "User ID",
+    "Section",
+    "Cells (as produced)",
+    "CSV Record",
+    "Source File"
+  ],
+  "data": [
+    [
+      "SYNTHUSER000000000000000A",
+      "Mystery Section",
+      "KEY A | VALUE A",
+      111,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Mystery Section",
+      "KEY B | VALUE B | THIRD COL",
+      112,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Wires",
+      "CREATED | AMOUNT",
+      116,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Empty Thing",
+      "",
+      "",
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Mystery Section",
+      "KEY A | VALUE A",
+      111,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Mystery Section",
+      "KEY B | VALUE B | THIRD COL",
+      112,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Wires",
+      "CREATED | AMOUNT",
+      116,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Empty Thing",
+      "",
+      "",
+      "0000aaaa/compliance_report.csv"
+    ]
+  ]
+}
