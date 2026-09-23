@@ -277,10 +277,13 @@ actual = {
     "dv_uploads":     sum(1 for r in DV_ALL if "checksum=" in str(r[3])),
     "dv_sync":        sum(1 for r in DV_ALL if "checksum=" not in str(r[3])),
     "quarantined":    len([n for n in os.listdir(mk(QDIR, ".")) if "zip_file_" in n]),
-    "vzmobile":       3,
+    "vzmobile":       sum(
+        len(files)
+        for _, _, files in os.walk(os.path.join(BASE, LCID, "VZMOBILE"))
+    ),
     "mms_media_files": sum(
         len(files)
-        for root, _, files in os.walk(os.path.join(BASE, LCID, "messages", "attachments", "mms"))
+        for _, _, files in os.walk(os.path.join(BASE, LCID, "messages", "attachments", "mms"))
     ),
 }
 
