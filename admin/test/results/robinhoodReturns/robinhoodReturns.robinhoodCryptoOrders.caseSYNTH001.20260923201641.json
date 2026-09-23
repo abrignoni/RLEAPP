@@ -1,0 +1,90 @@
+{
+  "metadata": {
+    "module_name": "robinhoodReturns",
+    "artifact_name": "Robinhood - Crypto Orders",
+    "function_name": "robinhoodCryptoOrders",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 14,
+    "number_of_rows": 3,
+    "total_data_size_bytes": 351,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/robinhoodReturns/testdata.robinhoodReturns.robinhoodCryptoOrders.caseSYNTH001.zip",
+    "start_time": "2026-09-23T20:16:41.159876+00:00",
+    "end_time": "2026-09-23T20:16:41.166372+00:00",
+    "run_time_seconds": 0.00021648406982421875,
+    "last_commit": {
+      "hash": "Uncommitted",
+      "author_name": "N/A",
+      "author_email": "N/A",
+      "date": "2026-09-23T16:16:41.164157",
+      "message": "File not yet committed to git"
+    }
+  },
+  "headers": [
+    "Time Entered",
+    "UUID",
+    "Symbol",
+    "Side",
+    "Quantity",
+    "State",
+    "Order Type",
+    "Leaves Quantity",
+    "Entered Price",
+    "Average Price",
+    "Notional",
+    "Other Columns (as produced)",
+    "CSV Record",
+    "Source File"
+  ],
+  "data": [
+    [
+      "03/24/2025, 08:17:57",
+      "O1",
+      "BTC",
+      "Buy",
+      "0.001",
+      "Filled",
+      "Market",
+      "0E-18",
+      "$1.00",
+      "$1.00",
+      "($100.00)",
+      "",
+      2,
+      "Final Production-SYNTH/RHC/crypto_account_orders.csv"
+    ],
+    [
+      "03/24/2025, 08:18:57",
+      "O2",
+      "BTC",
+      "Buy",
+      "1",
+      "Canceled",
+      "Limit",
+      "1",
+      "$100.00",
+      "",
+      "($100.00)",
+      "",
+      3,
+      "Final Production-SYNTH/RHC/crypto_account_orders.csv"
+    ],
+    [
+      "03/24/2025, 08:19:57",
+      "O3",
+      "BTC",
+      "Sell",
+      "1",
+      "Filled",
+      "Limit",
+      "0.5",
+      "$100.00",
+      "$100.00",
+      "$50.00",
+      "",
+      4,
+      "Final Production-SYNTH/RHC/crypto_account_orders.csv"
+    ]
+  ]
+}

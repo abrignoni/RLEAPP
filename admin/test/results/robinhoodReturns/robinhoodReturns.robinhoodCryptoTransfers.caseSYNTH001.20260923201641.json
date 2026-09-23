@@ -1,0 +1,72 @@
+{
+  "metadata": {
+    "module_name": "robinhoodReturns",
+    "artifact_name": "Robinhood - Crypto Transfers",
+    "function_name": "robinhoodCryptoTransfers",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 21,
+    "number_of_rows": 1,
+    "total_data_size_bytes": 307,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/robinhoodReturns/testdata.robinhoodReturns.robinhoodCryptoTransfers.caseSYNTH001.zip",
+    "start_time": "2026-09-23T20:16:41.200860+00:00",
+    "end_time": "2026-09-23T20:16:41.208440+00:00",
+    "run_time_seconds": 0.0015804767608642578,
+    "last_commit": {
+      "hash": "Uncommitted",
+      "author_name": "N/A",
+      "author_email": "N/A",
+      "date": "2026-09-23T16:16:41.204744",
+      "message": "File not yet committed to git"
+    }
+  },
+  "headers": [
+    "Timestamp (UTC)",
+    "Time Basis",
+    "id",
+    "created_at",
+    "withdrawal_submitted_timestamp",
+    "currency_code",
+    "transfer_type",
+    "amount",
+    "network",
+    "network_fee",
+    "native_network_fee",
+    "usd_amount_at_request",
+    "fiat_amount_at_request",
+    "state",
+    "to_address",
+    "address_tag",
+    "blockchain_txn_id",
+    "blockchain_txn_state",
+    "Other Columns (as produced)",
+    "CSV Record",
+    "Source File"
+  ],
+  "data": [
+    [
+      1742818829,
+      "stated offset",
+      "T1",
+      "2025-03-24T08:20:29.92436-04:00",
+      "",
+      "ETH",
+      "deposit",
+      "0.5",
+      "ETHEREUM",
+      "0",
+      "0.0000012",
+      "23.5144288476887836",
+      "23.5144288476887836",
+      "succeeded",
+      "0xabcdef0000000000000000000000000000000001",
+      "",
+      "0XAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "confirmed",
+      "",
+      2,
+      "Final Production-SYNTH/RHC/crypto_account_transfers.csv"
+    ]
+  ]
+}

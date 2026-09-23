@@ -1,0 +1,65 @@
+{
+  "metadata": {
+    "module_name": "robinhoodReturns",
+    "artifact_name": "Robinhood - Statements",
+    "function_name": "robinhoodStatements",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 11,
+    "number_of_rows": 2,
+    "total_data_size_bytes": 836,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/robinhoodReturns/testdata.robinhoodReturns.robinhoodStatements.caseSYNTH001.zip",
+    "start_time": "2026-09-23T20:16:41.166882+00:00",
+    "end_time": "2026-09-23T20:16:41.200192+00:00",
+    "run_time_seconds": 0.02644515037536621,
+    "last_commit": {
+      "hash": "Uncommitted",
+      "author_name": "N/A",
+      "author_email": "N/A",
+      "date": "2026-09-23T16:16:41.171434",
+      "message": "File not yet committed to git"
+    }
+  },
+  "headers": [
+    "Statement",
+    "Account",
+    "Account Basis",
+    "Period Start",
+    "Period End",
+    "Opening Balance",
+    "Closing Balance",
+    "Holdings",
+    "Location",
+    "Source Text",
+    "Source File"
+  ],
+  "data": [
+    [
+      "RHC crypto statement",
+      "SYNTH00001",
+      "stated in file (RHS ACCOUNT NUMBER)",
+      "",
+      "2025-01-31",
+      "",
+      "",
+      "BTC 0.001 ($100.00)",
+      "NAME at page 1, y 54; ACCOUNT NUMBER at page 1, y 74; RHS ACCOUNT NUMBER at page 1, y 94; PERIOD END at page 1, y 114; holdings at page 1, y 448",
+      "[[\"NAME\", \"Test Person\"], [\"ACCOUNT NUMBER\", \"SYNTHRHC01\"], [\"RHS ACCOUNT NUMBER\", \"SYNTH00001\"], [\"PERIOD END\", \"2025-01-31\"]]\nBitcoin 0.001 BTC $100.00",
+      "Final Production-SYNTH/RHC/00000000-0000-0000-0000-000000000001_rhc_statement_00000000-0000-0000-0000-000000000002_2025-01-31.pdf"
+    ],
+    [
+      "RHF brokerage statement",
+      "900000001",
+      "stated in file (Account #)",
+      "2025-01-01",
+      "2025-01-31",
+      "1.00",
+      "2.00",
+      "",
+      "page 1, y 64; page 1, y 78; page 1, y 203",
+      "01/01/2025 to 01/31/2025\nTest Person Account #:900000001\nPortfolio Value $1.00 $2.00",
+      "Final Production-SYNTH/SYNTH00001 (RHF)/bulk_edocs_SYNTH00001/SYNTH00001_account_statement_2025-01-31.pdf"
+    ]
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "metadata": {
+    "module_name": "robinhoodReturns",
+    "artifact_name": "Robinhood - Parsing Notes",
+    "function_name": "robinhoodParsingNotes",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 6,
+    "number_of_rows": 7,
+    "total_data_size_bytes": 1501,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/robinhoodReturns/testdata.robinhoodReturns.robinhoodParsingNotes.caseSYNTH001.zip",
+    "start_time": "2026-09-23T20:16:40.972606+00:00",
+    "end_time": "2026-09-23T20:16:41.112058+00:00",
+    "run_time_seconds": 0.13083148002624512,
+    "last_commit": {
+      "hash": "Uncommitted",
+      "author_name": "N/A",
+      "author_email": "N/A",
+      "date": "2026-09-23T16:16:40.977261",
+      "message": "File not yet committed to git"
+    }
+  },
+  "headers": [
+    "Document",
+    "Level",
+    "Message",
+    "Location",
+    "Source Text",
+    "Source File"
+  ],
+  "data": [
+    [
+      "account master",
+      "warning",
+      "Account Master: 1 label(s) not in the known vocabulary; kept as '(unrecognized label)' fields with their values",
+      "",
+      "",
+      "Final Production-SYNTH/Account Master edit logs.pdf"
+    ],
+    [
+      "account master",
+      "warning",
+      "Brokeback edit log: wrapped text could belong to either neighbouring record; not attached (records near: page 1, y 195 and page 1, y 219)",
+      "page 1, y 207",
+      "ambiguous line",
+      "Final Production-SYNTH/Account Master edit logs.pdf"
+    ],
+    [
+      "account master",
+      "warning",
+      "Brokeback edit log: wrapped text is not joined to any record by line spacing; not attached (records near: page 1, y 255)",
+      "page 1, y 315",
+      "stranded text",
+      "Final Production-SYNTH/Account Master edit logs.pdf"
+    ],
+    [
+      "account master",
+      "warning",
+      "Account Master: 1 text item(s) did not match a known label layout; kept as '(unlabelled text)' under Robinhood > Accounts",
+      "",
+      "",
+      "Final Production-SYNTH/Account Master; AC Document.pdf"
+    ],
+    [
+      "account master",
+      "warning",
+      "Account Master: 1 label(s) not in the known vocabulary; kept as '(unrecognized label)' fields with their values",
+      "",
+      "",
+      "Final Production-SYNTH/Account Master; AC Document.pdf"
+    ],
+    [
+      "crypto_account_orders.csv",
+      "info",
+      "text line at the end of the file; not a record",
+      "CSV record 6",
+      "Synthetic notice line. Synthetic notice line. Synthetic notice line. Synthetic notice line.",
+      "Final Production-SYNTH/RHC/crypto_account_orders.csv"
+    ],
+    [
+      "crypto_account_transfers.csv",
+      "info",
+      "text line at the end of the file; not a record",
+      "CSV record 3",
+      "Synthetic notice line for the transfers export, written to sit after the last record. Generated 01/01/2025.",
+      "Final Production-SYNTH/RHC/crypto_account_transfers.csv"
+    ]
+  ]
+}
