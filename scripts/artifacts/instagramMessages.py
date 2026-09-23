@@ -31,6 +31,13 @@ def instagramMessages(context):
 
         filename = os.path.basename(file_found)
 
+        # The Facebook "Download Your Information" export uses the same
+        # messages/inbox layout, under your_facebook_activity. Those threads
+        # belong to the Facebook Archive module, so skip them here rather than
+        # reporting Facebook messages under the Instagram category.
+        if 'your_facebook_activity' in file_found.replace('\\', '/'):
+            continue
+
         if filename.startswith('message_1.json'):
             source_paths.add(file_found)
 
