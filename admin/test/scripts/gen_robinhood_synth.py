@@ -205,6 +205,7 @@ def rhf_statement_pdf():
     """Activity table with a wrapped description line followed by another valid row."""
     p1 = [(665, 85, 8.7, "Test Person Account #:900000001"), (701, 71, 8.7, "01/01/2025 to 01/31/2025"),
           (36, 128, 8.7, "Account Summary"), (36, 211, 10.1, "Portfolio Value"), (211, 211, 10.1, "$1.00"), (298, 211, 10.1, "$2.00"),
+          (36, 250, 8.7, "AAPL 2 shares $300.00"),
           (36, 330, 8.7, "Robinhood Securities, LLC")]
     p3 = [(36, 75, 8.1, "Account Activity"),
           (36, 112, 6.9, "Description"), (248, 112, 6.9, "Symbol"), (313, 112, 6.9, "Acct Type"), (394, 112, 6.9, "Transaction"),

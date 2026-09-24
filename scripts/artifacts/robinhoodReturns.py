@@ -161,10 +161,14 @@ __artifacts_v2__ = {
         'description': 'Statement periods and balances from brokerage and crypto statement PDFs.',
         'author': '@CyberMike81',
         'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-23',
+        'last_update_date': '2026-09-24',
         'requirements': 'pdfminer.six',
         'category': 'Robinhood Returns',
-        'notes': ('Text is read from positions on the page (label rows, column positions, font '
+        'notes': ('RHF holdings are not mapped into the Holdings column. Source lines outside the '
+                  'header and activity tables, including positions, are retained in Parsing Notes; '
+                  'repeated section titles and page numbers are excluded. A warning identifies this '
+                  'limit. PDF layout checks used pdfminer.six 20260107. '
+                  'Text is read from positions on the page (label rows, column positions, font '
                   'sizes) observed in the tested production. Location gives the page and the '
                   'vertical position in points of the text a row came from, and Source Text gives '
                   'that text as read. Anything the reader could not place is listed in Robinhood -'
@@ -186,7 +190,7 @@ __artifacts_v2__ = {
         'description': 'Activity lines from brokerage and crypto statement PDFs.',
         'author': '@CyberMike81',
         'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-23',
+        'last_update_date': '2026-09-24',
         'requirements': 'pdfminer.six',
         'category': 'Robinhood Returns',
         'notes': ('Text is read from positions on the page (label rows, column positions, font '
@@ -212,11 +216,12 @@ __artifacts_v2__ = {
                         'as a record.'),
         'author': '@CyberMike81',
         'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-23',
+        'last_update_date': '2026-09-24',
         'requirements': 'pdfminer.six',
         'category': 'Robinhood Returns',
         'notes': ("One row per note. Level 'warning' marks text that was kept but not mapped to a "
-                  "field; 'info' marks layout observations and text lines at the end of a CSV "
+                  "field; 'info' marks source lines outside mapped tables, layout observations and text "
+                  "lines at the end of a CSV "
                   'export (a notice line in the tested files), which are kept here with their full'
                   ' text instead of being reported as records. An empty artifact means the readers'
                   ' raised no notes, not that the files were fully understood. Source File is the '
@@ -1154,11 +1159,20 @@ def _dash(v):
     return "" if v in ("--", "-") else v
 
 
+# Section titles repeated on RHF statements. They are not holdings and are not kept as records.
+_RHF_CHROME = {
+    "Account Summary", "Account Activity", "Portfolio Summary",
+    "Executed Trades Pending Settlement", "Income and Expense",
+    "Robinhood Securities, LLC", "Robinhood Securities",
+}
+
+
 def parse_rh_rhf_statement(pages, source, options=None):  # pylint: disable=unused-argument
     """
     RHF monthly statement. Reads the header (account, period, portfolio value), the Account
-    Activity table and the Executed Trades Pending Settlement table. Holdings and legal text
-    are not parsed; the PDF stays listed in the manifest.
+    Activity table and the Executed Trades Pending Settlement table. Every other line is kept
+    in Other records. The holdings column is left blank: this layout's positions are not mapped
+    into it, and the warning says so.
     """
     res = new_result()
     P = "Robinhood"
@@ -1167,31 +1181,45 @@ def parse_rh_rhf_statement(pages, source, options=None):  # pylint: disable=unus
     hdr, kind, hdr_size = None, "", None
     lines = []                           # [kind, cells, locator, rawtext]
     hdr_src = []
+    unmapped = []                        # (locator, text) outside the header and activity tables
+
+    def keep_unmapped(pno, top, txt):
+        if not txt or txt in _RHF_CHROME or re.fullmatch(r"Page \d+ of \d+", txt):
+            return
+        unmapped.append((_ploc(pno, top), txt))
+
     for pno, p in enumerate(pages):
         for top, size, segs in p:
             txt = _row_text(segs)
+            header_hit = False
             m = re.search(r"Account #:\s*(\d+)", txt)
             if m and not acct:
                 acct = m.group(1)
                 hdr_src.append((_ploc(pno, top), txt))
+                header_hit = True
             m = re.search(r"(\d{2}/\d{2}/\d{4}) to (\d{2}/\d{2}/\d{4})", txt)
             if m and not period_end:
                 period_start, period_end = _mdy(m.group(1)), _mdy(m.group(2))
                 hdr_src.append((_ploc(pno, top), txt))
+                header_hit = True
             if segs[0]["t"] == "Portfolio Value" and len(segs) >= 3 and not opening:
                 opening, closing = num(segs[1]["t"]), num(segs[2]["t"])
                 hdr_src.append((_ploc(pno, top), txt))
+                header_hit = True
             names = [s["t"] for s in segs]
             if names and names[0] == "Description" and "Debit" in names:
                 hdr, hdr_size = segs, size
                 kind = "pending settlement" if "Trade Date" in names else "activity"
                 continue
             if hdr is None:
+                if not header_hit:
+                    keep_unmapped(pno, top, txt)
                 continue
             if re.fullmatch(r"Page \d+ of \d+", txt):
                 continue
             if txt.startswith("Total ") or size > hdr_size + 0.8:
-                hdr = None               # table total, or a new section heading
+                keep_unmapped(pno, top, txt)   # table total or the heading that ended the table
+                hdr = None
                 continue
             cells = _assign_columns(hdr, segs)
             date_col = "Date" if kind == "activity" else "Trade Date"
@@ -1216,6 +1244,13 @@ def parse_rh_rhf_statement(pages, source, options=None):  # pylint: disable=unus
         AB = "from file name" if acct else ""
         warn(res, P, "RHF statement: no 'Account #' found on the pages; " +
              ("account taken from the file name" if acct else "account left blank"), source)
+    for lc, txt in unmapped:
+        res["other_records"].append(row(
+            "other_records", provider=P, section="RHF statement (not mapped to holdings or activity)",
+            record=txt, source=source, locator=lc, raw=txt))
+    warn(res, P, "RHF statement: holdings are not mapped to the holdings column. " +
+         (f"{len(unmapped)} other line(s) kept in Other records." if unmapped else
+          "No other statement lines were found outside the header and activity tables."), source)
     for r in res["other_records"]:
         r["account"], r["account_basis"] = acct, AB
     res["statements"].append(row("statements", provider=P, account=acct, statement_type="RHF brokerage statement",
@@ -1459,6 +1494,11 @@ def robinhoodParsingNotes(context):
             rows.append([kind.replace("rh_", "").replace("_", " "), r["level"], r["message"], r["locator"], r["raw"],
                          context.get_relative_path(source)])
             sources.add(source)
+        if kind == "rh_rhf_statement":
+            for r in res["other_records"]:
+                rows.append(["rhf statement", "info", r["section"], r["locator"], r["raw"],
+                             context.get_relative_path(source)])
+                sources.add(source)
     for file_found in sorted(str(f) for f in context.get_files_found()):
         if not file_found.lower().endswith(".csv") or not os.path.isfile(file_found):
             continue

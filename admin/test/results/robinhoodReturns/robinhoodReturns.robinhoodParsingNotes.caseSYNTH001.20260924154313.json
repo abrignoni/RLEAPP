@@ -5,20 +5,20 @@
     "function_name": "robinhoodParsingNotes",
     "case_number": "caseSYNTH001",
     "number_of_columns": 6,
-    "number_of_rows": 7,
-    "total_data_size_bytes": 1501,
+    "number_of_rows": 10,
+    "total_data_size_bytes": 2161,
     "media_checkins": 0,
     "media_embedded_checkins": 0,
     "input_zip_path": "admin/test/cases/data/robinhoodReturns/testdata.robinhoodReturns.robinhoodParsingNotes.caseSYNTH001.zip",
-    "start_time": "2026-09-23T20:16:40.972606+00:00",
-    "end_time": "2026-09-23T20:16:41.112058+00:00",
-    "run_time_seconds": 0.13083148002624512,
+    "start_time": "2026-09-24T15:43:13.921191+00:00",
+    "end_time": "2026-09-24T15:43:14.095581+00:00",
+    "run_time_seconds": 0.14816999435424805,
     "last_commit": {
-      "hash": "Uncommitted",
-      "author_name": "N/A",
-      "author_email": "N/A",
-      "date": "2026-09-23T16:16:40.977261",
-      "message": "File not yet committed to git"
+      "hash": "79f8ebcc9e938f16c95d201ec0a878e9eb4d68a9",
+      "author_name": "CyberMike81",
+      "author_email": "mikewlitt@pm.me",
+      "date": "2026-09-23T16:19:13-04:00",
+      "message": "Add robinhoodReturns: Robinhood law enforcement returns"
     }
   },
   "headers": [
@@ -69,6 +69,30 @@
       "",
       "",
       "Final Production-SYNTH/Account Master; AC Document.pdf"
+    ],
+    [
+      "rhf statement",
+      "warning",
+      "RHF statement: holdings are not mapped to the holdings column. 2 other line(s) kept in Other records.",
+      "",
+      "",
+      "Final Production-SYNTH/SYNTH00001 (RHF)/bulk_edocs_SYNTH00001/SYNTH00001_account_statement_2025-01-31.pdf"
+    ],
+    [
+      "rhf statement",
+      "info",
+      "RHF statement (not mapped to holdings or activity)",
+      "page 1, y 243",
+      "AAPL 2 shares $300.00",
+      "Final Production-SYNTH/SYNTH00001 (RHF)/bulk_edocs_SYNTH00001/SYNTH00001_account_statement_2025-01-31.pdf"
+    ],
+    [
+      "rhf statement",
+      "info",
+      "RHF statement (not mapped to holdings or activity)",
+      "page 2, y 194",
+      "Total Funds Paid and Received $10.00 $50.00",
+      "Final Production-SYNTH/SYNTH00001 (RHF)/bulk_edocs_SYNTH00001/SYNTH00001_account_statement_2025-01-31.pdf"
     ],
     [
       "crypto_account_orders.csv",
