@@ -6,19 +6,19 @@
     "case_number": "caseSYNTH001",
     "number_of_columns": 14,
     "number_of_rows": 6,
-    "total_data_size_bytes": 934,
+    "total_data_size_bytes": 1021,
     "media_checkins": 0,
     "media_embedded_checkins": 0,
     "input_zip_path": "admin/test/cases/data/coinbaseComplianceReport/testdata.coinbaseComplianceReport.coinbaseCREvents.caseSYNTH001.zip",
-    "start_time": "2026-09-23T20:05:51.895001+00:00",
-    "end_time": "2026-09-23T20:05:51.902173+00:00",
-    "run_time_seconds": 0.0009453296661376953,
+    "start_time": "2026-09-24T17:18:12.902101+00:00",
+    "end_time": "2026-09-24T17:18:12.920350+00:00",
+    "run_time_seconds": 0.0006060600280761719,
     "last_commit": {
-      "hash": "Uncommitted",
-      "author_name": "N/A",
-      "author_email": "N/A",
-      "date": "2026-09-23T16:05:51.898376",
-      "message": "File not yet committed to git"
+      "hash": "56605e78e12a11a169e08f9ed120e57c484f7ce8",
+      "author_name": "CyberMike81",
+      "author_email": "mikewlitt@pm.me",
+      "date": "2026-09-23T16:18:30-04:00",
+      "message": "Add coinbaseComplianceReport: Coinbase IdvComplianceReport returns"
     }
   },
   "headers": [
@@ -51,14 +51,14 @@
       "web",
       "",
       "",
-      101,
+      108,
       "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
     ],
     [
       "SYNTHUSER000000000000000A",
-      1609979284,
-      "2021-01-06 16:28:04 -0800",
-      "stated offset",
+      1609979280,
+      "January 6, 2021, 04:28pm PST",
+      "stated zone abbreviation (fixed offset)",
       "signin",
       "198.51.100.7",
       "SYNFP1",
@@ -67,7 +67,7 @@
       "web",
       "",
       "",
-      102,
+      109,
       "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
     ],
     [
@@ -83,14 +83,14 @@
       "web",
       "",
       "",
-      101,
+      108,
       "0000aaaa/compliance_report.csv"
     ],
     [
       "SYNTHUSER000000000000000A",
-      1609979284,
-      "2021-01-06 16:28:04 -0800",
-      "stated offset",
+      1609979280,
+      "January 6, 2021, 04:28pm PST",
+      "stated zone abbreviation (fixed offset)",
       "signin",
       "198.51.100.7",
       "SYNFP1",
@@ -99,7 +99,7 @@
       "web",
       "",
       "",
-      102,
+      109,
       "0000aaaa/compliance_report.csv"
     ],
     [
@@ -115,14 +115,14 @@
       "web",
       "",
       "",
-      101,
+      108,
       "0000bbbb/compliance_report.csv"
     ],
     [
       "SYNTHUSER000000000000000B",
-      1609979284,
-      "2021-01-06 16:28:04 -0800",
-      "stated offset",
+      1609979280,
+      "January 6, 2021, 04:28pm PST",
+      "stated zone abbreviation (fixed offset)",
       "signin",
       "198.51.100.7",
       "SYNFP1",
@@ -131,7 +131,7 @@
       "web",
       "",
       "",
-      102,
+      109,
       "0000bbbb/compliance_report.csv"
     ]
   ]

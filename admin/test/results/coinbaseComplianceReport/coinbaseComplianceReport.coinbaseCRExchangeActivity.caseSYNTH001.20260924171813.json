@@ -6,19 +6,19 @@
     "case_number": "caseSYNTH001",
     "number_of_columns": 8,
     "number_of_rows": 6,
-    "total_data_size_bytes": 1459,
+    "total_data_size_bytes": 1462,
     "media_checkins": 0,
     "media_embedded_checkins": 0,
     "input_zip_path": "admin/test/cases/data/coinbaseComplianceReport/testdata.coinbaseComplianceReport.coinbaseCRExchangeActivity.caseSYNTH001.zip",
-    "start_time": "2026-09-23T20:05:51.873223+00:00",
-    "end_time": "2026-09-23T20:05:51.880005+00:00",
-    "run_time_seconds": 0.0010483264923095703,
+    "start_time": "2026-09-24T17:18:13.000685+00:00",
+    "end_time": "2026-09-24T17:18:13.018605+00:00",
+    "run_time_seconds": 0.0005540847778320312,
     "last_commit": {
-      "hash": "Uncommitted",
-      "author_name": "N/A",
-      "author_email": "N/A",
-      "date": "2026-09-23T16:05:51.876787",
-      "message": "File not yet committed to git"
+      "hash": "56605e78e12a11a169e08f9ed120e57c484f7ce8",
+      "author_name": "CyberMike81",
+      "author_email": "mikewlitt@pm.me",
+      "date": "2026-09-23T16:18:30-04:00",
+      "message": "Add coinbaseComplianceReport: Coinbase IdvComplianceReport returns"
     }
   },
   "headers": [
@@ -39,7 +39,7 @@
       "stated offset",
       "Exchange Transfers",
       "TIMESTAMP: 2021-04-01T00:00:00Z; AMOUNT: 0.5; CURRENCY: ETH; TYPE: deposit",
-      91,
+      98,
       "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
     ],
     [
@@ -49,7 +49,7 @@
       "stated offset",
       "Exchange Transactions",
       "TIMESTAMP: 2021-04-02T00:00:00Z; ACCOUNT NAME: ETH; TYPE: match; BALANCE: 0.4; AMOUNT: -0.1; CURRENCY: ETH; EQUIV USD: 180.00; ID: SYNEX0001",
-      96,
+      103,
       "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
     ],
     [
@@ -59,7 +59,7 @@
       "stated offset",
       "Exchange Transfers",
       "TIMESTAMP: 2021-04-01T00:00:00Z; AMOUNT: 0.5; CURRENCY: ETH; TYPE: deposit",
-      91,
+      98,
       "0000aaaa/compliance_report.csv"
     ],
     [
@@ -69,7 +69,7 @@
       "stated offset",
       "Exchange Transactions",
       "TIMESTAMP: 2021-04-02T00:00:00Z; ACCOUNT NAME: ETH; TYPE: match; BALANCE: 0.4; AMOUNT: -0.1; CURRENCY: ETH; EQUIV USD: 180.00; ID: SYNEX0001",
-      96,
+      103,
       "0000aaaa/compliance_report.csv"
     ],
     [
@@ -79,7 +79,7 @@
       "stated offset",
       "Exchange Transfers",
       "TIMESTAMP: 2021-04-01T00:00:00Z; AMOUNT: 0.5; CURRENCY: ETH; TYPE: deposit",
-      91,
+      98,
       "0000bbbb/compliance_report.csv"
     ],
     [
@@ -89,7 +89,7 @@
       "stated offset",
       "Exchange Transactions",
       "TIMESTAMP: 2021-04-02T00:00:00Z; ACCOUNT NAME: ETH; TYPE: match; BALANCE: 0.4; AMOUNT: -0.1; CURRENCY: ETH; EQUIV USD: 180.00; ID: SYNEX0001",
-      96,
+      103,
       "0000bbbb/compliance_report.csv"
     ]
   ]

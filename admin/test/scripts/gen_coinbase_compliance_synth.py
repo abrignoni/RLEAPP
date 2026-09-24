@@ -20,6 +20,8 @@ into a fixture. The shape follows real reports, including the parts a parser can
   - an extra column the module does not name (TRANSACTIONS "SURPLUS COL"), which must land
     in Other Columns rather than be dropped
   - an unmapped section with rows, one with only a header row, and one that is empty
+  - an all-quoted report, a reordered second transaction header, an unknown table block,
+    and abbreviated timestamps in the converted transaction and event columns
   - a decoy file matching the path pattern that is not a compliance report
 
 Usage:
@@ -94,6 +96,9 @@ def report(user_id, name, email, extra_rows=True):
         ["2021-03-15 12:00:00", "BTC Wallet", "Receive", "Complete", "0.02", "0.01", "BTC", "", "", "",
          "410.00", "", "", "SYNTX0003", "bitcoin", ""],
         [], [],
+        ["AMOUNT", "CURRENCY", "TIMESTAMP", "TYPE", "STATUS", "TRANSACTION ID", "NEW COLUMN"],
+        ["2", "ETH", "March 9, 2025, 01:30am PST", "Receive", "Complete", "SYNTX0004", "extra"], [],
+        ["CUSTOM LABEL", "CUSTOM VALUE"], ["alpha", "beta"], [], [],
         ["EXCHANGE TRANSFERS ***"], ["TIMESTAMP", "AMOUNT", "CURRENCY", "TYPE"],
         ["2021-04-01T00:00:00Z", "0.5", "ETH", "deposit"], [], [],
         ["EXCHANGE TRANSACTIONS ***"],
@@ -102,7 +107,7 @@ def report(user_id, name, email, extra_rows=True):
         ["EVENTS ***"], ["TIMESTAMP", "ACTION", "IP", "FINGERPRINT", "USER AGENT", "LOCATION", "SOURCE",
                          "DETAILS"],
         ["2021-01-05 16:28:04 -0800", "signin", "2001:db8::1", "SYNFP1", "", "", "web", ""],
-        ["2021-01-06 16:28:04 -0800", "signin", "198.51.100.7", "SYNFP1", "", "Testville, US", "web", ""],
+        ["January 6, 2021, 04:28pm PST", "signin", "198.51.100.7", "SYNFP1", "", "Testville, US", "web", ""],
         [], [],
         ["MANUAL REVIEWS ***"], ["CREATED", "UPDATED", "STATUS", "REASON", "REASON VALUE"],
         ["2021-05-01 09:00:00 -0700", "2021-05-02 09:00:00 -0700", "resolved", "synthetic", "1"], [], [],
@@ -127,8 +132,10 @@ def main():
     first = report("SYNTHUSER000000000000000A", "Alex Sample", "alex@example.test")
     write("0000aaaa/compliance_report.csv", first)
     write("0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv", first)
-    write("0000bbbb/compliance_report.csv",
-          report("SYNTHUSER000000000000000B", "Blair Example", "blair@example.test", extra_rows=False))
+    second = report("SYNTHUSER000000000000000B", "Blair Example", "blair@example.test", extra_rows=False)
+    quoted = io.StringIO(newline="")
+    csv.writer(quoted, quoting=csv.QUOTE_ALL, lineterminator="\n").writerows(csv.reader(io.StringIO(second)))
+    write("0000bbbb/compliance_report.csv", quoted.getvalue())
     write("0000cccc/not_a_compliance_report.csv", "col1,col2\r\nx,y\r\n")
     print(f"Wrote synthetic Coinbase return to {BASE}")
 
