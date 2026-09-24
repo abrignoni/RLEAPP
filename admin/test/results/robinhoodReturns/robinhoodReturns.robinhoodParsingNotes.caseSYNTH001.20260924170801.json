@@ -5,20 +5,20 @@
     "function_name": "robinhoodParsingNotes",
     "case_number": "caseSYNTH001",
     "number_of_columns": 6,
-    "number_of_rows": 10,
-    "total_data_size_bytes": 2161,
+    "number_of_rows": 16,
+    "total_data_size_bytes": 3474,
     "media_checkins": 0,
     "media_embedded_checkins": 0,
     "input_zip_path": "admin/test/cases/data/robinhoodReturns/testdata.robinhoodReturns.robinhoodParsingNotes.caseSYNTH001.zip",
-    "start_time": "2026-09-24T15:43:13.921191+00:00",
-    "end_time": "2026-09-24T15:43:14.095581+00:00",
-    "run_time_seconds": 0.14816999435424805,
+    "start_time": "2026-09-24T17:08:01.420737+00:00",
+    "end_time": "2026-09-24T17:08:01.476775+00:00",
+    "run_time_seconds": 0.03858304023742676,
     "last_commit": {
-      "hash": "79f8ebcc9e938f16c95d201ec0a878e9eb4d68a9",
+      "hash": "00c7bfe1c3881279bf696268a91ccc9b731652da",
       "author_name": "CyberMike81",
       "author_email": "mikewlitt@pm.me",
-      "date": "2026-09-23T16:19:13-04:00",
-      "message": "Add robinhoodReturns: Robinhood law enforcement returns"
+      "date": "2026-09-24T11:45:39-04:00",
+      "message": "Preserve unmapped Robinhood statement text in Parsing Notes"
     }
   },
   "headers": [
@@ -41,6 +41,14 @@
     [
       "account master",
       "warning",
+      "Account Master: Account is blank because no Account Number was found in this PDF's Account Information section; no account is inferred from other files",
+      "",
+      "",
+      "Final Production-SYNTH/Account Master edit logs.pdf"
+    ],
+    [
+      "account master",
+      "warning",
       "Brokeback edit log: wrapped text could belong to either neighbouring record; not attached (records near: page 1, y 195 and page 1, y 219)",
       "page 1, y 207",
       "ambiguous line",
@@ -55,9 +63,17 @@
       "Final Production-SYNTH/Account Master edit logs.pdf"
     ],
     [
+      "unreadable pdf",
+      "error",
+      "Account Master page 7.pdf: could not read PDF (PDFSyntaxError); no records extracted",
+      "whole document",
+      "",
+      "Final Production-SYNTH/Account Master page 7.pdf"
+    ],
+    [
       "account master",
       "warning",
-      "Account Master: 1 text item(s) did not match a known label layout; kept as '(unlabelled text)' under Robinhood > Accounts",
+      "Account Master: 1 text item(s) did not match a known label layout; kept as '(unlabelled text)' in Robinhood - Account Master",
       "",
       "",
       "Final Production-SYNTH/Account Master; AC Document.pdf"
@@ -93,6 +109,38 @@
       "page 2, y 194",
       "Total Funds Paid and Received $10.00 $50.00",
       "Final Production-SYNTH/SYNTH00001 (RHF)/bulk_edocs_SYNTH00001/SYNTH00001_account_statement_2025-01-31.pdf"
+    ],
+    [
+      "unreadable pdf",
+      "error",
+      "SYNTH_account_statement_protected.pdf: could not read PDF (PDFPasswordIncorrect); no records extracted",
+      "whole document",
+      "",
+      "Final Production-SYNTH/SYNTH_account_statement_protected.pdf"
+    ],
+    [
+      "document pdf",
+      "warning",
+      "SYNTH_account_statement_tax.pdf: PDF layout not recognised by the Robinhood readers; no structured records extracted. PDF tax statements are not supported; review the source PDF.",
+      "whole document",
+      "",
+      "Final Production-SYNTH/SYNTH_account_statement_tax.pdf"
+    ],
+    [
+      "unreadable pdf",
+      "error",
+      "SYNTH_account_statement_truncated.pdf: could not read PDF (PDFSyntaxError); no records extracted",
+      "whole document",
+      "",
+      "Final Production-SYNTH/SYNTH_account_statement_truncated.pdf"
+    ],
+    [
+      "document pdf",
+      "warning",
+      "SYNTH_account_statement_unknown.pdf: PDF layout not recognised by the Robinhood readers; no structured records extracted. PDF tax statements are not supported; review the source PDF.",
+      "whole document",
+      "",
+      "Final Production-SYNTH/SYNTH_account_statement_unknown.pdf"
     ],
     [
       "crypto_account_orders.csv",

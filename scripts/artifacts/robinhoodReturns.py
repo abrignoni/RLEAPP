@@ -23,19 +23,18 @@ __artifacts_v2__ = {
         'description': 'Rows of a crypto_account_transfers.csv file.',
         'author': '@CyberMike81',
         'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-23',
+        'last_update_date': '2026-09-24',
         'requirements': 'none',
         'category': 'Robinhood Returns',
-        'notes': ('Timestamp (UTC) is derived from created_at, which states an offset; Time Basis '
-                  'records that. withdrawal_submitted_timestamp is reported as produced. This file'
-                  ' states no account number. Leading and trailing spaces in a cell are removed; '
-                  'nothing else in a value is changed. Other Columns (as produced) is empty unless'
-                  ' the file carries columns this artifact does not name; any such column is kept '
-                  'there as JSON. A text line at the end of the file that is not a record is '
-                  "listed in Robinhood - Parsing Notes. Source File is the file's path within the "
-                  'input; the same file can appear more than once in a production, and each copy '
-                  'is reported. Tested against synthetic files and one real 2025 production; other'
-                  ' production years and layouts are untested.'),
+        'notes': ('Timestamp (UTC) is derived from created_at, which states an offset; Time Basis records that. '
+                  'withdrawal_submitted_timestamp is reported as produced and is empty in the synthetic fixture; '
+                  'a blank value remains blank. This file states no account number. Leading and trailing spaces '
+                  'in a cell are removed; nothing else in a value is changed. Other Columns (as produced) is '
+                  'empty unless the file carries columns this artifact does not name; any such column is kept '
+                  'there as JSON. A text line at the end of the file that is not a record is listed in Robinhood '
+                  "- Parsing Notes. Source File is the file's path within the input; the same file can appear "
+                  'more than once in a production, and each copy is reported. Layouts are those of synthetic '
+                  'files and one 2025 production; other production years and layouts may differ.'),
         'paths': ('*crypto_account_transfers*.csv',),
         'output_types': 'standard',
         'artifact_icon': 'send',
@@ -45,19 +44,17 @@ __artifacts_v2__ = {
         'description': 'Rows of a crypto_account_orders.csv file.',
         'author': '@CyberMike81',
         'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-23',
+        'last_update_date': '2026-09-24',
         'requirements': 'none',
         'category': 'Robinhood Returns',
-        'notes': ('Time Entered: The file states no time zone for this column, so it is reported '
-                  'as produced and not converted. This file states no account number. Leading and '
-                  'trailing spaces in a cell are removed; nothing else in a value is changed. '
-                  'Other Columns (as produced) is empty unless the file carries columns this '
-                  'artifact does not name; any such column is kept there as JSON. A text line at '
-                  'the end of the file that is not a record is listed in Robinhood - Parsing '
-                  "Notes. Source File is the file's path within the input; the same file can "
-                  'appear more than once in a production, and each copy is reported. Tested '
-                  'against synthetic files and one real 2025 production; other production years '
-                  'and layouts are untested.'),
+        'notes': ('Time Entered: The file states no time zone for this column, so it is reported as produced and '
+                  'not converted. This file states no account number. Leading and trailing spaces in a cell are '
+                  'removed; nothing else in a value is changed. Other Columns (as produced) is empty unless the '
+                  'file carries columns this artifact does not name; any such column is kept there as JSON. A '
+                  'text line at the end of the file that is not a record is listed in Robinhood - Parsing Notes. '
+                  "Source File is the file's path within the input; the same file can appear more than once in a "
+                  'production, and each copy is reported. Layouts are those of synthetic files and one 2025 '
+                  'production; other production years and layouts may differ.'),
         'paths': ('*crypto_account_orders*.csv',),
         'output_types': 'standard',
         'artifact_icon': 'shopping-cart',
@@ -67,21 +64,17 @@ __artifacts_v2__ = {
         'description': 'Rows of a data_request_ip_timestamps CSV file.',
         'author': '@CyberMike81',
         'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-23',
+        'last_update_date': '2026-09-24',
         'requirements': 'none',
         'category': 'Robinhood Returns',
-        'notes': ('event_date_time: The file states no time zone for this column, so it is '
-                  'reported as produced and not converted. In the tested production these times '
-                  'lined up with Account Master edit-log times read as UTC; that is consistent '
-                  'with UTC and does not establish it. geo_ip columns are reported as produced. '
-                  'Leading and trailing spaces in a cell are removed; nothing else in a value is '
-                  'changed. Other Columns (as produced) is empty unless the file carries columns '
-                  'this artifact does not name; any such column is kept there as JSON. A text line'
-                  ' at the end of the file that is not a record is listed in Robinhood - Parsing '
-                  "Notes. Source File is the file's path within the input; the same file can "
-                  'appear more than once in a production, and each copy is reported. Tested '
-                  'against synthetic files and one real 2025 production; other production years '
-                  'and layouts are untested.'),
+        'notes': ('event_date_time: The file states no time zone for this column, so it is reported as produced '
+                  'and not converted. geo_ip columns are reported as produced. Leading and trailing spaces in a '
+                  'cell are removed; nothing else in a value is changed. Other Columns (as produced) is empty '
+                  'unless the file carries columns this artifact does not name; any such column is kept there as '
+                  'JSON. A text line at the end of the file that is not a record is listed in Robinhood - Parsing '
+                  "Notes. Source File is the file's path within the input; the same file can appear more than "
+                  'once in a production, and each copy is reported. Layouts are those of synthetic files and one '
+                  '2025 production; other production years and layouts may differ.'),
         'paths': ('*data_request_ip_timestamps*.csv',),
         'output_types': 'standard',
         'artifact_icon': 'globe',
@@ -91,18 +84,17 @@ __artifacts_v2__ = {
         'description': 'Rows of a Robinhood 1099 CSV file.',
         'author': '@CyberMike81',
         'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-23',
+        'last_update_date': '2026-09-24',
         'requirements': 'none',
         'category': 'Robinhood Returns',
-        'notes': ('Values are as produced. Where BASIS NOT SHOWN is Y, the COST BASIS value in the'
-                  ' file is not a reported basis. Leading and trailing spaces in a cell are '
-                  'removed; nothing else in a value is changed. Other Columns (as produced) is '
-                  'empty unless the file carries columns this artifact does not name; any such '
-                  'column is kept there as JSON. A text line at the end of the file that is not a '
-                  "record is listed in Robinhood - Parsing Notes. Source File is the file's path "
-                  'within the input; the same file can appear more than once in a production, and '
-                  'each copy is reported. Tested against synthetic files and one real 2025 '
-                  'production; other production years and layouts are untested.'),
+        'notes': ('Values are as produced. Where BASIS NOT SHOWN is Y, the COST BASIS value in the file is not a '
+                  'reported basis. Leading and trailing spaces in a cell are removed; nothing else in a value is '
+                  'changed. Other Columns (as produced) is empty unless the file carries columns this artifact '
+                  'does not name; any such column is kept there as JSON. A text line at the end of the file that '
+                  "is not a record is listed in Robinhood - Parsing Notes. Source File is the file's path within "
+                  'the input; the same file can appear more than once in a production, and each copy is reported. '
+                  'Layouts are those of synthetic files and one 2025 production; other production years and '
+                  'layouts may differ.'),
         'paths': ('*_1099_*.csv',),
         'output_types': 'standard',
         'artifact_icon': 'file-text',
@@ -112,21 +104,23 @@ __artifacts_v2__ = {
         'description': 'Labelled fields read from an Account Master PDF.',
         'author': '@CyberMike81',
         'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-23',
+        'last_update_date': '2026-09-24',
         'requirements': 'pdfminer.six',
         'category': 'Robinhood Returns',
-        'notes': ('Text is read from positions on the page (label rows, column positions, font '
-                  'sizes) observed in the tested production. Location gives the page and the '
-                  'vertical position in points of the text a row came from, and Source Text gives '
-                  'that text as read. Anything the reader could not place is listed in Robinhood -'
-                  ' Parsing Notes. Field is the label printed above the value. A label outside the'
-                  " tested vocabulary is reported as '(unrecognized label) <label>' with its "
-                  "value, and text that did not sit under a label as '(unlabelled text)'. When the"
-                  ' printed UUID is cut off, the full value is taken from the print footer URL and'
-                  " Location says so. Source File is the file's path within the input; the same "
-                  'file can appear more than once in a production, and each copy is reported. '
-                  'Tested against synthetic files and one real 2025 production; other production '
-                  'years and layouts are untested.'),
+        'notes': ('Text is read from positions on the page (label rows, column positions, font sizes) observed in '
+                  'the tested production. Location gives the page and the vertical position in points of the text '
+                  'a row came from, and Source Text gives that text as read. Reader-detected unmapped text and '
+                  'file-level PDF failures or unrecognised layouts are listed in Robinhood - Parsing Notes; this '
+                  'does not establish complete extraction. Field is the label printed above the value. A label '
+                  "outside the tested vocabulary is reported as '(unrecognized label) <label>' with its value, "
+                  "and text that did not sit under a label as '(unlabelled text)'. When the printed UUID is cut "
+                  'off, the full value is taken from the print footer URL and Location says so. Source File is '
+                  "the file's path within the input; the same file can appear more than once in a production, and "
+                  'each copy is reported. Layouts are those of synthetic files and one 2025 production; other '
+                  'production years and layouts may differ. Account is blank when this PDF has no Account Number '
+                  'in its Account Information section, including all edit-log fixture rows. Account is not '
+                  'inferred from adjacent PDFs or shared folder names; review Source File and the original return '
+                  'to establish attribution.'),
         'paths': ('*[Aa]ccount [Mm]aster*.pdf',),
         'output_types': 'standard',
         'artifact_icon': 'user',
@@ -136,22 +130,24 @@ __artifacts_v2__ = {
         'description': 'Rows of the edit-log tables printed in an Account Master PDF.',
         'author': '@CyberMike81',
         'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-23',
+        'last_update_date': '2026-09-24',
         'requirements': 'pdfminer.six',
         'category': 'Robinhood Returns',
-        'notes': ('Text is read from positions on the page (label rows, column positions, font '
-                  'sizes) observed in the tested production. Location gives the page and the '
-                  'vertical position in points of the text a row came from, and Source Text gives '
-                  'that text as read. Anything the reader could not place is listed in Robinhood -'
-                  ' Parsing Notes. Timestamp (UTC) is converted from the printed time and zone '
-                  'abbreviation, read as a fixed North American offset (EST = UTC-5). Cells that '
-                  'wrap onto more lines are joined to their record only when line spacing ties '
-                  'them to that record alone; other wrapped text is listed in Unattached Text with'
-                  ' no record fields, so it is never placed on the wrong record. Unattached Text '
-                  "is empty for every other row. Source File is the file's path within the input; "
-                  'the same file can appear more than once in a production, and each copy is '
-                  'reported. Tested against synthetic files and one real 2025 production; other '
-                  'production years and layouts are untested.'),
+        'notes': ('Text is read from positions on the page (label rows, column positions, font sizes) observed in '
+                  'the tested production. Location gives the page and the vertical position in points of the text '
+                  'a row came from, and Source Text gives that text as read. Reader-detected unmapped text and '
+                  'file-level PDF failures or unrecognised layouts are listed in Robinhood - Parsing Notes; this '
+                  'does not establish complete extraction. Timestamp (UTC) is converted from the printed time and '
+                  'zone abbreviation, read as a fixed North American offset (EST = UTC-5). Cells that wrap onto '
+                  'more lines are joined to their record only when line spacing ties them to that record alone; '
+                  'other wrapped text is listed in Unattached Text with no record fields, so it is never placed '
+                  "on the wrong record. Unattached Text is empty for every other row. Source File is the file's "
+                  'path within the input; the same file can appear more than once in a production, and each copy '
+                  'is reported. Layouts are those of synthetic files and one 2025 production; other production '
+                  'years and layouts may differ. Account is blank when this PDF has no Account Number in its '
+                  'Account Information section, including all edit-log fixture rows. Account is not inferred from '
+                  'adjacent PDFs or shared folder names; review Source File and the original return to establish '
+                  'attribution.'),
         'paths': ('*[Aa]ccount [Mm]aster*.pdf',),
         'output_types': 'standard',
         'artifact_icon': 'edit',
@@ -164,23 +160,24 @@ __artifacts_v2__ = {
         'last_update_date': '2026-09-24',
         'requirements': 'pdfminer.six',
         'category': 'Robinhood Returns',
-        'notes': ('RHF holdings are not mapped into the Holdings column. Source lines outside the '
-                  'header and activity tables, including positions, are retained in Parsing Notes; '
-                  'repeated section titles and page numbers are excluded. A warning identifies this '
-                  'limit. PDF layout checks used pdfminer.six 20260107. '
-                  'Text is read from positions on the page (label rows, column positions, font '
-                  'sizes) observed in the tested production. Location gives the page and the '
-                  'vertical position in points of the text a row came from, and Source Text gives '
-                  'that text as read. Anything the reader could not place is listed in Robinhood -'
-                  ' Parsing Notes. Balances are the printed values with $ and thousands separators'
-                  ' removed and (x) written as -x; digits are not rounded. Holdings lists the '
-                  "holdings table as printed. Statement is 'RHF brokerage statement' or 'RHC "
-                  "crypto statement' by the statement's own layout. Account Basis says where "
-                  'Account came from: printed on the statement, or taken from the file name when '
-                  'the pages print none (a Parsing Notes row then says so). Source File is the '
-                  "file's path within the input; the same file can appear more than once in a "
-                  'production, and each copy is reported. Tested against synthetic files and one '
-                  'real 2025 production; other production years and layouts are untested.'),
+        'notes': ('RHF holdings are not mapped into the Holdings column. Source lines outside the header and '
+                  'activity tables, including positions, are retained in Parsing Notes; repeated section titles '
+                  'and page numbers are excluded. A warning identifies this limit. PDF layout checks used '
+                  'pdfminer.six 20260107. Text is read from positions on the page (label rows, column positions, '
+                  'font sizes) observed in the tested production. Location gives the page and the vertical '
+                  'position in points of the text a row came from, and Source Text gives that text as read. '
+                  'Reader-detected unmapped text and file-level PDF failures or unrecognised layouts are listed '
+                  'in Robinhood - Parsing Notes; this does not establish complete extraction. Balances are the '
+                  'printed values with $ and thousands separators removed and (x) written as -x; digits are not '
+                  "rounded. Holdings lists the holdings table as printed. Statement is 'RHF brokerage statement' "
+                  "or 'RHC crypto statement' by the statement's own layout. Account Basis says where Account came "
+                  'from: printed on the statement, or taken from the file name when the pages print none (a '
+                  "Parsing Notes row then says so). Source File is the file's path within the input; the same "
+                  'file can appear more than once in a production, and each copy is reported. Layouts are those '
+                  'of synthetic files and one 2025 production; other production years and layouts may differ. RHC '
+                  "Account Number, Name (RHC), and Address (RHC) report the crypto statement's ACCOUNT NUMBER, "
+                  'NAME, and ADDRESS labels; they are empty for RHF statements or missing labels. Account remains '
+                  'the RHS number on RHC statements, as identified by Account Basis.'),
         'paths': ('*_account_statement_*.pdf', '*_rhc_statement_*.pdf'),
         'output_types': 'standard',
         'artifact_icon': 'book-open',
@@ -193,19 +190,17 @@ __artifacts_v2__ = {
         'last_update_date': '2026-09-24',
         'requirements': 'pdfminer.six',
         'category': 'Robinhood Returns',
-        'notes': ('Text is read from positions on the page (label rows, column positions, font '
-                  'sizes) observed in the tested production. Location gives the page and the '
-                  'vertical position in points of the text a row came from, and Source Text gives '
-                  'that text as read. Anything the reader could not place is listed in Robinhood -'
-                  ' Parsing Notes. Dates are calendar dates as printed, with no time or zone. '
-                  'Quantities, prices and values have $ and thousands separators removed and (x) '
-                  'written as -x; digits are not rounded. Debit and Credit are as printed. Account'
-                  ' Basis says where Account came from: printed on the statement, or taken from '
-                  'the file name when the pages print none (a Parsing Notes row then says so). '
-                  "Source File is the file's path within the input; the same file can appear more "
-                  'than once in a production, and each copy is reported. Tested against synthetic '
-                  'files and one real 2025 production; other production years and layouts are '
-                  'untested.'),
+        'notes': ('Text is read from positions on the page (label rows, column positions, font sizes) observed in '
+                  'the tested production. Location gives the page and the vertical position in points of the text '
+                  'a row came from, and Source Text gives that text as read. Reader-detected unmapped text and '
+                  'file-level PDF failures or unrecognised layouts are listed in Robinhood - Parsing Notes; this '
+                  'does not establish complete extraction. Dates are calendar dates as printed, with no time or '
+                  'zone. Quantities, prices and values have $ and thousands separators removed and (x) written as '
+                  '-x; digits are not rounded. Debit and Credit are as printed. Account Basis says where Account '
+                  'came from: printed on the statement, or taken from the file name when the pages print none (a '
+                  "Parsing Notes row then says so). Source File is the file's path within the input; the same "
+                  'file can appear more than once in a production, and each copy is reported. Layouts are those '
+                  'of synthetic files and one 2025 production; other production years and layouts may differ.'),
         'paths': ('*_account_statement_*.pdf', '*_rhc_statement_*.pdf'),
         'output_types': 'standard',
         'artifact_icon': 'list',
@@ -219,15 +214,15 @@ __artifacts_v2__ = {
         'last_update_date': '2026-09-24',
         'requirements': 'pdfminer.six',
         'category': 'Robinhood Returns',
-        'notes': ("One row per note. Level 'warning' marks text that was kept but not mapped to a "
-                  "field; 'info' marks source lines outside mapped tables, layout observations and text "
-                  "lines at the end of a CSV "
-                  'export (a notice line in the tested files), which are kept here with their full'
-                  ' text instead of being reported as records. An empty artifact means the readers'
-                  ' raised no notes, not that the files were fully understood. Source File is the '
-                  "file's path within the input; the same file can appear more than once in a "
-                  'production, and each copy is reported. Tested against synthetic files and one '
-                  'real 2025 production; other production years and layouts are untested.'),
+        'notes': ("One row per note. Level 'error' marks an unreadable PDF, with file name and exception type; "
+                  "'warning' marks an unrecognised layout, missing account attribution, or text kept but not "
+                  "mapped to a field; 'info' marks source lines outside mapped tables, layout observations and "
+                  'text lines at the end of a CSV export (a notice line in the tested files), which are kept here '
+                  'with their full text instead of being reported as records. An empty artifact means the readers '
+                  "raised no notes, not that the files were fully understood. Source File is the file's path "
+                  'within the input; the same file can appear more than once in a production, and each copy is '
+                  'reported. Layouts are those of synthetic files and one 2025 production; other production years '
+                  'and layouts may differ.'),
         'paths': ('*[Aa]ccount [Mm]aster*.pdf', '*_account_statement_*.pdf', '*_rhc_statement_*.pdf', '*crypto_account_transfers*.csv', '*crypto_account_orders*.csv', '*data_request_ip_timestamps*.csv', '*_1099_*.csv'),
         'output_types': 'standard',
         'artifact_icon': 'alert-triangle',
@@ -246,52 +241,30 @@ from scripts.ilapfuncs import artifact_processor, logfunc
 
 
 # ==========================================================================
-# PDF reading. Cyber Agents, Inc.
+# PDF reading by @CyberMike81; contributed under the MIT license.
 # Checked against the layouts of the tested production.
 # ==========================================================================
 
 # --------------------------------------------------------------------------
 # Output schemas
 # --------------------------------------------------------------------------
-PROV = ["source", "source_sha256", "locator", "account_basis", "raw"]
-
+PROV = ["source", "locator", "account_basis", "raw"]
 
 SCHEMAS = {
-    "accounts": ["provider", "account", "user_id", "name", "email", "created_original", "created_utc",
-                 "created_basis", "status", "account_type", "linked_account"] + PROV,
     "identity": ["provider", "account", "section", "field", "value"] + PROV,
-    "id_documents": ["provider", "account", "date_original", "date_utc", "date_basis", "doc_type", "id_number",
-                     "status", "name", "dob", "address", "city", "state", "zip", "country"] + PROV,
-    "contacts": ["provider", "account", "kind", "value", "normalized", "detail"] + PROV,
-    "payment_methods": ["provider", "account", "kind", "holder", "institution", "number", "routing",
-                        "method_type", "verified", "detail"] + PROV,
-    "wallet_addresses": ["provider", "account", "created_original", "created_utc", "created_basis", "wallet",
-                         "network", "address", "label"] + PROV,
-    "transactions": ["provider", "account", "ts_utc", "ts_original", "tz_basis", "category", "type",
-                     "direction", "asset", "amount", "usd_value", "counterparty", "tx_hash", "payment_method",
-                     "status", "txn_id", "network", "notes"] + PROV,
-    "events": ["provider", "account", "ts_utc", "ts_original", "tz_basis", "category", "action", "ip",
-               "device_id", "user_agent", "location", "channel", "details"] + PROV,
-    "balances": ["provider", "account", "asset", "metric", "amount", "usd_value"] + PROV,
+    "events": ["provider", "account", "ts_utc", "ts_original", "tz_basis"] + PROV,
     "statements": ["provider", "account", "statement_type", "period_start", "period_end",
-                   "opening_balance", "closing_balance", "holdings"] + PROV,
+                   "opening_balance", "closing_balance", "holdings", "rhc_account", "name", "address"] + PROV,
     "statement_activity": ["provider", "account", "statement_type", "period_end", "date", "description",
                            "type", "symbol", "quantity", "price", "debit", "credit", "value", "fee"] + PROV,
-    "tax": ["provider", "account", "form", "tax_year", "date_acquired", "sale_date", "description",
-            "quantity", "cost_basis", "basis_status", "proceeds", "term", "qualifiers", "payer"] + PROV,
     "other_records": ["provider", "account", "section", "record"] + PROV,
-    "images": ["provider", "account", "name", "media_type", "data_ref", "width", "height", "page"] + PROV,
     "warnings": ["provider", "level", "message"] + PROV,
 }
-
 
 BASIS_STATED_OFFSET = "stated offset"
 
 
 BASIS_STATED_ABBR = "stated zone abbreviation (fixed offset)"
-
-
-BASIS_EXAMINER_UTC = "examiner-assumed UTC"
 
 
 BASIS_NOT_STATED = "zone not stated"
@@ -370,76 +343,6 @@ def _plain_decimal(t, neg=False):
     return ("-" if sign else "") + out
 
 
-def digits(v):
-    return re.sub(r"\D", "", v or "")
-
-
-def norm_phone(v):
-    """NANP phones -> 10 digits. Extensions are dropped. Other numbers -> '+<digits>'."""
-    s = clean(v).lower()
-    s = re.sub(r"\(deleted\)", "", s)
-    s = re.split(r"\s*(?:ext\.?|extension|x|#)\s*\d+\s*$", s)[0]
-    intl = s.strip().startswith("+") and not s.strip().startswith("+1")
-    d = digits(s)
-    if intl:
-        return "+" + d if len(d) >= 8 else ""
-    if len(d) == 11 and d.startswith("1"):
-        d = d[1:]
-    return d if len(d) == 10 else ""
-
-
-def norm_email(v, provider=""):
-    """Lower-case. Coinbase closed-account form 'deleted-<digits>+user@x' -> 'user@x' (Coinbase only)."""
-    s = clean(v).lower()
-    if provider == "Coinbase":
-        m = re.match(r"deleted-\d+\+(.+@.+)$", s)
-        if m:
-            s = m.group(1)
-    return s if re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", s) else ""
-
-
-_STREET_ABBR = {"west": "w", "east": "e", "north": "n", "south": "s", "road": "rd", "street": "st",
-                "avenue": "ave", "av": "ave", "boulevard": "blvd", "drive": "dr", "lane": "ln", "court": "ct",
-                "place": "pl", "circle": "cir", "highway": "hwy", "parkway": "pkwy", "terrace": "ter",
-                "northwest": "nw", "northeast": "ne", "southwest": "sw", "southeast": "se"}
-
-
-def street_key(line1, zipc, country=""):
-    """
-    Street line + 5-digit ZIP, e.g. '100 w example rd|00000'. Case, punctuation and common
-    street words are normalized. Unit / line 2 is NOT part of the key. US addresses only.
-    """
-    l1 = clean(line1).lower().replace("/", " ")
-    l1 = re.sub(r"[^a-z0-9# ]", " ", l1)
-    toks = [_STREET_ABBR.get(t, t) for t in l1.split()]
-    for i, t in enumerate(toks):
-        if t in ("apt", "unit", "ste", "suite", "#", "lot", "rm", "room") or t.startswith("#"):
-            toks = toks[:i]
-            break
-    z = digits(zipc)[:5]
-    c = clean(country).lower()
-    if c and c not in ("us", "usa", "united states", "united states of america"):
-        return ""
-    if len(toks) < 2 or not toks[0].isdigit() or len(z) != 5:
-        return ""
-    return " ".join(toks) + "|" + z
-
-
-def dob_key(v):
-    s = clean(v)
-    m = re.match(r"^(\d{1,2})/(\d{1,2})/(\d{4})$", s)
-    if m:
-        mo, d, y = int(m.group(1)), int(m.group(2)), int(m.group(3))
-    else:
-        m = re.match(r"^(\d{4})-(\d{2})-(\d{2})$", s)
-        if not m:
-            return ""
-        y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
-    try:
-        return datetime(y, mo, d).strftime("%Y-%m-%d")
-    except ValueError:
-        return ""
-
 
 # --------------------------------------------------------------------------
 # Timestamps (locale-independent)
@@ -467,11 +370,10 @@ def _hour12(h, ap):
     return h
 
 
-def parse_ts(value, naive_policy="unknown"):
+def parse_ts(value):
     """
     Returns (ts_utc, ts_original, tz_basis). ts_utc is 'YYYY-MM-DD HH:MM:SS[.fraction]' with the
-    source's fractional digits kept exactly. naive_policy 'utc' applies only to values with no
-    zone and is labelled as an examiner assumption.
+    source's fractional digits kept exactly. Values without a zone remain unconverted.
     """
     orig = clean(value)
     if not orig:
@@ -518,8 +420,6 @@ def parse_ts(value, naive_policy="unknown"):
         if tz not in _TZ_ABBR:
             return "", orig, f"zone '{tz}' not recognized"
         return (base - timedelta(hours=_TZ_ABBR[tz])).strftime("%Y-%m-%d %H:%M:%S") + fr, orig, BASIS_STATED_ABBR
-    if naive_policy == "utc":
-        return base.strftime("%Y-%m-%d %H:%M:%S") + fr, orig, BASIS_EXAMINER_UTC
     return "", orig, BASIS_NOT_STATED
 
 
@@ -531,8 +431,6 @@ def detect_pdf(pages) -> str:
         return "rh_rhc_statement"
     if "Robinhood Securities" in first and "Account Summary" in first:
         return "rh_rhf_statement"
-    if "Consolidated Tax Statement" in first and "Robinhood" in first:
-        return "rh_1099_pdf"
     return "document_pdf"
 
 
@@ -786,7 +684,7 @@ def _strip_print_chrome(pages):
 _EDIT_TITLE = re.compile(r"^\S.*\bedit logs\b")
 
 
-def parse_rh_account_master(pages, source, options=None):  # pylint: disable=unused-argument
+def parse_rh_account_master(pages, source):
     """
     Browser print of the Robinhood 'Major Oak' Account Master page. Every non-chrome text item
     ends up as a mapped field, an '(unrecognized label)' field with its value, an
@@ -904,12 +802,6 @@ def parse_rh_account_master(pages, source, options=None):  # pylint: disable=unu
                 return v
         return ""
 
-    def firstrow(label, sec=None):
-        for s_, l, v, lc, rawt in fields:
-            if l == label and v and (sec is None or s_ == sec):
-                return lc, rawt
-        return "", ""
-
     acct = first("Account Number", "Account Information")
     uuid = first("UUID")
     uuid_note = ""
@@ -933,61 +825,14 @@ def parse_rh_account_master(pages, source, options=None):  # pylint: disable=unu
                                    source=source, locator=lc, account_basis=AB, raw=rawt))
     if unl:
         warn(res, P, f"Account Master: {unl} text item(s) did not match a known label layout; kept as "
-                     f"'(unlabelled text)' under Robinhood > Accounts", source)
+                     f"'(unlabelled text)' in Robinhood - Account Master", source)
     if unknown_labels:
         warn(res, P, f"Account Master: {unknown_labels} label(s) not in the known vocabulary; kept as "
                      f"'(unrecognized label)' fields with their values", source)
 
-    def src(*labels_secs):
-        locs, raws = [], []
-        for lab, sec in labels_secs:
-            lc, rawt = firstrow(lab, sec)
-            if lc and lc not in locs:
-                locs.append(lc)
-                raws.append(rawt)
-        return "; ".join(locs), "\n".join(raws)
-
-    name = " ".join(x for x in [first("First Name"), first("Last Name")] if x)
-    created, created_sec = next(((v, s_) for s_, l, v, _, _ in fields
-                                 if l == "Created At" and "Application" in s_ and v), ("", None))
-    cu, co, cb = parse_ts(created)
-    lc, rawt = src(("Account Number", "Account Information"), ("UUID", None), ("First Name", None),
-                   ("Last Name", None), ("Email", None), ("Account Status", None), ("Account Type", None),
-                   *([("Created At", created_sec)] if created else []))
-    if uuid_note:
-        lc, rawt = lc + "; full UUID from print footer URL", rawt + "\n" + uuid_note
-    res["accounts"].append(row("accounts", provider=P, account=acct, user_id=uuid, name=name,
-                               email=first("Email"), status=first("Account Status"),
-                               created_original=co, created_utc=cu, created_basis=cb,
-                               account_type=f"RHF brokerage ({first('Account Type')})".replace(" ()", ""),
-                               source=source, locator=lc, account_basis=AB, raw=rawt))
-
-    def contact(kind, value, normalized, detail, *labels_secs):
-        lc_, raw_ = src(*labels_secs)
-        res["contacts"].append(row("contacts", provider=P, account=acct, kind=kind, value=value,
-                                   normalized=normalized, detail=detail, source=source, locator=lc_,
-                                   account_basis=AB, raw=raw_))
-
-    if first("Email"):
-        contact("email", first("Email"), norm_email(first("Email"), P), "Account Master", ("Email", None))
-    ph = first("Phone Number")
-    if ph and "X" not in ph:
-        contact("phone", ph, norm_phone(ph), "Account Master", ("Phone Number", None))
-    RA = "Residential Address"
-    l1 = first("Line1", RA)
-    if l1:
-        addr = ", ".join(x for x in [l1, first("Line2", RA), first("City", RA), first("State", RA),
-                                     first("Postal Code", RA)] if x)
-        contact("address", addr, street_key(l1, first("Postal Code", RA), first("Country", RA)),
-                "Account Master residential address", *[(lab, RA) for lab in
-                                                        ("Line1", "Line2", "City", "State", "Postal Code", "Country")
-                                                        if first(lab, RA)])
-    if first("Value", "Government IDs") and "Social Security" in first("ID Type", "Government IDs"):
-        v = first("Value", "Government IDs")
-        contact("ssn", v, digits(v), "Account Master", ("Value", "Government IDs"))
-    if first("Date of Birth (DOB)"):
-        v = first("Date of Birth (DOB)")
-        contact("dob", v, dob_key(v), "Account Master", ("Date of Birth (DOB)", None))
+    if not acct:
+        warn(res, P, "Account Master: Account is blank because no Account Number was found in "
+             "this PDF's Account Information section; no account is inferred from other files", source)
     for block in edit_blocks:
         _rh_edit_logs(block, acct, res, source, AB)
     return res
@@ -1035,9 +880,7 @@ def _rh_edit_logs(rows, acct, res, source, account_basis):
                 author, stamp = m.group(1), m.group(2)
             u, o, b = parse_ts(stamp)
             rec = row(
-                "events", provider=P, account=acct, ts_utc=u, ts_original=o, tz_basis=b, category="profile edit",
-                action=f"{c.get('Model', '')}.{field}".strip("."),
-                details=f"{log_name}: '{prev}' -> '{c.get('New Value', '')}'; author {author}",
+                "events", provider=P, account=acct, ts_utc=u, ts_original=o, tz_basis=b,
                 source=source, locator=lc, account_basis=account_basis, raw=rawt)
             rec["edit"] = {"log": log_name, "model": c.get("Model", ""), "field": field, "previous": prev,
                            "new": c.get("New Value", ""), "author": author}     # fields kept apart for RLEAPP
@@ -1051,7 +894,7 @@ RHC_KV_LABELS = ("NAME", "ACCOUNT NUMBER", "RHS ACCOUNT NUMBER", "ADDRESS", "PER
                  "PERIOD END", "OPENING BALANCE", "CLOSING BALANCE")
 
 
-def parse_rh_rhc_statement(pages, source, options=None):  # pylint: disable=unused-argument
+def parse_rh_rhc_statement(pages, source):
     res = new_result()
     P = "Robinhood"
     kv, kvloc = {}, {}
@@ -1115,36 +958,19 @@ def parse_rh_rhc_statement(pages, source, options=None):  # pylint: disable=unus
     kv_raw = json.dumps([[k, v] for k, v in kv.items()], ensure_ascii=False)
     kv_loc = "; ".join(f"{k} at {', '.join(v)}" for k, v in kvloc.items())
 
-    def kvl(*keys):
-        return "; ".join(f"{k} at {', '.join(kvloc[k])}" for k in keys if k in kvloc)
-
     def mv(h):
         return next((v for k, v in h.items() if k.startswith("MARKET VALUE")), "")
 
     hold_txt = "; ".join(f"{h.get('SYMBOL', '')} {h.get('QUANTITY', '')} ({mv(h)})" for h, _, _ in holdings)
     res["statements"].append(row("statements", provider=P, account=acct_rhs, statement_type="RHC crypto statement",
                                  period_start=kv.get("PERIOD START"), period_end=pend,
+                                 rhc_account=acct_rhc, name=kv.get("NAME"), address=kv.get("ADDRESS"),
                                  opening_balance=num(kv.get("OPENING BALANCE")),
                                  closing_balance=num(kv.get("CLOSING BALANCE")), holdings=hold_txt, source=source,
                                  locator=kv_loc + ("; holdings at " + ", ".join(lc for _, lc, _ in holdings)
                                                    if holdings else ""),
                                  account_basis=AB,
                                  raw=kv_raw + ("\n" + "\n".join(t for _, _, t in holdings) if holdings else "")))
-    if acct_rhc:
-        res["accounts"].append(row("accounts", provider=P, account=acct_rhc, name=kv.get("NAME"),
-                                   account_type="RHC crypto account", linked_account=acct_rhs, source=source,
-                                   locator=kvl("NAME", "ACCOUNT NUMBER", "RHS ACCOUNT NUMBER"),
-                                   account_basis="stated in file (ACCOUNT NUMBER)",
-                                   raw=json.dumps([[k, kv[k]] for k in ("NAME", "ACCOUNT NUMBER", "RHS ACCOUNT NUMBER")
-                                                   if k in kv], ensure_ascii=False)))
-    if kv.get("ADDRESS"):
-        a = kv["ADDRESS"]
-        parts = [x.strip() for x in a.split(",")]
-        zipm = re.search(r"\b(\d{5})(?:-\d{4})?\b", a)
-        res["contacts"].append(row("contacts", provider=P, account=acct_rhs, kind="address", value=a,
-                                   normalized=street_key(parts[0], zipm.group(1) if zipm else ""),
-                                   detail="RHC statement address", source=source, locator=kvl("ADDRESS"),
-                                   account_basis=AB, raw=json.dumps([["ADDRESS", a]], ensure_ascii=False)))
     for a, lc, t in activity:
         res["statement_activity"].append(row(
             "statement_activity", provider=P, account=acct_rhs, statement_type="RHC crypto statement",
@@ -1167,7 +993,7 @@ _RHF_CHROME = {
 }
 
 
-def parse_rh_rhf_statement(pages, source, options=None):  # pylint: disable=unused-argument
+def parse_rh_rhf_statement(pages, source):
     """
     RHF monthly statement. Reads the header (account, period, portfolio value), the Account
     Activity table and the Executed Trades Pending Settlement table. Every other line is kept
@@ -1295,29 +1121,46 @@ def _aware(utc_text):
     return value.replace(tzinfo=timezone.utc)
 
 
-def _parsed_pdfs(context, kinds):
-    """[(source path, kind, result)] for matched PDFs whose layout is one of `kinds`."""
+def _parsed_pdfs(context, kinds=None):
+    """Matched PDFs, including file-level notes; kinds=None also returns failed/unknown files."""
+    from pdfminer.pdfparser import PDFException  # pylint: disable=import-outside-toplevel
+
     out = []
     for file_found in sorted(str(f) for f in context.get_files_found()):
-        if not file_found.lower().endswith(".pdf") or not os.path.isfile(file_found):
+        if not file_found.lower().endswith(".pdf"):
             continue
-        stat = os.stat(file_found)
-        key = (file_found, stat.st_size, stat.st_mtime_ns)
-        if key not in _PDF_CACHE:
-            try:
+        # A failed stat/read must be file-local too. Do not cache failures lacking a stat.
+        key = None
+        try:
+            stat = os.stat(file_found)
+            key = (file_found, stat.st_size, stat.st_mtime_ns)
+            if key in _PDF_CACHE:
+                kind, result = _PDF_CACHE[key]
+            else:
                 with open(file_found, "rb") as handle:
                     data = handle.read()
                 pages = pdf_rows(data)
                 kind = detect_pdf(pages)
-                result = _PDF_KINDS[kind](pages, file_found) if kind in _PDF_KINDS else None
-            except (OSError, ValueError, TypeError, KeyError, IndexError) as err:
-                logfunc(f"Robinhood: could not read {os.path.basename(file_found)}: {type(err).__name__}")
-                kind, result = "", None
-            if len(_PDF_CACHE) > 64:                                 # bound memory across runs
+                if kind in _PDF_KINDS:
+                    result = _PDF_KINDS[kind](pages, file_found)
+                else:
+                    result = new_result()
+                    message = (f"{os.path.basename(file_found)}: PDF layout not recognised by the "
+                               "Robinhood readers; no structured records extracted. "
+                               "PDF tax statements are not supported; review the source PDF.")
+                    warn(result, "Robinhood", message, file_found, "whole document")
+                    logfunc(f"Robinhood: {message}")
+        except (PDFException, OSError, ValueError, TypeError, KeyError, IndexError) as err:
+            kind, result = "unreadable_pdf", new_result()
+            # Exception messages can contain machine-local paths; name the file and error type.
+            message = f"{os.path.basename(file_found)}: could not read PDF ({type(err).__name__}); no records extracted"
+            warn(result, "Robinhood", message, file_found, "whole document", level="error")
+            logfunc(f"Robinhood: {message}")
+        if key is not None:
+            if len(_PDF_CACHE) >= 64 and key not in _PDF_CACHE:
                 _PDF_CACHE.clear()
             _PDF_CACHE[key] = (kind, result)
-        kind, result = _PDF_CACHE[key]
-        if kind in kinds and result is not None:
+        if kinds is None or kind in kinds:
             out.append((file_found, kind, result))
     return out
 
@@ -1461,12 +1304,14 @@ def robinhoodStatements(context):
     for source, _, res in _parsed_pdfs(context, ("rh_rhf_statement", "rh_rhc_statement")):
         for r in res["statements"]:
             rows.append([r["statement_type"], r["account"], r["account_basis"], r["period_start"], r["period_end"],
-                         r["opening_balance"], r["closing_balance"], r["holdings"], r["locator"], r["raw"],
+                         r["opening_balance"], r["closing_balance"], r["holdings"],
+                         r["rhc_account"], r["name"], r["address"], r["locator"], r["raw"],
                          context.get_relative_path(source)])
             sources.add(source)
     headers = ("Statement", "Account", "Account Basis", "Period Start", "Period End", "Opening Balance",
                "Closing Balance",
-               "Holdings", "Location", "Source Text", "Source File")
+               "Holdings", "RHC Account Number", "Name (RHC)", "Address (RHC)",
+               "Location", "Source Text", "Source File")
     return headers, rows, "\n".join(sorted(sources))
 
 
@@ -1489,7 +1334,7 @@ def robinhoodStatementActivity(context):
 @artifact_processor
 def robinhoodParsingNotes(context):
     rows, sources = [], set()
-    for source, kind, res in _parsed_pdfs(context, tuple(_PDF_KINDS)):
+    for source, kind, res in _parsed_pdfs(context):
         for r in res["warnings"]:
             rows.append([kind.replace("rh_", "").replace("_", " "), r["level"], r["message"], r["locator"], r["raw"],
                          context.get_relative_path(source)])

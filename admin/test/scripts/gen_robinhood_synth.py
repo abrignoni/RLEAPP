@@ -18,8 +18,9 @@ any real document. Covered:
   - an Account Master printing every residential address component on its own row
   - an RHC crypto statement with holdings and activity on one page, and an RHF brokerage
     statement whose activity description wraps onto a second line
+  - truncated, password-protected and unrecognised-layout PDFs beside good files
 
-Synthetic PDF builders by Cyber Agents, Inc.
+Synthetic PDF builders by @CyberMike81; contributed under the MIT license.
 
 Usage:
     python admin/test/scripts/gen_robinhood_synth.py [output_dir]
@@ -192,6 +193,7 @@ def rhc_statement_pdf():
          (26, 86, 9, "ACCOUNT NUMBER"), (144, 84, 12, "SYNTHRHC01"),
          (26, 106, 9, "RHS ACCOUNT NUMBER"), (144, 104, 12, "SYNTH00001"),
          (26, 126, 9, "PERIOD END"), (144, 124, 12, "2025-01-31"),
+         (26, 146, 9, "ADDRESS"), (144, 144, 12, "100 Synthetic Lane, Testville, KY 40324"),
          (25, 283, 12, "PORTFOLIO ALLOCATION"),
          (24, 433, 8, "CRYPTOCURRENCY HELD IN ACCOUNT"), (253, 433, 8, "QUANTITY"), (302, 433, 8, "SYMBOL"), (388, 433, 8, "MARKET VALUE ON 2025/01/31"),
          (24, 454, 8, "Bitcoin"), (246, 454, 8, "0.001"), (302, 454, 8, "BTC"), (477, 454, 8, "$100.00"),
@@ -217,6 +219,18 @@ def rhf_statement_pdf():
     return make_pdf([p1, p3], width=800)
 
 
+def protected_pdf():
+    """Password-protected synthetic statement; no real credentials or records."""
+    from pypdf import PdfReader, PdfWriter  # pylint: disable=import-outside-toplevel
+    writer = PdfWriter()
+    for page in PdfReader(io.BytesIO(rhc_statement_pdf())).pages:
+        writer.add_page(page)
+    writer.encrypt("synthetic-test-password")
+    output = io.BytesIO()
+    writer.write(output)
+    return output.getvalue()
+
+
 def write(rel, data):
     path = os.path.join(BASE, *rel.split("/"))
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -239,6 +253,15 @@ def main():
           f"00000000-0000-0000-0000-000000000002_2025-01-31.pdf", rhc_statement_pdf())
     write(f"{prod}/SYNTH00001 (RHF)/bulk_edocs_SYNTH00001/SYNTH00001_account_statement_2025-01-31.pdf",
           rhf_statement_pdf())
+    # Matched but unreadable/unsupported PDFs must produce file-level notes while
+    # retaining the good rows from the other files in this same production.
+    write(f"{prod}/Account Master page 7.pdf", b"%PDF-1.4\ntruncated synthetic PDF")
+    write(f"{prod}/SYNTH_account_statement_truncated.pdf", b"%PDF-1.4\ntruncated synthetic PDF")
+    write(f"{prod}/SYNTH_account_statement_protected.pdf", protected_pdf())
+    write(f"{prod}/SYNTH_account_statement_unknown.pdf",
+          make_pdf([[(40, 40, 12, "Synthetic unrecognised layout")]]))
+    write(f"{prod}/SYNTH_account_statement_tax.pdf",
+          make_pdf([[(40, 40, 12, "Robinhood Consolidated Tax Statement")]]))
     print(f"Wrote synthetic Robinhood return to {BASE}")
 
 
