@@ -1,0 +1,74 @@
+{
+  "metadata": {
+    "module_name": "coinbaseComplianceReport",
+    "artifact_name": "Coinbase Compliance Report - Previous Emails",
+    "function_name": "coinbaseCRPreviousEmails",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 10,
+    "number_of_rows": 3,
+    "total_data_size_bytes": 540,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/coinbaseComplianceReport/testdata.coinbaseComplianceReport.coinbaseCRPreviousEmails.caseSYNTH001.zip",
+    "start_time": "2026-09-23T20:05:51.887928+00:00",
+    "end_time": "2026-09-23T20:05:51.894416+00:00",
+    "run_time_seconds": 0.000896453857421875,
+    "last_commit": {
+      "hash": "Uncommitted",
+      "author_name": "N/A",
+      "author_email": "N/A",
+      "date": "2026-09-23T16:05:51.891265",
+      "message": "File not yet committed to git"
+    }
+  },
+  "headers": [
+    "User ID",
+    "Timestamp (UTC)",
+    "CHANGED AT (as produced)",
+    "Time Basis",
+    "CHANGED FROM",
+    "CHANGED TO",
+    "CONFIRMED AT",
+    "Other Columns (as produced)",
+    "CSV Record",
+    "Source File"
+  ],
+  "data": [
+    [
+      "SYNTHUSER000000000000000A",
+      1612202400,
+      "2021-02-01 10:00:00 -0800",
+      "stated offset",
+      "old@example.test",
+      "alex@example.test",
+      "2021-02-01 10:05:00 -0800",
+      "",
+      31,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      1612202400,
+      "2021-02-01 10:00:00 -0800",
+      "stated offset",
+      "old@example.test",
+      "alex@example.test",
+      "2021-02-01 10:05:00 -0800",
+      "",
+      31,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      1612202400,
+      "2021-02-01 10:00:00 -0800",
+      "stated offset",
+      "old@example.test",
+      "blair@example.test",
+      "2021-02-01 10:05:00 -0800",
+      "",
+      31,
+      "0000bbbb/compliance_report.csv"
+    ]
+  ]
+}

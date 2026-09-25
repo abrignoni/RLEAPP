@@ -1,0 +1,182 @@
+{
+  "metadata": {
+    "module_name": "coinbaseComplianceReport",
+    "artifact_name": "Coinbase Compliance Report - Totals",
+    "function_name": "coinbaseCRTotals",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 10,
+    "number_of_rows": 12,
+    "total_data_size_bytes": 1409,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/coinbaseComplianceReport/testdata.coinbaseComplianceReport.coinbaseCRTotals.caseSYNTH001.zip",
+    "start_time": "2026-09-23T20:05:51.840728+00:00",
+    "end_time": "2026-09-23T20:05:51.847965+00:00",
+    "run_time_seconds": 0.0010235309600830078,
+    "last_commit": {
+      "hash": "Uncommitted",
+      "author_name": "N/A",
+      "author_email": "N/A",
+      "date": "2026-09-23T16:05:51.844745",
+      "message": "File not yet committed to git"
+    }
+  },
+  "headers": [
+    "User ID",
+    "Section",
+    "Asset",
+    "Metric",
+    "First Value",
+    "Second Value",
+    "Further Values",
+    "Value Columns (as produced)",
+    "CSV Record",
+    "Source File"
+  ],
+  "data": [
+    [
+      "SYNTHUSER000000000000000A",
+      "Totals",
+      "BTC",
+      "BALANCE",
+      "0.00000000",
+      "0.00",
+      "",
+      "BTC | EQUIV USD",
+      69,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Totals",
+      "BTC",
+      "BOUGHT",
+      "0.01000000",
+      "400.00",
+      "",
+      "BTC | EQUIV USD",
+      70,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Totals",
+      "USD",
+      "DEPOSITED",
+      "100.00",
+      "100.00",
+      "",
+      "USD",
+      73,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Exchange Totals",
+      "ETH",
+      "DEPOSITED",
+      "0.5",
+      "900.00",
+      "",
+      "ETH | EQUIV USD",
+      78,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Totals",
+      "BTC",
+      "BALANCE",
+      "0.00000000",
+      "0.00",
+      "",
+      "BTC | EQUIV USD",
+      69,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Totals",
+      "BTC",
+      "BOUGHT",
+      "0.01000000",
+      "400.00",
+      "",
+      "BTC | EQUIV USD",
+      70,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Totals",
+      "USD",
+      "DEPOSITED",
+      "100.00",
+      "100.00",
+      "",
+      "USD",
+      73,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Exchange Totals",
+      "ETH",
+      "DEPOSITED",
+      "0.5",
+      "900.00",
+      "",
+      "ETH | EQUIV USD",
+      78,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "Totals",
+      "BTC",
+      "BALANCE",
+      "0.00000000",
+      "0.00",
+      "",
+      "BTC | EQUIV USD",
+      69,
+      "0000bbbb/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "Totals",
+      "BTC",
+      "BOUGHT",
+      "0.01000000",
+      "400.00",
+      "",
+      "BTC | EQUIV USD",
+      70,
+      "0000bbbb/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "Totals",
+      "USD",
+      "DEPOSITED",
+      "100.00",
+      "100.00",
+      "",
+      "USD",
+      73,
+      "0000bbbb/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "Exchange Totals",
+      "ETH",
+      "DEPOSITED",
+      "0.5",
+      "900.00",
+      "",
+      "ETH | EQUIV USD",
+      78,
+      "0000bbbb/compliance_report.csv"
+    ]
+  ]
+}
