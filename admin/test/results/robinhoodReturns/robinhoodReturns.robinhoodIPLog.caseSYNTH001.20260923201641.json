@@ -1,0 +1,58 @@
+{
+  "metadata": {
+    "module_name": "robinhoodReturns",
+    "artifact_name": "Robinhood - IP Log",
+    "function_name": "robinhoodIPLog",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 14,
+    "number_of_rows": 1,
+    "total_data_size_bytes": 201,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/robinhoodReturns/testdata.robinhoodReturns.robinhoodIPLog.caseSYNTH001.zip",
+    "start_time": "2026-09-23T20:16:41.112739+00:00",
+    "end_time": "2026-09-23T20:16:41.120716+00:00",
+    "run_time_seconds": 0.00018930435180664062,
+    "last_commit": {
+      "hash": "Uncommitted",
+      "author_name": "N/A",
+      "author_email": "N/A",
+      "date": "2026-09-23T16:16:41.118294",
+      "message": "File not yet committed to git"
+    }
+  },
+  "headers": [
+    "event_date_time",
+    "account_number",
+    "user__secret",
+    "user__username",
+    "device_platform",
+    "user_agent",
+    "client_ip",
+    "geo_ip",
+    "geo_ip_timezone",
+    "geo_ip_city_name",
+    "geo_ip_country_name",
+    "Other Columns (as produced)",
+    "CSV Record",
+    "Source File"
+  ],
+  "data": [
+    [
+      "2024-03-21 09:30:02",
+      "SYNTH00001",
+      "SYNTHSECRET-0001",
+      "synthuser",
+      "iOS",
+      "",
+      "203.0.113.9",
+      "203.0.113.9",
+      "Pacific/Honolulu",
+      "Testcity",
+      "United States",
+      "",
+      2,
+      "Final Production-SYNTH/data_request_ip_timestamps_account_number__00000001__1__1.csv"
+    ]
+  ]
+}
