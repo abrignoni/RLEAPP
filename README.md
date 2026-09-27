@@ -236,4 +236,4 @@ review does not stop while we work that out.
 
 This tool is the result of a collaborative effort of many people in the DFIR community.
 
-RLEAPP logo courtesy of Derek Eiri.
+RLEAPP logo courtesy of Kevin Pagano. The earlier RLEAPP logo was by Derek Eiri.
