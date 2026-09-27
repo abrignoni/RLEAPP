@@ -17,7 +17,8 @@ from PIL import Image, ImageTk
 from tkinter import ttk, filedialog as tk_filedialog, messagebox as tk_msgbox
 from scripts.version_info import rleapp_version, leapp_name
 from scripts.search_files import *
-from scripts.raw_image import RAW_IMAGE_LABEL, RAW_IMAGE_SUFFIXES, names_an_image_folder
+from scripts.raw_image import (RAW_IMAGE_LABEL, RAW_IMAGE_SUFFIXES, names_an_image_folder,
+                               needs_password, ask_image_password)
 from scripts.ilapfuncs import *
 from scripts.modules_to_exclude import modules_to_exclude
 from scripts.lavafuncs import *
@@ -492,6 +493,13 @@ def process(casedata):
     is_valid, extracttype, blah = ValidateInput()
 
     if is_valid:
+        # An encrypted Apple disk image opens only with its password: asked for here,
+        # checked against the image, and handed to the run, never stored.
+        image_password = None
+        if extracttype == 'raw' and needs_password(input_entry.get()):
+            image_password = ask_image_password(main_window, input_entry.get())
+            if image_password is None:
+                return
         GuiWindow.window_handle = main_window
         input_path = input_entry.get()
         output_folder = output_entry.get()
@@ -531,14 +539,14 @@ def process(casedata):
         worker = threading.Thread(
             target=run_crunch,
             args=(GuiWindow.message_queue, selected_modules, extracttype, input_path,
-                  out_params, wrap_text, casedata),
+                  out_params, wrap_text, casedata, image_password),
             daemon=True)
         worker.start()
         main_window.after(CRUNCH_POLL_MS, poll_crunch, GuiWindow.message_queue, out_params)
 
 
 def run_crunch(message_queue, selected_modules, extracttype, input_path, out_params, wrap_text,
-               case_info):
+               case_info, image_password=None):
     '''Do the processing off the main thread. Touches no widget; reports on the queue.'''
     try:
         # LAVA's SQLite connection is opened here rather than in process(): a sqlite3
@@ -547,7 +555,7 @@ def run_crunch(message_queue, selected_modules, extracttype, input_path, out_par
         initialize_lava(input_path, out_params.output_folder_base, extracttype, profile_filename)
         crunch_successful = rleapp.crunch_artifacts(
             selected_modules, extracttype, input_path, out_params, wrap_text,
-            loader, case_info, profile_filename)
+            loader, case_info, profile_filename, image_password=image_password)
         lava_finalize_output(out_params.output_folder_base)
     except Exception:  # pylint: disable=broad-exception-caught
         # Without this the GUI would poll an empty queue forever and look hung for real.
