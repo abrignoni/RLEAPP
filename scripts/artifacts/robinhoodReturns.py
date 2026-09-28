@@ -13,8 +13,8 @@ A Robinhood production mixes CSV exports and PDFs:
 
 CSV values are reported as produced, with the provider's own column names. The PDFs have
 no columns to keep, so their text is read from page positions; that code was written for
-and tested against the layouts of one production, and the Parsing Notes artifact lists
-anything it could not place.
+and tested against the layouts of one production. The Parsing Notes artifact lists files
+that could not be read and the text the readers know they did not place.
 """
 
 __artifacts_v2__ = {
@@ -104,7 +104,7 @@ __artifacts_v2__ = {
         'description': 'Labelled fields read from an Account Master PDF.',
         'author': '@CyberMike81',
         'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-24',
+        'last_update_date': '2026-09-28',
         'requirements': 'pdfminer.six',
         'category': 'Robinhood Returns',
         'notes': ('Text is read from positions on the page (label rows, column positions, font sizes) observed in '
@@ -113,8 +113,9 @@ __artifacts_v2__ = {
                   'file-level PDF failures or unrecognised layouts are listed in Robinhood - Parsing Notes; this '
                   'does not establish complete extraction. Field is the label printed above the value. A label '
                   "outside the tested vocabulary is reported as '(unrecognized label) <label>' with its value, "
-                  "and text that did not sit under a label as '(unlabelled text)'. When the printed UUID is cut "
-                  'off, the full value is taken from the print footer URL and Location says so. Source File is '
+                  "and text that did not sit under a label as '(unlabelled text)'. When a printed UUID is cut off "
+                  'and its text is the start of the UUID in the print footer URL, the full value is taken from '
+                  'that URL and Location says so; any other UUID is reported as printed. Source File is '
                   "the file's path within the input; the same file can appear more than once in a production, and "
                   'each copy is reported. Layouts are those of synthetic files and one 2025 production; other '
                   'production years and layouts may differ. Account is blank when this PDF has no Account Number '
@@ -130,7 +131,7 @@ __artifacts_v2__ = {
         'description': 'Rows of the edit-log tables printed in an Account Master PDF.',
         'author': '@CyberMike81',
         'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-24',
+        'last_update_date': '2026-09-28',
         'requirements': 'pdfminer.six',
         'category': 'Robinhood Returns',
         'notes': ('Text is read from positions on the page (label rows, column positions, font sizes) observed in '
@@ -141,7 +142,9 @@ __artifacts_v2__ = {
                   'zone abbreviation, read as a fixed North American offset (EST = UTC-5). Cells that wrap onto '
                   'more lines are joined to their record only when line spacing ties them to that record alone; '
                   'other wrapped text is listed in Unattached Text with no record fields, so it is never placed '
-                  "on the wrong record. Unattached Text is empty for every other row. Source File is the file's "
+                  "on the wrong record. Unattached Text is empty for every other row. Every table titled '<name> "
+                  "edit logs' is read; one with no 'Model Field' header row is named in Robinhood - Parsing Notes."
+                  " Source File is the file's "
                   'path within the input; the same file can appear more than once in a production, and each copy '
                   'is reported. Layouts are those of synthetic files and one 2025 production; other production '
                   'years and layouts may differ. Account is blank when this PDF has no Account Number in its '
@@ -157,19 +160,25 @@ __artifacts_v2__ = {
         'description': 'Statement periods and balances from brokerage and crypto statement PDFs.',
         'author': '@CyberMike81',
         'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-24',
+        'last_update_date': '2026-09-28',
         'requirements': 'pdfminer.six',
         'category': 'Robinhood Returns',
-        'notes': ('RHF holdings are not mapped into the Holdings column. Source lines outside the header and '
-                  'activity tables, including positions, are retained in Parsing Notes; repeated section titles '
-                  'and page numbers are excluded. A warning identifies this limit. PDF layout checks used '
-                  'pdfminer.six 20260107. Text is read from positions on the page (label rows, column positions, '
-                  'font sizes) observed in the tested production. Location gives the page and the vertical '
-                  'position in points of the text a row came from, and Source Text gives that text as read. '
-                  'Reader-detected unmapped text and file-level PDF failures or unrecognised layouts are listed '
-                  'in Robinhood - Parsing Notes; this does not establish complete extraction. Balances are the '
-                  'printed values with $ and thousands separators removed and (x) written as -x; digits are not '
-                  "rounded. Holdings lists the holdings table as printed. Statement is 'RHF brokerage statement' "
+        'notes': ('RHF holdings are not mapped into the Holdings column. On RHF statements, source lines outside '
+                  'the header and activity tables, including positions, are retained in Parsing Notes; repeated '
+                  'section titles and page numbers are excluded. A warning identifies this limit. PDF layout '
+                  'checks used pdfminer.six 20260107. Text is read from positions on the page (label rows, column '
+                  'positions, font sizes) observed in the tested production. Location gives the page and the '
+                  'vertical position in points of the text a row came from, and Source Text gives that text as '
+                  'read. Reader-detected unmapped text and file-level PDF failures or unrecognised layouts are '
+                  'listed in Robinhood - Parsing Notes; this does not establish complete extraction. Balances are '
+                  'the printed values with $ and thousands separators removed and (x) written as -x; digits are '
+                  'not rounded. On RHC statements, Holdings lists each holdings row as symbol, quantity and market'
+                  ' value, and the printed rows are in Source Text; text outside the header labels and the '
+                  'holdings and activity tables is not kept. The header labels are read once: when a later page '
+                  'repeats them with a different value, the first value is kept and Parsing Notes names the '
+                  'difference. A line directly under a value and aligned with it is joined to that value as a '
+                  'wrapped line; other text beside the labels is listed in Parsing Notes instead of being added '
+                  "to a value. Statement is 'RHF brokerage statement' "
                   "or 'RHC crypto statement' by the statement's own layout. Account Basis says where Account came "
                   'from: printed on the statement, or taken from the file name when the pages print none (a '
                   "Parsing Notes row then says so). Source File is the file's path within the input; the same "
@@ -187,7 +196,7 @@ __artifacts_v2__ = {
         'description': 'Activity lines from brokerage and crypto statement PDFs.',
         'author': '@CyberMike81',
         'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-24',
+        'last_update_date': '2026-09-28',
         'requirements': 'pdfminer.six',
         'category': 'Robinhood Returns',
         'notes': ('Text is read from positions on the page (label rows, column positions, font sizes) observed in '
@@ -196,7 +205,10 @@ __artifacts_v2__ = {
                   'file-level PDF failures or unrecognised layouts are listed in Robinhood - Parsing Notes; this '
                   'does not establish complete extraction. Dates are calendar dates as printed, with no time or '
                   'zone. Quantities, prices and values have $ and thousands separators removed and (x) written as '
-                  '-x; digits are not rounded. Debit and Credit are as printed. Account Basis says where Account '
+                  '-x; digits are not rounded. On RHF statements, Debit and Credit have $ and thousands separators'
+                  ' removed like the other amounts; on RHC statements they are as printed and can carry the asset '
+                  'symbol after the quantity. On RHC rows, Description and Type both hold the TRANSACTION TYPE '
+                  'column. Account Basis says where Account '
                   'came from: printed on the statement, or taken from the file name when the pages print none (a '
                   "Parsing Notes row then says so). Source File is the file's path within the input; the same "
                   'file can appear more than once in a production, and each copy is reported. Layouts are those '
@@ -207,15 +219,17 @@ __artifacts_v2__ = {
     },
     'robinhoodParsingNotes': {
         'name': 'Robinhood - Parsing Notes',
-        'description': ('Text in Robinhood PDFs and CSV exports that the readers could not place '
+        'description': ('Files the Robinhood readers could not read, and text in Robinhood PDFs '
+                        'and CSV exports that they could not place '
                         'as a record.'),
         'author': '@CyberMike81',
         'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-24',
+        'last_update_date': '2026-09-28',
         'requirements': 'pdfminer.six',
         'category': 'Robinhood Returns',
-        'notes': ("One row per note. Level 'error' marks an unreadable PDF, with file name and exception type; "
-                  "'warning' marks an unrecognised layout, missing account attribution, or text kept but not "
+        'notes': ("One row per note. Level 'error' marks an unreadable PDF or CSV, with file name and exception "
+                  "type; 'warning' marks an unrecognised layout, a CSV header lacking a column an artifact needs, "
+                  'missing account attribution, or text kept but not '
                   "mapped to a field; 'info' marks source lines outside mapped tables, layout observations and "
                   'text lines at the end of a CSV export (a notice line in the tested files), which are kept here '
                   'with their full text instead of being reported as records. An empty artifact means the readers '
@@ -229,6 +243,7 @@ __artifacts_v2__ = {
     },
 }
 
+import fnmatch
 import io
 import json
 import os
@@ -438,8 +453,9 @@ def detect_pdf(pages) -> str:
 # ROBINHOOD: CSVs
 # ==========================================================================
 def _rh_acct_from_name(source):
-    m = re.search(r"account_number__(\d{6,})__", source) or \
-        re.search(r"(?:^|/|> )(\d{8,10})_(?:account_statement|1099)", source)
+    name = re.split(r"[\\/]", source)[-1]          # file name only, on either separator
+    m = re.search(r"account_number__(\d{6,})__", name) or \
+        re.search(r"(?:^|> )(\d{8,10})_(?:account_statement|1099)", name)
     return m.group(1) if m else ""
 
 
@@ -688,7 +704,7 @@ def parse_rh_account_master(pages, source):
     """
     Browser print of the Robinhood 'Major Oak' Account Master page. Every non-chrome text item
     ends up as a mapped field, an '(unrecognized label)' field with its value, an
-    '(unlabelled text)' item, an edit-log record, or a warning. Nothing is dropped silently.
+    '(unlabelled text)' item, an edit-log record, or a warning.
     """
     res = new_result()
     P = "Robinhood"
@@ -803,12 +819,11 @@ def parse_rh_account_master(pages, source):
         return ""
 
     acct = first("Account Number", "Account Information")
-    uuid = first("UUID")
-    uuid_note = ""
+    footer_uuid = footer_url = ""
     for u in urls:  # the on-screen UUID can be cut off; the print footer URL carries it whole
         m = re.search(r"/master/v\d+/([0-9a-f-]{36})", u)
-        if m and uuid and m.group(1).startswith(uuid[:8]) and m.group(1) != uuid:
-            uuid, uuid_note = m.group(1), u
+        if m:
+            footer_uuid, footer_url = m.group(1), u
             break
     AB = "stated in file (Account Master)" if acct else ""
     seen = set()
@@ -817,10 +832,13 @@ def parse_rh_account_master(pages, source):
         if key in seen and not val and not lab.startswith("("):
             continue
         seen.add(key)
-        if lab == "UUID" and uuid:
-            val = uuid
-            if uuid_note:
-                lc, rawt = lc + "; full value from print footer URL", rawt + "\n" + uuid_note
+        # Only a UUID whose printed text is the start of the footer URL's UUID is completed
+        # from it; any other UUID on the page is a different value and is left as printed.
+        printed = val.rstrip(".\u2026")
+        if lab == "UUID" and footer_uuid and len(printed) >= 8 and printed != footer_uuid \
+                and footer_uuid.startswith(printed):
+            val = footer_uuid
+            lc, rawt = lc + "; full value from print footer URL", rawt + "\n" + footer_url
         res["identity"].append(row("identity", provider=P, account=acct, section=sec, field=lab, value=val,
                                    source=source, locator=lc, account_basis=AB, raw=rawt))
     if unl:
@@ -844,7 +862,7 @@ def _rh_edit_logs(rows, acct, res, source, account_basis):
     blocks, cur = [], None
     for pno, top, size, segs in rows:
         txt = _row_text(segs)
-        if txt.startswith("Brokeback edit logs") or txt.startswith("Identi edit logs"):
+        if _EDIT_TITLE.match(txt):
             cur = [txt.split(" edit logs")[0] + " edit log", None, []]
             blocks.append(cur)
             continue
@@ -862,6 +880,7 @@ def _rh_edit_logs(rows, acct, res, source, account_basis):
             cur[2].append((pno, top, size, segs))
     for log_name, header, body in blocks:
         if header is None:
+            warn(res, P, f"{log_name}: no 'Model Field' table header found; the table was not read", source)
             continue
         recs, loose = _wrapped_table(body, header, "Model", res, P, source, log_name)
         for lc, t in loose:
@@ -905,7 +924,8 @@ def parse_rh_rhc_statement(pages, source):
         labels = [(top, top + size / 2, s) for top, size, segs in p for s in segs
                   if s["x0"] < 100 and s["t"] in RHC_KV_LABELS]
         if labels:
-            last = None
+            pkv, pkvloc = {}, {}
+            last = last_top = last_x0 = None
             stop = max(t for t, _, _ in labels) + 4.0
             first_top = min(t for t, _, _ in labels) - 4.0
             for top, size, segs in p:
@@ -917,12 +937,24 @@ def parse_rh_rhc_statement(pages, source):
                         continue
                     lab = next((l["t"] for _, lc_, l in labels if abs(lc_ - centre) <= 4.0), None)
                     if lab:
-                        kv[lab] = s["t"] if lab not in kv else kv[lab] + " " + s["t"]
-                        kvloc.setdefault(lab, []).append(_ploc(pno, top))
-                        last = lab
-                    elif last and top > first_top:
-                        kv[last] = kv[last] + ", " + s["t"]
-                        kvloc.setdefault(last, []).append(_ploc(pno, top))
+                        pkv[lab] = s["t"] if lab not in pkv else pkv[lab] + " " + s["t"]
+                        pkvloc.setdefault(lab, []).append(_ploc(pno, top))
+                        last, last_top, last_x0 = lab, top, s["x0"]
+                    elif last and top > first_top and abs(s["x0"] - last_x0) <= 4.0 \
+                            and 0 < top - last_top <= 16.0:
+                        # a wrapped value line: directly under the previous value and aligned with it
+                        pkv[last] = pkv[last] + ", " + s["t"]
+                        pkvloc[last].append(_ploc(pno, top))
+                        last_top = top
+                    elif top > first_top:
+                        warn(res, P, "RHC statement: text beside the header labels is not under a label; "
+                             "not added to any value", source, _ploc(pno, top), raw=s["t"])
+            for lab, val in pkv.items():   # a header repeated on a later page is read once
+                if lab not in kv:
+                    kv[lab], kvloc[lab] = val, pkvloc[lab]
+                elif kv[lab] != val:
+                    warn(res, P, f"RHC statement: {lab} on page {pno + 1} differs from the value first "
+                         "read; the first value is kept", source, "; ".join(pkvloc[lab]), raw=val)
         hold_hdr = act_hdr = None
         for top, _, segs in p:
             txt = _row_text(segs)
@@ -937,8 +969,12 @@ def parse_rh_rhc_statement(pages, source):
             if txt in ("ACCOUNT ACTIVITY", "PORTFOLIO ALLOCATION") or txt.startswith("*"):
                 hold_hdr = None
                 continue
-            if hold_hdr and len(segs) >= 3:
-                holdings.append((_assign_columns(hold_hdr, segs), _ploc(pno, top), txt))
+            if hold_hdr:
+                if len(segs) >= 3:
+                    holdings.append((_assign_columns(hold_hdr, segs), _ploc(pno, top), txt))
+                else:
+                    warn(res, P, "RHC holdings: line with fewer than three cells; not read as a holding",
+                         source, _ploc(pno, top), raw=txt)
                 continue
             if act_hdr:
                 if re.match(r"\d{4}-\d{2}-\d{2}$", segs[0]["t"]):
@@ -1123,7 +1159,9 @@ def _aware(utc_text):
 
 def _parsed_pdfs(context, kinds=None):
     """Matched PDFs, including file-level notes; kinds=None also returns failed/unknown files."""
-    from pdfminer.pdfparser import PDFException  # pylint: disable=import-outside-toplevel
+    # PSException is the parent of PDFException and also covers PSEOF, which a truncated file
+    # raises; pdfminer also asserts on some damaged structures.
+    from pdfminer.psparser import PSException  # pylint: disable=import-outside-toplevel
 
     out = []
     for file_found in sorted(str(f) for f in context.get_files_found()):
@@ -1150,7 +1188,7 @@ def _parsed_pdfs(context, kinds=None):
                                "PDF tax statements are not supported; review the source PDF.")
                     warn(result, "Robinhood", message, file_found, "whole document")
                     logfunc(f"Robinhood: {message}")
-        except (PDFException, OSError, ValueError, TypeError, KeyError, IndexError) as err:
+        except (PSException, AssertionError, OSError, ValueError, TypeError, KeyError, IndexError) as err:
             kind, result = "unreadable_pdf", new_result()
             # Exception messages can contain machine-local paths; name the file and error type.
             message = f"{os.path.basename(file_found)}: could not read PDF ({type(err).__name__}); no records extracted"
@@ -1209,6 +1247,8 @@ def _csv_artifact(context, columns, required, utc_from=None):
             logfunc(f"Robinhood: could not read {os.path.basename(file_found)}: {err}")
             continue
         if not all(c in header for c in required):
+            logfunc(f"Robinhood: {os.path.basename(file_found)} lacks a required column; no rows read "
+                    "(listed in Robinhood - Parsing Notes)")
             continue
         for number, cells in body:
             rec = {header[i]: cells[i].strip() if i < len(cells) else "" for i in range(len(header))}
@@ -1242,24 +1282,33 @@ _1099_COLUMNS = ("1099-B", "ACCOUNT NUMBER", "TAX YEAR", "DATE ACQUIRED", "SALE 
                  "PAYER NAME1", "PAYER NAME2")
 
 
+# (file name pattern, artifact name, columns a file's header must hold to be read)
+_CSV_REQUIRED = (
+    ("*crypto_account_transfers*.csv", "Robinhood - Crypto Transfers", ("id", "created_at", "transfer_type")),
+    ("*crypto_account_orders*.csv", "Robinhood - Crypto Orders", ("UUID", "Time Entered", "Side")),
+    ("*data_request_ip_timestamps*.csv", "Robinhood - IP Log", ("event_date_time", "client_ip")),
+    ("*_1099_*.csv", "Robinhood - 1099-B Detail", ("1099-B", "ACCOUNT NUMBER")),
+)
+
+
 @artifact_processor
 def robinhoodCryptoTransfers(context):
-    return _csv_artifact(context, _TRANSFER_COLUMNS, ("id", "created_at", "transfer_type"), utc_from="created_at")
+    return _csv_artifact(context, _TRANSFER_COLUMNS, _CSV_REQUIRED[0][2], utc_from="created_at")
 
 
 @artifact_processor
 def robinhoodCryptoOrders(context):
-    return _csv_artifact(context, _ORDER_COLUMNS, ("UUID", "Time Entered", "Side"))
+    return _csv_artifact(context, _ORDER_COLUMNS, _CSV_REQUIRED[1][2])
 
 
 @artifact_processor
 def robinhoodIPLog(context):
-    return _csv_artifact(context, _IPLOG_COLUMNS, ("event_date_time", "client_ip"))
+    return _csv_artifact(context, _IPLOG_COLUMNS, _CSV_REQUIRED[2][2])
 
 
 @artifact_processor
 def robinhood1099(context):
-    return _csv_artifact(context, _1099_COLUMNS, ("1099-B", "ACCOUNT NUMBER"))
+    return _csv_artifact(context, _1099_COLUMNS, _CSV_REQUIRED[3][2])
 
 
 @artifact_processor
@@ -1348,9 +1397,19 @@ def robinhoodParsingNotes(context):
         if not file_found.lower().endswith(".csv") or not os.path.isfile(file_found):
             continue
         try:
-            _, _, footers = _read_csv(file_found)
-        except (OSError, csv.Error):
+            header, _, footers = _read_csv(file_found)
+        except (OSError, csv.Error) as err:
+            rows.append([os.path.basename(file_found), "error", f"could not read CSV ({type(err).__name__}); "
+                         "no rows reported", "whole file", "", context.get_relative_path(file_found)])
+            sources.add(file_found)
             continue
+        for pattern, artifact, required in _CSV_REQUIRED:
+            missing = [c for c in required if c not in header]
+            if fnmatch.fnmatchcase(os.path.basename(file_found), pattern) and missing:
+                rows.append([os.path.basename(file_found), "warning",
+                             f"header lacks {', '.join(missing)}; no rows reported in {artifact}",
+                             "CSV record 1", ",".join(header), context.get_relative_path(file_found)])
+                sources.add(file_found)
         for number, cells in footers:
             rows.append([os.path.basename(file_found), "info", "text line at the end of the file; not a record",
                          f"CSV record {number}", cells[0].strip(), context.get_relative_path(file_found)])
