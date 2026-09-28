@@ -12,7 +12,10 @@ __artifacts_v2__ = {
         "notes": "Lists sections this module does not parse as well as the ones it does, so a "
                  "section with content and no artifact is visible. 'Provider Notice' carries "
                  "the return's own sentence when a section says it holds no data for the "
-                 "requested range; a blank notice does not mean the section had records.",
+                 "requested range; a blank notice does not mean the section had records. "
+                 "PDF Created is the creationDate in each PDF's document metadata, as written "
+                 "by the software that rendered it; in the tested return all 20 fell within the "
+                 "same minute.",
         "paths": ('*/App/*.pdf', '*/Content/*.pdf', '*/Profile/*.pdf'),
         "output_types": "standard",
         "artifact_icon": "list",
@@ -279,6 +282,8 @@ _SECTIONS = ('App', 'Content', 'Profile')
 # Fields whose text is written by users; never inspected for field names or logged.
 _FREE_TEXT = {'Comment', 'ReplyToComment', 'Content', 'Video caption', 'Post caption',
               'PhotoPostCaption', 'AudioTitle'}
+_PDF_DATE = re.compile(r"^D:(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})"
+                       r"(?:Z|([+-])(\d{2})'?(\d{2})'?)?")
 _NO_DATA = re.compile(r'^Our records indicate no available data', re.I)
 _TS = re.compile(r'^(\d{1,2})/(\d{1,2})/(\d{4}) (\d{1,2}):(\d{2}):(\d{2}) ?([AP]M) ?'
                  r'\(UTC ?([+-])(\d{1,2})(?::?(\d{2}))?\)$', re.I)
@@ -295,7 +300,7 @@ class _Line:
 
 
 class _Pdf:
-    __slots__ = ('title', 'lines', 'pages', 'notice', 'is_tiktok', 'dropped')
+    __slots__ = ('title', 'lines', 'pages', 'notice', 'is_tiktok', 'dropped', 'created')
 
     def __init__(self):
         self.title = ''
@@ -304,6 +309,7 @@ class _Pdf:
         self.notice = ''
         self.is_tiktok = False
         self.dropped = 0
+        self.created = ''
 
 
 def _nospace(text):
@@ -316,8 +322,6 @@ def _is_subsequence(needle, haystack):
 
 
 def _page_lines(page):
-    links = [(fitz.Rect(link['from']), link['uri']) for link in page.get_links()
-             if link.get('uri')]
     lines = []
     for block in page.get_text('dict')['blocks']:
         for line in block.get('lines', []):
@@ -325,10 +329,17 @@ def _page_lines(page):
             if not spans:
                 continue
             text = ''.join(s['text'] for s in line['spans']).strip()
-            rect = fitz.Rect(line['bbox'])
-            uris = [uri for r, uri in sorted(links, key=lambda x: x[0].x0) if r.intersects(rect)]
             bold = all(s['flags'] & 16 for s in spans)
-            lines.append(_Line(text, rect, uris, bold))
+            lines.append(_Line(text, fitz.Rect(line['bbox']), [], bold))
+    # A link box can touch two wrapped lines; give each link only to the line it
+    # overlaps most, so it is reported once.
+    for link in sorted(page.get_links(), key=lambda l: (l['from'].y0, l['from'].x0)):
+        if not link.get('uri'):
+            continue
+        rect = fitz.Rect(link['from'])
+        best = max(lines, key=lambda l, r=rect: (l.rect & r).get_area(), default=None)
+        if best is not None and (best.rect & rect).get_area() > 0:
+            best.uris.append(link['uri'])
     return lines
 
 
@@ -356,6 +367,7 @@ def _read_pdf(path, is_label_start=None, max_pages=None):
     prev_last = None
     with fitz.open(path) as doc:
         pdf.pages = doc.page_count
+        pdf.created = _pdf_date((getattr(doc, 'metadata', None) or {}).get('creationDate', ''))
         for page_no, page in enumerate(doc):
             if max_pages is not None and page_no >= max_pages:
                 break
@@ -466,6 +478,22 @@ def _ts(value):
     except ValueError:
         return value
     return local.astimezone(timezone.utc)
+
+
+def _pdf_date(value):
+    '''PDF date string "D:YYYYMMDDHHmmSS" with "Z" or "+hh'mm'" to aware UTC; other text as is.'''
+    match = _PDF_DATE.match(value or '')
+    if not match:
+        return value or ''
+    year, mon, day, hour, minute, sec, sign, off_h, off_m = match.groups()
+    offset = timedelta(hours=int(off_h or 0), minutes=int(off_m or 0))
+    if sign == '-':
+        offset = -offset
+    try:
+        return datetime(int(year), int(mon), int(day), int(hour), int(minute), int(sec),
+                        tzinfo=timezone(offset)).astimezone(timezone.utc)
+    except ValueError:
+        return value
 
 
 def _split(path):
@@ -582,9 +610,10 @@ def tikTokReturnPdfSections(context):
                           if re.match(pattern, name, re.I)), 'not parsed')
         rel = context.get_relative_path(file_found)
         sources.append(file_found)
-        data_list.append((pdf.title, pdf.pages, pdf.notice, parsed_by, rel))
+        data_list.append((pdf.created, pdf.title, pdf.pages, pdf.notice, parsed_by, rel))
 
-    data_headers = ('Section Title', 'Pages', 'Provider Notice', 'Parsed By', 'Source File')
+    data_headers = (('PDF Created', 'datetime'), 'Section Title', 'Pages', 'Provider Notice',
+                    'Parsed By', 'Source File')
     return data_headers, data_list, '\n'.join(sources)
 
 
