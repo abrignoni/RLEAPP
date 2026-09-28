@@ -7,7 +7,7 @@ __artifacts_v2__ = {
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-28",
-        "requirements": "PyMuPDF",
+        "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Lists sections this module does not parse as well as the ones it does, so a "
                  "section with content and no artifact is visible. 'Provider Notice' carries "
@@ -31,7 +31,7 @@ __artifacts_v2__ = {
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-28",
-        "requirements": "PyMuPDF",
+        "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "BSI is a two-column table; fields are paired by row position, so a field "
                  "name not seen before is still reported under its printed name. Values are "
@@ -50,7 +50,7 @@ __artifacts_v2__ = {
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-28",
-        "requirements": "PyMuPDF",
+        "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Action is taken from the printed field name ('User login time' or 'User logout "
                  "time'). Country is the country the return prints beside each IP. Country was "
@@ -69,7 +69,7 @@ __artifacts_v2__ = {
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-28",
-        "requirements": "PyMuPDF",
+        "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Multi-part sections are read in part order and combined. Country is the "
                  "country the return prints beside each IP. Country was uniform across the "
@@ -88,7 +88,7 @@ __artifacts_v2__ = {
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-28",
-        "requirements": "PyMuPDF",
+        "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Event is the provider's event name as printed (observed: video_play, publish, "
                  "post_comment, share_video). Their meaning is not documented in the return and "
@@ -110,7 +110,7 @@ __artifacts_v2__ = {
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-28",
-        "requirements": "PyMuPDF",
+        "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Country is the country the return prints beside each IP. Country was uniform "
                  "across the tested return. Video ID is not limited to Videos: of 331 IDs "
@@ -130,12 +130,14 @@ __artifacts_v2__ = {
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-28",
-        "requirements": "PyMuPDF",
+        "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Media is linked by the video ID, which is the file name of each file in "
                  "Content/Videos. Video Link is the hyperlink behind the printed word 'URL'; "
                  "blank where the PDF carries the word with no hyperlink. Video Type was "
-                 "'deleted' on all 4 rows of the tested return.",
+                 "'deleted' on all 4 rows of the tested return. Some emoji are drawn from "
+                 "fonts that carry no Unicode mapping and cannot be decoded; each such glyph is "
+                 "shown as U+FFFD (2 captions in the tested return).",
         "paths": ('*/Content/VideoMetadata.pdf', '*/Content/Videos/*'),
         "output_types": "standard",
         "artifact_icon": "video",
@@ -150,7 +152,7 @@ __artifacts_v2__ = {
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-28",
-        "requirements": "PyMuPDF",
+        "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Media is linked by the post ID, which is the folder name in Content/Stories; "
                  "in the tested return 300 of 318 rows had a folder. Caption was blank on every "
@@ -172,11 +174,12 @@ __artifacts_v2__ = {
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-28",
-        "requirements": "PyMuPDF",
+        "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Media is linked by the photo post ID, which is the folder name in "
                  "Content/Photo Post. Audio files are those with an audio MIME type by content. "
-                 "Photo URL and Audio URL are the hyperlinks behind the printed word 'URL'.",
+                 "Photo URL and Audio URL are the hyperlinks behind the printed word 'URL'. "
+                 "Glyphs that cannot be decoded to Unicode are shown as U+FFFD.",
         "paths": ('*/Content/PhotoMetadata.pdf', '*/Content/Photo Post/*'),
         "output_types": "standard",
         "artifact_icon": "image",
@@ -192,13 +195,15 @@ __artifacts_v2__ = {
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-28",
-        "requirements": "PyMuPDF",
+        "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Comment image media is linked by the file name the return prints for it "
                  "('saved as Images/...'). 'ReplyToComment (as stored)' is kept verbatim: in the "
                  "tested return it equalled the Comment text on all 86 of 229 rows that "
                  "carried it, so it is not labelled as the parent comment. Post URL is the hyperlink behind the "
-                 "printed word 'URL'.",
+                 "printed word 'URL'. Some emoji are drawn from fonts that carry no Unicode "
+                 "mapping and cannot be decoded; each such glyph is shown as U+FFFD (56 comment "
+                 "cells in the tested return).",
         "paths": ('*/Content/Video Comments/Video Comments.pdf',
                   '*/Content/Photo Comments/*'),
         "output_types": "standard",
@@ -214,11 +219,12 @@ __artifacts_v2__ = {
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-28",
-        "requirements": "PyMuPDF",
+        "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Room ID, Host User ID and Device IP are split out of the printed lines. If a "
                  "line does not match the expected layout its text is kept whole in Room ID or "
-                 "Comment Time rather than dropped.",
+                 "Comment Time rather than dropped. Glyphs that cannot be decoded to Unicode "
+                 "are shown as U+FFFD.",
         "paths": ('*/Content/LiveComment_*.pdf',),
         "output_types": "standard",
         "artifact_icon": "message-circle",
@@ -233,7 +239,7 @@ __artifacts_v2__ = {
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-28",
-        "requirements": "PyMuPDF",
+        "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Covers files the metadata sections do not reference, which the per-section "
                  "artifacts cannot show. 'ID In Metadata PDF' was 'Yes' on every row of the "
@@ -258,7 +264,15 @@ import os
 import re
 from datetime import datetime, timedelta, timezone
 
-import fitz
+from pdfminer.converter import PDFPageAggregator
+from pdfminer.layout import LAParams, LTChar, LTTextContainer, LTTextLine
+from pdfminer.pdfdocument import PDFDocument
+from pdfminer.pdfinterp import PDFPageInterpreter, PDFResourceManager
+from pdfminer.pdfpage import PDFPage
+from pdfminer.pdfparser import PDFParser
+from pdfminer.pdftypes import resolve1
+from pdfminer.psparser import PSLiteral
+from pdfminer.utils import decode_text
 
 from scripts.ilapfuncs import artifact_processor, check_in_media, logfunc
 
@@ -267,15 +281,18 @@ from scripts.ilapfuncs import artifact_processor, check_in_media, logfunc
 #
 # The PDF layout prints each record as 'Label: value' lines in one font, so labels
 # cannot be told from values by typography and records are split on a known label
-# list per section. Three rendering quirks are handled here:
+# list per section. Rendering quirks handled here:
 #   * every page ends with a footer (page number, provider name, 'Confidential &
 #     Proprietary') that can fall in the middle of a record;
 #   * a line that straddles a page break is printed whole at the foot of one page and
-#     again, clipped into fragments, at the head of the next. The fragments are dropped
-#     when their characters are a subsequence of the previous page's last line;
+#     again at the head of the next, sometimes clipped into fragments. The repeat is
+#     dropped when it equals the previous page's last line, or when its characters
+#     are a subsequence of it;
 #   * a record occasionally starts on the same line as the end of the previous one
 #     ('...text Comment ID: 123'), so the record-start label is also split mid-line
 #     when a digit follows it.
+# Word spacing is taken from the space characters in the PDF, not inferred from the
+# gaps between glyphs, which inserts spaces inside user names and e-mail addresses.
 # ---------------------------------------------------------------------------
 
 _SECTIONS = ('App', 'Content', 'Profile')
@@ -287,6 +304,25 @@ _PDF_DATE = re.compile(r"^D:(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})"
 _NO_DATA = re.compile(r'^Our records indicate no available data', re.I)
 _TS = re.compile(r'^(\d{1,2})/(\d{1,2})/(\d{4}) (\d{1,2}):(\d{2}):(\d{2}) ?([AP]M) ?'
                  r'\(UTC ?([+-])(\d{1,2})(?::?(\d{2}))?\)$', re.I)
+_LAPARAMS = LAParams(word_margin=1e6)
+_UNDECODED = re.compile(r'^(?:\(cid:\d+\)|[\x00-\x1f\x7f])$')
+
+
+class _Rect:
+    '''Axis-aligned box in page coordinates with the origin at the top left.'''
+    __slots__ = ('x0', 'y0', 'x1', 'y1')
+
+    def __init__(self, x0, y0, x1, y1):
+        self.x0, self.y0, self.x1, self.y1 = x0, y0, x1, y1
+
+    def overlap(self, other):
+        width = min(self.x1, other.x1) - max(self.x0, other.x0)
+        height = min(self.y1, other.y1) - max(self.y0, other.y0)
+        return width * height if width > 0 and height > 0 else 0
+
+    def __or__(self, other):
+        return _Rect(min(self.x0, other.x0), min(self.y0, other.y0),
+                     max(self.x1, other.x1), max(self.y1, other.y1))
 
 
 class _Line:
@@ -321,25 +357,54 @@ def _is_subsequence(needle, haystack):
     return all(ch in it for ch in needle)
 
 
-def _page_lines(page):
+def _text_lines(layout):
+    for item in layout:
+        if isinstance(item, LTTextLine):
+            yield item
+        elif isinstance(item, LTTextContainer):
+            yield from _text_lines(item)
+
+
+def _page_links(page, height):
+    for annot in resolve1(page.annots) or []:
+        annot = resolve1(annot)
+        if not isinstance(annot, dict):
+            continue
+        subtype = annot.get('Subtype')
+        if not (isinstance(subtype, PSLiteral) and subtype.name == 'Link'):
+            continue
+        action = resolve1(annot.get('A')) or {}
+        uri = resolve1(action.get('URI')) if isinstance(action, dict) else None
+        rect = resolve1(annot.get('Rect'))
+        if not uri or not rect:
+            continue
+        uri = decode_text(uri) if isinstance(uri, bytes) else str(uri)
+        x0, y0, x1, y1 = (float(resolve1(v)) for v in rect)
+        yield _Rect(min(x0, x1), height - max(y0, y1), max(x0, x1), height - min(y0, y1)), uri
+
+
+def _page_lines(page, layout):
+    height = layout.height
     lines = []
-    for block in page.get_text('dict')['blocks']:
-        for line in block.get('lines', []):
-            spans = [s for s in line['spans'] if s['text'].strip()]
-            if not spans:
-                continue
-            text = ''.join(s['text'] for s in line['spans']).strip()
-            bold = all(s['flags'] & 16 for s in spans)
-            lines.append(_Line(text, fitz.Rect(line['bbox']), [], bold))
+    for line in _text_lines(layout):
+        # A glyph from a font with no Unicode mapping comes back as '(cid:N)' or as a raw
+        # control code; it cannot be decoded, so it is shown as U+FFFD rather than as a
+        # character the user never typed.
+        text = ''.join('�' if isinstance(c, LTChar) and _UNDECODED.match(c.get_text())
+                       else c.get_text() for c in line).strip()
+        if not text:
+            continue
+        chars = [c for c in line if isinstance(c, LTChar) and c.get_text().strip()]
+        bold = bool(chars) and all('bold' in c.fontname.lower() for c in chars)
+        lines.append(_Line(text, _Rect(line.x0, height - line.y1, line.x1, height - line.y0),
+                           [], bold))
+    lines.sort(key=lambda l: (round(l.rect.y0), l.rect.x0))
     # A link box can touch two wrapped lines; give each link only to the line it
     # overlaps most, so it is reported once.
-    for link in sorted(page.get_links(), key=lambda l: (l['from'].y0, l['from'].x0)):
-        if not link.get('uri'):
-            continue
-        rect = fitz.Rect(link['from'])
-        best = max(lines, key=lambda l, r=rect: (l.rect & r).get_area(), default=None)
-        if best is not None and (best.rect & rect).get_area() > 0:
-            best.uris.append(link['uri'])
+    for rect, uri in sorted(_page_links(page, height), key=lambda x: (x[0].y0, x[0].x0)):
+        best = max(lines, key=lambda l, r=rect: l.rect.overlap(r), default=None)
+        if best is not None and best.rect.overlap(rect) > 0:
+            best.uris.append(uri)
     return lines
 
 
@@ -357,21 +422,43 @@ def _strip_footer(lines):
     return is_tiktok
 
 
+def _drop_page_break_repeat(lines, prev_last, is_label_start):
+    '''Returns how many leading lines repeat the previous page's last line.'''
+    if lines and _nospace(lines[0].text) == _nospace(prev_last):
+        return 1
+    k = 0
+    while k < len(lines) and not is_label_start(lines[k].text):
+        k += 1
+    if 0 < k < len(lines):
+        fragment = ''.join(_nospace(line.text) for line in lines[:k])
+        if _is_subsequence(fragment, _nospace(prev_last)):
+            return k
+    return 0
+
+
 def _read_pdf(path, is_label_start=None, max_pages=None):
     '''Reads a TikTok return PDF into one list of content lines across all pages.
 
     is_label_start(text) says whether a line begins a field; it is used to find the
-    clipped duplicate of a line split over a page break. Pass None for sections whose
-    lines are not labelled (the BSI table).'''
+    repeat of a line split over a page break. Pass None for sections whose lines are
+    not labelled (the BSI table).'''
     pdf = _Pdf()
     prev_last = None
-    with fitz.open(path) as doc:
-        pdf.pages = doc.page_count
-        pdf.created = _pdf_date((getattr(doc, 'metadata', None) or {}).get('creationDate', ''))
-        for page_no, page in enumerate(doc):
+    with open(path, 'rb') as fh:
+        doc = PDFDocument(PDFParser(fh))
+        info = doc.info[0] if doc.info else {}
+        created = resolve1(info.get('CreationDate', b''))
+        pdf.created = _pdf_date(decode_text(created) if isinstance(created, bytes)
+                                else str(created or ''))
+        manager = PDFResourceManager()
+        device = PDFPageAggregator(manager, laparams=_LAPARAMS)
+        interpreter = PDFPageInterpreter(manager, device)
+        for page_no, page in enumerate(PDFPage.create_pages(doc)):
+            pdf.pages += 1
             if max_pages is not None and page_no >= max_pages:
-                break
-            lines = _page_lines(page)
+                continue
+            interpreter.process_page(page)
+            lines = _page_lines(page, device.get_result())
             if _strip_footer(lines):
                 pdf.is_tiktok = True
             if page_no == 0:
@@ -380,14 +467,10 @@ def _read_pdf(path, is_label_start=None, max_pages=None):
                         pdf.title = lines[0].text
                     lines.pop(0)
             elif prev_last is not None and is_label_start is not None:
-                k = 0
-                while k < len(lines) and not is_label_start(lines[k].text):
-                    k += 1
-                if 0 < k < len(lines):
-                    fragment = ''.join(_nospace(line.text) for line in lines[:k])
-                    if _is_subsequence(fragment, _nospace(prev_last)):
-                        pdf.dropped += k
-                        del lines[:k]
+                drop = _drop_page_break_repeat(lines, prev_last, is_label_start)
+                if drop:
+                    pdf.dropped += drop
+                    del lines[:drop]
             for line in lines:
                 if _NO_DATA.match(line.text):
                     pdf.notice = line.text
