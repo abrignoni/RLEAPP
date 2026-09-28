@@ -6,19 +6,19 @@
     "case_number": "caseSYNTH001",
     "number_of_columns": 9,
     "number_of_rows": 6,
-    "total_data_size_bytes": 1231,
+    "total_data_size_bytes": 1222,
     "media_checkins": 4,
     "media_embedded_checkins": 0,
     "input_zip_path": "admin/test/cases/data/synchronoss/testdata.synchronoss.synchronoss_mms_received.caseSYNTH001.zip",
-    "start_time": "2026-09-04T03:39:53.299755+00:00",
-    "end_time": "2026-09-04T03:39:53.327934+00:00",
-    "run_time_seconds": 0.001283884048461914,
+    "start_time": "2026-09-04T18:30:54.622940+00:00",
+    "end_time": "2026-09-04T18:30:54.649193+00:00",
+    "run_time_seconds": 0.0012514591217041016,
     "last_commit": {
-      "hash": "e610a63f92df487f3d5cc95c61ceb34278d6fb1d",
+      "hash": "bc0358bdf5234f869bc35b2f92a6e9760107e238",
       "author_name": "OneSixForensics",
       "author_email": "kyle@onesixforensics.com",
-      "date": "2026-09-03T09:34:48-06:00",
-      "message": "Resolve MMS media per date folder regardless of seeker file order"
+      "date": "2026-09-03T21:43:31-06:00",
+      "message": "Read the DV access log CSV case-insensitively, and pin media order"
     }
   },
   "headers": [
@@ -73,7 +73,7 @@
       "+12085550000",
       "",
       "9999999999999999999999999999999999999999999999999999999999999999.jpg",
-      "referenced \u2014 file not in daily folder; possibly quarantined/removed",
+      "referenced \u2014 no file of this name in the MMS media folders",
       "1764572400000:d14",
       "SYNTH001LCIDHASH/messages/20251201.csv"
     ],
