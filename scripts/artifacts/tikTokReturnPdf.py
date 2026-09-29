@@ -35,7 +35,9 @@ __artifacts_v2__ = {
         "category": "TikTok Returns",
         "notes": "BSI is a two-column table; fields are paired by row position, so a field "
                  "name not seen before is still reported under its printed name. Values are "
-                 "as printed, including the signup date text, which is not converted.",
+                 "as printed, including the signup date text, which is not converted. "
+                 "Source File is kept beside Section because Section does not separate two "
+                 "returns parsed in one input.",
         "paths": ('*/Profile/BSI.pdf', '*/App/LocationInfo.pdf'),
         "output_types": "standard",
         "artifact_icon": "user",
@@ -177,7 +179,10 @@ __artifacts_v2__ = {
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Media is linked by the photo post ID, which is the folder name in "
-                 "Content/Photo Post. Audio files are those with an audio MIME type by content. "
+                 "Content/Photo Post. A file is put in Audio when its first bytes are an ID3 "
+                 "tag, an MPEG audio frame header or a file type box with the M4A brand; every "
+                 "other file, "
+                 "including audio in another format, is put in Images. "
                  "Photo URL and Audio URL are the hyperlinks behind the printed word 'URL'. "
                  "Glyphs that cannot be decoded to Unicode are shown as U+FFFD.",
         "paths": ('*/Content/PhotoMetadata.pdf', '*/Content/Photo Post/*'),
@@ -198,14 +203,16 @@ __artifacts_v2__ = {
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Comment image media is linked by the file name the return prints for it "
-                 "('saved as Images/...'). 'ReplyToComment (as stored)' is kept verbatim: in the "
+                 "('saved as Images/...'), looked up only in the comments folder the record "
+                 "came from (Content/Video Comments or Content/Photo Comments). Source File "
+                 "is kept beside Post Type because Post Type does not separate two returns "
+                 "parsed in one input. 'ReplyToComment (as stored)' is kept verbatim: in the "
                  "tested return it equalled the Comment text on all 86 of 229 rows that "
                  "carried it, so it is not labelled as the parent comment. Post URL is the hyperlink behind the "
                  "printed word 'URL'. Some emoji are drawn from fonts that carry no Unicode "
                  "mapping and cannot be decoded; each such glyph is shown as U+FFFD (56 comment "
                  "cells in the tested return).",
-        "paths": ('*/Content/Video Comments/Video Comments.pdf',
-                  '*/Content/Photo Comments/*'),
+        "paths": ('*/Content/Video Comments/*', '*/Content/Photo Comments/*'),
         "output_types": "standard",
         "artifact_icon": "message-square",
         "sample_data": {
@@ -234,15 +241,19 @@ __artifacts_v2__ = {
     },
     "tikTokReturnPdfMedia": {
         "name": "TikTok PDF Return - Media Files",
-        "description": "Media files found under Content/ in a TikTok law enforcement return, with "
-                       "the ID taken from each path and whether a metadata section lists that ID.",
+        "description": "Media files in Content/Videos, Content/Stories, Content/Photo Post and "
+                       "Content/Photo Comments of a TikTok law enforcement return, with the ID "
+                       "taken from each path and whether a metadata section lists that ID.",
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-28",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Covers files the metadata sections do not reference, which the per-section "
-                 "artifacts cannot show. 'ID In Metadata PDF' was 'Yes' on every row of the "
+                 "artifacts cannot show. A file is listed only when the return folder it sits "
+                 "in also holds VideoMetadata.pdf, StoriesMetadata.pdf, PhotoMetadata.pdf or "
+                 "Photo Comments.pdf, so the same folder names in another provider's data add "
+                 "no rows. 'ID In Metadata PDF' was 'Yes' on every row of the "
                  "tested return (no unreferenced files); a 'No' marks a file no parsed section "
                  "lists. Returns delivered as several zip parts split the media across them "
                  "(the tested return: metadata and some media in part 1, the rest in parts 2 "
@@ -893,14 +904,17 @@ _COMMENT_LABELS = ('Comment ID', 'Date', 'VideoPostID', 'VideoPostURL', 'PhotoPo
 def tikTokReturnPdfComments(context):
     data_list = []
     sources = []
-    # Files under Content/Photo Comments, keyed by (return root, path below that folder).
+    # Files under Content/Video Comments and Content/Photo Comments, keyed by (return root,
+    # comments folder, path below that folder), so a record only links a file from its own
+    # folder.
     images = {}
     for file_found in context.get_files_found():
         file_found = str(file_found)
         split = _split(file_found)
         if (split and split[1] == 'Content' and len(split[2]) > 1
-                and split[2][0] == 'Photo Comments' and not file_found.lower().endswith('.pdf')):
-            images[(split[0], '/'.join(split[2][1:]))] = file_found
+                and split[2][0] in ('Video Comments', 'Photo Comments')
+                and not file_found.lower().endswith('.pdf') and os.path.isfile(file_found)):
+            images[(split[0], split[2][0], '/'.join(split[2][1:]))] = file_found
 
     for file_found, records in _parse_section(context, r'^(Video|Photo) Comments\.pdf$',
                                               _COMMENT_LABELS, ('Comment ID',)):
@@ -912,7 +926,8 @@ def tikTokReturnPdfComments(context):
             linked = []
             for value in rec.get('Comment photo Link', []):
                 for name in _SAVED_AS.findall(value['text']):
-                    path = images.get((root, name.strip().replace('\\', '/')))
+                    path = images.get((root, f'{post_type} Comments',
+                                       name.strip().replace('\\', '/')))
                     if path:
                         linked.append(path)
                     else:
@@ -986,6 +1001,12 @@ def tikTokReturnPdfMedia(context):
                 comment_images.update((root, name.strip().replace('\\', '/'))
                                       for name in _SAVED_AS.findall(value['text']))
 
+    # Only folders of a return that carries one of the metadata PDFs are listed, so the same
+    # folder names in another provider's data are not reported as TikTok media.
+    roots = {_split(f)[0] for f in _pdfs(
+        context, r'^(VideoMetadata|StoriesMetadata|PhotoMetadata|Photo Comments)\.pdf$')
+        if _split(f)}
+
     sources = []
     for file_found in sorted({str(f) for f in context.get_files_found()}):
         split = _split(file_found)
@@ -993,6 +1014,8 @@ def tikTokReturnPdfMedia(context):
                 or file_found.lower().endswith('.pdf') or not os.path.isfile(file_found)):
             continue
         root, _, below = split
+        if root not in roots:
+            continue
         folder = below[0]
         if folder == 'Photo Comments':
             item_id = re.sub(r'_\d+$', '', os.path.splitext(below[-1])[0])
