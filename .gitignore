@@ -90,6 +90,8 @@ __pypackages__/
 *.mo
 *.manifest
 *.spec
+# except the one packaging/build.py builds from
+!packaging/rleapp.spec
 pip-wheel-metadata/
 share/python-wheels/
 wheels/

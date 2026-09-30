@@ -4,6 +4,42 @@
 
 If you want to contribute hit me up on twitter: https://twitter.com/AlexisBrignoni   
 
+## Download
+
+Download a pre-built release, no Python installation required, from
+[RLEAPP GitHub Releases](https://github.com/abrignoni/RLEAPP/releases) or
+[LEAPPs Releases](https://leapps.org/releases).
+
+| Platform | Download |
+| -------- | -------- |
+| Windows (Intel/AMD) | `RLEAPP-*-windows-x64-setup.exe` (installer) or `RLEAPP-*-windows-x64-portable.zip` |
+| Windows (ARM) | `RLEAPP-*-windows-arm64-setup.exe` or `RLEAPP-*-windows-arm64-portable.zip` |
+| macOS (Apple Silicon) | `RLEAPP-*-macos-arm64.dmg` |
+| macOS (Intel) | `RLEAPP-*-macos-x64.dmg` |
+| Linux (Intel/AMD) | `RLEAPP-*-linux-x64.AppImage` |
+| Linux (ARM) | `RLEAPP-*-linux-arm64.AppImage` |
+
+Each download holds one program, `rleapp`. `SHA256SUMS.txt` in each release lets you check a download.
+
+**GUI**: open RLEAPP the usual way: from the Start menu after installing on Windows, by
+double-clicking `rleapp.exe` in the portable folder, RLEAPP in Applications on macOS, or
+the AppImage on Linux. Started without arguments, it opens the window.
+
+**CLI**: give `rleapp` arguments in a terminal and it runs as a command line instead. The
+output folder must already exist. On Windows, keep `rleapp.exe` in its folder with the
+files beside it.
+
+```
+rleapp.exe -t zip -i C:\path\to\return.zip -o C:\path\to\output\
+```
+
+On Linux, run the AppImage with the same arguments. On macOS it is inside the app; to
+type just `rleapp` in a terminal, link it onto your PATH once:
+
+```
+sudo ln -s /Applications/RLEAPP.app/Contents/MacOS/rleapp /usr/local/bin/rleapp
+```
+
 ## Requirements
 
 **Python 3.10 or above**
@@ -70,6 +106,22 @@ $ python rleappGUI.py
 ```
 $ python rleapp.py --help
 ```
+
+### Building the binaries
+
+`packaging/build.py` builds `rleapp` with PyInstaller for the machine it runs on, from the
+same virtual environment.
+
+```
+python packaging/build.py exe          # dist/RLEAPP/, and dist/RLEAPP.app on macOS
+python packaging/build.py smoke        # run what it built, without opening a window
+python packaging/build.py installer    # Windows: Inno Setup installer; macOS: .dmg; Linux: AppImage
+```
+
+`exe --onefile` makes `dist/rleapp` (`dist\rleapp.exe` on Windows) as a single file
+instead. The Windows installer needs [Inno Setup](https://jrsoftware.org/isdl.php); on
+Linux, `smoke` needs a display, which `xvfb-run` provides. `python packaging/build.py --help`
+has the rest.
 
 ## Contributing artifact plugins
 
