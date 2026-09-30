@@ -204,7 +204,7 @@ for it, so no report field carries a zone the evidence never had.
   Android `userdata`) is listed and its content refused rather than staged as
   ciphertext.
 - zstd-compressed SquashFS and UBIFS need Python 3.14 or later
-  (`compression.zstd`), which the builds made by `test_builds.yml` use. Run from
+  (`compression.zstd`), which the builds made by `packaging/build.py` use. Run from
   source on an older Python, a zstd SquashFS is listed as a volume with no files,
   and the run log gives the reason on that volume's line; a zstd-compressed UBIFS
   file is listed and not staged, and the log names the reason.
@@ -241,8 +241,9 @@ none of them a file the seeker got wrong:
 ## Frozen builds
 
 The reader is imported as a module, so a PyInstaller build carries it like any
-other module; nothing is spawned. `test_builds.yml` runs the frozen CLI with
-`-t raw` on the NTFS fixture and requires the run log to show the walk. An
+other module; nothing is spawned. `python packaging/build.py smoke`, which
+`test_builds.yml` and `release.yml` run on every platform, runs the built executable
+with `-t raw` on the NTFS fixture and requires the run log to show the walk. An
 earlier design that ran the reader as a subprocess through `sys.executable`
 could not work frozen, because in a bundle that is the tool itself.
 

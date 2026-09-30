@@ -994,6 +994,17 @@ leapps_logo_label = ttk.Label(title_frame, image=leapps_logo, cursor="target")
 leapps_logo_label.pack(side='right')
 leapps_logo_label.bind("<Button-1>", lambda e: open_website("https://leapps.org"))
 
+# --selfcheck stops here, before the window is ever drawn, so a built binary can be smoke
+# tested without anyone clicking. By this point Tk has started, the images under assets/
+# have loaded and every artifact module has been imported: the three things built binaries
+# have been found without while the same code ran fine from source. The search icon is
+# loaded further down, and only off macOS, so it is loaded here too.
+if '--selfcheck' in sys.argv[1:]:
+    ImageTk.PhotoImage(file=resource_path("magnif_glass.png"))
+    print(f'selfcheck passed: {len(loader)} artifacts, Tk {main_window.tk.call("info", "patchlevel")}')
+    main_window.destroy()
+    sys.exit(0)
+
 ### Input output selection
 input_frame = ttk.LabelFrame(
     main_window,

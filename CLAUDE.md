@@ -27,6 +27,13 @@ they are silently unchecked. Prefer a literal dict in new modules.
 
 ## Repo-specific things worth knowing
 
+- **Builds are made by `packaging/build.py`**, one PyInstaller spec for every platform and
+  one executable, `rleapp`, that opens the window without arguments. Every artifact module
+  is a hidden import, so what the artifacts import is followed without a list. What it
+  cannot follow is a name built at run time (`importlib.import_module(some_variable)`) or a
+  data file kept outside `scripts/`, `leapp_functions/` or `assets/`: expect a working dev
+  run and a broken build, and run `python packaging/build.py smoke` or `test_builds.yml`.
+  See `.claude/rules/rleapp-build-and-release.md`.
 - `scripts/parse3.py` is a self-contained protobuf decoder. This repo does not depend on
   protobuf or blackboxprotobuf, and should not start.
 - Returns routinely contain real personal data for real people. See
