@@ -81,6 +81,15 @@ EnCase `.L01` or an FTK Imager `.ad1`, is read as the files it holds. The GUI pi
 `raw` on its own for those extensions, and for a sparse bundle or AFD folder chosen with
 its folder button. See `admin/docs/raw_image_input.md`.
 
+`raw` is for an image that holds a return, not for an image of a whole computer or
+phone. Five Snapchat artifacts (`snapAiConvN`, `snapConvN`, `snapMemN`, `snapRepconN`
+and `snapStoryN`) ask for every path with a dot in it (`*/*.*`), because a return's
+media files are matched to its CSV rows by file name, and every file an artifact asks
+for is copied into the report's data folder. On a whole disk that pattern takes in
+most files: on a public 256 GB Windows 11 test image it matches 107 GB (computed from
+the image's file listing, not by running it). To read a return out of such an image,
+leave those five artifacts out of the run.
+
 An encrypted image opens with its password (`--image_password_file` or
 `--image_password_env`), or, when it is sealed to a certificate, with that certificate's
 RSA private key (`--image_private_key`). A BitLocker volume in an image opens with its
