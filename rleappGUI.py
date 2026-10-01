@@ -146,7 +146,7 @@ def filter_modules(*args):
                 cb.config(
                     background=theme_bgcolor,
                     fg=theme_fgcolor,
-                    selectcolor=theme_inputcolor,
+                    selectcolor=theme_bgcolor,
                     highlightthickness=0,
                     activebackground=theme_bgcolor,
                     activeforeground=theme_fgcolor)
@@ -455,7 +455,7 @@ def open_settings_window():
         command=toggle_history,
         background=theme_bgcolor,
         fg=theme_fgcolor,
-        selectcolor=theme_inputcolor,
+        selectcolor=theme_bgcolor,
         activebackground=theme_bgcolor,
         activeforeground=theme_fgcolor,
         highlightthickness=0,
