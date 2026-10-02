@@ -5,7 +5,7 @@ Leave blank if not available
 """
 
 leapp_name = 'RLEAPP'
-rleapp_version = '2026.4.3'
+rleapp_version = '2026.4.4-dev'
 
 rleapp_contributors = [
     ['Alexis Brignoni', 'https://abrignoni.com', '@AlexisBrignoni', 'https://github.com/abrignoni'],
