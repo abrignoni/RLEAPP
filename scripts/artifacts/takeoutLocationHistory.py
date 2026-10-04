@@ -4,13 +4,14 @@ __artifacts_v2__ = {
         "description": "One row per detected-activity entry of each location in Google Takeout Location History.json; locations with no activity entry are not listed.",
         "author": "@KevinPagano3 & @Cheeky4n6Monkey",
         "creation_date": "2021-09-21",
-        "last_update_date": "2026-06-27",
+        "last_update_date": "2026-10-04",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "Reworked from cheeky4n6monkey/4n6-scripts Google_Takeout_Location_History. The "
-                 "column headed Activity holds the number of sub-activities in the activity entry, "
-                 "and the column headed Sub-activity Types holds the entry's timestampMs value as "
-                 "stored; the sub-activity types and confidences are in Detected Activity.",
+        "notes": "Reworked from cheeky4n6monkey/4n6-scripts Google_Takeout_Location_History. Sub-activity "
+                 "Count is the number of type and confidence pairs in the activity entry. Activity "
+                 "timestampMs is the entry's timestampMs value as stored, and Timestamp Activity is "
+                 "the same value converted to UTC by the shared Unix time helper. Detected Activity "
+                 "lists each sub-activity type with its confidence in brackets.",
         "paths": ('*/Location History/Location History.json', '*/Location History.json'),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
         "artifact_icon": "map-pin",
@@ -61,6 +62,6 @@ def takeoutLocationHistory(context):
 
     data_headers = (('Timestamp', 'datetime'), 'Source', 'Device Tag', 'Platform', 'Latitude',
                     'Longitude', 'Altitude', 'Heading (Degrees)', 'Velocity', 'Accuracy',
-                    'Vertical Accuracy', 'Activity', 'Sub-activity Types',
+                    'Vertical Accuracy', 'Sub-activity Count', 'Activity timestampMs',
                     ('Timestamp Activity', 'datetime'), 'Detected Activity')
     return data_headers, data_list, context.get_relative_path(source_path)
