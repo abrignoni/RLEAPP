@@ -7,7 +7,9 @@ __artifacts_v2__ = {
         "last_update_date": "2026-06-27",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "",
+        "notes": "Latitude and Longitude are location.latitudeE7 and location.longitudeE7 divided "
+                 "by 1e7 and read 0.0 when the entry holds no such key; 0.0 there is not a "
+                 "recorded position.",
         "paths": ('*/Semantic Location History/*/*.json',),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
         "artifact_icon": "map-pin",
@@ -20,7 +22,9 @@ __artifacts_v2__ = {
         "last_update_date": "2026-06-27",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "Start/End coordinates are separate columns; the framework auto-KML (which needs exact Latitude/Longitude columns) is not emitted for this table.",
+        "notes": "Start/End coordinates are separate columns; no KML file is written for this "
+                 "artifact. A segment with no start or end location reads NOT_SPECIFIED; a "
+                 "location with no coordinate key reads 0.0, which is not a recorded position.",
         "paths": ('*/Semantic Location History/*/*.json',),
         "output_types": "standard",
         "artifact_icon": "navigation",

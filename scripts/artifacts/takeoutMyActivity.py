@@ -1,14 +1,14 @@
 __artifacts_v2__ = {
     "takeoutMyActivity": {
         "name": "Google Takeout - My Activity",
-        "description": "Parses and displays MyActivity.html files from Google Takeout for various "
+        "description": "Lists and attaches MyActivity.html files from Google Takeout for various "
                        "services (e.g., Ads, Chrome, YouTube).",
         "author": "@Jadoo4QFan",
         "creation_date": "2025-07-23",
         "last_update_date": "2026-07-09",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "Each service's MyActivity.html file is checked in as a media item so the "
+        "notes": "Each service's MyActivity.html file is attached to the report so the "
                  "original HTML can be opened and reviewed manually from the report; the file "
                  "contents are not parsed into rows. The Service column is taken from the "
                  "folder name under 'My Activity' in the Takeout path.",

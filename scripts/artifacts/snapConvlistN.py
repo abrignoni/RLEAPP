@@ -1,9 +1,10 @@
 __artifacts_v2__ = {
     "snapConvlistN": {
         "name": "Snapchat - Conversation List",
-        "description": "Conversation metadata (participants, creation and last activity timestamps, "
-                       "retention policy, storage region) for one-to-one and group conversations, "
-                       "parsed from a Snapchat law enforcement return (conversation_list.csv).",
+        "description": "Conversation metadata (participants, creation_time and "
+                       "last_event_timestamp, retention policy, storage region) for one-to-one and "
+                       "group conversations, parsed from a Snapchat law enforcement return "
+                       "(conversation_list.csv).",
         "author": "@AlexisBrignoni",
         "creation_date": "2026-07-09",
         "last_update_date": "2026-07-09",

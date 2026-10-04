@@ -1,13 +1,16 @@
 __artifacts_v2__ = {
     "takeoutLocationHistory": {
         "name": "Google Location History - Location History",
-        "description": "Parses Google Takeout Location History.json (locations with detected activity)",
+        "description": "One row per detected-activity entry of each location in Google Takeout Location History.json; locations with no activity entry are not listed.",
         "author": "@KevinPagano3 & @Cheeky4n6Monkey",
         "creation_date": "2021-09-21",
         "last_update_date": "2026-06-27",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "Reworked from cheeky4n6monkey/4n6-scripts Google_Takeout_Location_History.",
+        "notes": "Reworked from cheeky4n6monkey/4n6-scripts Google_Takeout_Location_History. The "
+                 "column headed Activity holds the number of sub-activities in the activity entry, "
+                 "and the column headed Sub-activity Types holds the entry's timestampMs value as "
+                 "stored; the sub-activity types and confidences are in Detected Activity.",
         "paths": ('*/Location History/Location History.json', '*/Location History.json'),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
         "artifact_icon": "map-pin",

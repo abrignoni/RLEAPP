@@ -1,9 +1,9 @@
 __artifacts_v2__ = {
     "snapCalllogsN": {
         "name": "Snapchat - Call Logs",
-        "description": "Audio and video call records (creator, participant count, start and end "
-                       "timestamps, duration, network and connection result), parsed from a "
-                       "Snapchat law enforcement return (call_logs.csv).",
+        "description": "Call records parsed from a Snapchat law enforcement return "
+                       "(call_logs.csv), with the columns the file carries. The per-call "
+                       "participant rows that follow each call in the file are not reported here.",
         "author": "@AlexisBrignoni",
         "creation_date": "2026-07-09",
         "last_update_date": "2026-07-09",

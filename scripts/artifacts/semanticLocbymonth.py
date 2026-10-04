@@ -7,7 +7,12 @@ __artifacts_v2__ = {
         "last_update_date": "2026-06-27",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "",
+        "notes": "Additional Latitude and Additional Longitude are location.latitudeE7 and "
+                 "location.longitudeE7 divided by 1e7 and read 0.0 when the entry holds no such "
+                 "key; 0.0 there is not a recorded position. Calculated Probability is the "
+                 "calibratedProbability field as stored. Timestamps that are ISO 8601 strings with "
+                 "a Z or an offset are converted to UTC; a value with no Z or offset is read in "
+                 "the local zone of the machine running the tool.",
         "paths": ('*/Location History*/Semantic Location History/*/*_*.json',),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
         "artifact_icon": "map-pin",
@@ -20,7 +25,16 @@ __artifacts_v2__ = {
         "last_update_date": "2026-06-27",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "Start/End/Parking coordinates are separate columns and waypoint coordinates are aggregated into the Waypoints cell; the original per-segment waypoint-track KML is not auto-emitted.",
+        "notes": "Start/End/Parking coordinates are separate columns. When a segment has "
+                 "waypoints, the Waypoints cell lists the start coordinate, then the end "
+                 "coordinate, then each waypoint in file order. No KML file is written for this "
+                 "artifact. Highest Activity Type Probability and Activity High Probability "
+                 "Percentage are the activityType and probability of the first entry of the "
+                 "activities list as stored; the list is not sorted here. Parking Location "
+                 "Latitude and Longitude read 0.0 when the parking event holds no coordinates; 0.0 "
+                 "there is not a recorded position. Timestamps that are ISO 8601 strings with a Z "
+                 "or an offset are converted to UTC; a value with no Z or offset is read in the "
+                 "local zone of the machine running the tool.",
         "paths": ('*/Location History*/Semantic Location History/*/*_*.json',),
         "output_types": "standard",
         "html_columns": ["Waypoints"],

@@ -1,13 +1,14 @@
 __artifacts_v2__ = {
     "googlePayTransactions": {
         "name": "Google Pay Transactions",
-        "description": "Purchases on Google like Play and YouTube, and purchases made using Google Pay balance.",
+        "description": "Transaction records from Google Pay Takeout data (Google transactions/transactions_*.csv).",
         "author": "@KevinPagano3",
         "creation_date": "2021-09-25",
         "last_update_date": "2026-06-27",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "Transaction Timestamp is preserved as the raw source value (Takeout CSV format is locale-dependent; not normalized to UTC).",
+        "notes": "Transaction Timestamp is preserved as the raw source value (not converted; the "
+                 "time zone of the stored value is not established).",
         "paths": ('*/Google Pay/Google transactions/transactions_*.csv'),
         "output_types": "standard",
         "artifact_icon": "currency-dollar",

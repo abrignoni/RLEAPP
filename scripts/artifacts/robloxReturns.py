@@ -9,8 +9,8 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Roblox Returns",
         "notes": "Column names ending in _utc come from the provider's own header row. "
-                 "Fields mapped from a private sample; Roblox does not publish a return "
-                 "format specification.",
+                 "Fields mapped from a private sample. No provider documentation of the return "
+                 "format was used.",
         "paths": ('*/IP address of the account*.csv',),
         "output_types": "standard",
         "artifact_icon": "globe",
@@ -28,10 +28,12 @@ __artifacts_v2__ = {
         "category": "Roblox Returns",
         "notes": "In the reviewed sample rows arrive grouped by conversation with a fully "
                  "empty separator row between groups; empty rows are skipped. Two row "
-                 "layouts were observed: most rows populate every column, others carry only "
-                 "ts, text, conversation_id, user_id and request_user_id. The module reports "
-                 "the user_id/name the provider recorded on each row and does not assert "
-                 "anything beyond that. Fields mapped from a private sample.",
+                 "layouts were observed in the reviewed sample: rows that populate every column, "
+                 "and rows that carry only ts, text, conversation_id, user_id and request_user_id. "
+                 "The module reports the user_id and name the provider recorded on each row. ts is "
+                 "read as ISO 8601 text; a value that states no offset is treated as UTC, and the "
+                 "zone of such a value is not established here. Fields mapped from a private "
+                 "sample.",
         "paths": ('*/Chat records of the Roblox user*.csv',),
         "output_types": "standard",
         "artifact_icon": "message-circle",
@@ -48,8 +50,8 @@ __artifacts_v2__ = {
         "category": "Roblox Returns",
         "notes": "Timestamps are taken from the 'created_time (UTC seconds)' and "
                  "'updated_time (UTC seconds)' epoch columns. In the reviewed sample the "
-                 "provider's human-readable 'MM/DD/YYYY hh:mm:ss' columns agreed with the "
-                 "epoch columns on every row. Fields mapped from a private sample.",
+                 "file also carried human-readable 'MM/DD/YYYY hh:mm:ss' columns; this artifact "
+                 "does not read them. Fields mapped from a private sample.",
         "paths": ('*/Messages of the Roblox user*.csv',),
         "output_types": "standard",
         "artifact_icon": "mail",
@@ -75,9 +77,9 @@ __artifacts_v2__ = {
     "robloxReturnFollowers": {
         "name": "Roblox - Follower & Following List",
         "description": "Follower/following relationships from a Roblox law enforcement "
-                       "return ('Follower & following list of the Roblox user' CSV). Both "
-                       "directions are present in one file; the provider does not document "
-                       "which column follows which, so userid and followeruserid are "
+                       "return ('Follower & following list of the Roblox user' CSV). The file is "
+                       "titled as a follower and following list; which column follows which is not "
+                       "established, so userid and followeruserid are "
                        "reported as stored.",
         "author": "@AlexisBrignoni, Claude",
         "creation_date": "2026-08-14",
@@ -86,8 +88,9 @@ __artifacts_v2__ = {
         "category": "Roblox Returns",
         "notes": "createdutc/updatedutc arrive as 13-digit integers. They are parsed as "
                  "Unix epoch milliseconds; that unit is inferred from the value range "
-                 "(parsed values in the reviewed sample all fall inside the provider's own "
-                 "stated dump window), not documented by the provider. Fields mapped from a "
+                 "(in the reviewed sample the parsed values fell inside the dump window the "
+                 "provider stated; the number of values compared was not recorded) and was not "
+                 "taken from provider documentation. Fields mapped from a "
                  "private sample.",
         "paths": ('*/Follower & following list of the Roblox user*.csv',),
         "output_types": "standard",
@@ -164,7 +167,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-08-14",
         "requirements": "none",
         "category": "Roblox Returns",
-        "notes": "The provider does not document what ad_id identifies; values are "
+        "notes": "What ad_id identifies is not established; values are "
                  "UUID-formatted and are reported as stored. Any CSV whose header row is "
                  "exactly 'ad_id' is treated as this record type. Fields mapped from a "
                  "private sample.",
@@ -176,7 +179,7 @@ __artifacts_v2__ = {
         "name": "Roblox - User Generated Content",
         "description": "User generated content list from a Roblox law enforcement return "
                        "('User generated content of the Roblox user' CSV): one row per "
-                       "asset with type, name, description and creator fields as delivered.",
+                       "CSV row with type, name, description and creator fields as delivered.",
         "author": "@AlexisBrignoni, Claude",
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
@@ -187,9 +190,9 @@ __artifacts_v2__ = {
                  "sourcing of that order. In the reviewed sample the asset_hash_id values "
                  "in this list did not match any delivered asset file name; they matched "
                  "the assethashid column of the richer asset metadata layout on every "
-                 "compared row. The delivered files are named by the separate 32-character "
-                 "hash carried in the *_metadata.csv files parsed by the 'Roblox - UGC "
-                 "Asset Files' artifact. Fields mapped from a private sample.",
+                 "compared row. In the reviewed sample the delivered files were named by the "
+                 "separate 32-character hash carried in the *_metadata.csv files parsed by the "
+                 "'Roblox - UGC Asset Files' artifact. Fields mapped from a private sample.",
         "paths": ('*/User generated content of the Roblox user*.csv',),
         "output_types": "standard",
         "artifact_icon": "package",
@@ -199,7 +202,8 @@ __artifacts_v2__ = {
         "description": "Delivered user generated content files from a Roblox law "
                        "enforcement return: the per-type *_metadata.csv lists inside the "
                        "asset dump joined to the hash-named payload files delivered next to "
-                       "them. Image payloads are embedded as media.",
+                       "them. Payloads named <hash>.png or <hash>-IMAGE are embedded as media; any "
+                       "other payload is listed by path.",
         "author": "@AlexisBrignoni, Claude",
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
@@ -212,11 +216,12 @@ __artifacts_v2__ = {
                  "delivery, a compact one keyed 'assetid' and a richer one keyed 'id' that "
                  "adds assettypeid, currentversionid, assethashid, assetgenres, "
                  "assetcategories and isarchived; records are merged and the richer fields "
-                 "are kept where delivered. The metadata 'hash' column matched every "
-                 "delivered payload file name in the reviewed sample. Several assets can "
-                 "share one payload hash. Non-image payloads (Roblox binary model/place "
-                 "formats) are referenced by path rather than embedded. Fields mapped from "
-                 "a private sample.",
+                 "are kept where delivered. In the reviewed sample every delivered payload file "
+                 "name matched a metadata 'hash' value; the number of files compared was not "
+                 "recorded. A payload with no metadata row is still listed, with blank metadata "
+                 "columns. Several assets can share one payload hash. Non-image payloads (Roblox "
+                 "binary model/place formats) are referenced by path rather than embedded. Fields "
+                 "mapped from a private sample.",
         "paths": ('*/UserId_*_metadata.csv',
                   '*/UserId_*_start_*_end_*/*',
                   "*/Images of the Roblox user*/*"),
@@ -233,8 +238,12 @@ __artifacts_v2__ = {
         "last_update_date": "2026-08-14",
         "requirements": "none",
         "category": "Roblox Returns",
-        "notes": "Field meanings follow the published Zendesk Ticket API schema, which is "
-                 "the structure these files carry. Any JSON file whose top level contains "
+        "notes": "Field names id, status, type, subject, recipient, tags, via, created_at and "
+                 "updated_at match the published Zendesk Tickets API ticket object "
+                 "(https://developer.zendesk.com/api-reference/ticketing/tickets/tickets/, read "
+                 "2026-10-03). That published object lists requester as write only and has no "
+                 "comments property; the embedded requester object and comments array are reported "
+                 "as stored. Any JSON file whose top level contains "
                  "via, requester and comments keys is treated as a ticket; other JSON is "
                  "skipped. Per-comment detail is in the 'Roblox - Support Ticket Comments' "
                  "artifact. Observed in a private sample.",
@@ -253,9 +262,14 @@ __artifacts_v2__ = {
         "last_update_date": "2026-08-14",
         "requirements": "none",
         "category": "Roblox Returns",
-        "notes": "Field meanings follow the published Zendesk Ticket Comments API schema. "
-                 "Location fields are Zendesk's own per-comment metadata and are reported "
-                 "as stored. The schema's per-comment attachments array was empty on every "
+        "notes": "Field names id, type, public, via, created_at, plain_body and metadata match the "
+                 "published Zendesk Ticket Comments API comment object "
+                 "(https://developer.zendesk.com/api-reference/ticketing/tickets/ticket_comments/, "
+                 "read 2026-10-03). The embedded author object is not part of that published "
+                 "object and is reported as stored. ip_address, location, latitude and longitude "
+                 "are read from each comment's metadata.system object and are reported as stored. "
+                 "The published page does not say how the location, latitude and longitude values "
+                 "are produced. The schema's per-comment attachments array was empty on every "
                  "comment in the reviewed sample and is not parsed; a return delivering "
                  "ticket attachments would need that added. Observed in a private sample.",
         "paths": ('*/*.json',),
@@ -274,8 +288,7 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Roblox Returns",
         "notes": "In the reviewed sample these PDFs were rendered from Google Docs "
-                 "(per their Producer metadata), i.e. human-assembled documents rather "
-                 "than a machine export, so no stable row structure is assumed. Observed "
+                 "(per their Producer metadata), and no row structure is assumed. Observed "
                  "in a private sample.",
         "paths": ('*/Information of the account*.pdf',
                   '*/Block list of the Roblox user*.pdf'),

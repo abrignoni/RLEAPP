@@ -2,7 +2,10 @@ __artifacts_v2__ = {
     "airdropdiscoverable": {
         "name": "AirDrop - Discoverable",
         "description": "AirDrop 'Updated people' discoverability events from the unified log "
-                       "(airdrop.ndjson): nearby people and their advertised identity fields.",
+                       "(airdrop.ndjson): the fields of each logged message (Updated People, "
+                       "realName, displayName, secondaryName, isMe, isKnown, isRapport, "
+                       "uwbCapable), reported as stored. What each field means is not established "
+                       "here.",
         "author": "@AlexisBrignoni",
         "creation_date": "2022-09-08",
         "last_update_date": "2026-06-28",

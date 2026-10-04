@@ -1,13 +1,15 @@
 __artifacts_v2__ = {
     "google_tasks": {
         "name": "Google Tasks",
-        "description": "Parses Google Tasks from a Takeout archive includes tasks and task lists",
+        "description": "Tasks and task lists from Google Tasks Takeout data (Tasks.json)",
         "author": "@stark4n6",
         "creation_date": "2022-04-28",
         "last_update_date": "2026-06-01",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "",
+        "notes": "A task list holding no tasks is reported as one row. On that row only Task "
+                 "List Name comes from the list; the other columns repeat the values of the last "
+                 "task read before it, or are blank, and must be disregarded.",
         "paths": ('*/Tasks/Tasks.json',),
         "output_types": "standard",  # or ["html", "tsv", "timeline", "lava"]
         "artifact_icon": "circle-check",

@@ -1,13 +1,16 @@
 __artifacts_v2__ = {
     "googleChat": {
         "name": "Google Chat - Messages",
-        "description": "Parses Google Chat messages from Takeout",
+        "description": "Google Chat messages from Takeout (Groups/*/messages.json)",
         "author": "@KevinPagano3 & John Hyla {jfhyla@gmail.com}",
         "creation_date": "2022-03-08",
         "last_update_date": "2026-06-27",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "",
+        "notes": "When a message record has no created_date, Created Timestamp holds its "
+                 "deleted_date and Sender Name reads deleted. A record with neither date is not "
+                 "reported. Group Members repeats the member list of group_info.json on every "
+                 "row.",
         "paths": ('*/Google Chat/Groups/*/**',),
         "output_types": "standard",
         "html_columns": ["Group Members"],

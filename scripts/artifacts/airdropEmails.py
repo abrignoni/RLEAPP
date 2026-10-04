@@ -1,16 +1,20 @@
 __artifacts_v2__ = {
     "airdropEmails": {
         "name": "AirDrop - Email from Hash",
-        "description": "Recovers sender email addresses from AirDrop partial hashes in the unified "
-                       "log (airdrop.ndjson) by testing a candidate email wordlist.",
+        "description": "Lists candidate email addresses from a wordlist whose SHA-256 begins and "
+                       "ends with the hash fragments logged in the unified log (airdrop.ndjson).",
         "author": "@AlexisBrignoni",
         "creation_date": "2022-03-16",
         "last_update_date": "2026-06-28",
         "requirements": "none",
         "category": "Airdrop Emails",
-        "notes": "Tests SHA-256 of each candidate email (scripts/emails/emails.txt) against the "
-                 "partial hashes AirDrop writes to the unified log. Timestamp is kept as text: the "
-                 "shared gather_hashes_in_file helper truncates the unified-log time to 25 chars, "
+        "notes": "Tests SHA-256 of each candidate email (scripts/emails/emails.txt) against the 5 "
+                 "character start and end fragments the pattern Email=[xxxxx...xxxxx] matches in "
+                 "the log's lines. Each distinct fragment pair that a candidate matches is "
+                 "reported once, with the time and message of the first log line that held it, and "
+                 "with the first wordlist candidate that matched. A match on 10 hex characters is "
+                 "a candidate, not proof of the address. Timestamp is kept as text: the shared "
+                 "gather_hashes_in_file helper truncates the unified-log time to 25 chars, "
                  "dropping the UTC offset, so it can't be safely typed/normalized to UTC.",
         "paths": ('*/airdrop.ndjson',),
         "output_types": "standard",

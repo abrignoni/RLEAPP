@@ -14,13 +14,15 @@ __artifacts_v2__ = {
     },
     "kik_subscriber_pics": {
         "name": "Kik - Subscriber Profile Pics",
-        "description": "Profile picture URLs and their original/scaled MD5s from the subscriber PDF",
+        "description": "Profile picture URLs and original/scaled MD5 values from the subscriber PDF, paired by their order in the extracted text",
         "author": "@OneSixForensics",
         "creation_date": "2026-05-08",
         "last_update_date": "2026-06-25",
         "requirements": "pdfminer.six",
         "category": "Kik",
-        "notes": "Located at package/subscriber-data-<username>_<id>.pdf",
+        "notes": "Located at package/subscriber-data-<username>_<id>.pdf. URLs and MD5 values "
+                 "are extracted separately and matched by position; confirm each pairing against "
+                 "the PDF.",
         "paths": ('*/package/subscriber-data-*.pdf',),
         "output_types": "standard",
         "html_columns": ['Profile Pic URL'],
@@ -28,20 +30,22 @@ __artifacts_v2__ = {
     },
     "kik_subscriber_events": {
         "name": "Kik - Subscriber Events",
-        "description": "Timestamped account events from the subscriber PDF event log",
+        "description": "Timestamped account events from the subscriber PDF event log, other than PROFILE_PIC_URL entries (reported in Kik - Subscriber Profile Pics)",
         "author": "@OneSixForensics",
         "creation_date": "2026-05-08",
         "last_update_date": "2026-06-25",
         "requirements": "pdfminer.six",
         "category": "Kik",
-        "notes": "Located at package/subscriber-data-<username>_<id>.pdf",
+        "notes": "Located at package/subscriber-data-<username>_<id>.pdf. Only event lines that "
+                 "carry a UTC-labelled timestamp, an event name and a value on one line of the "
+                 "extracted text are reported; compare the row count with the PDF.",
         "paths": ('*/package/subscriber-data-*.pdf',),
         "output_types": "standard",
         "artifact_icon": "activity"
     },
     "kik_group_legend": {
         "name": "Kik - Group Legend",
-        "description": "Parses group-legend-<username>_<id>.csv — maps group JIDs to names and metadata",
+        "description": "Parses group-legend-<username>_<id>.csv, which lists group JIDs with their names and metadata",
         "author": "@OneSixForensics",
         "creation_date": "2026-05-08",
         "last_update_date": "2026-06-25",
@@ -54,7 +58,7 @@ __artifacts_v2__ = {
     },
     "kik_chat_text": {
         "name": "Kik - Chat Messages (Text)",
-        "description": "Parses data-text.csv from Kik returns content folder - direct message text content",
+        "description": "Parses data-text.csv from Kik returns content folder - message text content",
         "author": "@OneSixForensics",
         "creation_date": "2026-05-08",
         "last_update_date": "2026-06-25",
@@ -73,7 +77,8 @@ __artifacts_v2__ = {
         "last_update_date": "2026-06-25",
         "requirements": "none",
         "category": "Kik",
-        "notes": "Located at package/content/data-media.csv. Filenames in medias/ folder are Base64-encoded.",
+        "notes": "Located at package/content/data-media.csv. Media is matched by the filename "
+                 "value as stored. A row whose file is not found has an empty Media cell.",
         "paths": ('*/package/content/data-media.csv', '*/package/content/medias/*'),
         "output_types": "standard",
         "artifact_icon": "photo"
@@ -86,7 +91,9 @@ __artifacts_v2__ = {
         "last_update_date": "2026-06-25",
         "requirements": "none",
         "category": "Kik",
-        "notes": "Located at package/logs/chat_sent.csv",
+        "notes": "Located at package/logs/chat_sent.csv. Timestamp is the ts value read as UTC, "
+                 "whether or not the value carries a UTC label. Word Count holds the file's "
+                 "words value as stored; the heading is the parser's label.",
         "paths": ('*/package/logs/chat_sent.csv',),
         "output_types": "standard",
         "artifact_icon": "message"
@@ -99,7 +106,9 @@ __artifacts_v2__ = {
         "last_update_date": "2026-06-25",
         "requirements": "none",
         "category": "Kik",
-        "notes": "Located at package/logs/chat_sent_received.csv",
+        "notes": "Located at package/logs/chat_sent_received.csv. Timestamp is the ts value read "
+                 "as UTC, whether or not the value carries a UTC label. Word Count holds the "
+                 "file's words value as stored; the heading is the parser's label.",
         "paths": ('*/package/logs/chat_sent_received.csv',),
         "output_types": "standard",
         "artifact_icon": "message"
@@ -184,7 +193,7 @@ __artifacts_v2__ = {
     },
     "kik_binds": {
         "name": "Kik - Binds (Log)",
-        "description": "Parses binds.csv from the logs folder - device/session binding events",
+        "description": "Parses binds.csv from the logs folder - the provider's bind log (user JID, IP, port, time and device)",
         "author": "@OneSixForensics",
         "creation_date": "2026-05-08",
         "last_update_date": "2026-06-25",

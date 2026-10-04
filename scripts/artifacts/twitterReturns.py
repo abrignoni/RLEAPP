@@ -2,8 +2,9 @@ __artifacts_v2__ = {
     "tweets": {
         "name": "Tweets",
         "description": "Tweets from the tweets file of a Twitter return, with time, text, the "
-                       "image where the tweets media folder holds it, tweet id, edit info, "
-                       "retweet flag and entities.",
+                       "first matched file whose path contains the tweet id (one file per row, even "
+                       "when more exist), tweet id, edit info, the retweeted value as stored and "
+                       "entities.",
         "author": "@AlexisBrignoni",
         "creation_date": "2025-06-23",
         "last_update_date": "2025-06-23",
@@ -17,8 +18,9 @@ __artifacts_v2__ = {
     "deltweets": {
         "name": "Deleted Tweets",
         "description": "Deleted tweets from the deleted-tweets file of a Twitter return, with "
-                       "time, text, the image where the deleted-tweets media folder holds it, "
-                       "tweet id, edit info, retweet flag and entities.",
+                       "time, text, the first matched file whose path contains the tweet id (one "
+                       "file per row, even when more exist), tweet id, edit info, the retweeted "
+                       "value as stored and entities.",
         "author": "@AlexisBrignoni",
         "creation_date": "2025-06-24",
         "last_update_date": "2025-06-24",
@@ -47,9 +49,9 @@ __artifacts_v2__ = {
     "deleteddmtwitter": {
         "name": "Deleted Twitter DMs",
         "description": "Deleted direct messages from the deleted-direct-messages file of a "
-                       "Twitter return, with time, sender and recipient ids, text, the image "
-                       "where the deleted direct messages media folder holds it, conversation id, "
-                       "media URLs and reactions.",
+                       "Twitter return, with time, sender and recipient ids, text, the first "
+                       "matched file whose path contains the message id (one file per row, even "
+                       "when more exist), conversation id, media URLs and reactions.",
         "author": "@AlexisBrignoni",
         "creation_date": "2025-07-01",
         "last_update_date": "2025-07-01",

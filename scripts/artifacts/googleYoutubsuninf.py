@@ -10,7 +10,10 @@ __artifacts_v2__ = {
         "category": "Google Returns Youtube Subs Info",
         "notes": "Dynamic-schema CSV: column headers are read from the file's first row and made "
                  "LAVA-safe (blanks/duplicates/SQL reserved words). Values are kept as exported "
-                 "(TEXT) since the column set varies per return.",
+                 "(TEXT) since the column set varies per return. When more than one matching "
+                 "file is found, every row is shown under the header row of the last file read, "
+                 "no column names the file, and a cell beyond the width of its own file's header "
+                 "row is not shown; check the source files when the return holds more than one.",
         "paths": ('*/*YoutubeAndYoutubeMusic.BasicSubscriberInfo_*/YouTube and YouTube Music/'
                   'Data for User */Basic Subscriber Info/Basic Subscriber Info.csv',),
         "output_types": "standard",

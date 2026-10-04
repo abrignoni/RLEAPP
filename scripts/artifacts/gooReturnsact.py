@@ -8,9 +8,12 @@ __artifacts_v2__ = {
         "last_update_date": "2026-06-28",
         "requirements": "none",
         "category": "Google Returns",
-        "notes": "Dynamic-schema CSV: headers are read from the file's first row (with the first "
-                 "column moved to the end, as in the original) and made LAVA-safe. This parses the "
-                 "same source as the Takeout 'Google Access Log Activities' artifact.",
+        "notes": "Dynamic-schema CSV: headers are read from the file's first row, with the first "
+                 "column moved to the end, and made LAVA-safe. When more than one Activities "
+                 "file is found, every row is shown under the header row of the last file read, "
+                 "no column names the file, and a cell beyond the width of its own file's header "
+                 "row is not shown. This parses the same source as the Takeout 'Google Access "
+                 "Log Activities' artifact.",
         "paths": ('*/Access Log Activity/Activities*.csv',),
         "output_types": "standard",
         "artifact_icon": "activity",

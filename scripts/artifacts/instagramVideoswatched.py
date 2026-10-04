@@ -1,7 +1,7 @@
 __artifacts_v2__ = {
     "instagramVideoswatched": {
         "name": "Instagram Archive - Videos Watched",
-        "description": "Parses videos watched from an Instagram data archive (videos_watched.json)",
+        "description": "Parses the provider's videos watched list (impressions_history_videos_watched) from an Instagram data archive (videos_watched.json); the label is the provider's",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-08-27",
         "last_update_date": "2026-06-27",

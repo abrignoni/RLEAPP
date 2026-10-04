@@ -8,8 +8,13 @@ __artifacts_v2__ = {
         "last_update_date": "2026-06-28",
         "requirements": "none",
         "category": "Offline Pages",
-        "notes": "Timestamp Modified is the file's on-disk modification time (UTC). MIME Date is the "
-                 "raw Date header from the saved page (kept as text; format varies).",
+        "notes": "Timestamp Modified is the modification time of the copy of the file this tool "
+                 "extracted. For a zip input that time comes from the zip entry's stored date "
+                 "and time, which records no time zone, read in the zone of the computer running "
+                 "the tool, so the UTC value shown can differ from the true time by the "
+                 "difference between the two zones. Confirm the time against the original "
+                 "container. MIME Date is the raw Date header from the saved page (kept as text; "
+                 "format varies).",
         "paths": ('*/*.mhtml', '*/*.mht'),
         "output_types": "standard",
         "artifact_icon": "globe",

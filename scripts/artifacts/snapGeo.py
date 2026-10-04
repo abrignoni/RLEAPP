@@ -7,7 +7,9 @@ __artifacts_v2__ = {
         "last_update_date": "2026-07-09",
         "requirements": "none",
         "category": "Snapchat Returns",
-        "notes": "Update by Shawn Ramsey 2024-08-05.",
+        "notes": "Update by Shawn Ramsey 2024-08-05. Latitude and Longitude are the number before "
+                 "the ± sign in each cell. Accuracy is the figure after the ± sign in the latitude "
+                 "cell; the figure in the longitude cell is not reported.",
         "paths": ('*/geo_locations.csv',),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
         "artifact_icon": "map-pin",
@@ -27,7 +29,7 @@ __artifacts_v2__ = {
     },
     "snapGeoCity": {
         "name": "Snapchat - Geolocation City",
-        "description": "Country, region, and city derived from device GPS (country,region,city,timestamp format) from a Snapchat law enforcement return (geo_locations.csv).",
+        "description": "Country, region and city as listed (country,region,city,timestamp format) in a Snapchat law enforcement return (geo_locations.csv).",
         "author": "@AlexisBrignoni",
         "creation_date": "2026-07-09",
         "last_update_date": "2026-07-09",

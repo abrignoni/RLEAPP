@@ -1,13 +1,20 @@
 __artifacts_v2__ = {
     "torrentData": {
         "name": "Torrent Data",
-        "description": "Metadata from .torrent files: torrent name, info hash, and the file list.",
+        "description": "Metadata from .torrent files: torrent name, info hash, and, for a "
+                       "multi-file torrent, each listed file's first directory, file name and "
+                       "length.",
         "author": "@AlexisBrignoni",
         "creation_date": "2023-09-27",
         "last_update_date": "2026-06-28",
         "requirements": "bencoding",
         "category": "Torrent Data",
-        "notes": "Info Hash is the SHA-1 of the bencoded info dictionary (uppercased).",
+        "notes": "Info Hash is the SHA-1, in upper case, of the info dictionary after it is decoded "
+                 "and encoded again by the bencoding library. The bytes stored in the file are not "
+                 "hashed directly, so the value can differ from the torrent's info hash when "
+                 "encoding again does not reproduce the stored bytes. Reference: BitTorrent.org, "
+                 "'BEP 3: The BitTorrent Protocol Specification', "
+                 "https://www.bittorrent.org/beps/bep_0003.html",
         "paths": ('*/*.torrent',),
         "output_types": "standard",
         "html_columns": ["Path"],

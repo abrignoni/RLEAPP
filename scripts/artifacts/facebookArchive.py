@@ -7,13 +7,14 @@ __artifacts_v2__ = {
         "last_update_date": "2026-09-22",
         "requirements": "none",
         "category": "Facebook Archive",
-        "notes": "Read from security_and_login_information/account_activity.json in a Facebook "
-                 "Download Your Information (DYI) JSON export. One row per entry in account_activity_v2. "
-                 "Timestamp is the entry's Unix seconds value. Action, IP Address, City, Region, "
-                 "Country, Site, User Agent, Datr Cookie and Port are the fields the export records for "
-                 "the event, reported as stored. The city, region and country are the export's own "
-                 "geolocation of the IP address, not a device location. Field mapping was done against a "
-                 "private sample; no sample data is recorded for it.",
+        "notes": "Read from security_and_login_information/account_activity.json in a Facebook Download "
+                 "Your Information (DYI) JSON export. One row per entry in account_activity_v2 of the "
+                 "first matching file; when the input holds more than one export only the first file "
+                 "found is read. Timestamp is the entry's Unix seconds value. Action, IP Address, City, "
+                 "Region, Country, Site, User Agent, Datr Cookie and Port are the fields the export "
+                 "records for the event, reported as stored. How the export derives City, Region and "
+                 "Country is not established here, and they are not shown to be a device location. "
+                 "Field mapping was done against a private sample; no sample data is recorded for it.",
         "paths": ('*/security_and_login_information/account_activity.json',),
         "output_types": "standard",
         "artifact_icon": "brand-facebook",
@@ -26,9 +27,10 @@ __artifacts_v2__ = {
         "last_update_date": "2026-09-22",
         "requirements": "none",
         "category": "Facebook Archive",
-        "notes": "Read from security_and_login_information/logins_and_logouts.json, one row per entry in "
-                 "account_accesses_v2. Timestamp is Unix seconds. Action, Site and IP Address are "
-                 "reported as stored. Field mapping was done against a private sample; no sample data is "
+        "notes": "Read from security_and_login_information/logins_and_logouts.json, one row per entry "
+                 "in account_accesses_v2. Timestamp is Unix seconds. Action, Site and IP Address are "
+                 "reported as stored. When the input holds more than one export only the first file "
+                 "found is read. Field mapping was done against a private sample; no sample data is "
                  "recorded for it.",
         "paths": ('*/security_and_login_information/logins_and_logouts.json',),
         "output_types": "standard",
@@ -42,10 +44,11 @@ __artifacts_v2__ = {
         "last_update_date": "2026-09-22",
         "requirements": "none",
         "category": "Facebook Archive",
-        "notes": "Read from security_and_login_information/ip_address_activity.json, one row per entry in "
-                 "used_ip_address_v2. Timestamp is Unix seconds. IP, Action and User Agent are reported "
-                 "as stored. Field mapping was done against a private sample; no sample data is recorded "
-                 "for it.",
+        "notes": "Read from security_and_login_information/ip_address_activity.json, one row per entry "
+                 "in used_ip_address_v2. Timestamp is Unix seconds. IP, Action and User Agent are "
+                 "reported as stored. When the input holds more than one export only the first file "
+                 "found is read. Field mapping was done against a private sample; no sample data is "
+                 "recorded for it.",
         "paths": ('*/security_and_login_information/ip_address_activity.json',),
         "output_types": "standard",
         "artifact_icon": "world",
@@ -58,10 +61,11 @@ __artifacts_v2__ = {
         "last_update_date": "2026-09-22",
         "requirements": "none",
         "category": "Facebook Archive",
-        "notes": "Read from security_and_login_information/where_you_re_logged_in.json, one row per entry "
-                 "in active_sessions_v2. Created and Updated are Unix seconds. IP Address, Device, "
-                 "Location, App, Session Type, User Agent and Datr Cookie are reported as stored. A row "
-                 "records a session the account listed as active at export time. Field mapping was done "
+        "notes": "Read from security_and_login_information/where_you_re_logged_in.json, one row per "
+                 "entry in active_sessions_v2. Created and Updated are Unix seconds. IP Address, "
+                 "Device, Location, App, Session Type, User Agent and Datr Cookie are reported as "
+                 "stored. What places a session in that list is not established here. When the input "
+                 "holds more than one export only the first file found is read. Field mapping was done "
                  "against a private sample; no sample data is recorded for it.",
         "paths": ('*/security_and_login_information/where_you_re_logged_in.json',),
         "output_types": "standard",
@@ -79,8 +83,11 @@ __artifacts_v2__ = {
                  "admin_records_v2. Event names the recorded account change. Session Created is Unix "
                  "seconds, with the Session IP, User Agent and Datr Cookie the export attached to the "
                  "event. Change Details joins the entry's extra_info fields (for example old and new "
-                 "name, email, phone number or vanity) as label: value pairs, reported as stored. Field "
-                 "mapping was done against a private sample; no sample data is recorded for it.",
+                 "name, email, phone number or vanity) as label: value pairs. A field with an empty "
+                 "value is left out, and a value that is not text (a number, a list or a nested object) "
+                 "is shown blank after its label. When the input holds more than one export only the "
+                 "first file found is read. Field mapping was done against a private sample; no sample "
+                 "data is recorded for it.",
         "paths": ('*/security_and_login_information/record_details.json',),
         "output_types": "standard",
         "artifact_icon": "history",
@@ -95,9 +102,11 @@ __artifacts_v2__ = {
         "category": "Facebook Archive",
         "notes": "Read from security_and_login_information/registration_information.json. Registered is "
                  "the file's top level Unix seconds timestamp. Label and Value are the export's own "
-                 "registration label_values pairs, one row each, reported as stored; the labels are in "
-                 "the language of the export. FBID is the account identifier the file records. Field "
-                 "mapping was done against a private sample; no sample data is recorded for it.",
+                 "registration label_values pairs, one row each, reported as stored, except that a "
+                 "value that is not text (a number, a list or a nested object) is shown blank; the "
+                 "labels are in the language of the export. FBID is the account identifier the file "
+                 "records. When the input holds more than one export only the first file found is read. "
+                 "Field mapping was done against a private sample; no sample data is recorded for it.",
         "paths": ('*/security_and_login_information/registration_information.json',),
         "output_types": "standard",
         "artifact_icon": "user-plus",
@@ -111,9 +120,10 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Facebook Archive",
         "notes": "Read from logged_information/search/your_search_history.json, one row per entry in "
-                 "searches_v2. Timestamp is Unix seconds. Search is the text values the entry carries in "
-                 "its data array, joined; Title is the entry's own title, reported as stored. Field "
-                 "mapping was done against a private sample; no sample data is recorded for it.",
+                 "searches_v2. Timestamp is Unix seconds. Search is the text values the entry carries "
+                 "in its data array, joined; Title is the entry's own title, reported as stored. When "
+                 "the input holds more than one export only the first file found is read. Field mapping "
+                 "was done against a private sample; no sample data is recorded for it.",
         "paths": ('*/logged_information/search/your_search_history.json',),
         "output_types": "standard",
         "artifact_icon": "search",
@@ -128,8 +138,11 @@ __artifacts_v2__ = {
         "category": "Facebook Archive",
         "notes": "Read from logged_information/interactions/profile_visits.json, one row per entry. "
                  "Timestamp is Unix seconds. Details joins the entry's label_values pairs as label: "
-                 "value, reported as stored; the labels are in the language of the export. Field mapping "
-                 "was done against a private sample; no sample data is recorded for it.",
+                 "value, reported as stored, except that a timestamp_value is shown as a UTC date and "
+                 "time and a value that is not text (a number, a list or a nested object) is shown "
+                 "blank after its label; the labels are in the language of the export. When the input "
+                 "holds more than one export only the first file found is read. Field mapping was done "
+                 "against a private sample; no sample data is recorded for it.",
         "paths": ('*/logged_information/interactions/profile_visits.json',),
         "output_types": "standard",
         "artifact_icon": "eye",
@@ -142,11 +155,14 @@ __artifacts_v2__ = {
         "last_update_date": "2026-09-22",
         "requirements": "none",
         "category": "Facebook Archive",
-        "notes": "Read from logged_information/location/primary_location.json. The file records the "
-                 "account's primary location as the platform estimated it, not a device GPS fix. Label "
-                 "and Value are the export's own label_values pairs, flattened one row each, reported as "
-                 "stored; the labels are in the language of the export. Field mapping was done against a "
-                 "private sample; no sample data is recorded for it.",
+        "notes": "Read from logged_information/location/primary_location.json. How the platform arrives "
+                 "at this location is not established here, and it is not shown to be a device GPS fix. "
+                 "Label and Value are the export's own label_values pairs, flattened one row each, "
+                 "reported as stored; the labels are in the language of the export. Only items that "
+                 "carry a value or a dict give a row, and a value that is not text (a number, a list or "
+                 "a nested object) is shown blank. When the input holds more than one export only the "
+                 "first file found is read. Field mapping was done against a private sample; no sample "
+                 "data is recorded for it.",
         "paths": ('*/logged_information/location/primary_location.json',),
         "output_types": "standard",
         "artifact_icon": "map-pin",
@@ -162,9 +178,11 @@ __artifacts_v2__ = {
         "notes": "Read from personal_information/profile_information/profile_information.json, from the "
                  "profile_v2 object. Full Name, First Name, Middle Name, Last Name, Emails, Birthday, "
                  "Gender, Pronoun, Current City, Hometown and Relationship Status are the account "
-                 "profile fields, reported as stored. Emails joins the listed addresses. Birthday is "
-                 "the stored year, month and day. Field mapping was done against a private sample; no "
-                 "sample data is recorded for it.",
+                 "profile fields, reported as stored. Emails joins the addresses in the emails list of "
+                 "the profile's emails object; any other list in that object is not read. Birthday is "
+                 "the stored year, month and day. When the input holds more than one export only the "
+                 "first file found is read. Field mapping was done against a private sample; no sample "
+                 "data is recorded for it.",
         "paths": ('*/personal_information/profile_information/profile_information.json',),
         "output_types": "standard",
         "artifact_icon": "user",
@@ -179,7 +197,10 @@ __artifacts_v2__ = {
         "category": "Facebook Archive",
         "notes": "Read from personal_information/profile_information/your_devices.json, one row per "
                  "entry. Details joins the entry's label_values pairs as label: value, reported as "
-                 "stored; the labels are in the language of the export. Field mapping was done against a "
+                 "stored, except that a timestamp_value is shown as a UTC date and time and a value "
+                 "that is not text (a number, a list or a nested object) is shown blank after its "
+                 "label; the labels are in the language of the export. When the input holds more than "
+                 "one export only the first file found is read. Field mapping was done against a "
                  "private sample; no sample data is recorded for it.",
         "paths": ('*/personal_information/profile_information/your_devices.json',),
         "output_types": "standard",
@@ -194,9 +215,10 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Facebook Archive",
         "notes": "Read from connections/friends/your_friends.json, one row per entry in friends_v2. "
-                 "Timestamp is Unix seconds and is when the friendship was recorded. Name is the "
-                 "friend's name as stored. Field mapping was done against a private sample; no sample "
-                 "data is recorded for it.",
+                 "Timestamp is Unix seconds; what event it marks is not established here. Name is the "
+                 "friend's name as stored. When the input holds more than one export only the first "
+                 "file found is read. Field mapping was done against a private sample; no sample data "
+                 "is recorded for it.",
         "paths": ('*/connections/friends/your_friends.json',),
         "output_types": "standard",
         "artifact_icon": "users",
@@ -227,10 +249,11 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Facebook Archive",
         "notes": "Read from your_facebook_activity/comments_and_reactions/comments.json, one row per "
-                 "comment in comments_v2. Timestamp is the comment's Unix seconds value. Comment is the "
-                 "comment text, Author is the recorded author, and Title is the entry's own title, all "
-                 "reported as stored. Field mapping was done against a private sample; no sample data is "
-                 "recorded for it.",
+                 "entry in comments_v2, showing the first comment item the entry carries. Timestamp is "
+                 "the comment's Unix seconds value. Comment is the comment text, Author is the recorded "
+                 "author, and Title is the entry's own title, all reported as stored. When the input "
+                 "holds more than one export only the first file found is read. Field mapping was done "
+                 "against a private sample; no sample data is recorded for it.",
         "paths": ('*/your_facebook_activity/comments_and_reactions/comments.json',),
         "output_types": "standard",
         "artifact_icon": "message-2",
@@ -244,27 +267,32 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Facebook Archive",
         "notes": "Read from your_facebook_activity/comments_and_reactions/likes_and_reactions.json, one "
-                 "row per entry. Timestamp is Unix seconds. Details joins the entry's label_values pairs "
-                 "as label: value, reported as stored; the labels are in the language of the export. "
-                 "Field mapping was done against a private sample; no sample data is recorded for it.",
+                 "row per entry. Timestamp is Unix seconds. Details joins the entry's label_values "
+                 "pairs as label: value, reported as stored, except that a timestamp_value is shown as "
+                 "a UTC date and time and a value that is not text (a number, a list or a nested "
+                 "object) is shown blank after its label; the labels are in the language of the export. "
+                 "When the input holds more than one export only the first file found is read. Field "
+                 "mapping was done against a private sample; no sample data is recorded for it.",
         "paths": ('*/your_facebook_activity/comments_and_reactions/likes_and_reactions.json',),
         "output_types": "standard",
         "artifact_icon": "thumb-up",
     },
     "facebookArchivePosts": {
         "name": "Facebook Archive - Posts",
-        "description": "Posts, check-ins and photos from a Facebook DYI export",
+        "description": "Post entries (title, text, place and external link) from the "
+                       "your_posts__check_ins__photos_and_videos files of a Facebook DYI export",
         "author": "@AlexisBrignoni, Claude",
         "creation_date": "2026-09-22",
         "last_update_date": "2026-09-22",
         "requirements": "none",
         "category": "Facebook Archive",
-        "notes": "Read from your_facebook_activity/posts/your_posts__check_ins__photos_and_videos_*.json, "
-                 "one row per post entry. Timestamp is Unix seconds. Title and Post text are reported as "
+        "notes": "Read from "
+                 "your_facebook_activity/posts/your_posts__check_ins__photos_and_videos_*.json, one row "
+                 "per post entry. Timestamp is Unix seconds. Title and Post text are reported as "
                  "stored. Place and Coordinates are read from an entry's place attachment when present, "
-                 "so a check-in shows where it was made as the export recorded it. External URL is read "
-                 "from an external_context attachment when present. Field mapping was done against a "
-                 "private sample; no sample data is recorded for it.",
+                 "reported as stored. A place attached to a post is not shown to be where the post was "
+                 "made. External URL is read from an external_context attachment when present. Field "
+                 "mapping was done against a private sample; no sample data is recorded for it.",
         "paths": ('*/your_facebook_activity/posts/your_posts__check_ins__photos_and_videos_*.json',),
         "output_types": "standard",
         "artifact_icon": "note",
@@ -277,21 +305,22 @@ __artifacts_v2__ = {
         "last_update_date": "2026-09-22",
         "requirements": "none",
         "category": "Facebook Archive",
-        "notes": "Read from the message_1.json thread files under your_facebook_activity/messages in a "
-                 "Facebook Download Your Information (DYI) export, covering the inbox, filtered_threads, "
-                 "e2ee_cutover and archived_threads folders. This is the DYI message shape (participants "
-                 "as name objects, title, and messages with sender_name, timestamp_ms and content), "
-                 "which is distinct from the camelCase Messenger export that the Facebook Messenger "
-                 "module reads. The Facebook and Instagram DYI message trees have the same layout and "
-                 "are told apart by the your_facebook_activity path, so this artifact reads only the "
-                 "Facebook side. Timestamp is Unix milliseconds. Sender and message text are repaired "
-                 "from the export's Latin-1-escaped UTF-8. Thread is the thread title where present, "
-                 "otherwise the thread folder name. Participants lists the thread's members. Media "
-                 "renders the photos, videos, gifs, audio, files and stickers a message carries, "
-                 "resolved from each item's uri relative to the export root and checked in from disk. "
-                 "Reactions joins each reaction with the actor who left it. Direction is not asserted "
-                 "because the export does not mark which participant is the account owner. Field "
-                 "mapping was done against a private sample; no sample data is recorded for it.",
+        "notes": "Read only from the files named message_1.json under your_facebook_activity/messages "
+                 "in a Facebook Download Your Information (DYI) export; any further numbered message "
+                 "file of a thread is not read. The read is not limited to particular folders under "
+                 "messages. This is the DYI message shape (participants as name objects, title, and "
+                 "messages with sender_name, timestamp_ms and content), which is distinct from the "
+                 "camelCase Messenger export that the Facebook Messenger module reads. The Facebook and "
+                 "Instagram DYI message trees have the same layout and are told apart by the "
+                 "your_facebook_activity path, so this artifact reads only the Facebook side. Timestamp "
+                 "is Unix milliseconds. Sender and message text are repaired from the export's "
+                 "Latin-1-escaped UTF-8. Thread is the thread title where present, otherwise the thread "
+                 "folder name. Participants lists the thread's members. Media renders the photos, "
+                 "videos, gifs, audio, files and stickers a message carries, resolved from each item's "
+                 "uri relative to the export root and checked in from disk. Reactions joins each "
+                 "reaction with the actor who left it. Direction is not asserted because the export "
+                 "does not mark which participant is the account owner. Field mapping was done against "
+                 "a private sample; no sample data is recorded for it.",
         "paths": ('*/your_facebook_activity/messages/*',),
         "output_types": "standard",
         "artifact_icon": "brand-messenger",
@@ -316,11 +345,14 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Facebook Archive",
         "notes": "Read from your_facebook_activity/facebook_payments/payment_history.json, one row per "
-                 "payment in payments_v2.payments. The fields of each payment are joined as label: value "
-                 "and reported as stored, because the payment record schema was not exercised on the "
-                 "tested export, where the payment list was empty. Preferred Currency is the account's "
-                 "stored currency. Field mapping was done against a private sample; no sample data is "
-                 "recorded for it.",
+                 "payment in payments_v2.payments; when that list is empty one row is written holding "
+                 "only Preferred Currency, which is not a payment. The fields of each payment are "
+                 "joined as label: value; a value that is not text (a number, a list or a nested "
+                 "object) is shown blank after its label. The payment record schema was not exercised "
+                 "on the tested export, where the payment list was empty. Preferred Currency is the "
+                 "account's stored currency. When the input holds more than one export only the first "
+                 "file found is read. Field mapping was done against a private sample; no sample data "
+                 "is recorded for it.",
         "paths": ('*/your_facebook_activity/facebook_payments/payment_history.json',),
         "output_types": "standard",
         "artifact_icon": "credit-card",

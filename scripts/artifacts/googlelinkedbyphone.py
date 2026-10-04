@@ -11,7 +11,10 @@ __artifacts_v2__ = {
         "notes": "Dynamic-schema CSV: column headers are read from the file's first row and made "
                  "LAVA-safe (blanks/duplicates/SQL reserved words). Values are kept as exported "
                  "(TEXT) since the column set varies per return (so phone-number columns are not "
-                 "individually typed).",
+                 "individually typed). When more than one matching file is found, every row is "
+                 "shown under the header row of the last file read, no column names the file, "
+                 "and a cell beyond the width of its own file's header row is not shown; check "
+                 "the source files when the return holds more than one.",
         "paths": ('*/*GoogleAccountTargetAssociation.LinkedByPhone_*/'
                   'Google Account Target Association/*.LinkedByPhone.csv',),
         "output_types": "standard",

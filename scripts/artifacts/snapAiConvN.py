@@ -1,9 +1,8 @@
 __artifacts_v2__ = {
     "snapAiConvN": {
         "name": "Snapchat - My AI Conversations",
-        "description": "Messages exchanged between the target account and Snapchat's My AI bot "
-                       "(text, stickers, reactions, replies and media references), parsed from a "
-                       "Snapchat law enforcement return (ai_conversations.csv).",
+        "description": "Rows of ai_conversations.csv from a Snapchat law enforcement return, with "
+                       "the columns the file carries.",
         "author": "@AlexisBrignoni",
         "creation_date": "2026-07-09",
         "last_update_date": "2026-07-09",

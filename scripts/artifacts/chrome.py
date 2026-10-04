@@ -92,23 +92,27 @@ __artifacts_v2__ = {
     },
     "chrome_os_settings": {
         "name": "Chrome - OS Settings",
-        "description": "Preference names with the user's gender and birth year from the Chrome OS "
-                       "Settings.json of a Google Takeout.",
+        "description": "Preference names with the gender value and birth year stored in each OS "
+                       "Priority Preference entry from the Chrome OS Settings.json of a Google "
+                       "Takeout.",
         "author": "@stark4n6 & @upintheairsheep",
         "creation_date": "2023-08-18",
         "last_update_date": "2026-06-22",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "",
+        "notes": "The User Gender column shows the stored gender value through the module's own "
+                 "mapping (0 Female, 1 Male, 2 Rather not say, any other value Other). No source "
+                 "for that mapping is given. Read the stored value in OS Settings.json before "
+                 "relying on the label.",
         "paths": "*/Chrome/OS Settings.json",
         "output_types": "standard",
         "artifact_icon": "settings",
     },
     "chrome_arc_packages": {
         "name": "Chrome - ARC Packages",
-        "description": "Android (ARC) packages backed up from a Chrome OS device, from the Chrome "
-                       "OS Settings.json of a Google Takeout, with package name, version, last "
-                       "backup time and Android id.",
+        "description": "Android (ARC) package entries listed for a Chrome OS device, from the "
+                       "Chrome OS Settings.json of a Google Takeout, with package name, version, "
+                       "last backup time and Android id.",
         "author": "@stark4n6 & @upintheairsheep",
         "creation_date": "2023-08-18",
         "last_update_date": "2026-06-22",

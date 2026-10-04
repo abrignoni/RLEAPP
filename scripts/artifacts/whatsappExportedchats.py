@@ -1,15 +1,19 @@
 __artifacts_v2__ = {
     "whatsappExportedchats": {
         "name": "Whatsapp Exported Chat",
-        "description": "Messages from a WhatsApp exported chat text file (_chat.txt) with attached "
-                       "media.",
+        "description": "Lines of a WhatsApp exported chat text file (_chat.txt), one row per line, "
+                       "with attached media where the file is in the export. Message text that "
+                       "contains ']' is cut at that character.",
         "author": "@AlexisBrignoni",
         "creation_date": "2022-03-12",
         "last_update_date": "2026-06-28",
         "requirements": "none",
         "category": "Whatsapp Exported Chat",
-        "notes": "Timestamp is the bracketed time from each exported line, kept as text because the "
-                 "WhatsApp export date format is locale-dependent.",
+        "notes": "Timestamp is the text before the first ']' on a line, with the '[' removed. A "
+                 "line that continues a multi-line message has a blank Timestamp unless it contains "
+                 "']', in which case the text before that character is shown there. Timestamp is "
+                 "kept as text and is not converted; the date format and time zone of the export "
+                 "are not established by this parser.",
         "paths": ('*/*_chat.txt',),
         "output_types": "standard",
         "artifact_icon": "message-circle",

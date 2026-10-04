@@ -9,12 +9,14 @@ __artifacts_v2__ = {
         "last_update_date": "2026-09-28",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
-        "notes": "Lists sections this module does not parse as well as the ones it does, so a "
-                 "section with content and no artifact is visible. 'Provider Notice' carries "
-                 "the return's own sentence when a section says it holds no data for the "
-                 "requested range; a blank notice does not mean the section had records. "
-                 "PDF Created is the creationDate in each PDF's document metadata, as written "
-                 "by the software that rendered it; in the tested return all 20 fell within the "
+        "notes": "Lists the PDFs under App, Content and Profile whose first page ends with the "
+                 "provider's footer naming TikTok, whether or not another artifact parses them. A "
+                 "PDF without that footer is not listed. Section Title and Provider Notice are read "
+                 "from the first page only. 'Provider Notice' carries the return's own sentence "
+                 "when a section says it holds no data for the requested range; a blank notice does "
+                 "not mean the section had records. PDF Created is the CreationDate in each PDF's "
+                 "document metadata, converted to UTC with the offset the value carries; a value "
+                 "with no offset is stored as UTC. In the tested return all 20 fell within the "
                  "same minute.",
         "paths": ('*/App/*.pdf', '*/Content/*.pdf', '*/Profile/*.pdf'),
         "output_types": "standard",
@@ -27,14 +29,17 @@ __artifacts_v2__ = {
         "name": "TikTok PDF Return - Subscriber Info",
         "description": "Basic subscriber information (Profile/BSI.pdf) and location information "
                        "(App/LocationInfo.pdf) from a TikTok law enforcement return, one row "
-                       "per field as printed.",
+                       "per field. In LocationInfo.pdf a field is any line holding a colon, split "
+                       "at the first colon, and a line with no colon is not reported; a no-data "
+                       "notice is added as a 'Provider Notice' row.",
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-28",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
-        "notes": "BSI is a two-column table; fields are paired by row position, so a field "
-                 "name not seen before is still reported under its printed name. Values are "
+        "notes": "In the tested return BSI is a two-column table; fields are paired by row "
+                 "position, so a field name not seen before is still reported under its printed "
+                 "name. Values are "
                  "as printed, including the signup date text, which is not converted. "
                  "Source File is kept beside Section because Section does not separate two "
                  "returns parsed in one input.",
@@ -54,8 +59,8 @@ __artifacts_v2__ = {
         "last_update_date": "2026-09-28",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
-        "notes": "Action is taken from the printed field name ('User login time' or 'User logout "
-                 "time'). Country is the country the return prints beside each IP. Country was "
+        "notes": "Action is 'logout' when the record prints a 'User logout time' field and 'login' "
+                 "otherwise. Country is the country the return prints beside each IP. Country was "
                  "uniform across the tested return, and IP was uniform on its 10 rows.",
         "paths": ('*/App/LoginLogoutHistory.pdf',),
         "output_types": "standard",
@@ -92,8 +97,9 @@ __artifacts_v2__ = {
         "last_update_date": "2026-09-28",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
-        "notes": "Event is the provider's event name as printed (observed: video_play, publish, "
-                 "post_comment, share_video). Their meaning is not documented in the return and "
+        "notes": "Event is the provider's event name as printed (observed in the tested return: "
+                 "video_play, publish, post_comment, share_video). Their meaning is not documented "
+                 "in the return and "
                  "is not interpreted here. Multi-part sections are combined; large returns may "
                  "exceed the HTML row limit, in which case the TSV and LAVA outputs hold the "
                  "full table. Country is the country the return prints beside each IP. Country "
@@ -134,12 +140,12 @@ __artifacts_v2__ = {
         "last_update_date": "2026-09-28",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
-        "notes": "Media is linked by the video ID, which is the file name of each file in "
-                 "Content/Videos. Video Link is the hyperlink behind the printed word 'URL'; "
-                 "blank where the PDF carries the word with no hyperlink. Video Type was "
-                 "'deleted' on all 4 rows of the tested return. Some emoji are drawn from "
-                 "fonts that carry no Unicode mapping and cannot be decoded; each such glyph is "
-                 "shown as U+FFFD (2 captions in the tested return).",
+        "notes": "Media is linked by the video ID, which is the name, without extension, of each "
+                 "file in Content/Videos (or of the folder a file sits in). Video Link is the "
+                 "hyperlink behind the printed word 'URL'; blank where the PDF carries the word "
+                 "with no hyperlink. Video Type was 'deleted' on all 4 rows of the tested return. "
+                 "Glyphs drawn from a font that carries no Unicode mapping cannot be decoded; each "
+                 "is shown as U+FFFD (2 captions in the tested return).",
         "paths": ('*/Content/VideoMetadata.pdf', '*/Content/Videos/*'),
         "output_types": "standard",
         "artifact_icon": "video",
@@ -209,9 +215,9 @@ __artifacts_v2__ = {
                  "parsed in one input. 'ReplyToComment (as stored)' is kept verbatim: in the "
                  "tested return it equalled the Comment text on all 86 of 229 rows that "
                  "carried it, so it is not labelled as the parent comment. Post URL is the hyperlink behind the "
-                 "printed word 'URL'. Some emoji are drawn from fonts that carry no Unicode "
-                 "mapping and cannot be decoded; each such glyph is shown as U+FFFD (56 comment "
-                 "cells in the tested return).",
+                 "printed word 'URL'. Glyphs drawn from a font that carries no Unicode mapping "
+                 "cannot be decoded; each is shown as U+FFFD (56 comment cells in the tested "
+                 "return).",
         "paths": ('*/Content/Video Comments/*', '*/Content/Photo Comments/*'),
         "output_types": "standard",
         "artifact_icon": "message-square",
@@ -228,8 +234,9 @@ __artifacts_v2__ = {
         "last_update_date": "2026-09-28",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
-        "notes": "Room ID, Host User ID and Device IP are split out of the printed lines. If a "
-                 "line does not match the expected layout its text is kept whole in Room ID or "
+        "notes": "Room ID, Host User ID and Device IP are split out of the printed lines. The "
+                 "tested return held one record. If a line does not match the expected layout its "
+                 "text is kept whole in Room ID or "
                  "Comment Time rather than dropped. Glyphs that cannot be decoded to Unicode "
                  "are shown as U+FFFD.",
         "paths": ('*/Content/LiveComment_*.pdf',),
@@ -255,9 +262,9 @@ __artifacts_v2__ = {
                  "Photo Comments.pdf, so the same folder names in another provider's data add "
                  "no rows. 'ID In Metadata PDF' was 'Yes' on every row of the "
                  "tested return (no unreferenced files); a 'No' marks a file no parsed section "
-                 "lists. Returns delivered as several zip parts split the media across them "
-                 "(the tested return: metadata and some media in part 1, the rest in parts 2 "
-                 "and 3); extract every part into one folder and parse that, or media in the "
+                 "lists. The tested return was delivered in zip parts, with the metadata and some "
+                 "media in part 1 and the rest in parts 2 and 3. When a return comes in several "
+                 "parts, extract every part into one folder and parse that, or media in the "
                  "other parts is neither linked nor listed.",
         "paths": ('*/Content/VideoMetadata.pdf', '*/Content/Videos/*',
                   '*/Content/StoriesMetadata.pdf', '*/Content/Stories/*',

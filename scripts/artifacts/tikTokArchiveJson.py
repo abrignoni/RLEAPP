@@ -71,13 +71,21 @@ def _register(key, name, icon, headers, extractor):
     globals()[key] = artifact_processor(fn)
     __artifacts_v2__[key] = {
         "name": name,
-        "description": f"Parses the '{name}' section of the TikTok 'Download My Data' JSON export.",
+        "description": f"Rows this parser labels '{name}', read from the TikTok 'Download My Data' "
+                       "JSON export. The label is the parser's own and the export's key names can "
+                       "differ.",
         "author": "@upintheairsheep and @Jadoo4QFan",
         "creation_date": "2025-06-15",
         "last_update_date": "2025-06-15",
         "requirements": "none",
         "category": "TikTok",
-        "notes": "Gemini Code Assist was used during the script's development, however the code was then heavily tested against real exports.",
+        "notes": "Gemini Code Assist was used during the script's development. No tested export, "
+                 "sample or row count is recorded for this artifact. Where this artifact converts a "
+                 "date, a value the export gives with no time zone is stored as UTC by this parser "
+                 "and an all-digit value is read as Unix time; the export's time zone was not "
+                 "established here. Where the export does not carry a key, the cell holds this "
+                 "parser's default (blank, 'N/A' or 0, depending on the column), which is not a "
+                 "value the export held.",
         "paths": _PATHS,
         "output_types": "standard",
         "artifact_icon": icon,

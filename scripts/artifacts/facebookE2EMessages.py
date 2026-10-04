@@ -1,7 +1,10 @@
 __artifacts_v2__ = {
     "get_fb_messages": {
         "name": "Messages",
-        "description": "Processes messages from a facebook messenger JSON export",
+        "description": "Messages from a Facebook Messenger JSON export. Outgoing is set by "
+                       "treating the first listed participant as the account owner, which the "
+                       "export is not shown to state; when a message lists several media items "
+                       "only the last is shown.",
         "author": "@C_Peter",
         "creation_date": "2026-06-01",
         "last_update_date": "2026-06-01",

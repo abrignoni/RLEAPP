@@ -8,8 +8,12 @@ __artifacts_v2__ = {
         "last_update_date": "2026-06-28",
         "requirements": "none",
         "category": "Apple Notes",
-        "notes": "Created/Modified are CloudKit millisecond timestamps normalized to UTC (the "
-                 "original rendered them in local/Pacific time).",
+        "notes": "Timestamp Created and Timestamp Modified are the record's created and modified "
+                 "timestamp values, read as Unix epoch values whose unit is taken from the size "
+                 "of the number, and shown in UTC to the second. Attachments holds every matched "
+                 "file whose path contains the Record Name, the note body file included. Note is "
+                 "the text of the last such file whose path does not contain 'content'; a blank "
+                 "Note does not establish the note had no text.",
         "paths": ('*/Notes/Metadata.txt', '*/Notes/*/**'),
         "output_types": "standard",
         "html_columns": ["Note"],

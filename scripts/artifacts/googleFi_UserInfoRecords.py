@@ -1,13 +1,16 @@
 __artifacts_v2__ = {
     "googleFi_UserInfoRecords": {
         "name": "Google Fi - User Info Records",
-        "description": "Parses Google Fi user info records from Takeout",
+        "description": "Google Fi usage records from Takeout (GoogleFi.UserInfo.Records.txt)",
         "author": "@KevinPagano3",
         "creation_date": "2022-02-28",
         "last_update_date": "2026-06-27",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "",
+        "notes": "Duration is the sixth field with the text 'Duration:' removed, shown as "
+                 "stored; the unit in the heading (Minutes) is not read from the file. The "
+                 "Start, End and Network Carrier Start times are read as UTC after any ' UTC' "
+                 "label is removed, including when the value carries no label.",
         "paths": ('*/Google Fi/User Info*/GoogleFi.UserInfo.Records.txt'),
         "output_types": "standard",
         "artifact_icon": "phone",

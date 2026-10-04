@@ -7,7 +7,11 @@ __artifacts_v2__ = {
         "last_update_date": "2026-06-27",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "",
+        "notes": "Body is the first text/plain part of the message, decoded as Latin-1, so text in "
+                 "another encoding can display wrongly and a message with no text/plain part shows "
+                 "a blank Body; a blank Body does not mean the message had no content. A Date "
+                 "header with no zone is treated as UTC. Attachments are the parts that carry a "
+                 "Content-Disposition header, which can include inline parts.",
         "paths": ('*/Mail/All mail Including Spam and Trash.mbox', '*/Deleted.mbox'),
         "output_types": "standard",
         "artifact_icon": "mail",

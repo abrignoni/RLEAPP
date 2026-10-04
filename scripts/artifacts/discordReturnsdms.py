@@ -1,7 +1,9 @@
 __artifacts_v2__ = {
     "discordReturnsdms": {
         "name": "Discord - Direct Messages",
-        "description": "Direct messages from a Discord law enforcement return (messages/dms/*.csv).",
+        "description": "Direct messages from a Discord law enforcement return "
+                       "(messages/dms/*.csv). Columns are named by position; the file's own header "
+                       "row is not read.",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-12-04",
         "last_update_date": "2026-06-28",
