@@ -1,0 +1,107 @@
+{
+  "metadata": {
+    "module_name": "synchronoss",
+    "artifact_name": "Synchronoss - DV Access Log Rows Without Checksum",
+    "function_name": "synchronoss_dv_sync",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 7,
+    "number_of_rows": 8,
+    "total_data_size_bytes": 882,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/synchronoss/testdata.synchronoss.synchronoss_dv_sync.caseSYNTH001.zip",
+    "start_time": "2026-10-04T20:44:35.032073+00:00",
+    "end_time": "2026-10-04T20:44:35.069235+00:00",
+    "run_time_seconds": 0.007689952850341797,
+    "last_commit": {
+      "hash": "6166d12ac78ec38163a14e23f3cb23e23368d7a8",
+      "author_name": "Brigs",
+      "author_email": "abrignoni@gmail.com",
+      "date": "2026-10-04T02:02:02-04:00",
+      "message": "Correct artifact descriptions and notes against the code and sources"
+    }
+  },
+  "headers": [
+    "Timestamp",
+    "User IP",
+    "CDN IPs",
+    "Device",
+    "Operation",
+    "LCID",
+    "Source File"
+  ],
+  "data": [
+    [
+      1780410300,
+      "174.21.5.9",
+      "",
+      "SAMSUNG/SM-F966U",
+      "conflictSolve",
+      "SYNTH001LCIDHASH",
+      "SYNTH001LCIDHASH_Dv_Access_Logs.xlsx"
+    ],
+    [
+      1780410360,
+      "174.21.5.9",
+      "",
+      "SAMSUNG/SM-F966U",
+      "20260602",
+      "SYNTH001LCIDHASH",
+      "SYNTH001LCIDHASH_Dv_Access_Logs.xlsx"
+    ],
+    [
+      "2025-12-01 02:05:00",
+      "174.21.5.9",
+      "",
+      "SAMSUNG/SM-F966U",
+      "conflictSolve",
+      "SYNTH001LCIDHASH",
+      "Dv Access logs mdn SYNTH001LCIDHASH December 2025.csv"
+    ],
+    [
+      "2025-12-01 02:06:00",
+      "",
+      "",
+      "HF",
+      "conflictSolve",
+      "SYNTH001LCIDHASH",
+      "Dv Access logs mdn SYNTH001LCIDHASH December 2025.csv"
+    ],
+    [
+      "2026-01-05 11:05:00",
+      "10.0.0.5",
+      "",
+      "SAMSUNG/SM-F966U",
+      "conflictSolve",
+      "SYNTH001LCIDHASH",
+      "SYNTH001LCIDHASH.xlsx"
+    ],
+    [
+      "2026-02-02 03:10:00",
+      "174.21.5.9",
+      "",
+      "SAMSUNG/SM-F966U",
+      "conflictSolve",
+      "SYNTH001LCIDHASH",
+      "Dv Access logs mdn SYNTH001LCIDHASH February 2026.csv"
+    ],
+    [
+      "2026-03-11 07:10:00",
+      "174.21.5.9",
+      "",
+      "SAMSUNG/SM-F966U",
+      "conflictSolve",
+      "SYNTH001LCIDHASH",
+      "SYNTH001LCIDHASH_TitleCase_Dv_Access_Logs.xlsx"
+    ],
+    [
+      "2026-03-11 07:15:00",
+      "174.21.5.9",
+      "",
+      "SAMSUNG/SM-F966U",
+      "20260311",
+      "SYNTH001LCIDHASH",
+      "SYNTH001LCIDHASH_TitleCase_Dv_Access_Logs.xlsx"
+    ]
+  ]
+}

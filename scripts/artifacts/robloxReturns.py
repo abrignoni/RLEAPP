@@ -21,18 +21,18 @@ __artifacts_v2__ = {
                        "the Roblox user' CSV). convo_type values observed include "
                        "chat/game/public, chat/game/private, chat/app and "
                        "chat/unfiltered_threads; values are reported as delivered.",
-        "author": "@AlexisBrignoni, Claude",
+        "author": "@AlexisBrignoni, Claude, Codex",
         "creation_date": "2026-08-14",
-        "last_update_date": "2026-08-14",
+        "last_update_date": "2026-10-04",
         "requirements": "none",
         "category": "Roblox Returns",
-        "notes": "In the reviewed sample rows arrive grouped by conversation with a fully "
+        "notes": "Mixed time columns use text storage and do not populate timeline/date filters. In the reviewed sample rows arrive grouped by conversation with a fully "
                  "empty separator row between groups; empty rows are skipped. Two row "
                  "layouts were observed in the reviewed sample: rows that populate every column, "
                  "and rows that carry only ts, text, conversation_id, user_id and request_user_id. "
                  "The module reports the user_id and name the provider recorded on each row. ts is "
-                 "read as ISO 8601 text; a value that states no offset is treated as UTC, and the "
-                 "zone of such a value is not established here. Fields mapped from a private "
+                 "read as ISO 8601 text; a value that states no offset is retained as text because its "
+                 "zone is not established here. Fields mapped from a private "
                  "sample.",
         "paths": ('*/Chat records of the Roblox user*.csv',),
         "output_types": "standard",
@@ -204,12 +204,12 @@ __artifacts_v2__ = {
                        "asset dump joined to the hash-named payload files delivered next to "
                        "them. Payloads named <hash>.png or <hash>-IMAGE are embedded as media; any "
                        "other payload is listed by path.",
-        "author": "@AlexisBrignoni, Claude",
+        "author": "@AlexisBrignoni, Claude, Codex",
         "creation_date": "2026-08-14",
-        "last_update_date": "2026-08-14",
+        "last_update_date": "2026-10-04",
         "requirements": "none",
         "category": "Roblox Returns",
-        "notes": "The dump was observed delivered twice, once with bare hash-and-label "
+        "notes": "Mixed time columns use text storage and do not populate timeline/date filters. The dump was observed delivered twice, once with bare hash-and-label "
                  "names (hash-IMAGE, hash-MODEL, hash-PLACE, hash-ANIMATION) and once with "
                  "extensions (.png, .rbxm, .rbxl); duplicate metadata rows are collapsed. "
                  "Two metadata header layouts were observed for the same records in one "
@@ -233,12 +233,12 @@ __artifacts_v2__ = {
         "description": "Customer support tickets from a Roblox law enforcement return, "
                        "delivered as per-ticket JSON in Zendesk ticket-export format (one "
                        "file per ticket, named by ticket id).",
-        "author": "@AlexisBrignoni, Claude",
+        "author": "@AlexisBrignoni, Claude, Codex",
         "creation_date": "2026-08-14",
-        "last_update_date": "2026-08-14",
+        "last_update_date": "2026-10-04",
         "requirements": "none",
         "category": "Roblox Returns",
-        "notes": "Field names id, status, type, subject, recipient, tags, via, created_at and "
+        "notes": "Mixed time columns use text storage and do not populate timeline/date filters. Field names id, status, type, subject, recipient, tags, via, created_at and "
                  "updated_at match the published Zendesk Tickets API ticket object "
                  "(https://developer.zendesk.com/api-reference/ticketing/tickets/tickets/, read "
                  "2026-10-03). That published object lists requester as write only and has no "
@@ -257,12 +257,12 @@ __artifacts_v2__ = {
                        "enforcement return (Zendesk ticket-export JSON), including the "
                        "per-comment ip_address, location and latitude/longitude metadata "
                        "the export carries.",
-        "author": "@AlexisBrignoni, Claude",
+        "author": "@AlexisBrignoni, Claude, Codex",
         "creation_date": "2026-08-14",
-        "last_update_date": "2026-08-14",
+        "last_update_date": "2026-10-04",
         "requirements": "none",
         "category": "Roblox Returns",
-        "notes": "Field names id, type, public, via, created_at, plain_body and metadata match the "
+        "notes": "Mixed time columns use text storage and do not populate timeline/date filters. Field names id, type, public, via, created_at, plain_body and metadata match the "
                  "published Zendesk Ticket Comments API comment object "
                  "(https://developer.zendesk.com/api-reference/ticketing/tickets/ticket_comments/, "
                  "read 2026-10-03). The embedded author object is not part of that published "
@@ -322,20 +322,14 @@ def _raise_csv_field_limit():
 
 
 def _iso_ts(value):
-    """ISO 8601 text as delivered (with or without fraction, trailing Z) -> aware UTC
-    datetime. Empty -> None. Unparseable text is returned unchanged."""
+    """Convert only explicitly zoned ISO values; preserve zone-less text."""
     if not value:
         return None
-    v = value.strip()
-    if v.endswith('Z'):
-        v = v[:-1]
     try:
-        dt = datetime.fromisoformat(v)
+        dt = datetime.fromisoformat(value.strip().replace('Z', '+00:00'))
     except ValueError:
         return value
-    if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
-    return dt.astimezone(timezone.utc)
+    return value if dt.tzinfo is None else dt.astimezone(timezone.utc)
 
 
 def _mdy_ts(value):
@@ -453,7 +447,7 @@ def robloxReturnChat(context):
                     _i(rewritten), _i(request_user_id),
                 ))
 
-    data_headers = (('Timestamp', 'datetime'), ('DS', 'date'), 'Conversation ID',
+    data_headers = ('Timestamp', ('DS', 'date'), 'Conversation ID',
                     'Convo Type', 'User ID', 'Name', 'Text', 'Is Filtered O13',
                     'Is Filtered U13', 'Is Rewritten', 'Request User ID')
     return data_headers, data_list, context.get_relative_path(source_path)
@@ -768,7 +762,7 @@ def robloxReturnAssets(context):
             media_item, context.get_relative_path(delivered_path),
         ))
 
-    data_headers = (('Created UTC', 'datetime'), ('Updated UTC', 'datetime'),
+    data_headers = ('Created', 'Updated',
                     'Asset Kind (from metadata filename)', 'Asset ID', 'Name',
                     'Description', 'Creator ID', 'Asset Type ID (as stored)',
                     'Current Version ID', 'Asset Hash ID (as stored)', 'Asset Genres',
@@ -824,10 +818,13 @@ def robloxReturnSupportTickets(context):
             ', '.join(ticket.get('tags') or []),
         ))
 
-    data_headers = (('Created', 'datetime'), ('Updated', 'datetime'), 'Ticket ID',
+    data_headers = ('Created', 'Updated', 'Ticket ID',
                     'Status', 'Type', 'Via Channel', 'Subject', 'Requester ID',
-                    'Requester Name', 'Requester Email', ('Requester Created', 'datetime'),
+                    'Requester Name', 'Requester Email', 'Requester Created',
                     'Recipient', 'Comment Count', 'Tags')
+    order = [0, 1, 10] + [i for i in range(len(data_headers)) if i not in [0, 1, 10]]
+    data_headers = tuple(data_headers[i] for i in order)
+    data_list = [tuple(row[i] for i in order) for row in data_list]
     return data_headers, data_list, context.get_relative_path(source_path)
 
 
@@ -864,7 +861,7 @@ def robloxReturnSupportTicketComments(context):
                 comment.get('plain_body', ''),
             ))
 
-    data_headers = (('Created', 'datetime'), 'Ticket ID', 'Comment ID', 'Comment Type',
+    data_headers = ('Created', 'Ticket ID', 'Comment ID', 'Comment Type',
                     'Author ID', 'Author Name', 'Author Email', 'Public', 'Via Channel',
                     'IP Address', 'Location', 'Latitude', 'Longitude', 'Body')
     return data_headers, data_list, context.get_relative_path(source_path)

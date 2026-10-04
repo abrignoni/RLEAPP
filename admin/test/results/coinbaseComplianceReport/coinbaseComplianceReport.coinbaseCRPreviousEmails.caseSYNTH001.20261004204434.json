@@ -1,0 +1,74 @@
+{
+  "metadata": {
+    "module_name": "coinbaseComplianceReport",
+    "artifact_name": "Coinbase Compliance Report - Previous Emails",
+    "function_name": "coinbaseCRPreviousEmails",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 10,
+    "number_of_rows": 3,
+    "total_data_size_bytes": 540,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/coinbaseComplianceReport/testdata.coinbaseComplianceReport.coinbaseCRPreviousEmails.caseSYNTH001.zip",
+    "start_time": "2026-10-04T20:44:34.065405+00:00",
+    "end_time": "2026-10-04T20:44:34.094135+00:00",
+    "run_time_seconds": 0.0006110668182373047,
+    "last_commit": {
+      "hash": "6166d12ac78ec38163a14e23f3cb23e23368d7a8",
+      "author_name": "Brigs",
+      "author_email": "abrignoni@gmail.com",
+      "date": "2026-10-04T02:02:02-04:00",
+      "message": "Correct artifact descriptions and notes against the code and sources"
+    }
+  },
+  "headers": [
+    "Timestamp (UTC)",
+    "CHANGED AT (as produced)",
+    "CONFIRMED AT",
+    "Time Basis",
+    "User ID",
+    "CHANGED FROM",
+    "CHANGED TO",
+    "Other Columns (as produced)",
+    "CSV Record",
+    "Source File"
+  ],
+  "data": [
+    [
+      1612202400,
+      "2021-02-01 10:00:00 -0800",
+      "2021-02-01 10:05:00 -0800",
+      "stated offset",
+      "SYNTHUSER000000000000000A",
+      "old@example.test",
+      "alex@example.test",
+      "",
+      31,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      1612202400,
+      "2021-02-01 10:00:00 -0800",
+      "2021-02-01 10:05:00 -0800",
+      "stated offset",
+      "SYNTHUSER000000000000000A",
+      "old@example.test",
+      "alex@example.test",
+      "",
+      31,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      1612202400,
+      "2021-02-01 10:00:00 -0800",
+      "2021-02-01 10:05:00 -0800",
+      "stated offset",
+      "SYNTHUSER000000000000000B",
+      "old@example.test",
+      "blair@example.test",
+      "",
+      31,
+      "0000bbbb/compliance_report.csv"
+    ]
+  ]
+}

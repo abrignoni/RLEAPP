@@ -1,0 +1,91 @@
+{
+  "metadata": {
+    "module_name": "synchronoss",
+    "artifact_name": "Synchronoss - Contacts",
+    "function_name": "synchronoss_contacts",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 11,
+    "number_of_rows": 4,
+    "total_data_size_bytes": 374,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/synchronoss/testdata.synchronoss.synchronoss_contacts.caseSYNTH001.zip",
+    "start_time": "2026-10-04T20:44:34.769532+00:00",
+    "end_time": "2026-10-04T20:44:34.798111+00:00",
+    "run_time_seconds": 0.0002589225769042969,
+    "last_commit": {
+      "hash": "6166d12ac78ec38163a14e23f3cb23e23368d7a8",
+      "author_name": "Brigs",
+      "author_email": "abrignoni@gmail.com",
+      "date": "2026-10-04T02:02:02-04:00",
+      "message": "Correct artifact descriptions and notes against the code and sources"
+    }
+  },
+  "headers": [
+    "Created",
+    "Deleted",
+    "First Name",
+    "Last Name",
+    "Phone Number",
+    "Phone Type",
+    "Source",
+    "ICE",
+    "Favorite",
+    "Item GUID",
+    "Source File"
+  ],
+  "data": [
+    [
+      "Sat Jun  2 23:19:50 2018",
+      "",
+      "Alice",
+      "Active",
+      "+1 714-487-1148",
+      "Mobile",
+      "cloud",
+      "False",
+      "True",
+      "g1",
+      "contacts_20251201.txt"
+    ],
+    [
+      "Sat Jun  2 23:19:50 2018",
+      "",
+      "Alice",
+      "Active",
+      "+1 208-555-0101",
+      "Home",
+      "cloud",
+      "False",
+      "True",
+      "g1",
+      "contacts_20251201.txt"
+    ],
+    [
+      "Sun Jan  6 10:00:00 2019",
+      "Wed May 22 12:59:18 2019",
+      "Bob",
+      "Deleted",
+      "+1 208-555-0202",
+      "Mobile",
+      "cloud",
+      "False",
+      "False",
+      "g2",
+      "contacts_20251201.txt"
+    ],
+    [
+      "Mon Mar  4 08:00:00 2019",
+      "",
+      "Carol",
+      "NoPhone",
+      "",
+      "",
+      "cloud",
+      "True",
+      "False",
+      "g3",
+      "contacts_20251201.txt"
+    ]
+  ]
+}

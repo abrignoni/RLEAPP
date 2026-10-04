@@ -1,0 +1,96 @@
+{
+  "metadata": {
+    "module_name": "synchronoss",
+    "artifact_name": "Synchronoss - Quarantined Media (CyberTip)",
+    "function_name": "synchronoss_quarantined",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 12,
+    "number_of_rows": 4,
+    "total_data_size_bytes": 2606,
+    "media_checkins": 4,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/synchronoss/testdata.synchronoss.synchronoss_quarantined.caseSYNTH001.zip",
+    "start_time": "2026-10-04T20:44:36.629259+00:00",
+    "end_time": "2026-10-04T20:44:36.681305+00:00",
+    "run_time_seconds": 0.009758949279785156,
+    "last_commit": {
+      "hash": "6166d12ac78ec38163a14e23f3cb23e23368d7a8",
+      "author_name": "Brigs",
+      "author_email": "abrignoni@gmail.com",
+      "date": "2026-10-04T02:02:02-04:00",
+      "message": "Correct artifact descriptions and notes against the code and sources"
+    }
+  },
+  "headers": [
+    "Matched Log Timestamp",
+    "User IP",
+    "Device",
+    "Media",
+    "Detected Type",
+    "Size (bytes)",
+    "SHA-256",
+    "Hash Verified",
+    "DV Correlation",
+    "Sequence",
+    "Filename",
+    "Source File"
+  ],
+  "data": [
+    [
+      "2026-01-04 08:15:00",
+      "174.21.5.9",
+      "SAMSUNG/SM-F966U",
+      "mock_hash_for_770d2225305340cea852d92626230d0b_9f045cd488940c8d9570ed6e522a738c093022030e77bb1b1f80bcfb5e444ec8.zip_file_1",
+      ".jpg (by magic bytes)",
+      907,
+      "9f045cd488940c8d9570ed6e522a738c093022030e77bb1b1f80bcfb5e444ec8",
+      "yes; content matches filename hash",
+      "matched DV access log row",
+      1,
+      "770d2225305340cea852d92626230d0b_9f045cd488940c8d9570ed6e522a738c093022030e77bb1b1f80bcfb5e444ec8.zip_file_1",
+      "SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined/SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined/770d2225305340cea852d92626230d0b_9f045cd488940c8d9570ed6e522a738c093022030e77bb1b1f80bcfb5e444ec8.zip_file_1"
+    ],
+    [
+      "2026-01-04 09:20:00",
+      "174.21.5.9",
+      "SAMSUNG/SM-F966U",
+      "mock_hash_for_770d2225305340cea852d92626230d0b_c707582f09f9b4e261889285cf51ff85883a564a9513debd849cbaa02bbf8286.zip_file_2",
+      ".png (by magic bytes)",
+      315,
+      "c707582f09f9b4e261889285cf51ff85883a564a9513debd849cbaa02bbf8286",
+      "yes; content matches filename hash",
+      "matched DV access log row",
+      2,
+      "770d2225305340cea852d92626230d0b_c707582f09f9b4e261889285cf51ff85883a564a9513debd849cbaa02bbf8286.zip_file_2",
+      "SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined/SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined/770d2225305340cea852d92626230d0b_c707582f09f9b4e261889285cf51ff85883a564a9513debd849cbaa02bbf8286.zip_file_2"
+    ],
+    [
+      "",
+      "",
+      "",
+      "mock_hash_for_770d2225305340cea852d92626230d0b_2157e8b4aae77f6bf80cc8fc9ec02a2b204a6ce9030fe52d074e831ab1729a5c.zip_file_3",
+      ".jpg (by magic bytes)",
+      909,
+      "2157e8b4aae77f6bf80cc8fc9ec02a2b204a6ce9030fe52d074e831ab1729a5c",
+      "yes; content matches filename hash",
+      "no matching checksum in DV access log",
+      3,
+      "770d2225305340cea852d92626230d0b_2157e8b4aae77f6bf80cc8fc9ec02a2b204a6ce9030fe52d074e831ab1729a5c.zip_file_3",
+      "SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined/SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined/770d2225305340cea852d92626230d0b_2157e8b4aae77f6bf80cc8fc9ec02a2b204a6ce9030fe52d074e831ab1729a5c.zip_file_3"
+    ],
+    [
+      "",
+      "",
+      "",
+      "mock_hash_for_770d2225305340cea852d92626230d0b_dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.zip_file_4",
+      ".jpg (by magic bytes)",
+      909,
+      "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "NO; content hashes to f5d0bb2d5941990fb94fe4ec453fbc0e5b0779a3bee6240f67e76c43d0918bf0",
+      "no matching checksum in DV access log",
+      4,
+      "770d2225305340cea852d92626230d0b_dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.zip_file_4",
+      "SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined/SYNTH001LCIDHASH-770d2225305340cea852d92626230d0b-quarantined/770d2225305340cea852d92626230d0b_dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.zip_file_4"
+    ]
+  ]
+}
