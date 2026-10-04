@@ -2,7 +2,7 @@ __artifacts_v2__ = {
     "takeoutSavedLinksDefault": {
         "name": "Saved Links - Default List",
         "description": "Entries of the Default list in the Saved folder of a Google Takeout, "
-                       "links saved from Google Search and Maps with their title, note, URL and "
+                       "with their title, note, URL and "
                        "comment.",
         "author": "@KevinPagano3",
         "creation_date": "2021-09-25",

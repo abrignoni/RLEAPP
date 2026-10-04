@@ -4,18 +4,24 @@
 __artifacts_v2__ = {
     "airdropNumbers": {
         "name": "AirDrop - Phone Number from Hash",
-        "description": "Recovers sender phone numbers from AirDrop partial hashes in the unified "
-                       "log (airdrop.ndjson) by brute-forcing candidate numbers per area code.",
+        "description": "Lists candidate phone numbers, generated per United States area code, "
+                       "whose SHA-256 begins and ends with the hash fragments logged in the "
+                       "unified log (airdrop.ndjson).",
         "author": "@AlexisBrignoni",
         "creation_date": "2022-03-15",
         "last_update_date": "2026-06-28",
         "requirements": "none",
         "category": "Airdrop Numbers",
         "notes": "Brute-forces every candidate number for each area code in "
-                 "scripts/areacodes/areacodes_us.txt and SHA-256s it against AirDrop's partial "
-                 "hashes. This is compute-heavy (up to 10^7 hashes per area code). Timestamp is "
-                 "kept as text: the shared gather_hashes_in_file helper truncates the unified-log "
-                 "time to 25 chars, dropping the UTC offset, so it can't be safely normalized.",
+                 "scripts/areacodes/areacodes_us.txt and compares its SHA-256 with the 5 character "
+                 "start and end fragments the pattern Phone=[xxxxx...xxxxx] matches in the log's "
+                 "lines. Only country code 1 with 7 digit local numbers is tried. Every generated "
+                 "number that matches a fragment pair is reported, so one fragment can give more "
+                 "than one row, and a match is a candidate, not proof of the number. Timestamp and "
+                 "Event Message are those of the first log line that held the fragment. This is "
+                 "compute-heavy (10^7 hashes per area code). Timestamp is kept as text: the shared "
+                 "gather_hashes_in_file helper truncates the unified-log time to 25 chars, "
+                 "dropping the UTC offset, so it can't be safely normalized.",
         "paths": ('*/airdrop.ndjson',),
         "output_types": "standard",
         "artifact_icon": "phone",

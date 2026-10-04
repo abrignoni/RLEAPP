@@ -26,7 +26,9 @@ __artifacts_v2__ = {
         'last_update_date': '2026-09-24',
         'requirements': 'none',
         'category': 'Robinhood Returns',
-        'notes': ('Timestamp (UTC) is derived from created_at, which states an offset; Time Basis records that. '
+        'notes': ('Timestamp (UTC) is converted from created_at when that value states a UTC offset or a '
+                  'recognised zone abbreviation; Time Basis records the basis. When created_at states no zone or '
+                  'cannot be read, Timestamp (UTC) is blank and Time Basis says so. '
                   'withdrawal_submitted_timestamp is reported as produced and is empty in the synthetic fixture; '
                   'a blank value remains blank. This file states no account number. Leading and trailing spaces '
                   'in a cell are removed; nothing else in a value is changed. Other Columns (as produced) is '
@@ -87,8 +89,9 @@ __artifacts_v2__ = {
         'last_update_date': '2026-09-24',
         'requirements': 'none',
         'category': 'Robinhood Returns',
-        'notes': ('Values are as produced. Where BASIS NOT SHOWN is Y, the COST BASIS value in the file is not a '
-                  'reported basis. Leading and trailing spaces in a cell are removed; nothing else in a value is '
+        'notes': ('Values are as produced. BASIS NOT SHOWN and COST BASIS are reported as produced. How one '
+                  'qualifies the other is not established here. Leading and trailing spaces in a cell are '
+                  'removed; nothing else in a value is '
                   'changed. Other Columns (as produced) is empty unless the file carries columns this artifact '
                   'does not name; any such column is kept there as JSON. A text line at the end of the file that '
                   "is not a record is listed in Robinhood - Parsing Notes. Source File is the file's path within "
@@ -119,7 +122,7 @@ __artifacts_v2__ = {
                   "the file's path within the input; the same file can appear more than once in a production, and "
                   'each copy is reported. Layouts are those of synthetic files and one 2025 production; other '
                   'production years and layouts may differ. Account is blank when this PDF has no Account Number '
-                  'in its Account Information section, including all edit-log fixture rows. Account is not '
+                  'in its Account Information section. Account is not '
                   'inferred from adjacent PDFs or shared folder names; review Source File and the original return '
                   'to establish attribution.'),
         'paths': ('*[Aa]ccount [Mm]aster*.pdf',),
@@ -141,14 +144,14 @@ __artifacts_v2__ = {
                   'does not establish complete extraction. Timestamp (UTC) is converted from the printed time and '
                   'zone abbreviation, read as a fixed North American offset (EST = UTC-5). Cells that wrap onto '
                   'more lines are joined to their record only when line spacing ties them to that record alone; '
-                  'other wrapped text is listed in Unattached Text with no record fields, so it is never placed '
-                  "on the wrong record. Unattached Text is empty for every other row. Every table titled '<name> "
-                  "edit logs' is read; one with no 'Model Field' header row is named in Robinhood - Parsing Notes."
-                  " Source File is the file's "
-                  'path within the input; the same file can appear more than once in a production, and each copy '
-                  'is reported. Layouts are those of synthetic files and one 2025 production; other production '
-                  'years and layouts may differ. Account is blank when this PDF has no Account Number in its '
-                  'Account Information section, including all edit-log fixture rows. Account is not inferred from '
+                  'other wrapped text is listed in Unattached Text with no record fields, so it is not attached '
+                  'to a record by guesswork. Unattached Text is empty for every other row. Each table titled '
+                  "'<name> edit logs' that has a 'Model Field' header row is read. One without that header row is "
+                  "not read and is named in Robinhood - Parsing Notes. Source File is the file's path within the "
+                  'input; the same file can appear more than once in a production, and each copy is reported. '
+                  'Layouts are those of synthetic files and one 2025 production; other production years and '
+                  'layouts may differ. Account is blank when this PDF has no Account Number in its Account '
+                  'Information section. Account is not inferred from '
                   'adjacent PDFs or shared folder names; review Source File and the original return to establish '
                   'attribution.'),
         'paths': ('*[Aa]ccount [Mm]aster*.pdf',),
@@ -172,21 +175,24 @@ __artifacts_v2__ = {
                   'read. Reader-detected unmapped text and file-level PDF failures or unrecognised layouts are '
                   'listed in Robinhood - Parsing Notes; this does not establish complete extraction. Balances are '
                   'the printed values with $ and thousands separators removed and (x) written as -x; digits are '
-                  'not rounded. On RHC statements, Holdings lists each holdings row as symbol, quantity and market'
-                  ' value, and the printed rows are in Source Text; text outside the header labels and the '
-                  'holdings and activity tables is not kept. The header labels are read once: when a later page '
-                  'repeats them with a different value, the first value is kept and Parsing Notes names the '
-                  'difference. A line directly under a value and aligned with it is joined to that value as a '
-                  'wrapped line; other text beside the labels is listed in Parsing Notes instead of being added '
-                  "to a value. Statement is 'RHF brokerage statement' "
-                  "or 'RHC crypto statement' by the statement's own layout. Account Basis says where Account came "
-                  'from: printed on the statement, or taken from the file name when the pages print none (a '
-                  "Parsing Notes row then says so). Source File is the file's path within the input; the same "
-                  'file can appear more than once in a production, and each copy is reported. Layouts are those '
-                  'of synthetic files and one 2025 production; other production years and layouts may differ. RHC '
-                  "Account Number, Name (RHC), and Address (RHC) report the crypto statement's ACCOUNT NUMBER, "
-                  'NAME, and ADDRESS labels; they are empty for RHF statements or missing labels. Account remains '
-                  'the RHS number on RHC statements, as identified by Account Basis.'),
+                  'not rounded, and a printed -- or - is reported blank. On RHF statements Opening Balance and '
+                  'Closing Balance are the first and second values printed on the Portfolio Value line, taken by '
+                  'position; the headings printed above them are not read, so confirm them against the statement. '
+                  'On RHC statements, Holdings lists each holdings row as symbol, quantity and market value, and '
+                  'the printed rows are in Source Text; text outside the header labels and the holdings and '
+                  'activity tables is not kept. The header labels are read once: when a later page repeats them '
+                  'with a different value, the first value is kept and Parsing Notes names the difference. A line '
+                  'directly under a value and aligned with it is joined to that value as a wrapped line; other '
+                  'text beside the labels is listed in Parsing Notes instead of being added to a value. Statement '
+                  "is 'RHF brokerage statement' or 'RHC crypto statement' by the statement's own layout. Account "
+                  'Basis says where Account came from: printed on the statement, or taken from the file name when '
+                  "the pages print none (a Parsing Notes row then says so). Source File is the file's path within "
+                  'the input; the same file can appear more than once in a production, and each copy is reported. '
+                  'Layouts are those of synthetic files and one 2025 production; other production years and '
+                  'layouts may differ. RHC Account Number, Name (RHC), and Address (RHC) report the crypto '
+                  "statement's ACCOUNT NUMBER, NAME, and ADDRESS labels; they are empty for RHF statements or "
+                  'missing labels. On RHC statements Account is the value printed under RHS ACCOUNT NUMBER, as '
+                  'identified by Account Basis.'),
         'paths': ('*_account_statement_*.pdf', '*_rhc_statement_*.pdf'),
         'output_types': 'standard',
         'artifact_icon': 'book-open',
@@ -203,12 +209,15 @@ __artifacts_v2__ = {
                   'the tested production. Location gives the page and the vertical position in points of the text '
                   'a row came from, and Source Text gives that text as read. Reader-detected unmapped text and '
                   'file-level PDF failures or unrecognised layouts are listed in Robinhood - Parsing Notes; this '
-                  'does not establish complete extraction. Dates are calendar dates as printed, with no time or '
-                  'zone. Quantities, prices and values have $ and thousands separators removed and (x) written as '
-                  '-x; digits are not rounded. On RHF statements, Debit and Credit have $ and thousands separators'
-                  ' removed like the other amounts; on RHC statements they are as printed and can carry the asset '
-                  'symbol after the quantity. On RHC rows, Description and Type both hold the TRANSACTION TYPE '
-                  'column. Account Basis says where Account '
+                  'does not establish complete extraction. Dates are calendar dates with no time or zone. RHF '
+                  'dates printed MM/DD/YYYY are rewritten as YYYY-MM-DD; RHC dates are as printed. Rows from the '
+                  'Executed Trades Pending Settlement table carry "(executed, pending settlement)" in Statement '
+                  'and the printed settle date appended to Description. Quantities, prices and values have $ and '
+                  'thousands separators removed and (x) written as -x; digits are not rounded. On RHF statements, '
+                  'Debit and Credit have $ and thousands separators removed like the other amounts; on RHC '
+                  'statements they are as printed, except that a printed -- or - is reported blank, and can carry '
+                  'the asset symbol after the quantity. On RHC rows, Description and Type both hold the '
+                  'TRANSACTION TYPE column. Account Basis says where Account '
                   'came from: printed on the statement, or taken from the file name when the pages print none (a '
                   "Parsing Notes row then says so). Source File is the file's path within the input; the same "
                   'file can appear more than once in a production, and each copy is reported. Layouts are those '
@@ -230,7 +239,7 @@ __artifacts_v2__ = {
         'notes': ("One row per note. Level 'error' marks an unreadable PDF or CSV, with file name and exception "
                   "type; 'warning' marks an unrecognised layout, a CSV header lacking a column an artifact needs, "
                   'missing account attribution, or text kept but not '
-                  "mapped to a field; 'info' marks source lines outside mapped tables, layout observations and "
+                  "mapped to a field; 'info' marks source lines outside mapped tables and "
                   'text lines at the end of a CSV export (a notice line in the tested files), which are kept here '
                   'with their full text instead of being reported as records. An empty artifact means the readers '
                   "raised no notes, not that the files were fully understood. Source File is the file's path "

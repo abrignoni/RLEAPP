@@ -1,13 +1,14 @@
 __artifacts_v2__ = {
     "instagramMessageReq": {  # This should match the function name exactly
         "name": "Instagram Archive - Message Request",
-        "description": "Parses Instagram message requests",
+        "description": "Parses Instagram message requests from each thread's message_1.json in an Instagram data archive",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-08-30",
         "last_update_date": "2025-07-03",
         "requirements": "none",
         "category": "Instagram Archive",
-        "notes": "",
+        "notes": "Only message_1.json of each thread folder is read; check the folder for "
+                 "further message_N.json files.",
         "paths": ('*/messages/message_requests/*'),
         "output_types": "standard",  # or ["html", "tsv", "timeline", "lava"]
         "artifact_icon": "brand-instagram",

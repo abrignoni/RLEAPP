@@ -7,7 +7,16 @@ __artifacts_v2__ = {
         "last_update_date": "2026-06-27",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "Device Information is also parsed by the Google Location History Data Parser: https://github.com/MetadataForensics/Google-Location-History-Data-Parser",
+        "notes": "Device Information is also parsed by the Google Location History Data Parser: "
+                 "https://github.com/MetadataForensics/Google-Location-History-Data-Parser. Google "
+                 "Account Creation Time holds the createdTime value of Settings.json; what it "
+                 "marks is not established here. Device OS Version is the stored iosVersion, or "
+                 "the Android name for the stored androidOsLevel from a table in this module. "
+                 "Device Model translates a stored iPhone identifier from a table in this module; "
+                 "other values are as stored. Cells reading 'New Data Supported in Recent Export "
+                 "Versions' mean the key was absent from the file or, for Encrypted Backups "
+                 "Controls, empty. A timestamp with no Z or offset is not handled as UTC by the "
+                 "code; it is read in the local zone of the machine running the tool.",
         "paths": ('*/Location History*/Settings.json',),
         "output_types": "standard",
         "artifact_icon": "settings",

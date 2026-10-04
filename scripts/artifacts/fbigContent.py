@@ -8,7 +8,7 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Facebook - Instagram Returns",
         "notes": "One row per record of the Photos section of records.html and every preservation_N.html; Snapshot File names the file. "
-                 "The Image column renders the file the record's 'Linked Media File:' names inside the return's linked_media folder; Linked Media File keeps that name. "
+                 "The Media column renders the file the record's 'Linked Media File:' names inside the return's linked_media folder; Linked Media File keeps that name. "
                  "Column names are the provider's field labels. Per its embedded definition, Taken is when the image was uploaded, Status whether the image can be viewed, Source the device through which the photo was taken, Is Published whether it is currently on the profile, Shared to Platform whether it was shared to a different platform, Carousel Id the identifier a post gets when it contains more than one media, and Upload Ip the address (with source port after a colon, when available) associated with the upload. "
                  "Caption and Comments hold the nested caption and comment records flattened to 'label: value' lines; on the return this was built against both were empty on every photo. "
                  "Location Name, Location Address, Location External Id, Latitude and Longitude come from the record's Location block; all five were blank on every photo of the tested return, and a KML point is written only for a row carrying both coordinates, so the coordinate path is unexercised. Cross Post Id was blank, and Privacy Setting, Filter and Like Count each held one value, on every photo of the tested return; the columns stay because the provider defines them and the Likes and Saved Media sections of the same return carried varying values for the same fields.",
@@ -18,7 +18,7 @@ __artifacts_v2__ = {
     },
     "fbigVideos": {
         "name": "Facebook Instagram Returns - Videos",
-        "description": "Videos uploaded by the account holder, with the linked media rendered where present, from a Meta (Instagram) law enforcement return.",
+        "description": "Records of the Videos section, with the linked media rendered where present, from a Meta (Instagram) law enforcement return.",
         "author": "@AlexisBrignoni, Claude",
         "creation_date": "2023-07-01",
         "last_update_date": "2026-09-19",
@@ -55,14 +55,14 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Facebook - Instagram Returns",
         "notes": "One row per snapshot file (records.html and every preservation_N.html) whose Profile Picture section names a linked media file; per the provider's embedded definition it is the profile image at the time of production. "
-                 "A snapshot whose section holds 'No responsive records' produces no row here: on the return this was built against one of three snapshots had no profile picture while the other two carried the same file.",
+                 "A snapshot whose section holds 'No responsive records' produces no row here: on the private return this was built against, a snapshot had no profile picture while the other snapshots carried the same file; no sample data is recorded for it.",
         "paths": ('*/records.html', '*/preservation*.html', '*/linked_media/*'),
         "output_types": "standard",
         "artifact_icon": "user-circle",
     },
     "fbigComments": {
         "name": "Facebook Instagram Returns - Comments",
-        "description": "Comments the account holder left on images and videos, from a Meta (Instagram) law enforcement return.",
+        "description": "Records of the Comments section of a Meta (Instagram) law enforcement return.",
         "author": "@AlexisBrignoni, Claude",
         "creation_date": "2023-06-30",
         "last_update_date": "2026-09-19",
@@ -77,7 +77,7 @@ __artifacts_v2__ = {
     },
     "fbigLikes": {
         "name": "Facebook Instagram Returns - Likes",
-        "description": "Media the account holder liked, from a Meta (Instagram) law enforcement return.",
+        "description": "Records of the Likes section of a Meta (Instagram) law enforcement return.",
         "author": "@AlexisBrignoni, Claude",
         "creation_date": "2023-06-30",
         "last_update_date": "2026-09-19",
@@ -85,14 +85,14 @@ __artifacts_v2__ = {
         "category": "Facebook - Instagram Returns",
         "notes": "One row per record of the Likes section of records.html and every preservation_N.html; Snapshot File names the file. "
                  "Per the provider's embedded definition, Like Timestamp is when the account holder liked the post, Liked Post Owner Vanity the username of the post owner, Taken when the liked media was uploaded, Url the link to the media, and the remaining columns describe the liked media (Status, Source, Filter, Is Published, Shared to Platform, Upload Ip, Carousel Id, Cross Post Id) as stored. "
-                 "Each snapshot file lists its own set of likes and the counts differed widely between the three snapshots of the tested return. Records split across the return's page breaks are rejoined before reporting; on the tested return the row count equalled the number of 'Like Timestamp' labels in the source text of each file.",
+                 "Each snapshot file lists its own set of likes and the counts differed widely between the three snapshots of the tested return. Records split across the return's page breaks are rejoined before reporting. On the tested return, which is private, the row count equalled the number of 'Like Timestamp' labels in the source text of each file; no sample data is recorded for it.",
         "paths": ('*/records.html', '*/preservation*.html'),
         "output_types": "standard",
         "artifact_icon": "heart",
     },
     "fbigCommentLikes": {
         "name": "Facebook Instagram Returns - Comment Likes",
-        "description": "Comments the account holder liked, from a Meta (Instagram) law enforcement return.",
+        "description": "Records of the Comment Likes section of a Meta (Instagram) law enforcement return.",
         "author": "@AlexisBrignoni, Claude",
         "creation_date": "2026-09-19",
         "last_update_date": "2026-09-19",

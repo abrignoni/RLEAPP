@@ -7,7 +7,9 @@ __artifacts_v2__ = {
         "last_update_date": "2026-07-09",
         "requirements": "none",
         "category": "Synchronoss",
-        "notes": "Located at <LCID>/messages/YYYYMMDD.csv. All daily CSVs are merged.",
+        "notes": "Located at <LCID>/messages/YYYYMMDD.csv. All daily CSVs are merged. Date values "
+                 "that state no offset are treated as UTC; the provider document for that zone is "
+                 "not cited here.",
         "paths": ('*/messages/2*.csv',),
         "output_types": "standard",
         "html_columns": ['Recipients'],
@@ -21,7 +23,9 @@ __artifacts_v2__ = {
         "last_update_date": "2026-07-09",
         "requirements": "none",
         "category": "Synchronoss",
-        "notes": "Located at <LCID>/messages/YYYYMMDD.csv. All daily CSVs are merged.",
+        "notes": "Located at <LCID>/messages/YYYYMMDD.csv. All daily CSVs are merged; only rows of "
+                 "Type call are reported. Date values that state no offset are treated as UTC; the "
+                 "provider document for that zone is not cited here.",
         "paths": ('*/messages/2*.csv',),
         "output_types": "standard",
         "artifact_icon": "phone",
@@ -35,16 +39,18 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Synchronoss",
         "notes": "Media at <LCID>/messages/attachments/mms/in/YYYY-MM-DD/. "
-                 "Link Status records how each attachment token resolved. 'linked' means a file of "
+                 "Link Status records how each attachment token that carries a file extension "
+                 "resolved. Tokens that start with smil, null or text0, tokens ending .smi, .sml or "
+                 ".txt, and tokens with no extension get no row here. 'linked' means a file of "
                  "that name in the message's own date folder, or -- when that name occurs in only one "
                  "folder in the return -- that single copy. Attachment names repeat across date "
                  "folders in these returns (image000000.jpg and the extensionless '0' recur daily), so "
                  "where a name is in more than one folder and none is the message's own date, the "
                  "token is reported as not linked, with the number of folders carrying the name, "
-                 "rather than linked to another date's copy. 'referenced -- file not in daily folder' "
-                 "means the token names media that is not in the return at all; per Synchronoss, "
-                 "flagged files are quarantined out of the daily folder, so absence here is expected "
-                 "for reported content and is not on its own a finding about the file. Direction is "
+                 "rather than linked to another date's copy. A Link Status that begins 'referenced' "
+                 "means no file of that name was found in any mms/in/ date folder of the return; a "
+                 "missing file is not on its own a finding about the file. That Link Status text also "
+                 "reads 'possibly quarantined/removed'; the code does not test for either. Direction is "
                  "constant in this artifact by construction, since the artifact selects one direction.",
         "paths": (
             '*/messages/2*.csv',
@@ -63,16 +69,18 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Synchronoss",
         "notes": "Media at <LCID>/messages/attachments/mms/out/YYYY-MM-DD/. "
-                 "Link Status records how each attachment token resolved. 'linked' means a file of "
+                 "Link Status records how each attachment token that carries a file extension "
+                 "resolved. Tokens that start with smil, null or text0, tokens ending .smi, .sml or "
+                 ".txt, and tokens with no extension get no row here. 'linked' means a file of "
                  "that name in the message's own date folder, or -- when that name occurs in only one "
                  "folder in the return -- that single copy. Attachment names repeat across date "
                  "folders in these returns (image000000.jpg and the extensionless '0' recur daily), so "
                  "where a name is in more than one folder and none is the message's own date, the "
                  "token is reported as not linked, with the number of folders carrying the name, "
-                 "rather than linked to another date's copy. 'referenced -- file not in daily folder' "
-                 "means the token names media that is not in the return at all; per Synchronoss, "
-                 "flagged files are quarantined out of the daily folder, so absence here is expected "
-                 "for reported content and is not on its own a finding about the file. Direction is "
+                 "rather than linked to another date's copy. A Link Status that begins 'referenced' "
+                 "means no file of that name was found in any mms/out/ date folder of the return; a "
+                 "missing file is not on its own a finding about the file. That Link Status text also "
+                 "reads 'possibly quarantined/removed'; the code does not test for either. Direction is "
                  "constant in this artifact by construction, since the artifact selects one direction.",
         "paths": (
             '*/messages/2*.csv',
@@ -86,15 +94,20 @@ __artifacts_v2__ = {
         "name": "Synchronoss - MMS Folder Media (Unlinked)",
         "description": "Media physically present in the MMS attachment folders that is not "
                        "tied to a specific message (e.g. extensionless '0' files referenced "
-                       "only via SMIL placeholders). Surfaced so no sent/received media is lost.",
+                       "only via SMIL placeholders). Lists folder media whose file name no MMS row "
+                       "in any message CSV references with a file extension.",
         "author": "@OneSixForensics",
         "creation_date": "2026-06-24",
         "last_update_date": "2026-07-09",
         "requirements": "none",
         "category": "Synchronoss",
         "notes": "Media at <LCID>/messages/attachments/mms/(in|out)/YYYY-MM-DD/ whose filename "
-                 "is never referenced by a real-extension token in any message CSV. Dated by "
-                 "the folder (upload date per Synchronoss FAQ); not attributed to a message. "
+                 "is never referenced by a real-extension token in any message CSV. Upload Date is "
+                 "the name of the date folder the file sits in; the provider document that calls "
+                 "this the upload date is not cited here. Files are not attributed to a message. A "
+                 "file is left out when an MMS row of any date or direction references its name, "
+                 "so a copy of a repeating name that sits in another date folder can be shown "
+                 "neither here nor in the MMS Media Received and Sent artifacts. "
                  "Extensionless files are typed and rendered inline via magic-byte detection.",
         "paths": (
             '*/messages/2*.csv',
@@ -112,14 +125,19 @@ __artifacts_v2__ = {
         "last_update_date": "2026-07-09",
         "requirements": "none",
         "category": "Synchronoss",
-        "notes": "Located alongside the zip as contacts_YYYYMMDD.txt (JSON format)",
+        "notes": "Located alongside the zip as contacts_YYYYMMDD.txt (JSON format). One row per "
+                 "phone number, so a contact with several numbers repeats; a contact with no phone "
+                 "number gets one row. Created and Deleted are the file's created and deleted "
+                 "values; a value with no offset is treated as UTC and a 10 or 13 digit value as "
+                 "Unix seconds or milliseconds. The provider document for that zone and unit is "
+                 "not cited here, and what the deleted value marks is not established.",
         "paths": ('*contacts_*.txt',),
         "output_types": "standard",
         "artifact_icon": "users",
     },
     "synchronoss_dv_uploads": {
         "name": "Synchronoss - DV Access Log Uploads",
-        "description": "Parses file upload events from Synchronoss DV access logs — rows with file checksums",
+        "description": "Parses Synchronoss DV access log rows whose querystring carries a file checksum",
         "author": "@OneSixForensics",
         "creation_date": "2026-06-24",
         "last_update_date": "2026-09-03",
@@ -132,16 +150,20 @@ __artifacts_v2__ = {
                  "'<LCID>_Dv_Access_Logs.xlsx' workbook, which also names its timestamp "
                  "column 'logtimestamp' rather than 'server_ts' and writes Apache/CLF "
                  "timestamps such as '[02/Jun/2026:14:23:11 +0000]' rather than "
-                 "'YYYY-MM-DD HH:MM:SS'. That third shape is not defensive coding: it came "
-                 "off a second production return in September 2026, and the CLF offset is "
-                 "honoured rather than assumed to be UTC. A workbook may carry no 'DV' in "
+                 "'YYYY-MM-DD HH:MM:SS'. That third shape was seen on a production return in "
+                 "September 2026. The offset written in its timestamps is applied. A workbook may "
+                 "carry no 'DV' in "
                  "its name at all, so workbooks are identified by their column headers; the "
                  "four non-timestamp columns have been stable across every shape seen, the "
-                 "timestamp column has not. Which shape a return carries appears to vary by "
-                 "production rather than by date, so an older case is not safe merely "
-                 "because it once parsed. Header matching and the row keys are both lower "
+                 "timestamp column has not. What decides which shape a return carries is not "
+                 "established. Header matching and the row keys are both lower "
                  "case, so a workbook that capitalises its column titles reads normally. "
-                 "Upload rows contain a SHA-256 checksum in the querystring. "
+                 "Rows are selected by a 64 hex character checksum= value in the querystring, "
+                 "reported as File Checksum (SHA-256). That heading names SHA-256 from the value's "
+                 "length; no hash is computed here. User IP is the first address in the "
+                 "remoteipaddress field and CDN IPs are the remaining addresses, by position. "
+                 "Timestamps that state no offset are treated as UTC. The provider document for "
+                 "the address order and the time zone is not cited here. "
                  "Cross-reference checksums with CyberTip file hashes.",
         "paths": ('*[Dd][Vv]*[Aa]ccess*[Ll]ogs*.csv', '*.xlsx'),
         "output_types": "standard",
@@ -149,7 +171,7 @@ __artifacts_v2__ = {
     },
     "synchronoss_dv_sync": {
         "name": "Synchronoss - DV Access Log Sync Events",
-        "description": "Parses sync/conflict-resolve events from Synchronoss DV access logs",
+        "description": "Synchronoss DV access log rows that carry no file checksum, with the operation named in the querystring",
         "author": "@OneSixForensics",
         "creation_date": "2026-06-24",
         "last_update_date": "2026-09-03",
@@ -159,32 +181,39 @@ __artifacts_v2__ = {
                  "monthly 'Dv Access logs mdn <LCID> <Month> <Year>.csv' files, a single "
                  "'<LCID>.xlsx' workbook, or a '<LCID>_Dv_Access_Logs.xlsx' workbook that "
                  "names its timestamp column 'logtimestamp' and uses Apache/CLF timestamps. "
-                 "See the Uploads artifact's notes for the detail. Sync rows show device "
-                 "activity without a specific file upload. A workbook cell may hold a number "
-                 "or a date rather than text, so text columns are converted before use: a "
-                 "single such cell in the querystring column previously failed this whole "
-                 "artifact rather than one row.",
+                 "See the Uploads artifact's notes for the detail. These rows carry no file "
+                 "checksum. Operation is the first key of the querystring as logged; what each "
+                 "operation represents is not established here. A workbook cell may hold a number "
+                 "or a date rather than text, so text columns are converted before use.",
         "paths": ('*[Dd][Vv]*[Aa]ccess*[Ll]ogs*.csv', '*.xlsx'),
         "output_types": "standard",
         "artifact_icon": "refresh",
     },
     "synchronoss_quarantined": {
         "name": "Synchronoss - Quarantined Media (CyberTip)",
-        "description": "Preserved content that Synchronoss quarantined on upload and reported "
-                       "to NCMEC, correlated to the DV access log upload event that produced it",
+        "description": "Files from the return's quarantined archive (names of the form "
+                       "<container>_<sha256>.zip_file_<N>), each joined on the SHA-256 in its file "
+                       "name to a Synchronoss DV access log row that carries the same checksum, "
+                       "where one exists.",
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-02",
         "last_update_date": "2026-09-02",
         "requirements": "openpyxl",
         "category": "Synchronoss",
         "notes": "Delivered alongside the zip as '<LCID>-<container>-quarantined.zip', which "
-                 "extracts to files named '<container>_<sha256>.zip_file_<N>'. Despite the "
-                 "name these are NOT split-archive parts: each is a complete standalone media "
-                 "file whose SHA-256 is its own filename, and the '.zip_file_<N>' suffix is only "
-                 "a sequence number. The hash is verified against the file's contents here, and "
-                 "used to join the file to its upload event in the DV access log — the "
-                 "'<LCID>_<checksum>' correlation described in Synchronoss' 'Interpreting DV "
-                 "Access Logs'. Files are typed and rendered inline by magic bytes; nothing on "
+                 "extracts to files named '<container>_<sha256>.zip_file_<N>'. On the return this "
+                 "was built against, all 41 files were complete media files whose SHA-256 equalled "
+                 "the hash in their own file name, so they are read one by one and not joined as "
+                 "parts of a split archive. Hash Verified reports the result for each file. The "
+                 "hash in the file name is compared with the SHA-256 of the file's contents here, "
+                 "and used to look for rows with the same checksum in the DV access log. The first "
+                 "matching row is shown, and DV Correlation says whether a row matched and, where "
+                 "several did, how many. Log rows are ordered by their timestamp text, which is "
+                 "time order for 'YYYY-MM-DD HH:MM:SS' values and is not for Apache/CLF values, so "
+                 "the row the DV Correlation text calls earliest is the first in that order. The "
+                 "'<LCID>_<checksum>' correlation is attributed to the Synchronoss document "
+                 "'Interpreting DV Access Logs', which is not publicly available and was not "
+                 "checked here. Files are typed and rendered inline by magic bytes; nothing on "
                  "disk is renamed.",
         "paths": (
             '*[Qq]uarantined*.zip_file_*',
@@ -203,7 +232,9 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Synchronoss",
         "notes": "Located at <LCID>/VZMOBILE/YYYY-MM-DD/<device name>/. "
-                 "Files are PNG device backups. Date folder = upload date per Synchronoss FAQ.",
+                 "Files under the device folder are listed and displayed; the file type is not "
+                 "checked here. Upload Date is the name of the date folder; the provider document "
+                 "that calls this the upload date is not cited here.",
         "paths": ('*/VZMOBILE/*/*/**',),
         "output_types": "standard",
         "artifact_icon": "device-mobile",

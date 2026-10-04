@@ -8,7 +8,10 @@ __artifacts_v2__ = {
         "last_update_date": "2026-06-28",
         "requirements": "none",
         "category": "iCloud Documents Folders",
-        "notes": "Modified Date is the file's on-disk modification time (UTC).",
+        "notes": "Modified Date is the modification time of the copy the tool staged, taken from "
+                 "the input folder's file or the archive member's stored time. A zip member's time "
+                 "has no recorded zone and is read in the examiner machine's local zone before the "
+                 "UTC label is applied.",
         "paths": ('*/backup/*/Documents/**',),
         "output_types": "standard",
         "artifact_icon": "folder",

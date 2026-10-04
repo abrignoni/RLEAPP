@@ -7,8 +7,9 @@ __artifacts_v2__ = {
         "last_update_date": "2026-06-28",
         "requirements": "pypdf",
         "category": "Chase Returns",
-        "notes": "Timestamp normalized to UTC. GEOLAT/GEOLON are exposed as Latitude/Longitude so "
-                 "the rows map (KML).",
+        "notes": "Timestamp is the time printed in the return, labelled UTC without conversion. "
+                 "The time zone of the printed value is not established here. GEOLAT/GEOLON are "
+                 "exposed as Latitude/Longitude so the rows map (KML).",
         "paths": ('*.pdf',),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
         "artifact_icon": "login-2",
@@ -21,8 +22,9 @@ __artifacts_v2__ = {
         "last_update_date": "2026-06-28",
         "requirements": "pypdf",
         "category": "Chase Returns",
-        "notes": "Surfaces the User Data demographics (name/email/address/phones) the original "
-                 "module parsed into an AccountInfo object but never reported.",
+        "notes": "Reports the text between the labels of each User Data block (User ID, E-mail "
+                 "Address, Name, Address 1, Address 2, City, State, Zip, Country Code, W. Phone, "
+                 "H. Phone), as extracted from the PDF text.",
         "paths": ('*.pdf',),
         "output_types": "standard",
         "artifact_icon": "user",

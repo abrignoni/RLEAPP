@@ -7,7 +7,10 @@ __artifacts_v2__ = {
         "last_update_date": "2026-06-27",
         "requirements": "ijson",
         "category": "Google Takeout Archive",
-        "notes": "Edited from cheeky4n6monkey/4n6-scripts Google_Takeout_Records.",
+        "notes": "Edited from cheeky4n6monkey/4n6-scripts Google_Takeout_Records. Sub-activity "
+                 "Types holds the number of sub-activities in the activity entry; their types and "
+                 "confidences are in Detected Activity. One row per activity entry of each "
+                 "location; locations with no activity entry are not listed.",
         "paths": ('*/Location History*/Records.json'),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
         "artifact_icon": "map-pin",

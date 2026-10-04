@@ -1,14 +1,19 @@
 __artifacts_v2__ = {
     "tikTokipdata": {
         "name": "TikTok - IP Data",
-        "description": "IP login/activity data from a TikTok law enforcement return (*- IP Data.xlsx).",
+        "description": "Rows of the IP Data spreadsheet from a TikTok law enforcement return (*- IP "
+                       "Data.xlsx).",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-09-29",
         "last_update_date": "2026-06-28",
         "requirements": "openpyxl",
         "category": "TikTok Returns",
-        "notes": "Source File column added so per-subscriber provenance (originally encoded in the "
-                 "report title) survives when multiple returns are merged into one table.",
+        "notes": "Reads the active sheet of each '- IP Data.xlsx' file. The first row is skipped as "
+                 "the header and the first four columns are reported, by position, as Timestamp, "
+                 "Active Start Time, IP and IP Country; the spreadsheet's own column titles are not "
+                 "checked. A date with no time zone is stored as UTC; the zone the provider uses "
+                 "was not established here. Source File names the spreadsheet each row came from. "
+                 "No tested return is recorded for this artifact.",
         "paths": ('*/*/*- IP Data.xlsx',),
         "output_types": "standard",
         "artifact_icon": "globe",

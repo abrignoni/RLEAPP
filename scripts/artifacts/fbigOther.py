@@ -8,7 +8,7 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Facebook - Instagram Returns",
         "notes": "One row per record of the Ncmec Reports section of records.html and every preservation_N.html; Snapshot File names the file. "
-                 "The section held no records on the return this was built against ('No responsive records'), so this artifact is unexercised and takes its field names from the provider's embedded definition: Time (when the cybertip was sent), CyberTip ID, and every other field of the record flattened into Details as 'label: value' lines, with any linked_media file the record names rendered in Media. "
+                 "The section held no records on the return this was built against ('No responsive records'), so this artifact is unexercised and takes its field names from the provider's embedded definition: Time (when the cybertip was sent, per the definition; when a record has no Time field that parses, the column takes the first of Timestamp, Date Created, Upload Time, Time Reported or Saved At that does, and on such a record it is not the sent time), CyberTip ID, and every other field of the record flattened into Details as 'label: value' lines, with any linked_media file the record names rendered in Media. "
                  "The definition lists, among others, Responsible Id, Upload Time, User Generated Filename, Upload IP, NCMEC File ID, Human Reviewed, Recipients, PhotoDNA Hash, Caption, Sharepoint, Messages (up to 3 above and below the reported content), Reported Text, Industry CSAM Classification and NCMEC Defined Product Annotations.",
         "paths": ('*/records.html', '*/preservation*.html', '*/linked_media/*'),
         "output_types": "standard",
@@ -16,14 +16,14 @@ __artifacts_v2__ = {
     },
     "fbigOtherSections": {
         "name": "Facebook Instagram Returns - Other Sections",
-        "description": "Any section of a Meta (Instagram) law enforcement return that holds records and has no dedicated artifact, one row per record, so nothing responsive is silently dropped.",
+        "description": "Any section of a Meta (Instagram) law enforcement return that holds records and has no dedicated artifact, one row per record.",
         "author": "@AlexisBrignoni, Claude",
         "creation_date": "2026-09-19",
         "last_update_date": "2026-09-19",
         "requirements": "none",
         "category": "Facebook - Instagram Returns",
         "notes": "Covers every section of records.html and every preservation_N.html that no dedicated artifact in this module set reads, whenever the section holds something other than the provider's 'No responsive records' placeholder. "
-                 "Section is the provider's section name; Time is read from a Time, Timestamp, Date Created, Upload Time, Time Reported or Saved At field of the record when one parses as 'YYYY-MM-DD HH:MM:SS UTC'; Details holds every field of the record as 'label: value' lines, nested blocks flattened with their labels; Media renders any linked_media file the record names. A section whose value is plain text rather than records is reported one row per line of that text. "
+                 "Section is the provider's section name; Time is read from a Time, Timestamp, Date Created, Upload Time, Time Reported or Saved At field of the record when one parses as 'YYYY-MM-DD HH:MM:SS UTC', as an ISO 8601 value, or is all digits (read as Unix epoch seconds); Details holds every field of the record as 'label: value' lines, nested blocks flattened with their labels; Media renders any linked_media file the record names. A section whose value is plain text rather than records is reported one row per line of that text. "
                  "On the return this was built against every section that held records had a dedicated artifact, so this artifact produced no rows; it exists for the sections the provider's embedded definitions describe but that return did not exercise (live videos, notes, reported conversations, encrypted groups, the Threads app sections, community notes, quicksnaps, shared access, authenticity submissions, last location, and any section added to the format later). "
                  "The run log lists the sections that reached this artifact, so a section worth its own artifact can be promoted.",
         "paths": ('*/records.html', '*/preservation*.html', '*/linked_media/*'),

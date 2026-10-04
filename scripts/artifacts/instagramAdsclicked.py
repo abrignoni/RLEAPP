@@ -1,7 +1,7 @@
 __artifacts_v2__ = {
     "instagramAdsclicked": {
         "name": "Instagram Archive - Ads Clicked",
-        "description": "Parses ads clicked from an Instagram data archive (ads_clicked.json)",
+        "description": "Parses the provider's ads clicked list (impressions_history_ads_clicked) from an Instagram data archive (ads_clicked.json); the label is the provider's",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-08-27",
         "last_update_date": "2026-06-27",

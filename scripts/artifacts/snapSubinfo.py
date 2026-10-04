@@ -4,7 +4,10 @@ __artifacts_v2__ = {
         "description": "Account information from a Snapchat law enforcement return (subscriber_info.csv).",
         "author": "@AlexisBrignoni", "creation_date": "2024-06-13",
         "last_update_date": "2026-07-09", "requirements": "none",
-        "category": "Snapchat Returns", "notes": "",
+        "category": "Snapchat Returns", "notes": "The Verified Email Address and Verified Phone Number columns "
+                                                 "hold email_address and phone_number as listed; the code does "
+                                                 "not check whether either was verified. Email status and "
+                                                 "Phone Status hold email_status and phone_status as listed.",
         "paths": ('*/subscriber_info.csv',), "output_types": "standard", "artifact_icon": "user",
     },
     "snapSubHistory": {

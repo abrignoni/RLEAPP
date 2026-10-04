@@ -1,7 +1,7 @@
 __artifacts_v2__ = {
     "snapIncCom": {
         "name": "Snapchat - Inc Comms",
-        "description": "Incoming email communications parsed from a Snapchat law enforcement return (snap_inc_communications.csv).",
+        "description": "Email events (campaign name, type, user agent and timestamp) parsed from a Snapchat law enforcement return (snap_inc_communications.csv).",
         "author": "@AlexisBrignoni",
         "creation_date": "2024-06-13",
         "last_update_date": "2026-07-09",
@@ -27,7 +27,7 @@ __artifacts_v2__ = {
     },
     "snapIncComAppeals": {
         "name": "Snapchat - In App Appeals",
-        "description": "In-app account appeals parsed from a Snapchat law enforcement return (snap_inc_communications.csv).",
+        "description": "In-app appeals parsed from a Snapchat law enforcement return (snap_inc_communications.csv).",
         "author": "@AlexisBrignoni",
         "creation_date": "2026-07-09",
         "last_update_date": "2026-07-09",

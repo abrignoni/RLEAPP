@@ -1,7 +1,7 @@
 __artifacts_v2__ = {
     "takeoutAccessLogActivities": {
         "name": "Google Access Log Activities",
-        "description": "A list of Google services accessed by your devices (e.g. each time a phone syncs with Gmail).",
+        "description": "Rows of the Takeout Access Log Activity file whose name begins 'Activities - A list of Google services accessed by'.",
         "author": "@KevinPagano3",
         "creation_date": "2021-09-25",
         "last_update_date": "2026-06-27",
@@ -14,13 +14,18 @@ __artifacts_v2__ = {
     },
     "takeoutAccessLogDevices": {
         "name": "Google Access Log Devices",
-        "description": "A list of devices (Nest, Pixel, iPhone, Galaxy, etc.) that accessed your Google account in the last 30 days.",
+        "description": "Rows of the Takeout Access Log Activity file whose name begins 'Devices - A list of devices'.",
         "author": "@KevinPagano3",
         "creation_date": "2021-09-25",
         "last_update_date": "2026-06-27",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "Old-format exports store last country/activity-time inside a free-text field; that legacy string slicing is preserved as-is.",
+        "notes": "Old-format exports store last country/activity-time inside a free-text field; on "
+                 "that layout Device Last Country and Last Activity Timestamp are cut from fixed "
+                 "character positions after the labels Country ISO: and Last Activity Time:, and "
+                 "First Activity Timestamp and Device Last Location Timestamp are blank. A "
+                 "timestamp with no Z or offset is not handled as UTC by the code; it is read in "
+                 "the local zone of the machine running the tool.",
         "paths": ('*/Access Log Activity/Devices*.csv',),
         "output_types": "standard",
         "artifact_icon": "device-mobile",

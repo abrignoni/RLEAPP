@@ -1,15 +1,33 @@
 _REGEX_NOTE = ("Scans every cell of the return workbook with regexes; the account token comes "
                "from the file name.")
-_SECTION_NOTE = ("Walks a named header section of the return workbook (reading down/right from the "
-                 "header cell) to surface the account data Cash App reports as labelled tables. "
-                 "The original module parsed this data into an AccountInfo object but never "
-                 "reported it; these artifacts surface it. The account token comes from the file "
-                 "name.")
+_DATED_REGEX_NOTE = ("Scans every cell of the return workbook with regexes. UTC Date Time is the "
+                     "cell to the left of the matching cell; a value with no stated zone is "
+                     "labelled UTC without conversion, and the zone of the workbook's times is "
+                     "not established here. The account token comes from the file name.")
+_SECTION_HEAD = ("Walks a named header section of the return workbook (reading down/right from the "
+                 "header cell) to surface the account data Cash App reports as labelled tables. ")
+_SECTION_TAIL = "The account token comes from the file name."
+_SECTION_NOTE = _SECTION_HEAD + _SECTION_TAIL
+_NO_ZONE = " Issued Date with no stated zone is labelled UTC without conversion."
+_CARDS_NOTE = (_SECTION_HEAD + "Card Number, Card Brand and Zip Code are named by position; the "
+               "workbook's own sub-header row is not read. " + _SECTION_TAIL)
+_BANKS_NOTE = (_SECTION_HEAD + "Rows are read under the workbook's own 'Bank Account Number' "
+               "sub-header; Routing Number is the cell to the right, named by position. "
+               + _SECTION_TAIL)
+_VIRTUAL_NOTE = (_SECTION_HEAD + "Virtual Card Number and Issued Date are named by position; the "
+                 "workbook's own sub-header row is not read." + _NO_ZONE + " " + _SECTION_TAIL)
+_PHYSICAL_NOTE = (_SECTION_HEAD + "Rows are read under the workbook's own 'Physical Card Number' "
+                  "sub-header; Issued Date and Address are the next two cells, named by position."
+                  + _NO_ZONE + " " + _SECTION_TAIL)
+_PHONE_DESCRIPTION = ("Cells of 8 to 15 digits (phone number shaped values) found in a Cash App law "
+                      "enforcement return (*-for-subject-SQ_CASH-*.xlsx), except a cell directly "
+                      "under one containing 'Full SSN'.")
 
 
-def _meta(name, icon, notes, html_columns=None):
+def _meta(name, icon, notes, html_columns=None, description=None):
     meta = {"name": f"CashApp - {name}",
-            "description": f"{name} extracted from a Cash App law enforcement return "
+            "description": description or
+                           f"{name} extracted from a Cash App law enforcement return "
                            f"(*-for-subject-SQ_CASH-*.xlsx).",
             "author": "Shawn Ramsey", "creation_date": "2024-02-02",
             "last_update_date": "2026-06-28", "requirements": "openpyxl",
@@ -22,17 +40,18 @@ def _meta(name, icon, notes, html_columns=None):
 
 
 __artifacts_v2__ = {
-    "cashappEmails": _meta("Emails", "mail", _REGEX_NOTE),
+    "cashappEmails": _meta("Emails", "mail", _DATED_REGEX_NOTE),
     "cashappIPv4": _meta("IPv4", "globe", _REGEX_NOTE),
     "cashappIPv6": _meta("IPv6", "globe", _REGEX_NOTE),
-    "cashappPhoneNumbers": _meta("Phone Numbers", "phone", _REGEX_NOTE),
+    "cashappPhoneNumbers": _meta("Phone Numbers", "phone", _DATED_REGEX_NOTE,
+                                 description=_PHONE_DESCRIPTION),
     "cashappDisplayNames": _meta("Display Name History", "user", _SECTION_NOTE),
-    "cashappPaymentCards": _meta("Payment Source Cards", "credit-card", _SECTION_NOTE),
+    "cashappPaymentCards": _meta("Payment Source Cards", "credit-card", _CARDS_NOTE),
     "cashappPaymentBankAccounts": _meta("Payment Source Bank Accounts", "dollar-sign",
-                                        _SECTION_NOTE),
-    "cashappIssuedVirtualCards": _meta("Issued Virtual Cards", "credit-card", _SECTION_NOTE),
-    "cashappIssuedPhysicalCards": _meta("Issued Physical Cards", "credit-card", _SECTION_NOTE),
-    "cashappIssuedBankAccounts": _meta("Issued Bank Accounts", "dollar-sign", _SECTION_NOTE),
+                                        _BANKS_NOTE),
+    "cashappIssuedVirtualCards": _meta("Issued Virtual Cards", "credit-card", _VIRTUAL_NOTE),
+    "cashappIssuedPhysicalCards": _meta("Issued Physical Cards", "credit-card", _PHYSICAL_NOTE),
+    "cashappIssuedBankAccounts": _meta("Issued Bank Accounts", "dollar-sign", _BANKS_NOTE),
 }
 
 import os

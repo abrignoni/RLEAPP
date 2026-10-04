@@ -14,39 +14,50 @@ __artifacts_v2__ = {
     },
     "fitbit_sleep_score": {
         "name": "Google Health (Fitbit) - Sleep Scores",
-        "description": "Sleep scores for a Fitbit account",
+        "description": "Sleep score records from a Fitbit account export (sleep_score.csv)",
         "author": "@stark4n6",
         "creation_date": "2023-09-14",
         "last_update_date": "2026-06-19",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "",
+        "notes": "Column headings are the parser's labels and are not read from the file. End "
+                 "Timestamp holds the file's second column. Deep & REM Score, Restoration Score "
+                 "and Time Asleep Score hold the fourth, fifth and sixth columns, which the "
+                 "parser reads as the composition, revitalization and duration scores; no source "
+                 "for the relabelling is cited. Restlessness (%) is the ninth column multiplied "
+                 "by 100 and rounded to two places; no source for reading the stored value as a "
+                 "fraction of 1 is cited.",
         "paths": "*/Sleep Score/sleep_score.csv",
         "output_types": "standard",
         "artifact_icon": "moon",
     },
     "fitbit_stress_score": {
         "name": "Google Health (Fitbit) - Stress Scores",
-        "description": "Stress scores for a Fitbit account",
+        "description": "Stress score records from a Fitbit account export (Stress Score.csv)",
         "author": "@stark4n6",
         "creation_date": "2023-09-14",
         "last_update_date": "2026-06-19",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "",
+        "notes": "Sleep Points, Responsiveness Points and Exertion Points hold the fourth, sixth "
+                 "and eighth columns of the file as stored. The (n/30) and (n/40) in the "
+                 "headings are the parser's labels; the fifth, seventh and ninth columns are not "
+                 "read and no source for those maximums is cited.",
         "paths": "*/Stress Score/Stress Score.csv",
         "output_types": "standard",
         "artifact_icon": "mood-empty",
     },
     "fitbit_profile": {
         "name": "Google Health (Fitbit) - Account Profile",
-        "description": "Profile details for a Fitbit account",
+        "description": "Profile details from a Fitbit account export (Profile.csv)",
         "author": "@stark4n6",
         "creation_date": "2023-09-14",
         "last_update_date": "2026-06-19",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "",
+        "notes": "Height and Weight are shown as stored; the units in the headings (cm, kg) are "
+                 "the parser's labels and are not read from the file. The column headed Strike "
+                 "Length (Walking) holds the walking stride length value.",
         "paths": "*/Your Profile/Profile.csv",
         "output_types": ["html","tsv","lava"],
         "artifact_icon": "user",

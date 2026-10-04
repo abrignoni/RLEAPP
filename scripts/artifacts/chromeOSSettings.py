@@ -14,13 +14,17 @@ __artifacts_v2__ = {
     },
     "chromeOSSettings": {
         "name": "Chrome OS Settings",
-        "description": "Parses user OS priority preferences (gender, birth year) from Google Takeout OS Settings.json",
+        "description": "Parses the gender value and birth year stored in each OS Priority Preference entry from "
+                       "Google Takeout OS Settings.json",
         "author": "@upintheairsheep & @KevinPagano3",
         "creation_date": "2023-08-18",
         "last_update_date": "2026-06-27",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "",
+        "notes": "The User Gender column shows the stored gender value through the module's own mapping (0 Female, 1 "
+                 "Male, 2 Rather not say, any other value Other). No source for that mapping is given. An entry with "
+                 "no gender value is also shown as Other. Read the stored value in OS Settings.json before relying on "
+                 "the label.",
         "paths": ('*/Chrome/OS Settings.json'),
         "output_types": "standard",
         "artifact_icon": "settings",

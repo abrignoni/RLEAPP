@@ -1,13 +1,14 @@
 __artifacts_v2__ = {
     "instagramRecentreq": {
         "name": "Instagram Archive - Recent Follow Req",
-        "description": "Parses permanent/recent follow requests from an Instagram data archive (recent_follow_requests.json)",
+        "description": "Parses the relationships_permanent_follow_requests list of an Instagram data archive (recent_follow_requests.json)",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-08-27",
         "last_update_date": "2026-06-27",
         "requirements": "none",
         "category": "Instagram Archive",
-        "notes": "",
+        "notes": "The column headed Following holds the account value of each follow request "
+                 "record as stored. The heading does not establish a follow relationship.",
         "paths": ('*/followers_and_following/recent_follow_requests.json'),
         "output_types": "standard",
         "artifact_icon": "brand-instagram",

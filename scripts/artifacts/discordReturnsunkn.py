@@ -1,7 +1,8 @@
 __artifacts_v2__ = {
     "discordReturnsunkn": {
         "name": "Discord - Unknown Messages",
-        "description": "Unknown-channel messages from a Discord law enforcement return (messages/unknown/*.csv).",
+        "description": "Messages from the messages/unknown folder of a Discord law enforcement return "
+                       "(messages/unknown/*.csv).",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-12-04",
         "last_update_date": "2026-06-28",

@@ -1,61 +1,66 @@
 __artifacts_v2__ = {
     "takeoutSearchContributionsStreaming": {
         "name": "Google Search Contributions - Streaming Providers",
-        "description": "User-reported information about streaming providers that the user is "
-                       "subscribed to.",
+        "description": "Entries of Streaming video providers.json in the Search Contributions "
+                       "folder of a Google Takeout: provider name and published time. What action "
+                       "created an entry is not established here.",
         "author": "@Jadoo4QFan",
         "creation_date": "2025-07-23",
         "last_update_date": "2026-07-09",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "Published/Updated values are ISO 8601 UTC ('Z') strings in the Takeout JSON "
-                 "and are converted to timezone-aware UTC; unparseable values are kept "
-                 "verbatim as text.",
+        "notes": "Published values that are ISO 8601 strings with a Z or an offset are converted "
+                 "to timezone-aware UTC; unparseable values are kept verbatim as text. A value "
+                 "with no Z or offset is not handled as UTC by the code; it is read in the local "
+                 "zone of the machine running the tool.",
         "paths": ('*/Search Contributions/Streaming video providers.json',),
         "output_types": "standard",
         "artifact_icon": "device-tv",
     },
     "takeoutSearchContributionsReviews": {
         "name": "Google Search Contributions - Reviews",
-        "description": "Reviews for movies, TV shows, music albums, etc.",
+        "description": "Entries of Reviews.json in the Search Contributions folder of a Google Takeout: search query, star rating, comment, published and updated times.",
         "author": "@Jadoo4QFan",
         "creation_date": "2025-07-23",
         "last_update_date": "2026-07-09",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "Published/Updated values are ISO 8601 UTC ('Z') strings in the Takeout JSON "
-                 "and are converted to timezone-aware UTC; unparseable values are kept "
-                 "verbatim as text.",
+        "notes": "Published and Updated values that are ISO 8601 strings with a Z or an offset are "
+                 "converted to timezone-aware UTC; unparseable values are kept verbatim as text. A "
+                 "value with no Z or offset is not handled as UTC by the code; it is read in the "
+                 "local zone of the machine running the tool.",
         "paths": ('*/Search Contributions/Reviews.json',),
         "output_types": "standard",
         "artifact_icon": "star",
     },
     "takeoutSearchContributionsWatched": {
         "name": "Google Search Contributions - Watched",
-        "description": "Movies and TV shows that the user reported as already watched.",
+        "description": "Entries of Watched.json in the Search Contributions folder of a Google Takeout: search query and published time. What action created an entry is not established here.",
         "author": "@Jadoo4QFan",
         "creation_date": "2025-07-23",
         "last_update_date": "2026-07-09",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "Published/Updated values are ISO 8601 UTC ('Z') strings in the Takeout JSON "
-                 "and are converted to timezone-aware UTC; unparseable values are kept "
-                 "verbatim as text.",
+        "notes": "Published values that are ISO 8601 strings with a Z or an offset are converted "
+                 "to timezone-aware UTC; unparseable values are kept verbatim as text. A value "
+                 "with no Z or offset is not handled as UTC by the code; it is read in the local "
+                 "zone of the machine running the tool.",
         "paths": ('*/Search Contributions/Watched.json',),
         "output_types": "standard",
         "artifact_icon": "eye",
     },
     "takeoutSearchContributionsThumbs": {
         "name": "Google Search Contributions - Thumbs",
-        "description": "Thumb ratings for movies, TV shows, music albums, etc.",
+        "description": "Entries of Thumbs.json in the Search Contributions folder of a Google Takeout: search query, thumbs rating, published and updated times.",
         "author": "@Jadoo4QFan",
         "creation_date": "2025-07-23",
         "last_update_date": "2026-07-09",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "Published/Updated values are ISO 8601 UTC ('Z') strings in the Takeout JSON "
-                 "and are converted to timezone-aware UTC; unparseable values are kept "
-                 "verbatim as text.",
+        "notes": "Published and Updated values that are ISO 8601 strings with a Z or an offset are "
+                 "converted to timezone-aware UTC; unparseable values are kept verbatim as text. A "
+                 "value with no Z or offset is not handled as UTC by the code; it is read in the "
+                 "local zone of the machine running the tool.",
         "paths": ('*/Search Contributions/Thumbs.json',),
         "output_types": "standard",
         "artifact_icon": "thumb-up",

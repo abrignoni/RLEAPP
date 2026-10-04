@@ -1,17 +1,23 @@
 __artifacts_v2__ = {
     "airdropRealname": {
         "name": "AirDrop - Real Name from Hash",
-        "description": "Recovers sender real names from AirDrop partial hashes in the unified log "
-                       "(airdrop.ndjson) by testing a candidate name wordlist.",
+        "description": "Lists candidate names from a wordlist whose SHA-256 begins and ends with "
+                       "the 10 characters logged after 'realName:' in the unified log "
+                       "(airdrop.ndjson).",
         "author": "Rex",
         "creation_date": "2022-09-10",
         "last_update_date": "2026-06-28",
         "requirements": "none",
         "category": "Airdrop Real Names",
         "notes": "Tests SHA-256 of each candidate name (scripts/names/realnames.txt) against the "
-                 "partial hashes AirDrop writes to the unified log. Timestamp is kept as text: the "
-                 "shared gather_hashes_in_file helper truncates the unified-log time to 25 chars, "
-                 "dropping the UTC offset, so it can't be safely typed/normalized to UTC.",
+                 "first 10 characters logged after 'realName:', read as the first 5 and last 5 "
+                 "characters of a SHA-256. That the logged value is a hash fragment is not "
+                 "established here. Each distinct value that a candidate matches is reported once, "
+                 "with the first log line that held it and the first wordlist candidate that "
+                 "matched; a match is a candidate, not proof of the name. Timestamp is kept as "
+                 "text: the shared gather_hashes_in_file helper truncates the unified-log time to "
+                 "25 chars, dropping the UTC offset, so it can't be safely typed/normalized to "
+                 "UTC.",
         "paths": ('*/airdrop.ndjson',),
         "output_types": "standard",
         "artifact_icon": "user",

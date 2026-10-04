@@ -8,10 +8,14 @@ __artifacts_v2__ = {
         "last_update_date": "2026-09-21",
         "requirements": "pypdf",
         "category": "TikTok Returns",
-        "notes": "Source File column added so per-subscriber provenance (originally encoded in the "
-                 "report title) survives when multiple returns are merged into one table. The PDF's "
-                 "text is read with pypdf, and each field is taken from a line holding its label, a "
-                 "colon and the value. A field whose label and value are not extracted onto the same "
+        "notes": "Source File names the PDF each row came from, so rows from several returns stay "
+                 "apart. The PDF's text is read with pypdf, and each field is taken from a line "
+                 "whose text before the first colon contains the field's label (username, "
+                 "registration method, phone, registration date, registration IP, registration "
+                 "device info); when more than one line matches, the last is kept. One row is "
+                 "written per PDF. Registration Date is converted when it is an ISO date, with a "
+                 "value that has no time zone stored as UTC; other text is kept as printed. A field "
+                 "whose label and value are not extracted onto the same "
                  "line is left blank. Checked only on constructed PDFs made with ReportLab and with "
                  "Chrome's print to PDF, not on a real TikTok return.",
         "paths": ('*/*/*(Subscriber information).pdf',),
