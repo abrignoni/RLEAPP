@@ -2,14 +2,12 @@ __artifacts_v2__ = {
     "synchronoss_messages": {
         "name": "Synchronoss - Messages (SMS and MMS)",
         "description": "Parses SMS and MMS messages from Synchronoss/Verizon Cloud legal return daily CSVs",
-        "author": "@OneSixForensics",
+        "author": "@OneSixForensics, @AlexisBrignoni, Codex",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-07-09",
+        "last_update_date": "2026-10-04",
         "requirements": "none",
         "category": "Synchronoss",
-        "notes": "Located at <LCID>/messages/YYYYMMDD.csv. All daily CSVs are merged. Date values "
-                 "that state no offset are treated as UTC; the provider document for that zone is "
-                 "not cited here.",
+        "notes": 'Mixed time columns use text storage and do not populate timeline/date filters. Daily CSV SMS/MMS rows. Explicit offsets are converted to UTC; zone-less and unsupported date values remain text.',
         "paths": ('*/messages/2*.csv',),
         "output_types": "standard",
         "html_columns": ['Recipients'],
@@ -18,14 +16,12 @@ __artifacts_v2__ = {
     "synchronoss_calls": {
         "name": "Synchronoss - Calls",
         "description": "Parses call records from Synchronoss/Verizon Cloud legal return daily CSVs",
-        "author": "@OneSixForensics",
+        "author": "@OneSixForensics, @AlexisBrignoni, Codex",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-07-09",
+        "last_update_date": "2026-10-04",
         "requirements": "none",
         "category": "Synchronoss",
-        "notes": "Located at <LCID>/messages/YYYYMMDD.csv. All daily CSVs are merged; only rows of "
-                 "Type call are reported. Date values that state no offset are treated as UTC; the "
-                 "provider document for that zone is not cited here.",
+        "notes": 'Mixed time columns use text storage and do not populate timeline/date filters. Daily CSV rows whose Type is call. Explicit offsets are converted to UTC; zone-less and unsupported date values remain text.',
         "paths": ('*/messages/2*.csv',),
         "output_types": "standard",
         "artifact_icon": "phone",
@@ -33,12 +29,12 @@ __artifacts_v2__ = {
     "synchronoss_mms_received": {
         "name": "Synchronoss - MMS Media Received",
         "description": "Parses received MMS media with inline display, linked to message CSV metadata",
-        "author": "@OneSixForensics",
+        "author": "@OneSixForensics, @AlexisBrignoni, Codex",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-09-03",
+        "last_update_date": "2026-10-04",
         "requirements": "none",
         "category": "Synchronoss",
-        "notes": "Media at <LCID>/messages/attachments/mms/in/YYYY-MM-DD/. "
+        "notes": "Mixed time columns use text storage and do not populate timeline/date filters. Media at <LCID>/messages/attachments/mms/in/YYYY-MM-DD/. "
                  "Link Status records how each attachment token that carries a file extension "
                  "resolved. Tokens that start with smil, null or text0, tokens ending .smi, .sml or "
                  ".txt, and tokens with no extension get no row here. 'linked' means a file of "
@@ -63,12 +59,12 @@ __artifacts_v2__ = {
     "synchronoss_mms_sent": {
         "name": "Synchronoss - MMS Media Sent",
         "description": "Parses sent MMS media with inline display, linked to message CSV metadata",
-        "author": "@OneSixForensics",
+        "author": "@OneSixForensics, @AlexisBrignoni, Codex",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-09-03",
+        "last_update_date": "2026-10-04",
         "requirements": "none",
         "category": "Synchronoss",
-        "notes": "Media at <LCID>/messages/attachments/mms/out/YYYY-MM-DD/. "
+        "notes": "Mixed time columns use text storage and do not populate timeline/date filters. Media at <LCID>/messages/attachments/mms/out/YYYY-MM-DD/. "
                  "Link Status records how each attachment token that carries a file extension "
                  "resolved. Tokens that start with smil, null or text0, tokens ending .smi, .sml or "
                  ".txt, and tokens with no extension get no row here. 'linked' means a file of "
@@ -94,21 +90,13 @@ __artifacts_v2__ = {
         "name": "Synchronoss - MMS Folder Media (Unlinked)",
         "description": "Media physically present in the MMS attachment folders that is not "
                        "tied to a specific message (e.g. extensionless '0' files referenced "
-                       "only via SMIL placeholders). Lists folder media whose file name no MMS row "
-                       "in any message CSV references with a file extension.",
-        "author": "@OneSixForensics",
+                       "only via SMIL placeholders). Lists folder media not resolved to a real-extension attachment token.",
+        "author": "@OneSixForensics, @AlexisBrignoni, Codex",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-07-09",
+        "last_update_date": "2026-10-04",
         "requirements": "none",
         "category": "Synchronoss",
-        "notes": "Media at <LCID>/messages/attachments/mms/(in|out)/YYYY-MM-DD/ whose filename "
-                 "is never referenced by a real-extension token in any message CSV. Upload Date is "
-                 "the name of the date folder the file sits in; the provider document that calls "
-                 "this the upload date is not cited here. Files are not attributed to a message. A "
-                 "file is left out when an MMS row of any date or direction references its name, "
-                 "so a copy of a repeating name that sits in another date folder can be shown "
-                 "neither here nor in the MMS Media Received and Sent artifacts. "
-                 "Extensionless files are typed and rendered inline via magic-byte detection.",
+        "notes": 'Mixed time columns use text storage and do not populate timeline/date filters. Files not resolved by the same direction/date-folder and unique-name rules as linked MMS media. Repeating names in other folders remain listed. Date Folder is the folder name, with no upload meaning inferred.',
         "paths": (
             '*/messages/2*.csv',
             '*/messages/attachments/mms/in/*/*',
@@ -120,71 +108,38 @@ __artifacts_v2__ = {
     "synchronoss_contacts": {
         "name": "Synchronoss - Contacts",
         "description": "Parses contacts from Synchronoss/Verizon Cloud JSON contacts file",
-        "author": "@OneSixForensics",
+        "author": "@OneSixForensics, @AlexisBrignoni, Codex",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-07-09",
+        "last_update_date": "2026-10-04",
         "requirements": "none",
         "category": "Synchronoss",
-        "notes": "Located alongside the zip as contacts_YYYYMMDD.txt (JSON format). One row per "
-                 "phone number, so a contact with several numbers repeats; a contact with no phone "
-                 "number gets one row. Created and Deleted are the file's created and deleted "
-                 "values; a value with no offset is treated as UTC and a 10 or 13 digit value as "
-                 "Unix seconds or milliseconds. The provider document for that zone and unit is "
-                 "not cited here, and what the deleted value marks is not established.",
+        "notes": 'Mixed time columns use text storage and do not populate timeline/date filters. One row per phone number; contacts with no number receive one row. created and deleted are stored fields. Explicit offsets convert to UTC; zone-less and numeric values remain text because their time basis is not established.',
         "paths": ('*contacts_*.txt',),
         "output_types": "standard",
         "artifact_icon": "users",
     },
     "synchronoss_dv_uploads": {
-        "name": "Synchronoss - DV Access Log Uploads",
+        "name": "Synchronoss - DV Access Log Rows With Checksum",
         "description": "Parses Synchronoss DV access log rows whose querystring carries a file checksum",
-        "author": "@OneSixForensics",
+        "author": "@OneSixForensics, @AlexisBrignoni, Codex",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-09-03",
+        "last_update_date": "2026-10-04",
         "requirements": "openpyxl",
         "category": "Synchronoss",
-        "notes": "Delivered alongside the zip. Three shapes have been seen on real returns "
-                 "and all are read, merged together when a return carries more than one: "
-                 "monthly 'Dv Access logs mdn <LCID> <Month> <Year>.csv' files; a single "
-                 "'<LCID>.xlsx' workbook covering the whole account; and a single "
-                 "'<LCID>_Dv_Access_Logs.xlsx' workbook, which also names its timestamp "
-                 "column 'logtimestamp' rather than 'server_ts' and writes Apache/CLF "
-                 "timestamps such as '[02/Jun/2026:14:23:11 +0000]' rather than "
-                 "'YYYY-MM-DD HH:MM:SS'. That third shape was seen on a production return in "
-                 "September 2026. The offset written in its timestamps is applied. A workbook may "
-                 "carry no 'DV' in "
-                 "its name at all, so workbooks are identified by their column headers; the "
-                 "four non-timestamp columns have been stable across every shape seen, the "
-                 "timestamp column has not. What decides which shape a return carries is not "
-                 "established. Header matching and the row keys are both lower "
-                 "case, so a workbook that capitalises its column titles reads normally. "
-                 "Rows are selected by a 64 hex character checksum= value in the querystring, "
-                 "reported as File Checksum (SHA-256). That heading names SHA-256 from the value's "
-                 "length; no hash is computed here. User IP is the first address in the "
-                 "remoteipaddress field and CDN IPs are the remaining addresses, by position. "
-                 "Timestamps that state no offset are treated as UTC. The provider document for "
-                 "the address order and the time zone is not cited here. "
-                 "Cross-reference checksums with CyberTip file hashes.",
+        "notes": 'Mixed time columns use text storage and do not populate timeline/date filters. CSV/workbook rows selected by a 64-character hexadecimal checksum parameter, with no hash algorithm or upload meaning inferred. Explicit offsets convert to UTC; zone-less values remain text. The first IP and subsequent IPs are split by position; their roles are not established.',
         "paths": ('*[Dd][Vv]*[Aa]ccess*[Ll]ogs*.csv', '*.xlsx'),
         "output_types": "standard",
         "artifact_icon": "upload",
     },
     "synchronoss_dv_sync": {
-        "name": "Synchronoss - DV Access Log Sync Events",
+        "name": "Synchronoss - DV Access Log Rows Without Checksum",
         "description": "Synchronoss DV access log rows that carry no file checksum, with the operation named in the querystring",
-        "author": "@OneSixForensics",
+        "author": "@OneSixForensics, @AlexisBrignoni, Codex",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-09-03",
+        "last_update_date": "2026-10-04",
         "requirements": "openpyxl",
         "category": "Synchronoss",
-        "notes": "Delivered alongside the zip in any of three shapes, all read and merged: "
-                 "monthly 'Dv Access logs mdn <LCID> <Month> <Year>.csv' files, a single "
-                 "'<LCID>.xlsx' workbook, or a '<LCID>_Dv_Access_Logs.xlsx' workbook that "
-                 "names its timestamp column 'logtimestamp' and uses Apache/CLF timestamps. "
-                 "See the Uploads artifact's notes for the detail. These rows carry no file "
-                 "checksum. Operation is the first key of the querystring as logged; what each "
-                 "operation represents is not established here. A workbook cell may hold a number "
-                 "or a date rather than text, so text columns are converted before use.",
+        "notes": 'Mixed time columns use text storage and do not populate timeline/date filters. CSV/workbook rows without the selected checksum parameter. Operation is the first querystring key; no sync event meaning is inferred. Explicit offsets convert to UTC; zone-less values remain text.',
         "paths": ('*[Dd][Vv]*[Aa]ccess*[Ll]ogs*.csv', '*.xlsx'),
         "output_types": "standard",
         "artifact_icon": "refresh",
@@ -195,26 +150,12 @@ __artifacts_v2__ = {
                        "<container>_<sha256>.zip_file_<N>), each joined on the SHA-256 in its file "
                        "name to a Synchronoss DV access log row that carries the same checksum, "
                        "where one exists.",
-        "author": "@OneSixForensics, Claude",
+        "author": "@OneSixForensics, Claude, @AlexisBrignoni, Codex",
         "creation_date": "2026-09-02",
-        "last_update_date": "2026-09-02",
+        "last_update_date": "2026-10-04",
         "requirements": "openpyxl",
         "category": "Synchronoss",
-        "notes": "Delivered alongside the zip as '<LCID>-<container>-quarantined.zip', which "
-                 "extracts to files named '<container>_<sha256>.zip_file_<N>'. On the return this "
-                 "was built against, all 41 files were complete media files whose SHA-256 equalled "
-                 "the hash in their own file name, so they are read one by one and not joined as "
-                 "parts of a split archive. Hash Verified reports the result for each file. The "
-                 "hash in the file name is compared with the SHA-256 of the file's contents here, "
-                 "and used to look for rows with the same checksum in the DV access log. The first "
-                 "matching row is shown, and DV Correlation says whether a row matched and, where "
-                 "several did, how many. Log rows are ordered by their timestamp text, which is "
-                 "time order for 'YYYY-MM-DD HH:MM:SS' values and is not for Apache/CLF values, so "
-                 "the row the DV Correlation text calls earliest is the first in that order. The "
-                 "'<LCID>_<checksum>' correlation is attributed to the Synchronoss document "
-                 "'Interpreting DV Access Logs', which is not publicly available and was not "
-                 "checked here. Files are typed and rendered inline by magic bytes; nothing on "
-                 "disk is renamed.",
+        "notes": 'Mixed time columns use text storage and do not populate timeline/date filters. Each matching filename is hashed as a standalone file and joined to log rows by checksum. Hash Verified compares SHA-256 with the filename hash. Comparable explicit-offset times sort chronologically; other values sort as text. The first matched row is shown, without claiming it is the earliest upload. No reporting to NCMEC is inferred.',
         "paths": (
             '*[Qq]uarantined*.zip_file_*',
             '*[Dd][Vv]*[Aa]ccess*[Ll]ogs*.csv',
@@ -226,15 +167,12 @@ __artifacts_v2__ = {
     "synchronoss_vzmobile": {
         "name": "Synchronoss - VZMOBILE Device Backup",
         "description": "Parses and displays media files from VZMOBILE device cloud backup folder",
-        "author": "@OneSixForensics",
+        "author": "@OneSixForensics, @AlexisBrignoni, Codex",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-07-09",
+        "last_update_date": "2026-10-04",
         "requirements": "none",
         "category": "Synchronoss",
-        "notes": "Located at <LCID>/VZMOBILE/YYYY-MM-DD/<device name>/. "
-                 "Files under the device folder are listed and displayed; the file type is not "
-                 "checked here. Upload Date is the name of the date folder; the provider document "
-                 "that calls this the upload date is not cited here.",
+        "notes": 'Mixed time columns use text storage and do not populate timeline/date filters. Files under VZMOBILE date/device folders are listed. Date Folder is the folder name, with no upload meaning inferred.',
         "paths": ('*/VZMOBILE/*/*/**',),
         "output_types": "standard",
         "artifact_icon": "device-mobile",
@@ -251,7 +189,7 @@ from datetime import datetime, timedelta, timezone
 from openpyxl import load_workbook
 from openpyxl.utils.exceptions import InvalidFileException
 
-from scripts.ilapfuncs import artifact_processor, logfunc, check_in_media, convert_unix_ts_to_utc
+from scripts.ilapfuncs import artifact_processor, logfunc, check_in_media
 from scripts.html_safe import safe_join
 
 
@@ -267,7 +205,7 @@ def _register_media(file_path, name):
 
 def _detect_media_type(filepath):
     """
-    Detect media type from file header magic bytes — no external libraries.
+    Detect media type from file header magic bytes; no external libraries.
     Returns a file extension string (e.g. '.jpg') or None if not a
     recognised media format. Used only for the informative 'Detected Type'
     column on extensionless files; inline rendering is handled by the
@@ -332,51 +270,40 @@ _CLF_TS_RE = re.compile(
 
 
 def _ts_utc(value):
-    """
-    Convert a source timestamp string to an aware-UTC datetime.
-
-    Handles ISO-8601 forms ('2025-12-01 18:22:33', 'T' separator, fractional
-    seconds, trailing 'Z' or ' UTC', explicit offsets) and bare epoch
-    seconds/milliseconds. Values in any other format are returned unchanged
-    as plain text rather than guessed at — never fabricate a timestamp.
-    """
-    if isinstance(value, str):
-        clf = _CLF_TS_RE.match(value.strip())
-        if clf:
-            # Apache/CLF form used by some DV exports: [02/Jun/2026:14:23:11 +0000].
-            # Month is mapped explicitly rather than via %b, which is locale-sensitive.
-            day, mon, year, hh, mm, ss, offset = clf.groups()
-            month = _CLF_MONTHS.get(mon.lower())
-            if month:
-                tz = timezone.utc
-                if offset:
-                    sign = -1 if offset[0] == '-' else 1
-                    tz = timezone(sign * timedelta(hours=int(offset[1:3]),
-                                                   minutes=int(offset[3:5])))
-                return datetime(int(year), month, int(day), int(hh), int(mm), int(ss),
-                                tzinfo=tz).astimezone(timezone.utc)
+    """Convert only stated offsets; preserve unsupported or zone-less values."""
     if isinstance(value, datetime):
-        # openpyxl hands back a datetime for date-formatted cells. Source times are
-        # UTC per the Synchronoss FAQ, so a naive value is stamped, not shifted.
-        if value.tzinfo is None:
-            return value.replace(tzinfo=timezone.utc)
-        return value.astimezone(timezone.utc)
+        return value.isoformat(sep=' ') if value.tzinfo is None else value.astimezone(timezone.utc)
     if not value or not isinstance(value, str):
         return value
     text = value.strip()
+    clf = _CLF_TS_RE.match(text)
+    if clf:
+        day, mon, year, hh, mm, ss, offset = clf.groups()
+        month = _CLF_MONTHS.get(mon.lower())
+        if not month or not offset:
+            return value
+        try:
+            sign = -1 if offset[0] == '-' else 1
+            tz = timezone(sign * timedelta(hours=int(offset[1:3]), minutes=int(offset[3:5])))
+            return datetime(int(year), month, int(day), int(hh), int(mm), int(ss),
+                            tzinfo=tz).astimezone(timezone.utc)
+        except ValueError:
+            return value
     if text.endswith(' UTC'):
-        text = text[:-4].strip()
-    if text.endswith('Z'):
-        text = text[:-1] + '+00:00'
+        text = text[:-4].strip() + '+00:00'
     try:
-        dt = datetime.fromisoformat(text)
+        dt = datetime.fromisoformat(text.replace('Z', '+00:00'))
     except ValueError:
-        if text.isdigit() and len(text) in (10, 13):
-            return convert_unix_ts_to_utc(text)
         return value
-    if dt.tzinfo is None:
-        return dt.replace(tzinfo=timezone.utc)
-    return dt.astimezone(timezone.utc)
+    return value if dt.tzinfo is None else dt.astimezone(timezone.utc)
+
+
+def _time_order(row):
+    """Order comparable instants first; other values retain text ordering only."""
+    value = _ts_utc(row.get('server_ts', ''))
+    if isinstance(value, datetime):
+        return 0, value.isoformat()
+    return 1, str(value or '')
 
 
 def _dedupe(files_found):
@@ -469,7 +396,7 @@ def _parse_all_message_csvs(context):
 
 
 def _extract_checksum(querystring):
-    """Extract SHA-256 checksum from DV log querystring if present."""
+    """Extract a 64-character hexadecimal checksum parameter without inferring its algorithm."""
     m = re.search(r'checksum=([a-f0-9]{64})', querystring, re.IGNORECASE)
     return m.group(1) if m else ''
 
@@ -493,7 +420,7 @@ def _extract_user_ip(remoteipaddress):
 #
 # Each is decorated with @artifact_processor and returns
 # (data_headers, data_list, source_path). The framework writes HTML, TSV,
-# timeline, and the LAVA database from that single return — including inline
+# timeline, and the LAVA database from that single return; including inline
 # media rendering for columns typed ('<name>', 'media'), whose cells hold a
 # media reference id from check_in_media().
 # ---------------------------------------------------------------------------
@@ -501,11 +428,11 @@ def _extract_user_ip(remoteipaddress):
 @artifact_processor
 def synchronoss_messages(context):
     """
-    messages/YYYYMMDD.csv — SMS and MMS rows only (Type = sms or mms).
+    messages/YYYYMMDD.csv; SMS and MMS rows only (Type = sms or mms).
     All daily CSVs merged and sorted by date.
     """
     data_headers = (
-        ('Date (UTC)', 'datetime'), 'Type', 'Direction', ('Sender', 'phonenumber'),
+        'Date', 'Type', 'Direction', ('Sender', 'phonenumber'),
         'Recipients', 'Body', 'Attachments', 'Message ID', 'Source File'
     )
     data_list = []
@@ -536,16 +463,16 @@ def synchronoss_messages(context):
 @artifact_processor
 def synchronoss_calls(context):
     """
-    messages/YYYYMMDD.csv — Call records only (Type = call).
+    messages/YYYYMMDD.csv; Call records only (Type = call).
     All daily CSVs merged and sorted by date.
 
     Present the source CSV's Sender/Recipients fields verbatim rather than
-    re-interpreting them as caller/account — the meaning flips with Direction
+    re-interpreting them as caller/account; the meaning flips with Direction
     (inbound: Sender = remote party; outbound: Recipients = dialed number),
     so faithful labels avoid mislabeling the dialed number as an "account".
     """
     data_headers = (
-        ('Date (UTC)', 'datetime'), 'Direction', ('Sender', 'phonenumber'),
+        'Date', 'Direction', ('Sender', 'phonenumber'),
         'Recipients', 'Message ID', 'Source File'
     )
     data_list = []
@@ -637,7 +564,7 @@ def _synchronoss_mms_media(context, direction):
     name_paths, date_media = _index_mms_media(media_paths)
 
     data_headers = (
-        ('Date (UTC)', 'datetime'), 'Direction', ('Sender', 'phonenumber'),
+        'Date', 'Direction', ('Sender', 'phonenumber'),
         'Recipients', ('Media', 'media'), 'Filename', 'Link Status',
         'Message ID', 'Source File'
     )
@@ -665,7 +592,7 @@ def _synchronoss_mms_media(context, direction):
         # in some other folder when its name is globally unique. This recovers
         # extensionless "0" media (referenced as a bare token) and avoids linking
         # a non-unique name (image000000.jpg, "0") to a wrong-date file. Tokens
-        # whose media file is absent are surfaced — per Synchronoss, flagged files
+        # whose media file is absent are surfaced; per Synchronoss, flagged files
         # are quarantined out of the daily folder.
         for tok in (t.strip() for t in row.get('Attachments', '').split(';') if t.strip()):
             low = tok.lower()
@@ -692,16 +619,16 @@ def _synchronoss_mms_media(context, direction):
             if fpath:
                 media_cell = _register_media(fpath, tok)
                 link_status = 'linked' if media_cell else (
-                    'matched on disk but media registration failed — review')
+                    'matched on disk but media registration failed; review')
             elif len(candidates) > 1:
                 media_cell = ''
-                link_status = (f'not linked — name present in {len(candidates)} '
+                link_status = (f'not linked; name present in {len(candidates)} '
                                f'date folders, none matching message date '
                                f'{date_folder or "?"}; manual review required')
             else:
-                # Media-looking token with no file present — likely quarantined/removed.
+                # Media-looking token with no file present; likely quarantined/removed.
                 media_cell = ''
-                link_status = ('referenced — file not in daily folder; '
+                link_status = ('referenced; file not in daily folder; '
                                'possibly quarantined/removed')
 
             data_list.append((
@@ -721,35 +648,24 @@ def _synchronoss_mms_media(context, direction):
 
 @artifact_processor
 def synchronoss_mms_received(context):
-    """MMS media received (direction 'in') — see _synchronoss_mms_media."""
+    """MMS media received (direction 'in'); see _synchronoss_mms_media."""
     return _synchronoss_mms_media(context, direction='in')
 
 
 @artifact_processor
 def synchronoss_mms_sent(context):
-    """MMS media sent (direction 'out') — see _synchronoss_mms_media."""
+    """MMS media sent (direction 'out'); see _synchronoss_mms_media."""
     return _synchronoss_mms_media(context, direction='out')
 
 
 @artifact_processor
 def synchronoss_mms_unlinked(context):
-    """
-    Media files present in the MMS attachment folders that are NOT referenced by
-    a real-extension token in any message CSV — chiefly the extensionless "0"
-    files, which appear in the CSV only via the 'null.smi;0;1' SMIL placeholder
-    and therefore cannot be reliably tied to a specific message. Listed here so
-    no sent/received media is lost, dated by the folder (upload date) but not
-    attributed to a message. Extensionless files are typed (Detected Type) and
-    rendered inline via the framework's magic-byte mime detection.
-
-    'Upload Date' is a bare YYYY-MM-DD folder name with no time component, so
-    it stays a plain-text column — typing it 'datetime' would fabricate a
-    midnight timestamp.
-    """
+    """MMS folder files not resolved to a message token. Date Folder is stored text."""
     csv_pattern = re.compile(r'\d{8}\.csv$', re.IGNORECASE)
     media_re = re.compile(r'/mms/(in|out)/([^/]+)/([^/]+)$', re.IGNORECASE)
 
-    referenced = set()   # real-extension filenames referenced by any MMS message
+    message_rows = []
+    referenced = set()   # actual file paths resolved by the linked artifacts
     media = []           # (direction, date_folder, basename, raw_full_path, cleaned_path)
 
     for raw, cf in _dedupe(context.get_files_found()):
@@ -766,20 +682,34 @@ def synchronoss_mms_unlinked(context):
                     if low.startswith(('smil', 'null', 'text0')) or ext in ('.smi', '.sml', '.txt'):
                         continue
                     if ext:  # a real-extension token names an actual media file
-                        referenced.add(tok)
+                        message_rows.append((row, tok))
         else:
             m = media_re.search(norm)
             if m:
                 media.append((m.group(1).lower(), m.group(2), m.group(3), raw, cf))
 
+    for direction in ('in', 'out'):
+        paths = [raw for media_direction, _, _, raw, _ in media if media_direction == direction]
+        name_paths, date_media = _index_mms_media(paths)
+        for row, tok in message_rows:
+            if (row.get('Direction') or '').lower() != direction:
+                continue
+            date_folder = (row.get('Date') or '')[:10]
+            resolved = date_media.get(date_folder, {}).get(tok)
+            candidates = name_paths.get(tok, [])
+            if not resolved and len(candidates) == 1:
+                resolved = candidates[0]
+            if resolved:
+                referenced.add(os.path.realpath(_clean_path(resolved)))
+
     data_headers = (
-        'Upload Date', 'Direction', ('Media', 'media'),
+        'Date Folder', 'Direction', ('Media', 'media'),
         'Filename', 'Detected Type', 'Source File'
     )
     data_list = []
     source_path = ''
     for direction, date_folder, basename, raw, cf in media:
-        if basename in referenced:
+        if os.path.realpath(cf) in referenced:
             continue  # already shown in the message-linked MMS report
         source_path = cf
         ext = os.path.splitext(basename)[1].lower()
@@ -800,14 +730,14 @@ def synchronoss_mms_unlinked(context):
 @artifact_processor
 def synchronoss_contacts(context):
     """
-    contacts_YYYYMMDD.txt — JSON format.
+    contacts_YYYYMMDD.txt; JSON format.
     Schema: {"contacts": {"itemcount": N, "contact": [...]}}
     Each contact has: firstname, lastname, source, created, deleted,
     itemguid, incaseofemergency, favorite, tel:[{type, number}]
     """
     data_headers = (
-        'First Name', 'Last Name', ('Phone Number', 'phonenumber'), 'Phone Type',
-        ('Created', 'datetime'), ('Deleted', 'datetime'), 'Source',
+        'Created', 'Deleted',
+        'First Name', 'Last Name', ('Phone Number', 'phonenumber'), 'Phone Type', 'Source',
         'ICE', 'Favorite', 'Item GUID', 'Source File'
     )
     data_list = []
@@ -843,16 +773,15 @@ def synchronoss_contacts(context):
             if tel_list:
                 for tel in tel_list:
                     data_list.append((
-                        first, last,
+                        created, deleted, first, last,
                         tel.get('number', ''),
-                        tel.get('type', ''),
-                        created, deleted, source, ice, favorite, guid,
+                        tel.get('type', ''), source, ice, favorite, guid,
                         rel,
                     ))
             else:
-                # Contact with no phone number — still surface it
+                # Contact with no phone number; still surface it
                 data_list.append((
-                    first, last, '', '', created, deleted,
+                    created, deleted, first, last, '', '',
                     source, ice, favorite, guid, rel,
                 ))
 
@@ -886,8 +815,8 @@ def _parse_dv_log(context):
     '<LCID>.xlsx' workbook covering the whole account (seen on 2026-format
     returns). Both carry the same five columns.
 
-    The workbook's filename holds no 'DV' marker — it is just the account
-    number — so workbooks are accepted on their column headers instead. That
+    The workbook's filename holds no 'DV' marker; it is just the account
+    number; so workbooks are accepted on their column headers instead. That
     keeps an unrelated spreadsheet elsewhere in the return from being read as
     an access log.
 
@@ -938,22 +867,17 @@ def _parse_dv_log(context):
             row['cdn_ips'] = cdn_ips
             row['checksum'] = _extract_checksum(row['querystring'])
         all_rows.extend(rows)
-    # str() so a date-typed workbook cell cannot raise against a plain CSV string.
-    all_rows.sort(key=lambda r: str(r.get('server_ts', '')))
+    # Explicit-offset values are comparable; other values retain text ordering.
+    all_rows.sort(key=_time_order)
     return all_rows
 
 
 @artifact_processor
 def synchronoss_dv_uploads(context):
-    """
-    DV Access Log — upload events only (rows with a file checksum).
-    These are the forensically significant rows — each checksum identifies
-    a specific file uploaded to the cloud. Cross-reference with CyberTip
-    file hashes to identify reported content.
-    """
+    """DV access log rows carrying a 64-character hexadecimal checksum parameter."""
     data_headers = (
-        ('Timestamp (UTC)', 'datetime'), 'User IP', 'CDN IPs', 'Device',
-        'File Checksum (SHA-256)', 'LCID', 'Source File'
+        'Timestamp', 'User IP', 'CDN IPs', 'Device',
+        'checksum (as stored)', 'LCID', 'Source File'
     )
     data_list = []
     source_path = ''
@@ -976,13 +900,9 @@ def synchronoss_dv_uploads(context):
 
 @artifact_processor
 def synchronoss_dv_sync(context):
-    """
-    DV Access Log — sync/conflict-resolve events (rows without a file checksum).
-    These show device activity — when the app checked in — without a specific
-    file upload. Useful for establishing device usage patterns and IP history.
-    """
+    """DV access log rows with no selected checksum parameter."""
     data_headers = (
-        ('Timestamp (UTC)', 'datetime'), 'User IP', 'CDN IPs', 'Device',
+        'Timestamp', 'User IP', 'CDN IPs', 'Device',
         'Operation', 'LCID', 'Source File'
     )
     data_list = []
@@ -1013,7 +933,7 @@ _QUARANTINE_NAME_RE = re.compile(
 
 
 def _sha256_file(path):
-    """Stream a file's SHA-256. Read-only — the source is never modified."""
+    """Stream a file's SHA-256. Read-only; the source is never modified."""
     digest = hashlib.sha256()
     try:
         with open(path, 'rb') as fh:
@@ -1027,26 +947,8 @@ def _sha256_file(path):
 
 @artifact_processor
 def synchronoss_quarantined(context):
-    """
-    Quarantined / preserved content — the files Synchronoss flagged on upload and
-    reported to NCMEC, delivered as '<LCID>-<container>-quarantined.zip'.
-
-    Extracted members are named '<container>_<sha256>.zip_file_<N>'. That suffix
-    makes them look like the parts of a split archive; they are not. Each member is
-    a complete standalone media file. On a live return all 41 members carried their
-    own media magic bytes, ranged 127 KB to 8.9 MB (split volumes would be uniform),
-    and every filename hash matched its own contents. Concatenating them as archive
-    volumes would corrupt the evidence, so each is read on its own.
-
-    The filename hash is re-verified against the bytes on disk, then joined to the
-    DV access log on the querystring checksum — the '<LCID>_<checksum>' correlation
-    described in Synchronoss' 'Interpreting DV Access Logs'. That puts the reported
-    file, its upload time, the user's IP and the uploading device on one row.
-
-    Members carry no usable extension; the framework's magic-byte mime detection
-    renders them inline regardless, and nothing on disk is renamed.
-    """
-    # checksum -> its upload events, earliest first (_parse_dv_log sorts ascending)
+    """Files matching the quarantined filename pattern, hashed and joined to log checksums. The first matching row in the report order is shown; no upload or reporting event is inferred."""
+    # checksum -> matching access log rows, in report order
     uploads = {}
     for row in _parse_dv_log(context):
         checksum = row.get('checksum', '')
@@ -1054,7 +956,7 @@ def synchronoss_quarantined(context):
             uploads.setdefault(checksum.lower(), []).append(row)
 
     data_headers = (
-        ('Upload Timestamp (UTC)', 'datetime'), 'User IP', 'Device', ('Media', 'media'),
+        'Matched Log Timestamp', 'User IP', 'Device', ('Media', 'media'),
         'Detected Type', 'Size (bytes)', 'SHA-256', 'Hash Verified', 'DV Correlation',
         'Sequence', 'Filename', 'Source File'
     )
@@ -1071,13 +973,12 @@ def synchronoss_quarantined(context):
 
         actual = _sha256_file(cf)
         if not actual:
-            verified = 'not verified — file unreadable'
+            verified = 'not verified; file unreadable'
         elif actual == claimed:
-            verified = 'yes — content matches filename hash'
+            verified = 'yes; content matches filename hash'
         else:
-            # Never silently trust the name: a mismatch means the delivered file is
-            # not the file the CyberTip names, which the examiner has to see.
-            verified = f'NO — content hashes to {actual}'
+            # Report a mismatch between the delivered file bytes and filename hash.
+            verified = f'NO; content hashes to {actual}'
 
         try:
             size = os.path.getsize(cf)
@@ -1093,13 +994,13 @@ def synchronoss_quarantined(context):
             timestamp = _ts_utc(first.get('server_ts', ''))
             user_ip = first.get('user_ip', '')
             device = first.get('clientidentifier', '')
-            correlation = 'matched DV upload event'
+            correlation = 'matched DV access log row'
             if len(events) > 1:
-                correlation = (f'matched DV upload event '
-                               f'({len(events)} events; earliest shown)')
+                correlation = (f'matched DV access log row '
+                               f'({len(events)} rows; first shown)')
         else:
             timestamp, user_ip, device = '', '', ''
-            correlation = 'no matching upload event in DV access log'
+            correlation = 'no matching checksum in DV access log'
 
         data_list.append((
             timestamp, user_ip, device,
@@ -1116,19 +1017,9 @@ def synchronoss_quarantined(context):
 
 @artifact_processor
 def synchronoss_vzmobile(context):
-    """
-    VZMOBILE/<date>/<device name>/<files> — device cloud backup media.
-
-    The date folder is the upload date per Synchronoss documentation.
-    Files are PNG device backups; some may contain CSAM. Rendered inline with
-    upload date and device name context via the framework's media system.
-
-    'Upload Date' is a bare YYYY-MM-DD folder name with no time component, so
-    it stays a plain-text column — typing it 'datetime' would fabricate a
-    midnight timestamp.
-    """
+    """Files below VZMOBILE date/device folders; the folder date is stored text."""
     data_headers = (
-        'Upload Date', 'Device', ('Media', 'media'),
+        'Date Folder', 'Device', ('Media', 'media'),
         'Filename', 'Source File'
     )
     data_list = []

@@ -2,21 +2,16 @@ __artifacts_v2__ = {
     "takeoutLocationHistorySettings": {
         "name": "Google Location History - Settings",
         "description": "Account and Device Data for Google Location History (Settings.json).",
-        "author": "@MetadataForensics by @SQL_McGee",
+        "author": "@MetadataForensics by @SQL_McGee, @AlexisBrignoni, Codex",
         "creation_date": "2024-03-21",
-        "last_update_date": "2026-06-27",
+        "last_update_date": "2026-10-04",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "Device Information is also parsed by the Google Location History Data Parser: "
-                 "https://github.com/MetadataForensics/Google-Location-History-Data-Parser. Google "
-                 "Account Creation Time holds the createdTime value of Settings.json; what it "
-                 "marks is not established here. Device OS Version is the stored iosVersion, or "
-                 "the Android name for the stored androidOsLevel from a table in this module. "
-                 "Device Model translates a stored iPhone identifier from a table in this module; "
-                 "other values are as stored. Cells reading 'New Data Supported in Recent Export "
-                 "Versions' mean the key was absent from the file or, for Encrypted Backups "
-                 "Controls, empty. A timestamp with no Z or offset is not handled as UTC by the "
-                 "code; it is read in the local zone of the machine running the tool.",
+        "notes": "Mixed time columns use text storage and do not populate timeline/date filters. createdTime is reported by its stored field name; its event meaning is "
+                 "not established. Missing fields are blank. Zone-less timestamps remain text. "
+                 "Device OS Version and iPhone Model use the lookup tables in this module. "
+                 "Device Information is also parsed by https://github.com/MetadataForensics/"
+                 "Google-Location-History-Data-Parser.",
         "paths": ('*/Location History*/Settings.json',),
         "output_types": "standard",
         "artifact_icon": "settings",
@@ -74,7 +69,8 @@ def _iso_to_utc(value):
     if not value:
         return value
     try:
-        return datetime.fromisoformat(value.replace('Z', '+00:00')).astimezone(timezone.utc)
+        dt = datetime.fromisoformat(value.replace('Z', '+00:00'))
+        return value if dt.tzinfo is None else dt.astimezone(timezone.utc)
     except (ValueError, AttributeError):
         return value
 
@@ -108,7 +104,7 @@ def takeoutLocationHistorySettings(context):
                 f"Device Tag: {key}, Enabled: {val.get('enabled')}"
                 for key, val in encrypted_backups.items())
         else:
-            encrypted_backups_info = "New Data Supported in Recent Export Versions"
+            encrypted_backups_info = ''
         has_reported = data.get('hasReportedLocations')
         has_set_retention = data.get('hasSetRetention')
 
@@ -130,21 +126,24 @@ def takeoutLocationHistorySettings(context):
                 device.get('devicePrettyName', ''), device.get('platformType', ''),
                 _iso_to_utc(device.get('deviceCreationTime', '')), reporting_change,
                 os_version, spec,
-                activeness.get('hasSavedTimelineData', "New Data Supported in Recent Export Versions"),
+                activeness.get('hasSavedTimelineData', ''),
                 activeness.get('observedPlaceVisitsFor30PercentOfTheLast7d',
-                               "New Data Supported in Recent Export Versions"),
+                               ''),
                 history_change, retention, encrypted_backups_info,
                 has_reported, has_set_retention))
 
     data_headers = (
-        ('Google Account Creation Time', 'datetime'), ('Location History Modified Time', 'datetime'),
-        'History Enabled', ('History/Timeline Deletion Time', 'datetime'), 'Device Tag',
+        'createdTime', 'Location History Modified Time',
+        'History Enabled', 'History/Timeline Deletion Time', 'Device Tag',
         'Device Reporting Enabled', 'Device Country Code', 'Device Pretty Name',
-        'Device Platform Type', ('Device Creation Time', 'datetime'),
-        ('Device Latest Location History Setting Change', 'datetime'), 'Device OS Version',
+        'Device Platform Type', 'Device Creation Time',
+        'Device Latest Location History Setting Change', 'Device OS Version',
         'Device Model', 'Has Saved Timeline Data',
         'ObservedPlace Visits for 30% of the last 7 Days',
-        ('Google Account Latest Location History Setting Change', 'datetime'),
+        'Google Account Latest Location History Setting Change',
         'Google Account Retention Window (in Days)', 'Encrypted Backups Controls',
         'Has Reported Locations', 'Has Set Retention')
+    order = [0, 1, 3, 9, 10, 15] + [i for i in range(len(data_headers)) if i not in [0, 1, 3, 9, 10, 15]]
+    data_headers = tuple(data_headers[i] for i in order)
+    data_list = [tuple(row[i] for i in order) for row in data_list]
     return data_headers, data_list, context.get_relative_path(source_path)

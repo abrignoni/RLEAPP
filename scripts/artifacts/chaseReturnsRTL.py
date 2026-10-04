@@ -2,12 +2,12 @@ __artifacts_v2__ = {
     "chaseReturnsRTL": {
         "name": "Chase - Refresh Token Login",
         "description": "Refresh Token Login events from a Chase Bank PDF return.",
-        "author": "@AlexisBrignoni, Shawn Ramsey",
+        "author": "@AlexisBrignoni, Shawn Ramsey, Codex",
         "creation_date": "2022-12-29",
-        "last_update_date": "2026-06-28",
+        "last_update_date": "2026-10-04",
         "requirements": "pypdf",
         "category": "Chase Returns",
-        "notes": "Timestamp is the time printed in the return, labelled UTC without conversion. "
+        "notes": "Timestamp is retained as printed text. "
                  "The time zone of the printed value is not established here. GEOLAT/GEOLON are "
                  "exposed as Latitude/Longitude so the rows map (KML).",
         "paths": ('*.pdf',),
@@ -31,8 +31,6 @@ __artifacts_v2__ = {
     },
 }
 
-from datetime import datetime, timezone
-
 from pypdf import PdfReader
 
 from scripts.ilapfuncs import artifact_processor
@@ -43,7 +41,7 @@ _RTL_KEYS = ['TIMESTAMP', 'USERNAME', 'APPLICATIONID', 'COMMENTS', 'DEVAPPINSTAL
              'INPT_DID', 'LANGUAGE', 'MLWR_SC', 'RT_SC', 'STS', 'TKN_TP', 'USR_AGNT_DVC_NM',
              'SERVERID', 'CHANNELID', 'SLOTCODE', 'DEVICE_TRUST_LEVEL', 'FAILED_DVC_TRUST_RULE']
 _RTL_FIELD_KEYS = set(_RTL_KEYS[2:])
-_RTL_HEADERS = ((('Timestamp', 'datetime'), 'Username', 'APPLICATIONID', 'COMMENTS', 'DEVAPPINSTALL',
+_RTL_HEADERS = (('Timestamp (as printed)', 'Username', 'APPLICATIONID', 'COMMENTS', 'DEVAPPINSTALL',
                  'DEVAPPVER', 'DEVID', 'DEVLOCALE', 'DEVOSVER', 'DEV_MDL_VER', 'DVC_ID', 'DVC_MAK',
                  'DVC_MDL', 'DVC_NAME', 'DVC_OS', 'ENC_DVC_ID', 'ERR_CD', 'ERR_DESC', 'Latitude',
                  'Longitude', 'GEOTS', 'INPT_DID', 'LANGUAGE', 'MLWR_SC', 'RT_SC', 'STS', 'TKN_TP',
@@ -69,19 +67,8 @@ def _between(text, start, end):
 
 
 def _ts(value):
-    text = (value or '').strip()
-    if not text:
-        return ''
-    for fmt in ('%m/%d/%Y %H:%M:%S', '%m/%d/%Y %I:%M:%S %p', '%Y-%m-%d %H:%M:%S'):
-        try:
-            return datetime.strptime(text, fmt).replace(tzinfo=timezone.utc)
-        except ValueError:
-            continue
-    try:
-        dt = datetime.fromisoformat(text.replace('Z', '+00:00'))
-        return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt.astimezone(timezone.utc)
-    except ValueError:
-        return value
+    """The return's printed time has no established zone; retain its text."""
+    return (value or '').strip()
 
 
 def _pdf_text(file_found):

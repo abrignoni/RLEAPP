@@ -9,7 +9,7 @@ import json
 import os
 from datetime import datetime, timezone
 
-from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc
+from scripts.ilapfuncs import artifact_processor
 
 # Every artifact in this module reads the same TikTok "Download My Data" JSON
 # export. Both the old (user_data.json) and new (user_data_tiktok.json)
@@ -28,32 +28,38 @@ def _load(file_found):
 def _tt_ts(value):
     '''Best-effort convert a TikTok timestamp to an aware UTC datetime.
     Handles epoch seconds/ms (numeric), "YYYY-MM-DD HH:MM:SS" and ISO-8601
-    strings (all UTC in the export). Unparseable/empty values are kept
-    verbatim so the LAVA datetime column stores them as text.'''
+    strings. Zone-less date strings remain text. Unparseable/empty values are kept
+    verbatim in the text time columns.'''
     if value in (None, '', 'N/A'):
         return ''
     s = str(value).strip()
     if not s:
         return ''
     if s.isdigit():
-        return convert_unix_ts_to_utc(s)
+        return value
     for fmt in ('%Y-%m-%d %H:%M:%S', '%Y-%m-%dT%H:%M:%S'):
         try:
-            return datetime.strptime(s, fmt).replace(tzinfo=timezone.utc)
+            datetime.strptime(s, fmt)
+            return value
         except ValueError:
             pass
     try:
         dt = datetime.fromisoformat(s.replace('Z', '+00:00'))
         if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
+            return value
         return dt.astimezone(timezone.utc)
     except ValueError:
         return value
 
 
-def _register(key, name, icon, headers, extractor):
+def _register(key, name, icon, headers, extractor, description=None):
     '''Build and register a context-form @artifact_processor for one report
     section of the TikTok export.'''
+    time_indexes = [i for i, header in enumerate(headers)
+                    if isinstance(header, tuple) and header[1] == 'datetime']
+    order = time_indexes + [i for i in range(len(headers)) if i not in time_indexes]
+    ordered_headers = tuple(headers[i][0] if isinstance(headers[i], tuple) and headers[i][1] == 'datetime' else headers[i] for i in order)
+
     def fn(context):
         data_list = []
         source_path = ''
@@ -63,27 +69,28 @@ def _register(key, name, icon, headers, extractor):
                 continue
             source_path = file_found
             data = _load(file_found)
-            data_list.extend(extractor(data))
-        return headers, data_list, context.get_relative_path(source_path)
+            for row in extractor(data):
+                data_list.append(tuple(row[i] for i in order))
+        return ordered_headers, data_list, context.get_relative_path(source_path)
 
     fn.__name__ = key
     fn.__qualname__ = key
     globals()[key] = artifact_processor(fn)
     __artifacts_v2__[key] = {
         "name": name,
-        "description": f"Rows this parser labels '{name}', read from the TikTok 'Download My Data' "
+        "description": description or f"Rows this parser labels '{name}', read from the TikTok 'Download My Data' "
                        "JSON export. The label is the parser's own and the export's key names can "
                        "differ.",
-        "author": "@upintheairsheep and @Jadoo4QFan",
+        "author": "@upintheairsheep and @Jadoo4QFan, @AlexisBrignoni, Codex",
         "creation_date": "2025-06-15",
-        "last_update_date": "2025-06-15",
+        "last_update_date": "2026-10-04",
         "requirements": "none",
         "category": "TikTok",
-        "notes": "Gemini Code Assist was used during the script's development. No tested export, "
-                 "sample or row count is recorded for this artifact. Where this artifact converts a "
-                 "date, a value the export gives with no time zone is stored as UTC by this parser "
-                 "and an all-digit value is read as Unix time; the export's time zone was not "
-                 "established here. Where the export does not carry a key, the cell holds this "
+        "notes": "Time columns preserve mixed values as text and do not populate timeline/date filters. "
+                 "Gemini Code Assist was used during the script's development. No registered real "
+                 "export has been validated for this artifact. Where this artifact converts a "
+                 "date, a value with no time zone remains stored text; an all-digit value is read "
+                 "as stored text because its epoch and unit are not established. The export's time zone is not established here. Where the export does not carry a key, the cell holds this "
                  "parser's default (blank, 'N/A' or 0, depending on the column), which is not a "
                  "value the export held.",
         "paths": _PATHS,
@@ -634,7 +641,12 @@ _register('tikTokAppSettings', 'TikTok App Settings', 'settings',
 _register('tikTokGoLiveSettings', 'TikTok Go Live Settings', 'settings',
           ('Setting Name', 'Setting Value'), _x_go_live_settings)
 _register('tikTokShopCommunicationHistory', 'TikTok Shop Communication History', 'shopping-cart',
-          (('Send Time', 'datetime'), 'Shop Name', 'Direction', 'Content (Encrypted)'), _x_shop_communication_history)
+          (('Send Time', 'datetime'), 'Shop Name', 'Direction', 'Content (as stored)'), _x_shop_communication_history,
+          description="CommunicationHistories message entries from the TikTok Shop export. Six other "
+                      "Shop sections (payment information, customer support, order disputes, orders, "
+                      "product reviews, returns/refunds) are each represented as one raw-JSON row "
+                      "when present. For those rows Send Time holds the section label, Shop Name "
+                      "holds 'See JSON', and Direction holds 'N/A'; these cells are parser labels.")
 _register('tikTokShopProductBrowsingHistory', 'TikTok Shop Product Browsing History', 'shopping-cart',
           (('Browsing Date', 'datetime'), 'Shop Name', 'Product Name'), _x_shop_product_browsing)
 _register('tikTokShopSavedAddresses', 'TikTok Shop Saved Addresses', 'map-pin',
