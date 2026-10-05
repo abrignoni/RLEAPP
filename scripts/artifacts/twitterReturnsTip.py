@@ -26,7 +26,11 @@ __artifacts_v2__ = {
     "twitterFollower": _meta("Follower", ('**/*-follower.txt',), "users"),
     "twitterFollowing": _meta("Following", ('**/*-following.txt',), "users"),
     "twitterIpAudit": _meta("IP Audit", ('**/*-ip-audit.txt',), "log-in"),
-    "twitterLike": _meta("Like", ('**/*-like.txt',), "heart"),
+    "twitterLike": _meta("Like", ('**/*-like.txt',), "heart",
+        description="Liked tweets from the like file of a Twitter law enforcement return. "
+                    "Tweet ID, Full Text and Expanded URL are decoded from JSON string fields "
+                    "in the line-oriented return, preserving punctuation and escaped text. "
+                    "Records with malformed or non-string fields are skipped and logged."),
     "twitterMute": _meta("Mute", ('**/*-mute.txt',), "volume-x"),
     "twitterTweet": _meta("Tweet", ('**/*-tweet.txt',), "twitter",
         description="Tweets from the tweet file of a Twitter law enforcement return. Full Text "
@@ -40,7 +44,7 @@ import os
 import json
 from datetime import datetime, timezone
 
-from scripts.ilapfuncs import artifact_processor, check_in_media
+from scripts.ilapfuncs import artifact_processor, check_in_media, logfunc
 
 
 def timestamps(line):
@@ -236,6 +240,17 @@ def twitterIpAudit(context):
     return data_headers, data_list, context.get_relative_path(source_path)
 
 
+def _like_string(line):
+    """Decode a complete string field, allowing only its structural trailing comma."""
+    _, separator, payload = line.partition(':')
+    if not separator:
+        raise ValueError('Missing field separator')
+    value, end = json.JSONDecoder().raw_decode(payload.lstrip())
+    if not isinstance(value, str) or payload.lstrip()[end:].strip() not in ('', ','):
+        raise ValueError('Expected one JSON string field')
+    return value
+
+
 @artifact_processor
 def twitterLike(context):
     data_list, source_path = [], ''
@@ -245,14 +260,31 @@ def twitterLike(context):
             continue
         source_path = file_found
         tweetid = fulltxt = ''
+        invalid = False
         with open(file_found, encoding='utf-8') as f:
-            for line in f:
-                if '"tweetId"' in line:
-                    tweetid = _value(line)
-                elif '"fullText"' in line:
-                    fulltxt = _value(line)
-                elif '"expandedUrl"' in line:
-                    data_list.append((tweetid, fulltxt, _value(line)))
+            for line_number, line in enumerate(f, 1):
+                field = line.partition(':')[0].strip()
+                if field not in ('"tweetId"', '"fullText"', '"expandedUrl"'):
+                    continue
+                if field == '"tweetId"':
+                    tweetid = fulltxt = ''
+                    invalid = False
+                try:
+                    value = _like_string(line)
+                except ValueError:
+                    invalid = True
+                    logfunc(f'Twitter Like: skipped invalid string field at '
+                            f'{context.get_relative_path(file_found)}:{line_number}')
+                else:
+                    if field == '"tweetId"':
+                        tweetid = value
+                    elif field == '"fullText"':
+                        fulltxt = value
+                    elif not invalid:
+                        data_list.append((tweetid, fulltxt, value))
+                if field == '"expandedUrl"':
+                    tweetid = fulltxt = ''
+                    invalid = False
     data_headers = ('Tweet ID', 'Full Text', 'Expanded URL')
     return data_headers, data_list, context.get_relative_path(source_path)
 
