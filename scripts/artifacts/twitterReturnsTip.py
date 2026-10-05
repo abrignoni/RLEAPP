@@ -1,15 +1,20 @@
-def _meta(name, paths, icon):
+def _meta(name, paths, icon, description=None):
     meta = {"name": f"Twitter Returns - {name}",
-            "description": f"{name} from a Twitter law enforcement return.",
-            "author": "@AlexisBrignoni", "creation_date": "2022-06-12",
-            "last_update_date": "2026-06-28", "requirements": "none",
-            "category": "Twitter Returns", "notes": "", "paths": paths,
+            "description": description or f"{name} from a Twitter law enforcement return.",
+            "author": "@AlexisBrignoni, Codex", "creation_date": "2022-06-12",
+            "last_update_date": "2026-10-04", "requirements": "none",
+            "category": "Twitter Returns", "notes": "Time columns preserve mixed values as text and do not populate timeline/date filters.", "paths": paths,
             "output_types": "standard", "artifact_icon": icon}
     return meta
 
 
 __artifacts_v2__ = {
-    "twitterDirectMessages": _meta("Direct Messages", ('**/*-direct-messages.txt',), "message-circle"),
+    "twitterDirectMessages": _meta("Direct Messages", ('**/*-direct-messages.txt',), "message-circle",
+        description="Direct messages from the direct-messages file of a Twitter law enforcement "
+                    "return. Text has commas and double quotes removed and is cut at the first "
+                    "colon followed by a space. Only the first media URL, reaction and URL are "
+                    "read. Reaction Timestamp is read from the first reaction when its labelled "
+                    "timestamp field is present."),
     "twitterAccountCreationIp": _meta("Account Creation IP", ('**/*-account-creation-ip.txt',),
                                       "globe"),
     "twitterAccountSuspension": _meta("Account Suspension", ('**/*-account-suspension.txt',),
@@ -21,37 +26,45 @@ __artifacts_v2__ = {
     "twitterFollower": _meta("Follower", ('**/*-follower.txt',), "users"),
     "twitterFollowing": _meta("Following", ('**/*-following.txt',), "users"),
     "twitterIpAudit": _meta("IP Audit", ('**/*-ip-audit.txt',), "log-in"),
-    "twitterLike": _meta("Like", ('**/*-like.txt',), "heart"),
+    "twitterLike": _meta("Like", ('**/*-like.txt',), "heart",
+        description="Liked tweets from the like file of a Twitter law enforcement return. "
+                    "Tweet ID, Full Text and Expanded URL are decoded from JSON string fields "
+                    "in the line-oriented return, preserving punctuation and escaped text. "
+                    "Records with malformed or non-string fields are skipped and logged."),
     "twitterMute": _meta("Mute", ('**/*-mute.txt',), "volume-x"),
-    "twitterTweet": _meta("Tweet", ('**/*-tweet.txt',), "twitter"),
+    "twitterTweet": _meta("Tweet", ('**/*-tweet.txt',), "twitter",
+        description="Tweets from the tweet file of a Twitter law enforcement return. Full Text "
+                    "has commas and double quotes removed and is cut where a colon, a space and "
+                    "a double quote appear inside it. created_at is converted using its printed "
+                    "offset. The first media_url line is not read. Video is linked only for a "
+                    "variant listed at bitrate 2176000."),
 }
 
 import os
+import json
 from datetime import datetime, timezone
 
-from scripts.ilapfuncs import artifact_processor, check_in_media
-
-_MONTHS = {'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04', 'May': '05', 'Jun': '06',
-           'Jul': '07', 'Aug': '08', 'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'}
+from scripts.ilapfuncs import artifact_processor, check_in_media, logfunc
 
 
 def timestamps(line):
-    date = line.split('T')
-    dateall = date[0].split(': "')[1].split('-')
-    year, month, day = dateall[0], dateall[1], dateall[2]
-    hours = date[1].split(':')[0]
-    minutes = date[1].split(':')[1]
-    seconds = date[1].split(':')[2].replace('Z"', '').replace(',', '').strip()
-    return f'{year}-{month}-{day} {hours}:{minutes}:{seconds}'
+    """Read the printed ISO time without discarding its offset."""
+    value = line.split(':', 1)[1].strip().rstrip(',')
+    try:
+        return json.loads(value)
+    except (ValueError, TypeError):
+        return value.strip('"')
 
 
 def _to_utc(value):
     if value in (None, ''):
         return ''
+    if isinstance(value, datetime):
+        return value.astimezone(timezone.utc) if value.tzinfo else value.isoformat(sep=' ')
     text = str(value).strip()
     try:
         dt = datetime.fromisoformat(text.replace('Z', '+00:00'))
-        return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt.astimezone(timezone.utc)
+        return value if dt.tzinfo is None else dt.astimezone(timezone.utc)
     except ValueError:
         return value
 
@@ -122,7 +135,7 @@ def twitterAccountSuspension(context):
                     timestamp = timestamps(line)
                 elif '"action"' in line:
                     data_list.append((_to_utc(timestamp), _value(line)))
-    data_headers = (('Timestamp', 'datetime'), 'Action')
+    data_headers = ('Timestamp', 'Action')
     return data_headers, data_list, context.get_relative_path(source_path)
 
 
@@ -150,7 +163,7 @@ def twitterAccount(context):
                 elif '"accountDisplayName"' in line:
                     accdn = line.split(': ')[1].replace('"', '').strip()
         data_list.append((_to_utc(timestamp), accountid, email, cvia, usern, accdn))
-    data_headers = (('Created At', 'datetime'), 'Account ID', 'Email', 'Created Via', 'Username',
+    data_headers = ('Created At', 'Account ID', 'Email', 'Created Via', 'Username',
                     'Account Display Name')
     return data_headers, data_list, context.get_relative_path(source_path)
 
@@ -201,7 +214,7 @@ def twitterDeviceToken(context):
                 elif '"createdAt"' in line:
                     data_list.append((_to_utc(timestamps(line)), _to_utc(lastseen), clientappid,
                                       clientappname, token))
-    data_headers = (('Created At', 'datetime'), ('Last Seen At', 'datetime'),
+    data_headers = ('Created At', 'Last Seen At',
                     'Client Application ID', 'Client Application Name', 'Token')
     return data_headers, data_list, context.get_relative_path(source_path)
 
@@ -223,8 +236,19 @@ def twitterIpAudit(context):
                     timestampt = timestamps(line)
                 elif '"loginIp"' in line:
                     data_list.append((_to_utc(timestampt), _value(line), accid))
-    data_headers = (('Created At', 'datetime'), 'Login IP', 'Account ID')
+    data_headers = ('Created At', 'Login IP', 'Account ID')
     return data_headers, data_list, context.get_relative_path(source_path)
+
+
+def _like_string(line):
+    """Decode a complete string field, allowing only its structural trailing comma."""
+    _, separator, payload = line.partition(':')
+    if not separator:
+        raise ValueError('Missing field separator')
+    value, end = json.JSONDecoder().raw_decode(payload.lstrip())
+    if not isinstance(value, str) or payload.lstrip()[end:].strip() not in ('', ','):
+        raise ValueError('Expected one JSON string field')
+    return value
 
 
 @artifact_processor
@@ -236,14 +260,31 @@ def twitterLike(context):
             continue
         source_path = file_found
         tweetid = fulltxt = ''
+        invalid = False
         with open(file_found, encoding='utf-8') as f:
-            for line in f:
-                if '"tweetId"' in line:
-                    tweetid = _value(line)
-                elif '"fullText"' in line:
-                    fulltxt = _value(line)
-                elif '"expandedUrl"' in line:
-                    data_list.append((tweetid, fulltxt, _value(line)))
+            for line_number, line in enumerate(f, 1):
+                field = line.partition(':')[0].strip()
+                if field not in ('"tweetId"', '"fullText"', '"expandedUrl"'):
+                    continue
+                if field == '"tweetId"':
+                    tweetid = fulltxt = ''
+                    invalid = False
+                try:
+                    value = _like_string(line)
+                except ValueError:
+                    invalid = True
+                    logfunc(f'Twitter Like: skipped invalid string field at '
+                            f'{context.get_relative_path(file_found)}:{line_number}')
+                else:
+                    if field == '"tweetId"':
+                        tweetid = value
+                    elif field == '"fullText"':
+                        fulltxt = value
+                    elif not invalid:
+                        data_list.append((tweetid, fulltxt, value))
+                if field == '"expandedUrl"':
+                    tweetid = fulltxt = ''
+                    invalid = False
     data_headers = ('Tweet ID', 'Full Text', 'Expanded URL')
     return data_headers, data_list, context.get_relative_path(source_path)
 
@@ -295,7 +336,7 @@ def twitterDirectMessages(context):
                         reactkey = next(f).split(' : ')[1].replace('"', '').replace(',', '').strip()
                         reventid = next(f).split(' : ')[1].replace('"', '').replace(',', '').strip()
                         extraline = next(f)
-                        if rtimestamp != '':
+                        if 'timestamp' in extraline.lower() or 'createdat' in extraline.lower():
                             rtimestamp = timestamps(extraline)
                 elif '"urls" :' in line:
                     line = line.strip()
@@ -308,14 +349,14 @@ def twitterDirectMessages(context):
                         extraline = next(f)
                         if extraline != '':
                             display = _value(extraline)
-                    data_list.append((_to_utc(timestamp), convoid, sid, rid, text, thumb, mediaurl,
-                                      url, expanded, display, _to_utc(rtimestamp), rsenderid,
+                    data_list.append((_to_utc(timestamp), _to_utc(rtimestamp), convoid, sid, rid, text, thumb, mediaurl,
+                                      url, expanded, display, rsenderid,
                                       reactkey, reventid, idc))
                     timestamp = sid = rid = text = mediaurl = url = expanded = display = ''
                     rtimestamp = rsenderid = reactkey = reventid = idc = thumb = ''
-    data_headers = (('Created At', 'datetime'), 'Conversation ID', 'Sender ID', 'Recipient ID',
+    data_headers = ('Created At', 'Reaction Timestamp', 'Conversation ID', 'Sender ID', 'Recipient ID',
                     'Text', ('Media', 'media'), 'Media URL', 'URL', 'Expanded URL', 'Display URL',
-                    ('Reaction Timestamp', 'datetime'), 'Reaction Sender ID', 'Reaction',
+                    'Reaction Sender ID', 'Reaction',
                     'Reaction Event ID', 'ID')
     return data_headers, data_list, context.get_relative_path(source_path)
 
@@ -364,12 +405,12 @@ def twitterTweet(context):
                     next(f)
                     videomedia = next(f).split('/')[-1].split('?')[0].replace('"', '').strip()
                     video_ref = check_in_media(videomedia, videomedia)
-    data_headers = (('Timestamp', 'datetime'), 'Full Text', ('Media', 'media'), ('Video', 'media'))
+    data_headers = ('Timestamp', 'Full Text', ('Media', 'media'), ('Video', 'media'))
     return data_headers, data_list, context.get_relative_path(source_path)
 
 
 def _tweet_date(createdat):
-    parts = createdat.replace("'", '').strip().split(' ')
-    if len(parts) < 6:
+    try:
+        return datetime.strptime(createdat.replace("'", '').strip(), '%a %b %d %H:%M:%S %z %Y').astimezone(timezone.utc)
+    except ValueError:
         return createdat
-    return f'{parts[5]}-{_MONTHS.get(parts[1], parts[1])}-{parts[2]} {parts[3]}'

@@ -1,0 +1,50 @@
+{
+  "metadata": {
+    "module_name": "synchronoss",
+    "artifact_name": "Synchronoss - MMS Folder Media (Unlinked)",
+    "function_name": "synchronoss_mms_unlinked",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 6,
+    "number_of_rows": 2,
+    "total_data_size_bytes": 213,
+    "media_checkins": 2,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/synchronoss/testdata.synchronoss.synchronoss_mms_unlinked.caseSYNTH001.zip",
+    "start_time": "2026-10-04T20:44:36.364016+00:00",
+    "end_time": "2026-10-04T20:44:36.396303+00:00",
+    "run_time_seconds": 0.001483917236328125,
+    "last_commit": {
+      "hash": "6166d12ac78ec38163a14e23f3cb23e23368d7a8",
+      "author_name": "Brigs",
+      "author_email": "abrignoni@gmail.com",
+      "date": "2026-10-04T02:02:02-04:00",
+      "message": "Correct artifact descriptions and notes against the code and sources"
+    }
+  },
+  "headers": [
+    "Date Folder",
+    "Direction",
+    "Media",
+    "Filename",
+    "Detected Type",
+    "Source File"
+  ],
+  "data": [
+    [
+      "2025-12-01",
+      "in",
+      "mock_hash_for_0",
+      "0",
+      ".jpg (by magic bytes)",
+      "SYNTH001LCIDHASH/messages/attachments/mms/in/2025-12-01/0"
+    ],
+    [
+      "2025-12-01",
+      "in",
+      "mock_hash_for_dup.jpg",
+      "dup.jpg",
+      ".jpg",
+      "SYNTH001LCIDHASH/messages/attachments/mms/in/2025-12-01/dup.jpg"
+    ]
+  ]
+}

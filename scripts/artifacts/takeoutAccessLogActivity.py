@@ -2,12 +2,12 @@ __artifacts_v2__ = {
     "takeoutAccessLogActivities": {
         "name": "Google Access Log Activities",
         "description": "Rows of the Takeout Access Log Activity file whose name begins 'Activities - A list of Google services accessed by'.",
-        "author": "@KevinPagano3",
+        "author": "@KevinPagano3, @AlexisBrignoni, Codex",
         "creation_date": "2021-09-25",
-        "last_update_date": "2026-06-27",
+        "last_update_date": "2026-10-04",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "",
+        "notes": "Mixed time columns use text storage and do not populate timeline/date filters. ",
         "paths": ('*/Access Log Activity/Activities*.csv',),
         "output_types": "standard",
         "artifact_icon": "activity",
@@ -15,17 +15,14 @@ __artifacts_v2__ = {
     "takeoutAccessLogDevices": {
         "name": "Google Access Log Devices",
         "description": "Rows of the Takeout Access Log Activity file whose name begins 'Devices - A list of devices'.",
-        "author": "@KevinPagano3",
+        "author": "@KevinPagano3, @AlexisBrignoni, Codex",
         "creation_date": "2021-09-25",
-        "last_update_date": "2026-06-27",
+        "last_update_date": "2026-10-04",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "Old-format exports store last country/activity-time inside a free-text field; on "
-                 "that layout Device Last Country and Last Activity Timestamp are cut from fixed "
-                 "character positions after the labels Country ISO: and Last Activity Time:, and "
-                 "First Activity Timestamp and Device Last Location Timestamp are blank. A "
-                 "timestamp with no Z or offset is not handled as UTC by the code; it is read in "
-                 "the local zone of the machine running the tool.",
+        "notes": "Mixed time columns use text storage and do not populate timeline/date filters. Old-format last country and activity time are read after their labels in "
+                 "the free-text field. First Activity and Device Last Location Timestamp are "
+                 "blank for that layout. Zone-less timestamps remain stored text.",
         "paths": ('*/Access Log Activity/Devices*.csv',),
         "output_types": "standard",
         "artifact_icon": "device-mobile",
@@ -34,6 +31,7 @@ __artifacts_v2__ = {
 
 import csv
 import os
+import re
 from datetime import datetime, timezone
 
 from scripts.ilapfuncs import artifact_processor, ipgen
@@ -43,7 +41,8 @@ def _iso_to_utc(value):
     if not value:
         return value
     try:
-        return datetime.fromisoformat(value.strip().replace('Z', '+00:00')).astimezone(timezone.utc)
+        dt = datetime.fromisoformat(value.strip().replace('Z', '+00:00'))
+        return value if dt.tzinfo is None else dt.astimezone(timezone.utc)
     except (ValueError, AttributeError):
         return value
 
@@ -81,7 +80,7 @@ def takeoutAccessLogActivities(context):
     if ip_list:
         ipgen(context.get_report_folder(), ip_list)
 
-    data_headers = (('Timestamp', 'datetime'), 'IP Address', 'Proxied Host IP Address',
+    data_headers = ('Timestamp', 'IP Address', 'Proxied Host IP Address',
                     'Is Non-routable IP Address', 'Activity Country', 'Activity Region',
                     'Activity City', 'User Agent String', 'Product Name', 'Sub-Product Name',
                     'Referer Product Name', 'Referer Sub-Product Name', 'Activity Type',
@@ -109,15 +108,18 @@ def takeoutAccessLogDevices(context):
                     data_list.append((_iso_to_utc(item[7]), _iso_to_utc(item[8]), item[1], item[2],
                                       item[3], item[4], '', item[5], _iso_to_utc(item[6]), item[0]))
                 else:
-                    last_loc = item[7].replace('\n', ' ')
-                    ci = last_loc.find('Country ISO: ')
-                    last_country = last_loc[ci + 12:ci + 15].strip() if ci != -1 else ''
-                    ai = last_loc.find('Last Activity Time:')
-                    last_activity = last_loc[ai + 20:ai + 39].strip() if ai != -1 else ''
+                    last_loc = item[7]
+                    country = re.search(r'Country ISO:\s*([^\s,;]+)', last_loc)
+                    activity = re.search(r'Last Activity Time:\s*(.*?)(?=\n|\s+[A-Za-z ]+:|$)', last_loc)
+                    last_country = country.group(1).strip() if country else ''
+                    last_activity = activity.group(1).strip() if activity else ''
                     data_list.append(('', _iso_to_utc(last_activity), item[0], item[1], item[5],
                                       item[3], item[4], last_country, '', item[8]))
 
-    data_headers = (('First Activity Timestamp', 'datetime'), ('Last Activity Timestamp', 'datetime'),
+    data_headers = ('First Activity Timestamp', 'Last Activity Timestamp',
                     'Device Type', 'Device Brand', 'Device Model', 'Device OS', 'OS Version',
-                    'Device Last Country', ('Device Last Location Timestamp', 'datetime'), 'GAIA ID')
+                    'Device Last Country', 'Device Last Location Timestamp', 'GAIA ID')
+    order = [0, 1, 8] + [i for i in range(len(data_headers)) if i not in [0, 1, 8]]
+    data_headers = tuple(data_headers[i] for i in order)
+    data_list = [tuple(row[i] for i in order) for row in data_list]
     return data_headers, data_list, context.get_relative_path(source_path)

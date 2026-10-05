@@ -1,14 +1,13 @@
 _REGEX_NOTE = ("Scans every cell of the return workbook with regexes; the account token comes "
                "from the file name.")
-_DATED_REGEX_NOTE = ("Scans every cell of the return workbook with regexes. UTC Date Time is the "
-                     "cell to the left of the matching cell; a value with no stated zone is "
-                     "labelled UTC without conversion, and the zone of the workbook's times is "
-                     "not established here. The account token comes from the file name.")
+_DATED_REGEX_NOTE = ("Scans every cell of the return workbook with regexes. Adjacent Cell is the "
+                     "cell to the left of the matching cell, reported as stored text; its meaning "
+                     "and time zone are not established. The account token comes from the file name.")
 _SECTION_HEAD = ("Walks a named header section of the return workbook (reading down/right from the "
                  "header cell) to surface the account data Cash App reports as labelled tables. ")
 _SECTION_TAIL = "The account token comes from the file name."
 _SECTION_NOTE = _SECTION_HEAD + _SECTION_TAIL
-_NO_ZONE = " Issued Date with no stated zone is labelled UTC without conversion."
+_NO_ZONE = " Issued Date is reported as stored text; its time zone is not established."
 _CARDS_NOTE = (_SECTION_HEAD + "Card Number, Card Brand and Zip Code are named by position; the "
                "workbook's own sub-header row is not read. " + _SECTION_TAIL)
 _BANKS_NOTE = (_SECTION_HEAD + "Rows are read under the workbook's own 'Bank Account Number' "
@@ -29,8 +28,8 @@ def _meta(name, icon, notes, html_columns=None, description=None):
             "description": description or
                            f"{name} extracted from a Cash App law enforcement return "
                            f"(*-for-subject-SQ_CASH-*.xlsx).",
-            "author": "Shawn Ramsey", "creation_date": "2024-02-02",
-            "last_update_date": "2026-06-28", "requirements": "openpyxl",
+            "author": "Shawn Ramsey, @AlexisBrignoni, Codex", "creation_date": "2024-02-02",
+            "last_update_date": "2026-10-04", "requirements": "openpyxl",
             "category": "Cash App Returns", "notes": notes,
             "paths": ('*/*-for-subject-SQ_CASH-*.xlsx',), "output_types": "standard",
             "artifact_icon": icon}
@@ -43,7 +42,7 @@ __artifacts_v2__ = {
     "cashappEmails": _meta("Emails", "mail", _DATED_REGEX_NOTE),
     "cashappIPv4": _meta("IPv4", "globe", _REGEX_NOTE),
     "cashappIPv6": _meta("IPv6", "globe", _REGEX_NOTE),
-    "cashappPhoneNumbers": _meta("Phone Numbers", "phone", _DATED_REGEX_NOTE,
+    "cashappPhoneNumbers": _meta("Phone-shaped Values", "phone", _DATED_REGEX_NOTE,
                                  description=_PHONE_DESCRIPTION),
     "cashappDisplayNames": _meta("Display Name History", "user", _SECTION_NOTE),
     "cashappPaymentCards": _meta("Payment Source Cards", "credit-card", _CARDS_NOTE),
@@ -56,11 +55,10 @@ __artifacts_v2__ = {
 
 import os
 import re
-from datetime import datetime, timezone
 
 from openpyxl import load_workbook
 
-from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc, ipgen
+from scripts.ilapfuncs import artifact_processor, ipgen
 
 _ACCOUNT_TOKEN_SUBSTR = "-for-subject-SQ_CASH-"
 
@@ -91,20 +89,8 @@ def _token(file_found):
 
 
 def _to_utc(value):
-    if value is None or value == '':
-        return ''
-    if isinstance(value, datetime):
-        return value.replace(tzinfo=timezone.utc) if value.tzinfo is None else value.astimezone(timezone.utc)
-    text = str(value).strip()
-    if not text:
-        return ''
-    if text.isdigit():
-        return convert_unix_ts_to_utc(int(text))
-    try:
-        dt = datetime.fromisoformat(text.replace('Z', '+00:00'))
-        return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt.astimezone(timezone.utc)
-    except ValueError:
-        return value
+    """Preserve adjacent/issued workbook cells without assigning a time basis."""
+    return _cell(value)
 
 
 def _scan(file_found, token):
@@ -118,7 +104,7 @@ def _scan(file_found, token):
                     value = str(sheet.cell(row=i, column=j).value)
                     if _email_re.match(value):
                         date = sheet.cell(row=i, column=j - 1).value if j > 1 else None
-                        emails.append((token, _to_utc(date), value))
+                        emails.append((_to_utc(date), token, value))
                     if _ipv4_re.match(value):
                         ipv4s.append((token, value))
                     if _ipv6_re.match(value):
@@ -127,7 +113,7 @@ def _scan(file_found, token):
                         above = str(sheet.cell(row=i - 1, column=j).value) if i > 1 else ''
                         if "Full SSN" not in above:
                             date = sheet.cell(row=i, column=j - 1).value if j > 1 else None
-                            phones.append((token, _to_utc(date), value))
+                            phones.append((_to_utc(date), token, value))
     finally:
         workbook.close()
     return emails, ipv4s, ipv6s, phones
@@ -175,18 +161,16 @@ def _walk_issued(sheet, i, j, token, virtual, physical, banks):
     # Virtual card rows (number, issued_date) start 2 rows below the header.
     a = 2
     while sheet.cell(row=i + a, column=j).value is not None:
-        virtual.append((token,
-                        _cell(sheet.cell(row=i + a, column=j).value),
-                        _to_utc(sheet.cell(row=i + a, column=j + 1).value)))
+        virtual.append((_to_utc(sheet.cell(row=i + a, column=j + 1).value),
+                        token, _cell(sheet.cell(row=i + a, column=j).value)))
         a += 1
     # Blank row, then the optional "Physical Card Number" sub-section (number, issued_date, address).
     a += 1
     if str(sheet.cell(row=i + a, column=j).value) == 'Physical Card Number':
         a += 1
         while sheet.cell(row=i + a, column=j).value is not None:
-            physical.append((token,
-                             _cell(sheet.cell(row=i + a, column=j).value),
-                             _to_utc(sheet.cell(row=i + a, column=j + 1).value),
+            physical.append((_to_utc(sheet.cell(row=i + a, column=j + 1).value),
+                             token, _cell(sheet.cell(row=i + a, column=j).value),
                              _cell(sheet.cell(row=i + a, column=j + 2).value)))
             a += 1
     # Blank row, then the optional "Bank Account Number" sub-section (account, routing). This
@@ -238,7 +222,7 @@ def cashappEmails(context):
         source_path = file_found
         emails, _, _, _ = _scan(file_found, _token(file_found))
         data_list.extend(emails)
-    data_headers = ('Account Token', ('UTC Date Time', 'datetime'), 'Email')
+    data_headers = ('Adjacent Cell (as stored)', 'Account Token', 'Email')
     return data_headers, data_list, context.get_relative_path(source_path)
 
 
@@ -281,7 +265,7 @@ def cashappPhoneNumbers(context):
         source_path = file_found
         _, _, _, phones = _scan(file_found, _token(file_found))
         data_list.extend(phones)
-    data_headers = ('Account Token', ('UTC Date Time', 'datetime'), ('Phone Numbers', 'phonenumber'))
+    data_headers = ('Adjacent Cell (as stored)', 'Account Token', 'Phone-shaped Value')
     return data_headers, data_list, context.get_relative_path(source_path)
 
 
@@ -321,7 +305,7 @@ def cashappIssuedVirtualCards(context):
     for file_found in _xlsx_files(context):
         source_path = file_found
         data_list.extend(_walk_sections(file_found, _token(file_found))['virtual_cards'])
-    data_headers = ('Account Token', 'Virtual Card Number', ('Issued Date', 'datetime'))
+    data_headers = ('Issued Date (as stored)', 'Account Token', 'Virtual Card Number')
     return data_headers, data_list, context.get_relative_path(source_path)
 
 
@@ -331,7 +315,7 @@ def cashappIssuedPhysicalCards(context):
     for file_found in _xlsx_files(context):
         source_path = file_found
         data_list.extend(_walk_sections(file_found, _token(file_found))['physical_cards'])
-    data_headers = ('Account Token', 'Physical Card Number', ('Issued Date', 'datetime'), 'Address')
+    data_headers = ('Issued Date (as stored)', 'Account Token', 'Physical Card Number', 'Address')
     return data_headers, data_list, context.get_relative_path(source_path)
 
 

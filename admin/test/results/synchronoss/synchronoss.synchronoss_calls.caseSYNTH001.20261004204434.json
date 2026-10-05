@@ -1,0 +1,50 @@
+{
+  "metadata": {
+    "module_name": "synchronoss",
+    "artifact_name": "Synchronoss - Calls",
+    "function_name": "synchronoss_calls",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 6,
+    "number_of_rows": 2,
+    "total_data_size_bytes": 169,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/synchronoss/testdata.synchronoss.synchronoss_calls.caseSYNTH001.zip",
+    "start_time": "2026-10-04T20:44:34.502665+00:00",
+    "end_time": "2026-10-04T20:44:34.544611+00:00",
+    "run_time_seconds": 0.00044274330139160156,
+    "last_commit": {
+      "hash": "6166d12ac78ec38163a14e23f3cb23e23368d7a8",
+      "author_name": "Brigs",
+      "author_email": "abrignoni@gmail.com",
+      "date": "2026-10-04T02:02:02-04:00",
+      "message": "Correct artifact descriptions and notes against the code and sources"
+    }
+  },
+  "headers": [
+    "Date",
+    "Direction",
+    "Sender",
+    "Recipients",
+    "Message ID",
+    "Source File"
+  ],
+  "data": [
+    [
+      1764565200,
+      "in",
+      "+12085557777",
+      "+12085550000",
+      "1764565200000:d8",
+      "SYNTH001LCIDHASH/messages/20251201.csv"
+    ],
+    [
+      1764565800,
+      "out",
+      "",
+      "+12085558888",
+      "1764565800000:d9",
+      "SYNTH001LCIDHASH/messages/20251201.csv"
+    ]
+  ]
+}
