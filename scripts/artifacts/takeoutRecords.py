@@ -2,15 +2,17 @@ __artifacts_v2__ = {
     "takeoutRecords": {
         "name": "Google Location History - Records",
         "description": "Parses Google Takeout Records.json location records with detected activity",
-        "author": "cheeky4n6monkey@gmail.com",
+        "author": "@AlexisBrignoni, Codex",
         "creation_date": "2022-02-27",
-        "last_update_date": "2026-06-27",
+        "last_update_date": "2026-10-07",
         "requirements": "ijson",
         "category": "Google Takeout Archive",
-        "notes": "Edited from cheeky4n6monkey/4n6-scripts Google_Takeout_Records. Sub-activity "
-                 "Types holds the number of sub-activities in the activity entry; their types and "
-                 "confidences are in Detected Activity. One row per activity entry of each "
-                 "location; locations with no activity entry are not listed.",
+        "notes": "Edited from cheeky4n6monkey/4n6-scripts Google_Takeout_Records. "
+                 "Sub-activity Count is the number of entries iterated from each activity entry's "
+                 "activity list; their stored types and confidences are rendered in Detected Activity. "
+                 "One row per activity entry of each location; locations with no activity entry are "
+                 "not listed. This count does not establish an event type or confidence interpretation. "
+                 "Original artifact contribution: cheeky4n6monkey@gmail.com.",
         "paths": ('*/Location History*/Records.json'),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
         "artifact_icon": "map-pin",
@@ -79,6 +81,6 @@ def takeoutRecords(context):
     data_headers = (('Timestamp', 'datetime'), 'Source', 'Device', 'Platform', 'Form Factor',
                     ('Timestamp Server', 'datetime'), ('Timestamp Device', 'datetime'),
                     'Timestamp Element', 'Latitude', 'Longitude', 'Altitude', 'Heading', 'Velocity',
-                    'Accuracy', 'Vertical Accuracy', 'Sub-activity Types',
+                    'Accuracy', 'Vertical Accuracy', 'Sub-activity Count',
                     ('Timestamp Activity', 'datetime'), 'Detected Activity')
     return data_headers, data_list, context.get_relative_path(source_path)
