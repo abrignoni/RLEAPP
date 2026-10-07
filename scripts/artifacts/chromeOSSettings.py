@@ -16,15 +16,12 @@ __artifacts_v2__ = {
         "name": "Chrome OS Settings",
         "description": "Parses the gender value and birth year stored in each OS Priority Preference entry from "
                        "Google Takeout OS Settings.json",
-        "author": "@upintheairsheep & @KevinPagano3",
+        "author": "@AlexisBrignoni, Codex",
         "creation_date": "2023-08-18",
-        "last_update_date": "2026-06-27",
+        "last_update_date": "2026-10-07",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "The User Gender column shows the stored gender value through the module's own mapping (0 Female, 1 "
-                 "Male, 2 Rather not say, any other value Other). No source for that mapping is given. An entry with "
-                 "no gender value is also shown as Other. Read the stored value in OS Settings.json before relying on "
-                 "the label.",
+        "notes": "Gender Value (as stored) returns the decoded preference JSON's gender value without enum interpretation. Missing gender and explicit null both return None and are not distinguished. User Birth Year retains the decoded birth_year value, with an empty-string default only when the key is absent; no event timestamp is inferred. Files named OS Settings.json are read in supplied order, preserving preference order and repeated inputs. The report-level source names the last eligible file, including one that produces no rows; it does not associate individual rows with a file. Original artifact contributions: @upintheairsheep & @KevinPagano3.",
         "paths": ('*/Chrome/OS Settings.json'),
         "output_types": "standard",
         "artifact_icon": "settings",
@@ -65,7 +62,6 @@ def chromeArcPackages(context):
 def chromeOSSettings(context):
     data_list = []
     source_path = ''
-    genders = {0: 'Female', 1: 'Male', 2: 'Rather not say'}
     for file_found in context.get_files_found():
         file_found = str(file_found)
         if os.path.basename(file_found) != 'OS Settings.json':
@@ -77,9 +73,9 @@ def chromeOSSettings(context):
         for pref in data.get('OS Priority Preference', []):
             pref_name = pref['preference']['name']
             preference_value = json.loads(pref['preference']['value'])
-            gender = genders.get(preference_value.get('gender'), 'Other')
+            gender = preference_value.get('gender')
             birth_year = preference_value.get('birth_year', '')
             data_list.append((pref_name, gender, birth_year))
 
-    data_headers = ('Preference Name', 'User Gender', 'User Birth Year')
+    data_headers = ('Preference Name', 'Gender Value (as stored)', 'User Birth Year')
     return data_headers, data_list, context.get_relative_path(source_path)
