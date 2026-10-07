@@ -2,14 +2,17 @@ __artifacts_v2__ = {
     "takeoutSemanticPlaceVisits": {
         "name": "Google Semantic Location History - Place Visits",
         "description": "Parses placeVisit entries from Google Takeout Semantic Location History JSON files",
-        "author": "@KevinPagano3",
+        "author": "@AlexisBrignoni, Codex",
         "creation_date": "2022-09-15",
-        "last_update_date": "2026-06-27",
+        "last_update_date": "2026-10-07",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "Latitude and Longitude are location.latitudeE7 and location.longitudeE7 divided "
-                 "by 1e7 and read 0.0 when the entry holds no such key; 0.0 there is not a "
-                 "recorded position.",
+        "notes": "Latitude and Longitude report location.latitudeE7 and location.longitudeE7 divided by "
+                 "1e7 when the respective key is present. A missing coordinate key yields a native None "
+                 "value (blank in HTML/TSV and NULL in the report database), not 0.0; an actual stored "
+                 "zero remains 0.0. A missing whole place location is treated as an empty mapping. "
+                 "Present JSON null or unsupported coordinate types remain unsupported. Original "
+                 "artifact contribution: @KevinPagano3.",
         "paths": ('*/Semantic Location History/*/*.json',),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
         "artifact_icon": "map-pin",
@@ -17,14 +20,17 @@ __artifacts_v2__ = {
     "takeoutSemanticActivitySegments": {
         "name": "Google Semantic Location History - Activity Segments",
         "description": "Parses activitySegment entries from Google Takeout Semantic Location History JSON files",
-        "author": "@KevinPagano3",
+        "author": "@AlexisBrignoni, Codex",
         "creation_date": "2022-09-15",
-        "last_update_date": "2026-06-27",
+        "last_update_date": "2026-10-07",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "Start/End coordinates are separate columns; no KML file is written for this "
-                 "artifact. A segment with no start or end location reads NOT_SPECIFIED; a "
-                 "location with no coordinate key reads 0.0, which is not a recorded position.",
+        "notes": "Start/End coordinates are separate columns; no KML file is written for this artifact. "
+                 "An absent whole start or end location retains NOT_SPECIFIED. A present location "
+                 "mapping with a missing coordinate key yields a native None value (blank in HTML/TSV "
+                 "and NULL in the report database); an actual stored zero remains 0.0. Present JSON "
+                 "null or unsupported coordinate types remain unsupported. Original artifact "
+                 "contribution: @KevinPagano3.",
         "paths": ('*/Semantic Location History/*/*.json',),
         "output_types": "standard",
         "artifact_icon": "navigation",
@@ -73,8 +79,8 @@ def takeoutSemanticPlaceVisits(context):
                 continue
             pv = element['placeVisit']
             location = pv.get('location', {})
-            lat = location.get('latitudeE7', 0) / 1e7
-            lon = location.get('longitudeE7', 0) / 1e7
+            lat = location['latitudeE7'] / 1e7 if 'latitudeE7' in location.keys() else None
+            lon = location['longitudeE7'] / 1e7 if 'longitudeE7' in location.keys() else None
             duration = pv.get('duration', {})
             data_list.append((_duration_ts(duration, 'start'), _duration_ts(duration, 'end'),
                               location.get('name', ''), location.get('address', ''), lat, lon,
@@ -104,12 +110,12 @@ def takeoutSemanticActivitySegments(context):
             seg = element['activitySegment']
             start_lat = start_lon = 'NOT_SPECIFIED'
             if 'startLocation' in seg:
-                start_lat = seg['startLocation'].get('latitudeE7', 0) / 1e7
-                start_lon = seg['startLocation'].get('longitudeE7', 0) / 1e7
+                start_lat = seg['startLocation']['latitudeE7'] / 1e7 if 'latitudeE7' in seg['startLocation'].keys() else None
+                start_lon = seg['startLocation']['longitudeE7'] / 1e7 if 'longitudeE7' in seg['startLocation'].keys() else None
             end_lat = end_lon = 'NOT_SPECIFIED'
             if 'endLocation' in seg:
-                end_lat = seg['endLocation'].get('latitudeE7', 0) / 1e7
-                end_lon = seg['endLocation'].get('longitudeE7', 0) / 1e7
+                end_lat = seg['endLocation']['latitudeE7'] / 1e7 if 'latitudeE7' in seg['endLocation'].keys() else None
+                end_lon = seg['endLocation']['longitudeE7'] / 1e7 if 'longitudeE7' in seg['endLocation'].keys() else None
             duration = seg.get('duration', {})
             subactivity_str = ''
             for activity in seg.get('activities', []):
