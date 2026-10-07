@@ -243,17 +243,22 @@ __artifacts_v2__ = {
     "facebookArchiveComments": {
         "name": "Facebook Archive - Comments",
         "description": "Comments from a Facebook Download Your Information export",
-        "author": "@AlexisBrignoni, Claude",
+        "author": "@AlexisBrignoni, Codex",
         "creation_date": "2026-09-22",
-        "last_update_date": "2026-09-22",
+        "last_update_date": "2026-10-07",
         "requirements": "none",
         "category": "Facebook Archive",
-        "notes": "Read from your_facebook_activity/comments_and_reactions/comments.json, one row per "
-                 "entry in comments_v2, showing the first comment item the entry carries. Timestamp is "
-                 "the comment's Unix seconds value. Comment is the comment text, Author is the recorded "
-                 "author, and Title is the entry's own title, all reported as stored. When the input "
-                 "holds more than one export only the first file found is read. Field mapping was done "
-                 "against a private sample; no sample data is recorded for it.",
+        "notes": "Read from your_facebook_activity/comments_and_reactions/comments.json. Each truthy "
+                 "comment object in an entry's data array gives one row, in stored array order; "
+                 "repeated comment items are retained. An entry with no truthy comment object gives one "
+                 "row with empty Comment and Author, preserving the existing entry fallback. Timestamp "
+                 "uses the outer comments_v2 entry's timestamp as Unix seconds, not a separately read "
+                 "comment timestamp; its event meaning is not established here. Comment, Author and "
+                 "Title use the existing text repair, which leaves non-text values blank. Title is the "
+                 "outer entry's own title. When the input holds more than one export only the first "
+                 "file found is read. Field mapping was done against a private sample; no sample data "
+                 "is recorded for it. Original parser and historical sample observations credited to "
+                 "@AlexisBrignoni, Claude.",
         "paths": ('*/your_facebook_activity/comments_and_reactions/comments.json',),
         "output_types": "standard",
         "artifact_icon": "message-2",
@@ -646,17 +651,19 @@ def facebookArchiveComments(context):
     file_found = _first_file(context)
     loaded = _load(file_found) if file_found else None
     for row in (loaded or {}).get('comments_v2', []):
-        comment_text = ''
-        author = ''
+        emitted = False
         for data in row.get('data') or []:
             comment = data.get('comment') or {}
             if comment:
-                comment_text = _fix(comment.get('comment', ''))
-                author = _fix(comment.get('author', ''))
-                break
-        data_list.append((
-            _ts(row.get('timestamp')), comment_text, author, _fix(row.get('title', '')),
-            context.get_relative_path(file_found)))
+                data_list.append((
+                    _ts(row.get('timestamp')), _fix(comment.get('comment', '')),
+                    _fix(comment.get('author', '')), _fix(row.get('title', '')),
+                    context.get_relative_path(file_found)))
+                emitted = True
+        if not emitted:
+            data_list.append((
+                _ts(row.get('timestamp')), '', '', _fix(row.get('title', '')),
+                context.get_relative_path(file_found)))
     return data_headers, data_list, file_found
 
 
