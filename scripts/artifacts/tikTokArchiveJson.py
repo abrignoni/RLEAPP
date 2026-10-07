@@ -665,7 +665,11 @@ _register('tikTokSentGifts', 'TikTok Purchase History - Sent Gifts', 'gift',
 _register('tikTokBoughtGifts', 'TikTok Purchase History - Bought Gifts', 'gift',
           (('Date', 'datetime'), 'Price'), _x_bought_gifts)
 _register('tikTokAdsConfiguration', 'TikTok Ads Configuration', 'ad',
-          ('Setting Name', 'Setting Value'), _x_ads_configuration)
+          ('Setting Name', 'Setting Value'), _x_ads_configuration,
+          description="Reports AdInterestCategories from Ads and data > Ad Interests, and DataPartnerList and AdvertiserList "
+                      "from Ads and data > Ads Based On Data Received From Partners. One row holds each retained value. "
+                      "Missing, null, false, zero and empty values emit no row.")
+__artifacts_v2__['tikTokAdsConfiguration']['last_update_date'] = '2026-10-07'
 _register('tikTokGoLiveHistory', 'TikTok Go Live History', 'device-tv',
           (('Start Time', 'datetime'), ('End Time', 'datetime'), 'Duration', 'Room ID', 'Room Title', 'Cover URI',
            'Replay URL', 'Total Earning', 'Total Likes', 'Total Views', 'Total Gifters', 'Quality Setting', 'Muted List'), _x_go_live_history)
