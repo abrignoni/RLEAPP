@@ -29,9 +29,9 @@ __artifacts_v2__ = {
     "synchronoss_mms_received": {
         "name": "Synchronoss - MMS Media Received",
         "description": "Parses received MMS media with inline display, linked to message CSV metadata",
-        "author": "@OneSixForensics, @AlexisBrignoni, Codex",
+        "author": "@AlexisBrignoni, Codex",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-10-04",
+        "last_update_date": "2026-10-07",
         "requirements": "none",
         "category": "Synchronoss",
         "notes": "Mixed time columns use text storage and do not populate timeline/date filters. Media at <LCID>/messages/attachments/mms/in/YYYY-MM-DD/. "
@@ -45,9 +45,10 @@ __artifacts_v2__ = {
                  "token is reported as not linked, with the number of folders carrying the name, "
                  "rather than linked to another date's copy. A Link Status that begins 'referenced' "
                  "means no file of that name was found in any mms/in/ date folder of the return; a "
-                 "missing file is not on its own a finding about the file. That Link Status text also "
-                 "reads 'possibly quarantined/removed'; the code does not test for either. Direction is "
-                 "constant in this artifact by construction, since the artifact selects one direction.",
+                 "missing file is not on its own a finding about the file. The status does not establish "
+                 "quarantine, removal or any other cause for a missing match. Direction is "
+                 "constant in this artifact by construction, since the artifact selects one direction. "
+                 "Original contribution credited to @OneSixForensics.",
         "paths": (
             '*/messages/2*.csv',
             '*/messages/attachments/mms/in/*/*',
@@ -59,9 +60,9 @@ __artifacts_v2__ = {
     "synchronoss_mms_sent": {
         "name": "Synchronoss - MMS Media Sent",
         "description": "Parses sent MMS media with inline display, linked to message CSV metadata",
-        "author": "@OneSixForensics, @AlexisBrignoni, Codex",
+        "author": "@AlexisBrignoni, Codex",
         "creation_date": "2026-06-24",
-        "last_update_date": "2026-10-04",
+        "last_update_date": "2026-10-07",
         "requirements": "none",
         "category": "Synchronoss",
         "notes": "Mixed time columns use text storage and do not populate timeline/date filters. Media at <LCID>/messages/attachments/mms/out/YYYY-MM-DD/. "
@@ -75,9 +76,10 @@ __artifacts_v2__ = {
                  "token is reported as not linked, with the number of folders carrying the name, "
                  "rather than linked to another date's copy. A Link Status that begins 'referenced' "
                  "means no file of that name was found in any mms/out/ date folder of the return; a "
-                 "missing file is not on its own a finding about the file. That Link Status text also "
-                 "reads 'possibly quarantined/removed'; the code does not test for either. Direction is "
-                 "constant in this artifact by construction, since the artifact selects one direction.",
+                 "missing file is not on its own a finding about the file. The status does not establish "
+                 "quarantine, removal or any other cause for a missing match. Direction is "
+                 "constant in this artifact by construction, since the artifact selects one direction. "
+                 "Original contribution credited to @OneSixForensics.",
         "paths": (
             '*/messages/2*.csv',
             '*/messages/attachments/mms/out/*/*',
@@ -626,10 +628,9 @@ def _synchronoss_mms_media(context, direction):
                                f'date folders, none matching message date '
                                f'{date_folder or "?"}; manual review required')
             else:
-                # Media-looking token with no file present; likely quarantined/removed.
+                # Media-looking token with no matching file present.
                 media_cell = ''
-                link_status = ('referenced; file not in daily folder; '
-                               'possibly quarantined/removed')
+                link_status = 'referenced; file not in daily folder'
 
             data_list.append((
                 _ts_utc(msg_date),
