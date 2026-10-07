@@ -2,17 +2,17 @@ __artifacts_v2__ = {
     "semanticLocationsMonthPlaces": {
         "name": "Semantic Locations - Places By Month",
         "description": "Parses placeVisit entries from Google Takeout per-month Semantic Location History JSON files",
-        "author": "@AlexisBrignoni",
+        "author": "@AlexisBrignoni, Codex",
         "creation_date": "2023-05-28",
-        "last_update_date": "2026-06-27",
+        "last_update_date": "2026-10-07",
         "requirements": "none",
         "category": "Google Takeout Archive",
         "notes": "Additional Latitude and Additional Longitude are location.latitudeE7 and "
-                 "location.longitudeE7 divided by 1e7 and read 0.0 when the entry holds no such "
-                 "key; 0.0 there is not a recorded position. Calculated Probability is the "
-                 "calibratedProbability field as stored. Timestamps that are ISO 8601 strings with "
-                 "a Z or an offset are converted to UTC; a value with no Z or offset is read in "
-                 "the local zone of the machine running the tool.",
+                 "location.longitudeE7 divided by 1e7 and read 0.0 when the entry holds no such key; 0.0 "
+                 "there is not a recorded position. Calibrated Probability (as stored) is the "
+                 "calibratedProbability field as stored. Timestamps that are ISO 8601 strings with a Z or "
+                 "an offset are converted to UTC; a value with no Z or offset is read in the local zone of"
+                 " the machine running the tool.",
         "paths": ('*/Location History*/Semantic Location History/*/*_*.json',),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
         "artifact_icon": "map-pin",
@@ -94,7 +94,7 @@ def semanticLocationsMonthPlaces(context):
     data_headers = (('Timestamp', 'datetime'), ('End Timestamp', 'datetime'), 'Record',
                     'Latitude', 'Longitude', 'Additional Latitude', 'Additional Longitude',
                     'Place ID', 'Name', 'Address', 'Device Tag', 'Location Confidence',
-                    'Calculated Probability', 'Visit Confidence', 'Visit Location Confidence',
+                    'Calibrated Probability (as stored)', 'Visit Confidence', 'Visit Location Confidence',
                     'Place Visit Type', 'Place Visit Importance')
     return data_headers, data_list, context.get_relative_path(source_path)
 
