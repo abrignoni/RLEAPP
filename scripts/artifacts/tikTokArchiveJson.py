@@ -602,8 +602,11 @@ _register('tikTokFollowers', 'TikTok Followers', 'users',
           ('Username', ('Date', 'datetime')), _x_followers)
 _register('tikTokFollowing', 'TikTok Following', 'users',
           ('Username', ('Date', 'datetime')), _x_following)
-_register('tikTokHashtagsUsed', 'TikTok Hashtags Used', 'hash',
-          ('Hashtag Name', 'URL'), _x_hashtags_used)
+_register('tikTokHashtagsUsed', 'TikTok Hashtag List', 'hash',
+          ('Hashtag Name', 'URL'), _x_hashtags_used,
+          description="Parses HashtagName and HashtagLink from Hashtag > HashtagList under Your Activity, "
+                      "or Activity when Your Activity is absent. List membership does not establish hashtag use.")
+__artifacts_v2__['tikTokHashtagsUsed']['last_update_date'] = '2026-10-07'
 _register('tikTokLikedVideos', 'TikTok Liked Videos', 'heart',
           ('Link', ('Date', 'datetime')), _x_liked_videos)
 _register('tikTokLoginHistory', 'TikTok Login History', 'login',
