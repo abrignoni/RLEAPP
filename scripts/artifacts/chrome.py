@@ -95,15 +95,15 @@ __artifacts_v2__ = {
         "description": "Preference names with the gender value and birth year stored in each OS "
                        "Priority Preference entry from the Chrome OS Settings.json of a Google "
                        "Takeout.",
-        "author": "@stark4n6 & @upintheairsheep",
+        "author": "@AlexisBrignoni, Codex",
         "creation_date": "2023-08-18",
-        "last_update_date": "2026-06-22",
+        "last_update_date": "2026-10-07",
         "requirements": "none",
         "category": "Google Takeout Archive",
-        "notes": "The User Gender column shows the stored gender value through the module's own "
-                 "mapping (0 Female, 1 Male, 2 Rather not say, any other value Other). No source "
-                 "for that mapping is given. Read the stored value in OS Settings.json before "
-                 "relying on the label.",
+        "notes": "User Gender (as stored) projects the decoded preference JSON's gender value without an enum "
+                 "interpretation. Missing gender or birth_year still follows the existing required-key error behavior. "
+                 "User Birth Year is the stored birth_year value; no event timestamp is inferred. Only the first "
+                 "matching OS Settings.json is read. Original artifact contributions: @stark4n6 and @upintheairsheep.",
         "paths": "*/Chrome/OS Settings.json",
         "output_types": "standard",
         "artifact_icon": "settings",
@@ -406,19 +406,11 @@ def chrome_os_settings(context):
         pref_value = pref['preference']['value']
         preference_value = json.loads(pref_value)
         gender = preference_value['gender']
-        if gender == 0:
-            gender = 'Female'
-        elif gender == 1:
-            gender = 'Male'
-        elif gender == 2:
-            gender = 'Rather not say'
-        else:
-            gender = 'Other'
         birth_year = preference_value['birth_year']
 
         data_list.append((pref_name,gender,birth_year))
 
-    data_headers = ('Preference Name','User Gender','User Birth Year')
+    data_headers = ('Preference Name','User Gender (as stored)','User Birth Year')
     return data_headers, data_list, file_found
     
 @artifact_processor
