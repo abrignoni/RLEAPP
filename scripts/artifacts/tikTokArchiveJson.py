@@ -676,7 +676,15 @@ _register('tikTokGoLiveHistory', 'TikTok Go Live History', 'device-tv',
 _register('tikTokMostRecentLocation', 'TikTok Most Recent Location Data', 'map-pin',
           (('Date', 'datetime'), 'GPS Data', 'Last Region'), _x_most_recent_location)
 _register('tikTokActivitySummary', 'TikTok Your Activity Summary', 'chart-bar',
-          ('Videos Commented On', 'Videos Shared', 'Videos Watched to End'), _x_activity_summary)
+          ('Videos Commented On', 'Videos Shared', 'Videos Watched to End'), _x_activity_summary,
+          description='Selects top-level Your Activity when present; otherwise Activity, then reads the nested Your Activity > '
+                      'Activity Summary > ActivitySummaryMap. A truthy summary mapping produces one row from '
+                      'videosCommentedOnSinceAccountRegistration, videosSharedSinceAccountRegistration and '
+                      "videosWatchedToTheEndSinceAccountRegistration. A missing field is shown as the parser's 0 default; "
+                      'present values, including null, false, empty values, lists and dictionaries, are retained. '
+                      'A missing or falsey summary produces no row. These source-key names do not establish count semantics, '
+                      'account coverage or a time span.')
+__artifacts_v2__['tikTokActivitySummary']['last_update_date'] = '2026-10-07'
 _register('tikTokLocationReviews', 'TikTok Location Reviews', 'map-pin',
           ('Place Name', ('Date', 'datetime'), 'Rating', 'Status', 'Likes', 'Review Text'), _x_location_reviews)
 _register('tikTokRecentlyDeletedPosts', 'TikTok Recently Deleted Posts', 'trash',
