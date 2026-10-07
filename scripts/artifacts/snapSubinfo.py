@@ -2,12 +2,12 @@ __artifacts_v2__ = {
     "snapSubAccountInfo": {
         "name": "Snapchat - Account Information",
         "description": "Account information from a Snapchat law enforcement return (subscriber_info.csv).",
-        "author": "@AlexisBrignoni", "creation_date": "2024-06-13",
-        "last_update_date": "2026-07-09", "requirements": "none",
-        "category": "Snapchat Returns", "notes": "The Verified Email Address and Verified Phone Number columns "
-                                                 "hold email_address and phone_number as listed; the code does "
-                                                 "not check whether either was verified. Email status and "
-                                                 "Phone Status hold email_status and phone_status as listed.",
+        "author": "@AlexisBrignoni, Codex", "creation_date": "2024-06-13",
+        "last_update_date": "2026-10-07", "requirements": "none",
+        "category": "Snapchat Returns", "notes": "Email Address and Phone Number report email_address and phone_number as listed in the matching "
+                                                 "subscriber section. The parser does not check whether either was verified. Email status and Phone "
+                                                 "Status report email_status and phone_status as listed; these values are retained without "
+                                                 "interpreting their meanings. Original artifact contribution: @AlexisBrignoni.",
         "paths": ('*/subscriber_info.csv',), "output_types": "standard", "artifact_icon": "user",
     },
     "snapSubHistory": {
@@ -153,12 +153,12 @@ def snapSubAccountInfo(context):
         context, ('subscriber_info.csv',), ('username', 'user_id', 'created'),
         [('created', ('Timestamp', 'datetime')),
          ('user_id', 'User ID'),
-         ('email_address', 'Verified Email Address'),
+         ('email_address', 'Email Address'),
          ('email_status', 'Email status'),
          ('pending_email_address', 'Pending Email Address'),
          ('username', 'Username'),
          ('creation_ip', 'Creation IP'),
-         ('phone_number', ('Verified Phone Number', 'phonenumber')),
+         ('phone_number', ('Phone Number', 'phonenumber')),
          ('phone_status', 'Phone Status'),
          ('pending_phone_number', ('Pending Phone Number', 'phonenumber')),
          ('former_phone_number', ('Former Phone Number', 'phonenumber')),
