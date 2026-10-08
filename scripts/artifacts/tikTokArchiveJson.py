@@ -589,7 +589,9 @@ _register('tikTokFavoriteEffects', 'TikTok Favorite Effects', 'star',
 _register('tikTokBlockedUsers', 'TikTok Blocked Users', 'user-off',
           ('Username', ('Date', 'datetime')), _x_blocked_users)
 _register('tikTokVideoHistory', 'TikTok Video History', 'history',
-          ('URL', ('Date', 'datetime'), 'Time Per TikTok (s)'), _x_video_history)
+          ('URL', ('Date', 'datetime'), 'Time Per TikTok (as stored)'), _x_video_history,
+          description="Selects top-level Your Activity when present; otherwise Activity, then Watch History when present; otherwise Video Browsing History. For supported mappings, each VideoList entry supplies Link, Date and the raw timepertiktok value. A missing Link or Date uses the parser's blank default; Date follows the existing timestamp handling. Missing timepertiktok is shown as the parser's 0 default; present values, including null, false, empty values, lists and dictionaries, are retained. Missing VideoList produces no rows. The timepertiktok source key does not establish seconds, a duration or watch completion.")
+__artifacts_v2__['tikTokVideoHistory']['last_update_date'] = '2026-10-07'
 _register('tikTokComments', 'TikTok Comments', 'message',
           ('Comment', ('Date', 'datetime')), _x_comments)
 _register('tikTokFavoriteHashtags', 'TikTok Favorite Hashtags', 'hash',
