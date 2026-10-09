@@ -626,21 +626,38 @@ _register('tikTokUploadedVideos', 'TikTok Uploaded Videos', 'video',
 _register('tikTokOffTikTokActivity', 'TikTok Off-TikTok Activity', 'external-link',
           (('Timestamp', 'datetime'), 'Source', 'Event'), _x_off_tiktok_activity)
 _register('tikTokDirectMessages', 'TikTok Direct Messages', 'message-2',
-          (('Date', 'datetime'), 'Chat With', 'Sender', 'Content'), _x_direct_messages)
+          (('Date', 'datetime'), 'Chat With', 'Sender', 'Content'), _x_direct_messages,
+          description="Date, From and Content of each message under Direct Message (or Direct Messages) > "
+                      "Direct Messages (or Chat History) > ChatHistory. Chat With is the ChatHistory key "
+                      "with the text 'Chat History with ' and any trailing colon removed.")
+__artifacts_v2__['tikTokDirectMessages']['last_update_date'] = '2026-10-09'
 _register('tikTokProfileAutoFill', 'TikTok Profile Auto Fill', 'forms',
           (('Phone Number', 'phonenumber'), 'Email', 'First Name', 'Last Name', 'Address', 'Zip Code',
-           'Unit', 'City', 'State', 'Country'), _x_profile_auto_fill)
+           'Unit', 'City', 'State', 'Country'), _x_profile_auto_fill,
+          description="One row from Profile > Autofill (or Auto Fill) when that mapping holds any key: "
+                      "PhoneNumber, Email, FirstName, LastName, Address, ZipCode, Unit, City, State and "
+                      "Country as stored. A key the export does not carry shows the parser's 'N/A'.")
+__artifacts_v2__['tikTokProfileAutoFill']['last_update_date'] = '2026-10-09'
 _register('tikTokProfileInformation', 'TikTok Profile Information', 'user',
           ('Username', 'Bio Description', 'Birth Date', 'Email Address', ('Telephone Number', 'phonenumber'),
            'Likes Received', 'Profile Photo URL', 'Profile Video URL'), _x_profile_information)
 _register('tikTokAiMoji', 'TikTok AI-Moji', 'mood-smile',
           (('Create Date', 'datetime'), 'AI Moji List (JSON)'), _x_ai_moji)
 _register('tikTokWatchLiveHistory', 'TikTok Watch Live History', 'device-tv',
-          ('Live ID', ('Watch Time', 'datetime'), 'Link'), _x_watch_live_history)
+          ('Live ID', ('Watch Time', 'datetime'), 'Link'), _x_watch_live_history,
+          description="One row per entry of Tiktok Live > Watch Live History > WatchLiveMap: the entry's key "
+                      "as Live ID, with its WatchTime and Link. An entry keyed '-1' that has no Link is "
+                      "skipped.")
+__artifacts_v2__['tikTokWatchLiveHistory']['last_update_date'] = '2026-10-09'
 _register('tikTokWatchLiveSettings', 'TikTok Watch Live Settings', 'settings',
           ('App Setting', 'Web Setting', ('App Mod Time', 'datetime'), ('Web Mod Time', 'datetime')), _x_watch_live_settings)
 _register('tikTokWatchLiveInteractions', 'TikTok Watch Live Interactions', 'messages',
-          ('Live ID', ('Live Watch Time', 'datetime'), 'Interaction Type', ('Interaction Time', 'datetime'), 'Content'), _x_watch_live_interactions)
+          ('Live ID', ('Live Watch Time', 'datetime'), 'Interaction Type', ('Interaction Time', 'datetime'), 'Content'), _x_watch_live_interactions,
+          description="One row per item of the Comments and Questions lists of each entry of Tiktok Live > "
+                      "Watch Live History > WatchLiveMap, with the entry's key as Live ID and its WatchTime. "
+                      "Interaction Type is the parser's label for the list the item came from. An entry "
+                      "keyed '-1' that has no Link is skipped, and an entry with neither list gives no row.")
+__artifacts_v2__['tikTokWatchLiveInteractions']['last_update_date'] = '2026-10-09'
 _register('tikTokAppSettings', 'TikTok App Settings', 'settings',
           ('Setting Name', 'Setting Value'), _x_app_settings)
 _register('tikTokGoLiveSettings', 'TikTok Go Live Settings', 'settings',
@@ -676,7 +693,12 @@ _register('tikTokGoLiveHistory', 'TikTok Go Live History', 'device-tv',
           (('Start Time', 'datetime'), ('End Time', 'datetime'), 'Duration', 'Room ID', 'Room Title', 'Cover URI',
            'Replay URL', 'Total Earning', 'Total Likes', 'Total Views', 'Total Gifters', 'Quality Setting', 'Muted List'), _x_go_live_history)
 _register('tikTokMostRecentLocation', 'TikTok Most Recent Location Data', 'map-pin',
-          (('Date', 'datetime'), 'GPS Data', 'Last Region'), _x_most_recent_location)
+          (('Date', 'datetime'), 'GPS Data', 'Last Region'), _x_most_recent_location,
+          description="One row from Most Recent Location Data > LocationData under Your Activity (or Activity "
+                      "when Your Activity is absent), when that mapping holds any key: Date, GpsData and "
+                      "LastRegion as stored. A missing GpsData or LastRegion shows the parser's 'N/A'. "
+                      "What the Date marks is not established.")
+__artifacts_v2__['tikTokMostRecentLocation']['last_update_date'] = '2026-10-09'
 _register('tikTokActivitySummary', 'TikTok Your Activity Summary', 'chart-bar',
           ('Videos Commented On', 'Videos Shared', 'Videos Watched to End'), _x_activity_summary,
           description='Selects top-level Your Activity when present; otherwise Activity, then reads the nested Your Activity > '

@@ -50,8 +50,8 @@ class TestTwitterLikeText(unittest.TestCase):
         self.assertEqual(headers, ('Tweet ID', 'Full Text', 'Expanded URL'))
         self.assertEqual(rows, EXPECTED)
         self.assertEqual(source, 'CONSTRUCTED/account-like.txt')
-        # Other return artifacts retain their previously documented interpretation.
-        self.assertEqual(getattr(artifact, '_value')('"text": "a,b: c",'), 'ab')
+        # The shared helper decodes a JSON string whole, keeping its punctuation.
+        self.assertEqual(getattr(artifact, '_value')('"text": "a,b: c",'), 'a,b: c')
 
     def test_invalid_records_do_not_reuse_prior_text(self):
         with tempfile.TemporaryDirectory() as directory:

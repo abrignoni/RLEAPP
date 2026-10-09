@@ -2,12 +2,12 @@ __artifacts_v2__ = {
     "tweets": {
         "name": "Tweets",
         "description": "Tweets from the tweets file of a Twitter return, with time, text, the "
-                       "first matched file whose path contains the tweet id (one file per row, even "
-                       "when more exist), tweet id, edit info, the retweeted value as stored and "
-                       "entities.",
+                       "first matched file in the tweets media folder whose name contains the tweet "
+                       "id (one file per row, even when more exist), tweet id, edit info, the "
+                       "retweeted value as stored and entities.",
         "author": "@AlexisBrignoni",
         "creation_date": "2025-06-23",
-        "last_update_date": "2025-06-23",
+        "last_update_date": "2026-10-09",
         "requirements": "none",
         "category": "Twitter",
         "notes": "",
@@ -18,12 +18,12 @@ __artifacts_v2__ = {
     "deltweets": {
         "name": "Deleted Tweets",
         "description": "Deleted tweets from the deleted-tweets file of a Twitter return, with "
-                       "time, text, the first matched file whose path contains the tweet id (one "
-                       "file per row, even when more exist), tweet id, edit info, the retweeted "
-                       "value as stored and entities.",
+                       "time, text, the first matched file in the deleted tweets media folder whose "
+                       "name contains the tweet id (one file per row, even when more exist), tweet "
+                       "id, edit info, the retweeted value as stored and entities.",
         "author": "@AlexisBrignoni",
         "creation_date": "2025-06-24",
-        "last_update_date": "2025-06-24",
+        "last_update_date": "2026-10-09",
         "requirements": "none",
         "category": "Twitter",
         "notes": "",
@@ -50,11 +50,12 @@ __artifacts_v2__ = {
         "name": "Deleted Twitter DMs",
         "description": "Deleted direct messages from the deleted-direct-messages file of a "
                        "Twitter return, with time, sender and recipient ids, text, the first "
-                       "matched file whose path contains the message id (one file per row, even "
-                       "when more exist), conversation id, media URLs and reactions.",
+                       "matched file in the deleted direct messages media folder whose name "
+                       "contains the message id (one file per row, even when more exist), "
+                       "conversation id, media URLs and reactions.",
         "author": "@AlexisBrignoni",
         "creation_date": "2025-07-01",
-        "last_update_date": "2025-07-01",
+        "last_update_date": "2026-10-09",
         "requirements": "none",
         "category": "Twitter",
         "notes": "",
@@ -85,6 +86,29 @@ import json
 from pathlib import Path
 
 from scripts.ilapfuncs import artifact_processor, check_in_media
+
+def _media_for(files_found, ident, folder_suffix):
+    """Return the first matched file in a media folder whose name contains ident.
+
+    Only the file name is tested, never the folders above it.
+    """
+    if not ident:
+        return ''
+    ident = str(ident)
+    for candidate in files_found:
+        candidate = str(candidate)
+        media_path = Path(candidate)
+        if media_path.name.startswith('.') or not os.path.isfile(candidate):
+            continue
+        folder = media_path.parent.name
+        if not folder.endswith(folder_suffix):
+            continue
+        if folder_suffix == '_tweets_media' and folder.endswith('_deleted_tweets_media'):
+            continue
+        if ident in media_path.name:
+            return check_in_media(candidate, media_path.name)
+    return ''
+
 
 def load_json_from_signed_file(filepath):
     with open(filepath, 'r', encoding='utf-8') as f:
@@ -151,17 +175,7 @@ def tweets(context):
                 
                 entities = (items['tweet'].get('entities'))
             
-                media_item = ''
-                
-                for tentative_media in files_found:
-                    if idstr in tentative_media:
-                        media_path = Path(tentative_media )
-                        
-                        filenamem = (media_path.name)
-                        
-                        #logfunc(f'{filename}-{artifact_info}')
-                        media_item = check_in_media(tentative_media, filenamem)
-                        break
+                media_item = _media_for(files_found, idstr, '_tweets_media')
                 
                 data_list.append((timestamp, idstr, fulltext, media_item, tweetid,
                                     initial, retweeted, entities, filename))
@@ -215,18 +229,8 @@ def deltweets(context):
                 
                 entities = (items['tweet'].get('entities'))
                 
-                media_item = ''
-                
-                for tentative_media in files_found:
-                    if idstr in tentative_media:
-                        media_path = Path(tentative_media )
-                        
-                        filenamem = (media_path.name)
-                        
-                        #logfunc(f'{tentative_media}-{filenamem}')
-                        media_item = check_in_media(tentative_media, filenamem)
-                        break
-                    
+                media_item = _media_for(files_found, idstr, '_deleted_tweets_media')
+
                 data_list.append((timestamp, idstr, fulltext, media_item, tweetid,
                                     initial, retweeted, entities, filename))
                 
@@ -322,18 +326,8 @@ def deleteddmtwitter(context):
                     mediaurls = message['messageCreate']['mediaUrls']
                     reactions = message['messageCreate']['reactions']
                     
-                    media_item = ''
-                    
-                    for tentative_media in files_found:
-                        if idstr in tentative_media:
-                            media_path = Path(tentative_media )
-                            
-                            filenamem = (media_path.name)
-                            
-                            #logfunc(f'{tentative_media}-{filenamem}')
-                            media_item = check_in_media(tentative_media, filenamem)
-                            break
-                    
+                    media_item = _media_for(files_found, idstr, '_deleted_direct_messages_media')
+
                     data_list.append((timestamp,senderid,recipientid,text,media_item,convid,mediaurls,reactions,filename))
                     
     data_headers = (('Timestamp', 'datetime'),'Sender ID','Recipient ID','Text',('Image', 'media'),'Conversation ID','Media URLs','Reactions','File Source')

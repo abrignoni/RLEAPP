@@ -1,43 +1,233 @@
-def _meta(name, paths, icon, description=None):
-    meta = {"name": f"Twitter Returns - {name}",
-            "description": description or f"{name} from a Twitter law enforcement return.",
-            "author": "@AlexisBrignoni, Codex", "creation_date": "2022-06-12",
-            "last_update_date": "2026-10-04", "requirements": "none",
-            "category": "Twitter Returns", "notes": "Time columns preserve mixed values as text and do not populate timeline/date filters.", "paths": paths,
-            "output_types": "standard", "artifact_icon": icon}
-    return meta
-
-
 __artifacts_v2__ = {
-    "twitterDirectMessages": _meta("Direct Messages", ('**/*-direct-messages.txt',), "message-circle",
-        description="Direct messages from the direct-messages file of a Twitter law enforcement "
-                    "return. Text has commas and double quotes removed and is cut at the first "
-                    "colon followed by a space. Only the first media URL, reaction and URL are "
-                    "read. Reaction Timestamp is read from the first reaction when its labelled "
-                    "timestamp field is present."),
-    "twitterAccountCreationIp": _meta("Account Creation IP", ('**/*-account-creation-ip.txt',),
-                                      "globe"),
-    "twitterAccountSuspension": _meta("Account Suspension", ('**/*-account-suspension.txt',),
-                                      "alert-octagon"),
-    "twitterAccount": _meta("Account", ('**/*-account.txt',), "user"),
-    "twitterAgeInfo": _meta("Age Info", ('**/*-ageinfo.txt',), "calendar"),
-    "twitterBlock": _meta("Block", ('**/*-block.txt',), "slash"),
-    "twitterDeviceToken": _meta("Device Token", ('**/*-device-token.txt',), "smartphone"),
-    "twitterFollower": _meta("Follower", ('**/*-follower.txt',), "users"),
-    "twitterFollowing": _meta("Following", ('**/*-following.txt',), "users"),
-    "twitterIpAudit": _meta("IP Audit", ('**/*-ip-audit.txt',), "log-in"),
-    "twitterLike": _meta("Like", ('**/*-like.txt',), "heart",
-        description="Liked tweets from the like file of a Twitter law enforcement return. "
-                    "Tweet ID, Full Text and Expanded URL are decoded from JSON string fields "
-                    "in the line-oriented return, preserving punctuation and escaped text. "
-                    "Records with malformed or non-string fields are skipped and logged."),
-    "twitterMute": _meta("Mute", ('**/*-mute.txt',), "volume-x"),
-    "twitterTweet": _meta("Tweet", ('**/*-tweet.txt',), "twitter",
-        description="Tweets from the tweet file of a Twitter law enforcement return. Full Text "
-                    "has commas and double quotes removed and is cut where a colon, a space and "
-                    "a double quote appear inside it. created_at is converted using its printed "
-                    "offset. The first media_url line is not read. Video is linked only for a "
-                    "variant listed at bitrate 2176000."),
+    'twitterDirectMessages': {
+        'name': 'Twitter Returns - Direct Messages',
+        'description': (
+            'Direct messages from the direct-messages file of a Twitter law enforcement return. '
+            'String values are decoded as the JSON string printed on each line, keeping commas, '
+            'double quotes and colons. Only the first media URL, reaction and URL of a message '
+            'are read. Reaction Timestamp is read from the first reaction when its labelled '
+            'timestamp field is present.'
+        ),
+        'author': '@AlexisBrignoni, Codex',
+        'creation_date': '2022-06-12',
+        'last_update_date': '2026-10-09',
+        'requirements': 'none',
+        'category': 'Twitter Returns',
+        'notes': (
+            'Time columns preserve mixed values as text and do not populate timeline/date '
+            'filters.'
+        ),
+        'paths': ('**/*-direct-messages.txt',),
+        'output_types': 'standard',
+        'artifact_icon': 'message-circle',
+    },
+    'twitterAccountCreationIp': {
+        'name': 'Twitter Returns - Account Creation IP',
+        'description': 'Account Creation IP from a Twitter law enforcement return.',
+        'author': '@AlexisBrignoni, Codex',
+        'creation_date': '2022-06-12',
+        'last_update_date': '2026-10-09',
+        'requirements': 'none',
+        'category': 'Twitter Returns',
+        'notes': (
+            'Time columns preserve mixed values as text and do not populate timeline/date '
+            'filters.'
+        ),
+        'paths': ('**/*-account-creation-ip.txt',),
+        'output_types': 'standard',
+        'artifact_icon': 'globe',
+    },
+    'twitterAccountSuspension': {
+        'name': 'Twitter Returns - Account Suspension',
+        'description': 'Account Suspension from a Twitter law enforcement return.',
+        'author': '@AlexisBrignoni, Codex',
+        'creation_date': '2022-06-12',
+        'last_update_date': '2026-10-09',
+        'requirements': 'none',
+        'category': 'Twitter Returns',
+        'notes': (
+            'Time columns preserve mixed values as text and do not populate timeline/date '
+            'filters.'
+        ),
+        'paths': ('**/*-account-suspension.txt',),
+        'output_types': 'standard',
+        'artifact_icon': 'alert-octagon',
+    },
+    'twitterAccount': {
+        'name': 'Twitter Returns - Account',
+        'description': (
+            'Account details from the account file of a Twitter law enforcement return. String '
+            'values are decoded as the JSON string printed on each line, keeping commas, double '
+            'quotes and colons.'
+        ),
+        'author': '@AlexisBrignoni, Codex',
+        'creation_date': '2022-06-12',
+        'last_update_date': '2026-10-09',
+        'requirements': 'none',
+        'category': 'Twitter Returns',
+        'notes': (
+            'Time columns preserve mixed values as text and do not populate timeline/date '
+            'filters.'
+        ),
+        'paths': ('**/*-account.txt',),
+        'output_types': 'standard',
+        'artifact_icon': 'user',
+    },
+    'twitterAgeInfo': {
+        'name': 'Twitter Returns - Age Info',
+        'description': 'Age Info from a Twitter law enforcement return.',
+        'author': '@AlexisBrignoni, Codex',
+        'creation_date': '2022-06-12',
+        'last_update_date': '2026-10-09',
+        'requirements': 'none',
+        'category': 'Twitter Returns',
+        'notes': (
+            'Time columns preserve mixed values as text and do not populate timeline/date '
+            'filters.'
+        ),
+        'paths': ('**/*-ageinfo.txt',),
+        'output_types': 'standard',
+        'artifact_icon': 'calendar',
+    },
+    'twitterBlock': {
+        'name': 'Twitter Returns - Block',
+        'description': 'Block from a Twitter law enforcement return.',
+        'author': '@AlexisBrignoni, Codex',
+        'creation_date': '2022-06-12',
+        'last_update_date': '2026-10-09',
+        'requirements': 'none',
+        'category': 'Twitter Returns',
+        'notes': (
+            'Time columns preserve mixed values as text and do not populate timeline/date '
+            'filters.'
+        ),
+        'paths': ('**/*-block.txt',),
+        'output_types': 'standard',
+        'artifact_icon': 'slash',
+    },
+    'twitterDeviceToken': {
+        'name': 'Twitter Returns - Device Token',
+        'description': 'Device Token from a Twitter law enforcement return.',
+        'author': '@AlexisBrignoni, Codex',
+        'creation_date': '2022-06-12',
+        'last_update_date': '2026-10-09',
+        'requirements': 'none',
+        'category': 'Twitter Returns',
+        'notes': (
+            'Time columns preserve mixed values as text and do not populate timeline/date '
+            'filters.'
+        ),
+        'paths': ('**/*-device-token.txt',),
+        'output_types': 'standard',
+        'artifact_icon': 'smartphone',
+    },
+    'twitterFollower': {
+        'name': 'Twitter Returns - Follower',
+        'description': 'Follower from a Twitter law enforcement return.',
+        'author': '@AlexisBrignoni, Codex',
+        'creation_date': '2022-06-12',
+        'last_update_date': '2026-10-09',
+        'requirements': 'none',
+        'category': 'Twitter Returns',
+        'notes': (
+            'Time columns preserve mixed values as text and do not populate timeline/date '
+            'filters.'
+        ),
+        'paths': ('**/*-follower.txt',),
+        'output_types': 'standard',
+        'artifact_icon': 'users',
+    },
+    'twitterFollowing': {
+        'name': 'Twitter Returns - Following',
+        'description': 'Following from a Twitter law enforcement return.',
+        'author': '@AlexisBrignoni, Codex',
+        'creation_date': '2022-06-12',
+        'last_update_date': '2026-10-09',
+        'requirements': 'none',
+        'category': 'Twitter Returns',
+        'notes': (
+            'Time columns preserve mixed values as text and do not populate timeline/date '
+            'filters.'
+        ),
+        'paths': ('**/*-following.txt',),
+        'output_types': 'standard',
+        'artifact_icon': 'users',
+    },
+    'twitterIpAudit': {
+        'name': 'Twitter Returns - IP Audit',
+        'description': 'IP Audit from a Twitter law enforcement return.',
+        'author': '@AlexisBrignoni, Codex',
+        'creation_date': '2022-06-12',
+        'last_update_date': '2026-10-09',
+        'requirements': 'none',
+        'category': 'Twitter Returns',
+        'notes': (
+            'Time columns preserve mixed values as text and do not populate timeline/date '
+            'filters.'
+        ),
+        'paths': ('**/*-ip-audit.txt',),
+        'output_types': 'standard',
+        'artifact_icon': 'log-in',
+    },
+    'twitterLike': {
+        'name': 'Twitter Returns - Like',
+        'description': (
+            'Liked tweets from the like file of a Twitter law enforcement return. Tweet ID, Full '
+            'Text and Expanded URL are decoded from JSON string fields in the line-oriented '
+            'return, preserving punctuation and escaped text. Records with malformed or '
+            'non-string fields are skipped and logged.'
+        ),
+        'author': '@AlexisBrignoni, Codex',
+        'creation_date': '2022-06-12',
+        'last_update_date': '2026-10-09',
+        'requirements': 'none',
+        'category': 'Twitter Returns',
+        'notes': (
+            'Time columns preserve mixed values as text and do not populate timeline/date '
+            'filters.'
+        ),
+        'paths': ('**/*-like.txt',),
+        'output_types': 'standard',
+        'artifact_icon': 'heart',
+    },
+    'twitterMute': {
+        'name': 'Twitter Returns - Mute',
+        'description': 'Mute from a Twitter law enforcement return.',
+        'author': '@AlexisBrignoni, Codex',
+        'creation_date': '2022-06-12',
+        'last_update_date': '2026-10-09',
+        'requirements': 'none',
+        'category': 'Twitter Returns',
+        'notes': (
+            'Time columns preserve mixed values as text and do not populate timeline/date '
+            'filters.'
+        ),
+        'paths': ('**/*-mute.txt',),
+        'output_types': 'standard',
+        'artifact_icon': 'volume-x',
+    },
+    'twitterTweet': {
+        'name': 'Twitter Returns - Tweet',
+        'description': (
+            'Tweets from the tweet file of a Twitter law enforcement return. Full Text is decoded '
+            'as the JSON string printed on its line, keeping commas, double quotes and colons. '
+            'created_at is converted using its printed offset. Each distinct media_url file name '
+            "of a tweet is looked up once among the return's media files. Video is linked only "
+            'for a variant listed at bitrate 2176000.'
+        ),
+        'author': '@AlexisBrignoni, Codex',
+        'creation_date': '2022-06-12',
+        'last_update_date': '2026-10-09',
+        'requirements': 'none',
+        'category': 'Twitter Returns',
+        'notes': (
+            'Time columns preserve mixed values as text and do not populate timeline/date '
+            'filters.'
+        ),
+        'paths': ('**/*-tweet.txt',),
+        'output_types': 'standard',
+        'artifact_icon': 'twitter',
+    },
 }
 
 import os
@@ -70,6 +260,18 @@ def _to_utc(value):
 
 
 def _value(line):
+    """Return the value printed after a line's first colon.
+
+    A JSON string is decoded whole, so commas, double quotes and colons inside
+    it are kept. Any other value is returned as printed.
+    """
+    payload = line.partition(':')[2].strip()
+    try:
+        value, end = json.JSONDecoder().raw_decode(payload)
+    except ValueError:
+        value, end = None, 0
+    if isinstance(value, str) and payload[end:].strip() in ('', ','):
+        return value
     return line.split(': ')[1].replace('"', '').replace(',', '').strip()
 
 
@@ -161,7 +363,7 @@ def twitterAccount(context):
                 elif '"username"' in line:
                     usern = _value(line)
                 elif '"accountDisplayName"' in line:
-                    accdn = line.split(': ')[1].replace('"', '').strip()
+                    accdn = _value(line)
         data_list.append((_to_utc(timestamp), accountid, email, cvia, usern, accdn))
     data_headers = ('Created At', 'Account ID', 'Email', 'Created Via', 'Username',
                     'Account Display Name')
@@ -332,9 +534,9 @@ def twitterDirectMessages(context):
                         reactkey = rsenderid = reventid = rtimestamp = ''
                     else:
                         next(f)
-                        rsenderid = next(f).split(' : ')[1].replace('"', '').replace(',', '').strip()
-                        reactkey = next(f).split(' : ')[1].replace('"', '').replace(',', '').strip()
-                        reventid = next(f).split(' : ')[1].replace('"', '').replace(',', '').strip()
+                        rsenderid = _value(next(f))
+                        reactkey = _value(next(f))
+                        reventid = _value(next(f))
                         extraline = next(f)
                         if 'timestamp' in extraline.lower() or 'createdat' in extraline.lower():
                             rtimestamp = timestamps(extraline)
@@ -369,7 +571,8 @@ def twitterTweet(context):
         if not os.path.basename(file_found).endswith('-tweet.txt'):
             continue
         source_path = file_found
-        msgbase = mediabase = 0
+        msgbase = 0
+        media_seen = set()
         media_refs, video_ref = [], ''
         createdat = fulltext = ''
         with open(file_found, encoding='utf-8') as f:
@@ -380,7 +583,7 @@ def twitterTweet(context):
                     else:
                         data_list.append((_to_utc(_tweet_date(createdat)), fulltext, media_refs,
                                           video_ref))
-                        mediabase = 0
+                        media_seen = set()
                         fulltext = ''
                         media_refs, video_ref = [], ''
                 elif "-----END PGP SIGNATURE-----" in line:
@@ -390,17 +593,16 @@ def twitterTweet(context):
                 elif '"created_at" : ' in line:
                     createdat = _value(line)
                 elif '"full_text" : ' in line:
-                    fulltext = line.split(': "')[1].replace(',', '').replace('"', '').strip()
+                    fulltext = _value(line)
                 elif '"media_url" : ' in line:
-                    if mediabase == 0:
-                        mediabase = 1
-                    else:
-                        ident = line.split(': ')[1].replace(',', '').replace('"', '').strip()
-                        ident = ident.split('/')[-1].split('.')[0]
+                    # The same media_url is printed under entities and again under
+                    # extended_entities, so each file name is looked up once per tweet.
+                    ident = _value(line).split('/')[-1].split('.')[0]
+                    if ident and ident not in media_seen:
+                        media_seen.add(ident)
                         ref = check_in_media(ident, ident)
                         if ref:
                             media_refs.append(ref)
-                        mediabase = 2
                 elif '"bitrate" : "2176000"' in line:
                     next(f)
                     videomedia = next(f).split('/')[-1].split('?')[0].replace('"', '').strip()

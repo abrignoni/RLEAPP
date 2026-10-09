@@ -3,14 +3,18 @@ __artifacts_v2__ = {
         "name": "Messages",
         "description": "Messages from a Facebook Messenger JSON export. Outgoing is set by "
                        "treating the first listed participant as the account owner, which the "
-                       "export is not shown to state; when a message lists several media items "
-                       "only the last is shown.",
+                       "export is not shown to state.",
         "author": "@C_Peter",
         "creation_date": "2026-06-01",
-        "last_update_date": "2026-06-01",
+        "last_update_date": "2026-10-09",
         "requirements": "none",
         "category": "Facebook Messenger",
-        "notes": "",
+        "notes": "Outgoing, Sender and Receiver depend on treating the first listed participant as "
+                 "the account owner; the export is not shown to state which participant that is, so "
+                 "confirm direction against the participants list. Attachment File shows the first "
+                 "media item of a message that resolves to a file in the export. Attachment URIs (as "
+                 "stored) lists the uri value of every media item of the message, one per line, in "
+                 "stored order, including items the export marks as not downloaded.",
         "paths": ('*/*.json','*/media/*',),
         "output_types": "standard",
         'artifact_icon': 'message',
@@ -77,15 +81,15 @@ def get_fb_messages(context):
                 time_utc = datetime.datetime.fromtimestamp(timestamp/1000, tz=datetime.timezone.utc)
                 message = x.get('text', '')
                 media = x.get('media', None)
-                if media:
-                    for entry in media:
-                        fpath = entry.get("uri")
-                        if "Failed to download media" in fpath:
-                            attach_file = None
-                        else:
-                            attach_file = check_in_media(fpath, fpath)
-                else:
-                    attach_file = None
+                attach_file = None
+                media_uris = []
+                for entry in media if isinstance(media, list) else []:
+                    fpath = entry.get("uri") if isinstance(entry, dict) else None
+                    if not isinstance(fpath, str) or not fpath:
+                        continue
+                    media_uris.append(fpath)
+                    if attach_file is None and "Failed to download media" not in fpath:
+                        attach_file = check_in_media(fpath, fpath)
                 if sender_name == owner:
                     out = 1
                     receiver = without_owner
@@ -93,8 +97,9 @@ def get_fb_messages(context):
                     out = 0
                     without_sender = [p for p in participants if p != sender_name]
                     receiver = ", ".join(without_sender)
-                data_list.append((time_utc, out, sender_name, thread, message, attach_file, receiver, unsent))
+                data_list.append((time_utc, out, sender_name, thread, message, attach_file,
+                                  '\n'.join(media_uris), receiver, unsent))
 
-    data_headers = (('Timestamp', 'datetime'), "Outgoing", "Sender", "Thread", "Message", ('Attachment File', 'media'), "Receiver", "Unsent")
+    data_headers = (('Timestamp', 'datetime'), "Outgoing", "Sender", "Thread", "Message", ('Attachment File', 'media'), "Attachment URIs (as stored)", "Receiver", "Unsent")
 
     return data_headers, data_list, '\n'.join(sorted(source_paths))
