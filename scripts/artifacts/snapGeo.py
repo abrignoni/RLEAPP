@@ -4,12 +4,13 @@ __artifacts_v2__ = {
         "description": "Geolocation (latitude,longitude,timestamp format) from a Snapchat law enforcement return (geo_locations.csv).",
         "author": "@AlexisBrignoni",
         "creation_date": "2024-06-13",
-        "last_update_date": "2026-07-09",
+        "last_update_date": "2026-10-09",
         "requirements": "none",
         "category": "Snapchat Returns",
         "notes": "Update by Shawn Ramsey 2024-08-05. Latitude and Longitude are the number before "
-                 "the ± sign in each cell. Accuracy is the figure after the ± sign in the latitude "
-                 "cell; the figure in the longitude cell is not reported.",
+                 "the ± sign in each cell. Latitude Accuracy and Longitude Accuracy are the text "
+                 "after the ± sign in the latitude cell and in the longitude cell, as stored; a "
+                 "cell with no such text gives a blank.",
         "paths": ('*/geo_locations.csv',),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
         "artifact_icon": "map-pin",
@@ -124,13 +125,14 @@ def snapGeolocation(context):
     data_list = []
     for values in rows:
         # Coordinates come as "34.47359 ± 39.66 meters"; the accuracy is embedded.
+        # Each cell carries its own figure, so both are reported.
         lat_parts = values.get('latitude', '').split(' ')
-        lat = lat_parts[0]
-        accuracy = lat_parts[2] + ' meters' if len(lat_parts) > 2 else ''
-        lon = values.get('longitude', '').split(' ')[0]
-        data_list.append((_snap_ts(values.get('timestamp', '')), lat, lon, accuracy))
+        lon_parts = values.get('longitude', '').split(' ')
+        data_list.append((_snap_ts(values.get('timestamp', '')), lat_parts[0], lon_parts[0],
+                          ' '.join(lat_parts[2:]), ' '.join(lon_parts[2:])))
 
-    data_headers = (('Timestamp', 'datetime'), 'Latitude', 'Longitude', 'Accuracy')
+    data_headers = (('Timestamp', 'datetime'), 'Latitude', 'Longitude', 'Latitude Accuracy',
+                    'Longitude Accuracy')
     return data_headers, data_list, context.get_relative_path(source_path)
 
 

@@ -4,12 +4,12 @@ __artifacts_v2__ = {
         "description": "Parses placeVisit entries from Google Takeout per-month Semantic Location History JSON files",
         "author": "@AlexisBrignoni, Codex",
         "creation_date": "2023-05-28",
-        "last_update_date": "2026-10-07",
+        "last_update_date": "2026-10-09",
         "requirements": "none",
         "category": "Google Takeout Archive",
         "notes": "Additional Latitude and Additional Longitude are location.latitudeE7 and "
-                 "location.longitudeE7 divided by 1e7 and read 0.0 when the entry holds no such key; 0.0 "
-                 "there is not a recorded position. Calibrated Probability (as stored) is the "
+                 "location.longitudeE7 divided by 1e7 and are blank when the entry holds no such key. "
+                 "Calibrated Probability (as stored) is the "
                  "calibratedProbability field as stored. Timestamps that are ISO 8601 strings with a Z or "
                  "an offset are converted to UTC; a value with no Z or offset is read in the local zone of"
                  " the machine running the tool.",
@@ -22,17 +22,18 @@ __artifacts_v2__ = {
         "description": "Parses activitySegment entries from Google Takeout per-month Semantic Location History JSON files",
         "author": "@AlexisBrignoni",
         "creation_date": "2023-05-28",
-        "last_update_date": "2026-06-27",
+        "last_update_date": "2026-10-09",
         "requirements": "none",
         "category": "Google Takeout Archive",
         "notes": "Start/End/Parking coordinates are separate columns. When a segment has "
                  "waypoints, the Waypoints cell lists the start coordinate, then the end "
                  "coordinate, then each waypoint in file order. No KML file is written for this "
-                 "artifact. Highest Activity Type Probability and Activity High Probability "
-                 "Percentage are the activityType and probability of the first entry of the "
-                 "activities list as stored; the list is not sorted here. Parking Location "
-                 "Latitude and Longitude read 0.0 when the parking event holds no coordinates; 0.0 "
-                 "there is not a recorded position. Timestamps that are ISO 8601 strings with a Z "
+                 "artifact. First Listed Activity Type and First Listed Activity Probability "
+                 "are the activityType and probability of the first entry of the "
+                 "activities list as stored; the list is not sorted here, and whether its first "
+                 "entry is the most probable one is not established. Parking Location "
+                 "Latitude and Longitude are blank when the parking event holds no such key. "
+                 "Timestamps that are ISO 8601 strings with a Z "
                  "or an offset are converted to UTC; a value with no Z or offset is read in the "
                  "local zone of the machine running the tool.",
         "paths": ('*/Location History*/Semantic Location History/*/*_*.json',),
@@ -56,6 +57,13 @@ def _iso_to_utc(value):
         return datetime.fromisoformat(value.replace('Z', '+00:00')).astimezone(timezone.utc)
     except (ValueError, AttributeError):
         return value
+
+
+def _e7(value):
+    """An E7 coordinate as degrees; blank when the key is absent."""
+    if value is None or isinstance(value, bool) or not isinstance(value, (int, float)):
+        return ''
+    return value / 1e7
 
 
 @artifact_processor
@@ -84,7 +92,7 @@ def semanticLocationsMonthPlaces(context):
                 _iso_to_utc(duration.get('startTimestamp', '')),
                 _iso_to_utc(duration.get('endTimestamp', '')), 'placeVisit',
                 center_lat, center_lng,
-                location.get('latitudeE7', 0) / 1e7, location.get('longitudeE7', 0) / 1e7,
+                _e7(location.get('latitudeE7')), _e7(location.get('longitudeE7')),
                 location.get('placeId', ''), location.get('name', ''), location.get('address', ''),
                 devicetag, location.get('locationConfidence', ''),
                 location.get('calibratedProbability', ''), pv.get('visitConfidence', ''),
@@ -140,8 +148,8 @@ def semanticLocationsMonthActivity(context):
             parking = seg.get('parkingEvent', {})
             if parking:
                 ploc = parking.get('location', {})
-                parking_lat = ploc.get('latitudeE7', 0) / 1e7
-                parking_lon = ploc.get('longitudeE7', 0) / 1e7
+                parking_lat = _e7(ploc.get('latitudeE7'))
+                parking_lon = _e7(ploc.get('longitudeE7'))
                 parking_acc = ploc.get('accuracyMetres', '')
                 parking_time = _iso_to_utc(parking.get('timestamp', ''))
             else:
@@ -156,8 +164,8 @@ def semanticLocationsMonthActivity(context):
 
     data_headers = (('Timestamp', 'datetime'), ('End Timestamp', 'datetime'), 'Record',
                     'Start Latitude', 'Start Longitude', 'End Latitude', 'End Longitude',
-                    'Distance', 'Activity Type', 'Confidence', 'Highest Activity Type Probability',
-                    'Activity High Probability Percentage', 'Waypoints',
+                    'Distance', 'Activity Type', 'Confidence', 'First Listed Activity Type',
+                    'First Listed Activity Probability', 'Waypoints',
                     ('Parking Location Time', 'datetime'), 'Parking Location Latitude',
                     'Parking Location Longitude', 'Parking Accuracy in Meters')
     return data_headers, data_list, context.get_relative_path(source_path)

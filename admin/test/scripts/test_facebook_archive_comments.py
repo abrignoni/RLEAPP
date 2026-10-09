@@ -74,11 +74,12 @@ class TestFacebookComments(unittest.TestCase):
         self.assertEqual([(r[0].timestamp(), r[3]) for r in rows],
                          [(1700000000, 'outer'), (1700000000, 'outer')])
 
-    def test_nontext_field_repair_policy_unchanged(self):
+    def test_nontext_field_is_reported_as_json_text(self):
         rows = self.parse([{'title': 0, 'data': [
             {'comment': {'comment': ['raw'], 'author': {'nested': 1}}},
             {'comment': {'comment': False, 'author': None}}]}])
-        self.assertEqual([r[1:4] for r in rows], [('', '', ''), ('', '', '')])
+        self.assertEqual([r[1:4] for r in rows],
+                         [('["raw"]', '{"nested": 1}', '0'), ('false', '', '0')])
 
     def test_repeated_entries_and_empty_array(self):
         entry = {'data': [{'comment': {'comment': 'repeat'}}]}
