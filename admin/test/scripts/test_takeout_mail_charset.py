@@ -10,8 +10,8 @@ from unittest.mock import patch
 
 from scripts.artifacts import takeoutGoogleMail as artifact
 
-get_body = artifact._get_body
-decode_body = artifact._decode_body_payload
+get_body = artifact._get_body  # pylint: disable=protected-access
+decode_body = artifact._decode_body_payload  # pylint: disable=protected-access
 
 
 def leaf(payload, charset=None, content_type='text/plain', transfer='base64', disposition=None):
