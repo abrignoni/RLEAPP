@@ -9,7 +9,7 @@ __artifacts_v2__ = {
                        "unified log (airdrop.ndjson).",
         "author": "@AlexisBrignoni",
         "creation_date": "2022-03-15",
-        "last_update_date": "2026-06-28",
+        "last_update_date": "2026-10-09",
         "requirements": "none",
         "category": "Airdrop Numbers",
         "notes": "Brute-forces every candidate number for each area code in "
@@ -94,6 +94,6 @@ def airdropNumbers(context):
                     logfunc("No target hashes left")
                     break
 
-    data_headers = ('Timestamp', ('Target Phone', 'phonenumber'), 'Event Message', 'Subsystem',
+    data_headers = ('Timestamp', ('Candidate Phone', 'phonenumber'), 'Event Message', 'Subsystem',
                     'Category', 'Trace ID')
     return data_headers, data_list, context.get_relative_path(source_path)
