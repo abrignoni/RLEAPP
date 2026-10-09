@@ -5,7 +5,7 @@ __artifacts_v2__ = {
                        "ends with the hash fragments logged in the unified log (airdrop.ndjson).",
         "author": "@AlexisBrignoni",
         "creation_date": "2022-03-16",
-        "last_update_date": "2026-06-28",
+        "last_update_date": "2026-10-09",
         "requirements": "none",
         "category": "Airdrop Emails",
         "notes": "Tests SHA-256 of each candidate email (scripts/emails/emails.txt) against the 5 "
@@ -59,5 +59,6 @@ def airdropEmails(context):
                 data_list.append(tuple(mail_hash))
                 logfunc(f'{emailcheck} matches hash fragments on {mail_hash[0]}')
 
-    data_headers = ('Timestamp', 'Email', 'Event Message', 'Subsystem', 'Category', 'Trace ID')
+    data_headers = ('Timestamp', 'Candidate Email', 'Event Message', 'Subsystem',
+                    'Category', 'Trace ID')
     return data_headers, data_list, context.get_relative_path(source_path)

@@ -6,7 +6,7 @@ __artifacts_v2__ = {
                        "(airdrop.ndjson).",
         "author": "Rex",
         "creation_date": "2022-09-10",
-        "last_update_date": "2026-06-28",
+        "last_update_date": "2026-10-09",
         "requirements": "none",
         "category": "Airdrop Real Names",
         "notes": "Tests SHA-256 of each candidate name (scripts/names/realnames.txt) against the "
@@ -61,5 +61,6 @@ def airdropRealname(context):
                 data_list.append(tuple(name_hash))
                 logfunc(f'{namecheck} matches hash fragments on {name_hash[0]}')
 
-    data_headers = ('Timestamp', 'Realname', 'Event Message', 'Subsystem', 'Category', 'Trace ID')
+    data_headers = ('Timestamp', 'Candidate Name', 'Event Message', 'Subsystem',
+                    'Category', 'Trace ID')
     return data_headers, data_list, context.get_relative_path(source_path)
