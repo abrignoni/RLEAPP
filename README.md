@@ -12,8 +12,8 @@ Download a pre-built release, no Python installation required, from
 
 | Platform | Download |
 | -------- | -------- |
-| Windows (Intel/AMD) | `RLEAPP-*-windows-x64-setup.exe` (installer) or `RLEAPP-*-windows-x64-portable.zip` |
-| Windows (ARM) | `RLEAPP-*-windows-arm64-setup.exe` or `RLEAPP-*-windows-arm64-portable.zip` |
+| Windows (Intel/AMD) | `RLEAPP-*-windows-x64-portable.zip` |
+| Windows (ARM) | `RLEAPP-*-windows-arm64-portable.zip` |
 | macOS (Apple Silicon) | `RLEAPP-*-macos-arm64.dmg` |
 | macOS (Intel) | `RLEAPP-*-macos-x64.dmg` |
 | Linux (Intel/AMD) | `RLEAPP-*-linux-x64.AppImage` |
@@ -21,13 +21,12 @@ Download a pre-built release, no Python installation required, from
 
 Each download holds one program, `rleapp`. `SHA256SUMS.txt` in each release lets you check a download.
 
-**GUI**: open RLEAPP the usual way: from the Start menu after installing on Windows, by
-double-clicking `rleapp.exe` in the portable folder, RLEAPP in Applications on macOS, or
-the AppImage on Linux. Started without arguments, it opens the window.
+**GUI**: open RLEAPP the usual way: by double-clicking `rleapp.exe` from the zip on
+Windows, RLEAPP in Applications on macOS, or the AppImage on Linux. Started without
+arguments, it opens the window.
 
 **CLI**: give `rleapp` arguments in a terminal and it runs as a command line instead. The
-output folder must already exist. On Windows, keep `rleapp.exe` in its folder with the
-files beside it.
+output folder must already exist. On Windows, use `rleapp.exe` from the zip.
 
 ```
 rleapp.exe -t zip -i C:\path\to\return.zip -o C:\path\to\output\

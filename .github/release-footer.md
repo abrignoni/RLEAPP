@@ -5,26 +5,32 @@
 
 | Platform | File |
 |---|---|
-| Windows 10 or 11, 64-bit Intel or AMD | `-windows-x64-setup.exe` (installer), or `-windows-x64-portable.zip` to run without installing |
-| Windows 11 on ARM | `-windows-arm64-setup.exe`, or `-windows-arm64-portable.zip` |
+| Windows 10 or 11, 64-bit Intel or AMD | `-windows-x64-portable.zip` |
+| Windows 11 on ARM | `-windows-arm64-portable.zip` |
 | macOS, Apple silicon | `-macos-arm64.dmg` |
 | macOS, Intel | `-macos-x64.dmg` |
 | Linux, 64-bit Intel or AMD | `-linux-x64.AppImage` |
 | Linux on ARM | `-linux-arm64.AppImage` |
 
-Every download holds one program, `rleapp`. Started without arguments, from the Start
-menu, the Applications folder or a double-click, it opens the window. Given arguments in a
-terminal, it is the command line. On macOS the command line is inside the app:
+Every download holds one program, `rleapp`. Started without arguments, from the
+Applications folder or a double-click, it opens the window. Given arguments in a terminal,
+it is the command line. On macOS the command line is inside the app:
 
 ```bash
 /Applications/RLEAPP.app/Contents/MacOS/rleapp --help
 ```
 
 **For tools that run RLEAPP themselves.** The options, output and exit codes of `rleapp`
-are those of earlier releases, but the downloads changed shape: there is no `rleappGUI`
-any more, since `rleapp` without arguments opens the window. On Windows and macOS,
-`rleapp` needs the folder it came in, so run it from there rather than copying the
-executable elsewhere on its own; on Linux the AppImage is the whole program.
+are those of earlier releases, but there is no `rleappGUI` any more, since `rleapp`
+without arguments opens the window. On Windows the zip holds the whole program as one
+file, `rleapp.exe`, which can be put wherever the tool expects it; there is no installer.
+The executable inside the macOS app needs the folder it came in; on Linux the AppImage is
+the whole program.
+
+**`rleapp.exe` on Windows** unpacks itself to a temporary folder each time it starts, so it
+takes a few seconds to start, and it does not run where a policy (AppLocker, WDAC) forbids
+running programs from the temporary folder. There, run RLEAPP from source; the README has
+the steps.
 
 ## First launch
 
