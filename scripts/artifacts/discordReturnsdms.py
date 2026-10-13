@@ -97,9 +97,9 @@ def discordReturnsdms(context):
                 author_id = item[2]
                 message_id = item[1]
                 direction = "Unknown" if not local_user_id else "Sent" if local_user_id == author_id else "Received"
-                data_list.append((_discord_ts(item[3]), direction, item[4], item[5], _media_refs(item[6], author_id, message_id),
-                                  message_id, item[0], author_id))
+                data_list.append((_discord_ts(item[3]), direction, item[4], item[0], item[5],
+                                  _media_refs(item[6], author_id, message_id), message_id, author_id))
 
-    data_headers = (('Timestamp', 'datetime'), 'Direction', 'Username', 'Contents', ('Media', 'media'), 'ID',
-                    'Channel ID', 'Author ID')
+    data_headers = (('Timestamp', 'datetime'), 'Direction', 'Username', 'Channel ID', 'Contents', ('Media', 'media'),
+                    'ID', 'Author ID')
     return data_headers, data_list, context.get_relative_path(source_path)
