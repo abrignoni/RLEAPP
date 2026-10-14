@@ -135,6 +135,8 @@ has the rest.
 
 Each plugin is a Python source file which should be added to the `scripts/artifacts` folder which will be loaded dynamically each time RLEAPP is run.
 
+The helper functions a module calls to find files, read SQLite, check in media and convert timestamps are described in [Helper Functions for Artifact Modules](admin/docs/helper_functions.md).
+
 The plugin source file must contain a dictionary named `__artifacts_v2__` at the very beginning of the module, which defines the artifacts that the plugin processes. The keys in the `__artifacts_v2__` dictionary should be IDs for the artifact(s) which must be unique within RLEAPP. The values should be dictionaries containing the following keys:
 
 - `name`: The name of the artifact as a string.
