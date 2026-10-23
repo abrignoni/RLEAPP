@@ -9,9 +9,11 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "iCloud Documents Folders",
         "notes": "Staged File mtime is the modification-time value of the extracted copy, in "
-                 "Unix seconds. It does not establish a source event time. For ZIP inputs the "
-                 "staging process interprets the zone-less member time in the examiner's local "
-                 "zone, so this value can depend on the machine running the tool.",
+                 "Unix seconds. It does not establish a source event time. For a ZIP member "
+                 "that carries an NTFS or extended timestamp field it is that field's UTC time. "
+                 "For a ZIP member with neither, the staging process interprets the zone-less "
+                 "member time in the examiner's local zone, so this value can depend on the "
+                 "machine running the tool.",
         "paths": ('*/backup/*/Documents/**',),
         "output_types": "standard",
         "artifact_icon": "folder",
