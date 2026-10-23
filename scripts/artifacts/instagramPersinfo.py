@@ -74,5 +74,5 @@ def instagramPersinfo(context):
                                                    
     data_headers = (('Timestamp', 'datetime'), 'Key', 'Value', ('URI','media'), 'HREF')
     #('HREF/URI','media'))
-    source_files = "\n\n".join(context.get_relative_path(s) for s in sources)
+    source_files = "\n".join(context.get_relative_path(s) for s in sources)
     return data_headers, data_list, source_files
