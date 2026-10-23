@@ -41,7 +41,7 @@ sudo ln -s /Applications/RLEAPP.app/Contents/MacOS/rleapp /usr/local/bin/rleapp
 
 ## Requirements
 
-**Python 3.10 or above**
+**Python 3.11 or above**
 
 ### Dependencies
 
