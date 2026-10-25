@@ -62,7 +62,7 @@ __artifacts_v2__ = {
         ),
         'author': '@AlexisBrignoni, Codex',
         'creation_date': '2022-06-12',
-        'last_update_date': '2026-10-09',
+        'last_update_date': '2026-10-24',
         'requirements': 'none',
         'category': 'Twitter Returns',
         'notes': (
@@ -348,22 +348,27 @@ def twitterAccount(context):
         file_found = str(file_found)
         if not os.path.basename(file_found).endswith('-account.txt'):
             continue
-        source_path = file_found
         email = timestamp = accountid = cvia = usern = accdn = ''
         with open(file_found, encoding='utf-8') as f:
-            for line in f:
-                if '"createdAt"' in line:
-                    timestamp = timestamps(line)
-                elif '"accountId"' in line:
-                    accountid = _value(line)
-                elif '"email" :' in line:
-                    email = _value(line)
-                elif '"createdVia"' in line:
-                    cvia = _value(line)
-                elif '"username"' in line:
-                    usern = _value(line)
-                elif '"accountDisplayName"' in line:
-                    accdn = _value(line)
+            lines = f.readlines()
+        # xAI (Grok) returns name their account file <userId>-account.txt too.
+        if any('"xaiAccount"' in line for line in lines):
+            logfunc(f'{os.path.basename(file_found)} is an xAI account file, skipped')
+            continue
+        source_path = file_found
+        for line in lines:
+            if '"createdAt"' in line:
+                timestamp = timestamps(line)
+            elif '"accountId"' in line:
+                accountid = _value(line)
+            elif '"email" :' in line:
+                email = _value(line)
+            elif '"createdVia"' in line:
+                cvia = _value(line)
+            elif '"username"' in line:
+                usern = _value(line)
+            elif '"accountDisplayName"' in line:
+                accdn = _value(line)
         data_list.append((_to_utc(timestamp), accountid, email, cvia, usern, accdn))
     data_headers = ('Created At', 'Account ID', 'Email', 'Created Via', 'Username',
                     'Account Display Name')
