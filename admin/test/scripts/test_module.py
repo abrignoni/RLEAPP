@@ -31,12 +31,13 @@ import shutil
 import subprocess
 import argparse
 import inspect
+import stat
 
 # Adjust import paths as necessary
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))
 # import scripts.ilapfuncs as ilapfuncs
 from scripts.context import Context
-from scripts.search_files import FileInfo, FileSeekerZip
+from scripts.search_files import FileInfo, FileSeekerZip, _CLBX_VERSION_MEMBER, _compile_pattern
 
 
 def mock_logdevinfo(message):
@@ -59,32 +60,69 @@ def mock_logfunc(message):
     print(f"[LOGFUNC] {message}")
 
 
+def order_like_seeker(staged_files, file_infos, paths):
+    """Order staged files the way a real zip run hands them to the artifact.
+
+    rleapp.py searches each of the artifact's paths in declared order and
+    extends files_found with that pattern's matches in archive order, so an
+    artifact that takes the first match (get_file_path) sees the file of its
+    first pattern. os.walk order depends on the file system (in iLEAPP it flipped on
+    the GitHub runner image of 2026-10-18), so it is not used for that. Files no
+    pattern matches follow, sorted.
+    """
+    if isinstance(paths, str):
+        paths = (paths,)
+    ordered = []
+    seen = set()
+    root = os.path.normcase('root/')
+    for pattern in paths or ():
+        pat = _compile_pattern(os.path.normcase(pattern))
+        for extracted_path, info in file_infos.items():
+            if extracted_path in seen:
+                continue
+            if pat(root + os.path.normcase(info.source_path)) is not None:
+                ordered.append(extracted_path)
+                seen.add(extracted_path)
+    ordered.extend(sorted(path for path in staged_files if path not in seen))
+    return ordered
+
+
 def stage_case_members(zip_ref, temp_dir, file_infos):
     """
     Extracts a case zip into temp_dir recording what FileSeekerZip.search records.
 
     For each file member, file_infos maps the extracted path to a FileInfo holding
-    the member name and the creation and modification times the zip seeker's own
-    decoder reads from the member's extended timestamp field, or None where the
-    member has none. The extracted file's modification time is then set from the
-    member's date and time, read as local time, as the seeker does. So an artifact
-    sees the values a real run of the same zip gives it, not the time of the test.
+    the member name and the times FileSeekerZip itself reads for it (_member_times):
+    from the member's NTFS or extended timestamp field (None where it has neither),
+    or, in a CLBX zip, from the member's record in the CLBX metadata. The
+    extracted file's modification time is then set as the seeker sets it: that
+    modification time, else the member's date and time read as local time. So an
+    artifact sees the values a real run of the same zip gives it, not the time of
+    the test. A CLBX zip's version and metadata members are not staged: a run hands
+    an artifact only the members its patterns match.
 
     Args:
-        zip_ref (zipfile.ZipFile): The open case zip.
+        zip_ref (zipfile.ZipFile): The open case zip, opened from a path.
         temp_dir (Path): Folder to extract into.
         file_infos (dict): Filled in place, keyed by extracted path.
     """
-    for info in zip_ref.infolist():
-        extracted_path = zip_ref.extract(info, temp_dir)
-        if info.is_dir():
-            continue
-        # decode_extended_timestamp does not use the instance, so no seeker (and no
-        # archive handle) is needed to call it.
-        creation_date, modification_date = FileSeekerZip.decode_extended_timestamp(None, info.extra)
-        file_infos[extracted_path] = FileInfo(info.filename, creation_date, modification_date)
-        member_time = time.mktime(info.date_time + (0, 0, -1))
-        os.utime(extracted_path, (member_time, member_time))
+    # pylint: disable=protected-access
+    seeker = FileSeekerZip(zip_ref.filename, str(temp_dir))
+    try:
+        clbx_own = {_CLBX_VERSION_MEMBER, *seeker._clbx.values()} if seeker._clbx else set()
+        for info in zip_ref.infolist():
+            if info.filename in clbx_own:
+                continue
+            extracted_path = zip_ref.extract(info, temp_dir)
+            if info.is_dir():
+                continue
+            creation_date, modification_date, staged, times = seeker._member_times(info.filename, info)
+            kind = 'link' if stat.S_ISLNK(info.external_attr >> 16) else 'file'
+            file_infos[extracted_path] = FileInfo(info.filename, creation_date, modification_date, kind,
+                                                  times=times)
+            seeker._set_staged_time(extracted_path, staged, info)
+    finally:
+        seeker.cleanup()
 
 
 def process_artifact(zip_path, module_name, artifact_name, _artifact_data, target_os_version=None):
@@ -154,9 +192,12 @@ def process_artifact(zip_path, module_name, artifact_name, _artifact_data, targe
             stage_case_members(zip_ref, temp_dir, mock_seeker.file_infos)
 
             # Recursively get all files
+            staged_files = []
             for root, _, files in os.walk(temp_dir):
                 for file in files:
-                    all_files.append(os.path.join(root, file))
+                    staged_files.append(os.path.join(root, file))
+            artifact_paths = getattr(module, '__artifacts_v2__', {}).get(artifact_name, {}).get('paths')
+            all_files.extend(order_like_seeker(staged_files, mock_seeker.file_infos, artifact_paths))
 
         # Mock for lava_db connection and cursor
         mock_lava_cursor_instance = MagicMock()

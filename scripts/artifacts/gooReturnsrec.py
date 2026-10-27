@@ -8,7 +8,10 @@ __artifacts_v2__ = {
         "requirements": "ijson",
         "category": "Google Returns",
         "notes": "Parses the same source as the Takeout 'Google Location History - Records' "
-                 "artifact. Latitude/Longitude are exposed for KML; timestamps normalized to UTC "
+                 "artifact. Only location records that carry an activity block are reported, one "
+                 "row per entry of that block, so a location is repeated when its block holds "
+                 "several entries and locations with no activity block are not in this table. "
+                 "Latitude/Longitude are exposed for KML; timestamps normalized to UTC "
                  "(unspecified values are kept verbatim, e.g. NOT_SPECIFIED / Not found).",
         "paths": ('*/Location History*/Records.json',),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],

@@ -9,12 +9,14 @@ __artifacts_v2__ = {
         "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
-        "notes": "Lists sections this module does not parse as well as the ones it does, so a "
-                 "section with content and no artifact is visible. 'Provider Notice' carries "
-                 "the return's own sentence when a section says it holds no data for the "
-                 "requested range; a blank notice does not mean the section had records. "
-                 "PDF Created is the creationDate in each PDF's document metadata, as written "
-                 "by the software that rendered it; in the tested return they fell within the "
+        "notes": "Lists the PDFs under App, Content and Profile whose first page ends with the "
+                 "provider's footer naming TikTok, whether or not another artifact parses them. A "
+                 "PDF without that footer is not listed. Section Title and Provider Notice are read "
+                 "from the first page only. 'Provider Notice' carries the return's own sentence "
+                 "when a section says it holds no data for the requested range; a blank notice does "
+                 "not mean the section had records. PDF Created is the CreationDate in each PDF's "
+                 "document metadata, converted to UTC with the offset the value carries; a value "
+                 "with no offset is stored as UTC. In the tested return they all fell within the "
                  "same minute.",
         "paths": ('*/App/*.pdf', '*/Content/*.pdf', '*/Profile/*.pdf'),
         "output_types": "standard",
@@ -27,18 +29,22 @@ __artifacts_v2__ = {
         "name": "TikTok PDF Return - Subscriber Info",
         "description": "Basic subscriber information (Profile/BSI.pdf) and location information "
                        "(App/LocationInfo.pdf) from a TikTok law enforcement return, one row "
-                       "per field as printed.",
+                       "per field. In LocationInfo.pdf a field starts at a line that begins with a "
+                       "capitalised name and a colon, followed by a space or the line end, at the "
+                       "field-name margin; any other line "
+                       "continues the previous field's value, and a line before the first field is "
+                       "reported under '(unlabelled)'. A no-data notice is added as a 'Provider "
+                       "Notice' row.",
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
-        "notes": "BSI is a two-column table; fields are paired by row position, so a field "
-                 "name not seen before is still reported under its printed name. Values are "
+        "notes": "In the tested return BSI is a two-column table; fields are paired by row "
+                 "position, so a field name not seen before is still reported under its printed "
+                 "name. Values are "
                  "as printed, including the signup date text, which is not converted. "
-                 "LocationInfo is read as 'Name: value' lines: a line starts a field only when "
-                 "it begins with a capitalised name and a colon at the field-name margin, and "
-                 "any other line continues the previous value. Source File is kept beside Section because Section does not separate two "
+                 "Source File is kept beside Section because Section does not separate two "
                  "returns parsed in one input.",
         "paths": ('*/Profile/BSI.pdf', '*/App/LocationInfo.pdf'),
         "output_types": "standard",
@@ -56,8 +62,8 @@ __artifacts_v2__ = {
         "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
-        "notes": "Action is taken from the printed field name ('User login time' or 'User logout "
-                 "time'). Country is the country the return prints beside each IP. Country and "
+        "notes": "Action is 'logout' when the record prints a 'User logout time' field and 'login' "
+                 "otherwise. Country is the country the return prints beside each IP. Country and "
                  "IP were each uniform in the tested return.",
         "paths": ('*/App/LoginLogoutHistory.pdf',),
         "output_types": "standard",
@@ -94,8 +100,9 @@ __artifacts_v2__ = {
         "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
-        "notes": "Event is the provider's event name as printed (observed: video_play, publish, "
-                 "post_comment, share_video). Their meaning is not documented in the return and "
+        "notes": "Event is the provider's event name as printed (observed in the tested return: "
+                 "video_play, publish, post_comment, share_video). Their meaning is not documented "
+                 "in the return and "
                  "is not interpreted here. Multi-part sections are combined; large returns may "
                  "exceed the HTML row limit, in which case the TSV and LAVA outputs hold the "
                  "full table. Country is the country the return prints beside each IP. Country "
@@ -136,11 +143,12 @@ __artifacts_v2__ = {
         "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
-        "notes": "Media is linked by the video ID, which is the file name of each file in "
-                 "Content/Videos. Video Link is the hyperlink behind the printed word 'URL'; "
-                 "blank where the PDF carries the word with no hyperlink. Video Type was "
-                 "uniform in the tested return. Some emoji are drawn from fonts that carry no "
-                 "Unicode mapping and cannot be decoded; each such glyph is shown as U+FFFD.",
+        "notes": "Media is linked by the video ID, which is the name, without extension, of each "
+                 "file in Content/Videos (or of the folder a file sits in). Video Link is the "
+                 "hyperlink behind the printed word 'URL'; blank where the PDF carries the word "
+                 "with no hyperlink. Video Type was uniform in the tested return. Glyphs drawn "
+                 "from a font that carries no Unicode mapping cannot be decoded; each is shown as "
+                 "U+FFFD.",
         "paths": ('*/Content/VideoMetadata.pdf', '*/Content/Videos/*'),
         "output_types": "standard",
         "artifact_icon": "video",
@@ -210,8 +218,8 @@ __artifacts_v2__ = {
                  "parsed in one input. 'ReplyToComment (as stored)' is kept verbatim: in the "
                  "tested return it equalled the Comment text on every row that carried it, so "
                  "it is not labelled as the parent comment. Post URL is the hyperlink behind "
-                 "the printed word 'URL'. Some emoji are drawn from fonts that carry no Unicode "
-                 "mapping and cannot be decoded; each such glyph is shown as U+FFFD.",
+                 "the printed word 'URL'. Glyphs drawn from a font that carries no Unicode "
+                 "mapping cannot be decoded; each is shown as U+FFFD.",
         "paths": ('*/Content/Video Comments/*', '*/Content/Photo Comments/*'),
         "output_types": "standard",
         "artifact_icon": "message-square",
@@ -228,8 +236,9 @@ __artifacts_v2__ = {
         "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
-        "notes": "Room ID, Host User ID and Device IP are split out of the printed lines. If a "
-                 "line does not match the expected layout its text is kept whole in Room ID or "
+        "notes": "Room ID, Host User ID and Device IP are split out of the printed lines. The "
+                 "tested return held one record. If a line does not match the expected layout its "
+                 "text is kept whole in Room ID or "
                  "Comment Time rather than dropped. Glyphs that cannot be decoded to Unicode "
                  "are shown as U+FFFD.",
         "paths": ('*/Content/LiveComment_*.pdf',),
@@ -255,10 +264,10 @@ __artifacts_v2__ = {
                  "Photo Comments.pdf, so the same folder names in another provider's data add "
                  "no rows. 'ID In Metadata PDF' was 'Yes' on every row of the "
                  "tested return (no unreferenced files); a 'No' marks a file no parsed section "
-                 "lists. Returns delivered as several zip parts split the media across them "
-                 "(in the tested return the metadata came in the first part); extract every "
-                 "part into one folder and parse that, or media in the other parts is neither "
-                 "linked nor listed.",
+                 "lists. The tested return was delivered in zip parts, with the metadata and some "
+                 "media in the first part and the rest of the media in later parts. When a return "
+                 "comes in several parts, extract every part into one folder and parse that, or "
+                 "media in the other parts is neither linked nor listed.",
         "paths": ('*/Content/VideoMetadata.pdf', '*/Content/Videos/*',
                   '*/Content/StoriesMetadata.pdf', '*/Content/Stories/*',
                   '*/Content/PhotoMetadata.pdf', '*/Content/Photo Post/*',
@@ -362,9 +371,6 @@ class _Pdf:
         self.created = ''
 
 
-_FIELD_NAME = re.compile(r'^([A-Z][A-Za-z ]{0,40}?)(?: \d+)?:')
-
-
 def _nospace(text):
     return re.sub(r'\s+', '', text)
 
@@ -434,13 +440,15 @@ def _strip_footer(lines):
     return is_tiktok
 
 
-def _drop_page_break_repeats(pages, pdf):
+def _drop_page_break_repeats(pages, pdf, label_re=None):
     '''Drops the copy of a line that a page break printed twice.
 
     A page's first line is dropped only when it equals the previous page's last line
     and sits above the first-line position of the document's other pages, where the
     repeat is printed. Without both, it is kept: a duplicated line is visible in the
-    output, a dropped one is not.'''
+    output, a dropped one is not. label_re matches the section's own field names; a
+    dropped line is logged by that name only, so text from a user-written line is never
+    logged.'''
     repeats = {n for n in range(1, len(pages))
                if pages[n] and pages[n - 1]
                and _nospace(pages[n][0].text) == _nospace(pages[n - 1][-1].text)}
@@ -451,19 +459,19 @@ def _drop_page_break_repeats(pages, pdf):
     for n in sorted(repeats):
         line = pages[n][0]
         if normal_top is not None and line.rect.y0 < normal_top - 1:
-            name = _FIELD_NAME.match(line.text)
+            name = label_re.match(line.text) if label_re is not None else None
             pdf.dropped.append((n + 1, name.group(1) if name else '(unlabelled line)'))
             del pages[n][0]
         else:
             pdf.kept_repeats.append(n + 1)
 
 
-def _read_pdf(path, labelled=False, max_pages=None):
+def _read_pdf(path, label_re=None, max_pages=None):
     '''Reads a TikTok return PDF into one list of content lines across all pages.
 
-    labelled: True for sections printed as 'Label: value' lines, where a line split by
-    a page break is printed twice and the repeat is dropped. False for the BSI table
-    and single-page reads.'''
+    label_re: the field-name pattern of a section printed as 'Label: value' lines, where
+    a line split by a page break is printed twice and the repeat is dropped. None for the
+    BSI table and single-page reads.'''
     pdf = _Pdf()
     pages = []
     with open(path, 'rb') as fh:
@@ -492,8 +500,8 @@ def _read_pdf(path, labelled=False, max_pages=None):
                 if _NO_DATA.match(line.text):
                     pdf.notice = line.text
             pages.append(lines)
-    if labelled:
-        _drop_page_break_repeats(pages, pdf)
+    if label_re is not None:
+        _drop_page_break_repeats(pages, pdf, label_re)
     for lines in pages:
         pdf.lines.extend(lines)
     return pdf
@@ -621,7 +629,7 @@ def _parse_section(context, name_re, labels, starts):
     '''Yields (file, records) for each matching PDF, logging anything unusual.'''
     parser = _Parser(labels, starts)
     for file_found in _pdfs(context, name_re):
-        pdf = _read_pdf(file_found, labelled=True)
+        pdf = _read_pdf(file_found, parser.head)
         records, unknown = parser.parse(pdf.lines)
         rel = context.get_relative_path(file_found)
         _log_repeats(rel, pdf)
@@ -746,15 +754,16 @@ def _table_fields(lines):
     return [(name, value) for name, value, _ in fields]
 
 
-_LABEL_LINE = re.compile(r'^([A-Z][A-Za-z ]{0,40}):[ \t]?(.*)$')
+_LABEL_LINE = re.compile(r"^([A-Z][A-Za-z0-9 /()&.,'_-]{0,60}?):(?:[ \t]+(.*))?$")
 
 
 def _labelled_fields(lines):
     '''Reads a page of 'Name: value' lines whose field names are not known in advance.
 
-    A line starts a field only when it begins with a capitalised name and a colon at the
-    left margin of the page's field names. Any other line, including one that holds a
-    colon (a time, an IPv6 address), continues the previous value.'''
+    A line starts a field only when it begins, at the left margin of the page's field
+    names, with a capitalised name and a colon followed by a space or the line end. Any
+    other line, including one that holds a colon (a time, an IPv6 address), continues the
+    previous value.'''
     lines = [line for line in lines if not _NO_DATA.match(line.text)]
     starts = [line for line in lines if _LABEL_LINE.match(line.text)]
     margin = min((line.rect.x0 for line in starts), default=None)
@@ -762,7 +771,7 @@ def _labelled_fields(lines):
     for line in lines:
         match = _LABEL_LINE.match(line.text)
         if match and abs(line.rect.x0 - margin) < 3:
-            fields.append([match.group(1).strip(), match.group(2).strip()])
+            fields.append([match.group(1).strip(), (match.group(2) or '').strip()])
         elif fields:
             value = fields[-1][1]
             fields[-1][1] = f'{value}\n{line.text}' if value else line.text

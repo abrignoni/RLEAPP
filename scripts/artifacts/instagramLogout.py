@@ -1,13 +1,15 @@
 __artifacts_v2__ = {
     "instagramLogout": {  # This should match the function name exactly
         "name": "Instagram Archive - Logout Activity",
-        "description": "Parses Instagram logout activity",
+        "description": "Logout records from an Instagram data archive (logout_activity.json)",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-08-30",
         "last_update_date": "2025-07-04",
         "requirements": "none",
         "category": "Instagram Archive",
-        "notes": "",
+        "notes": "The column headed Timestamp (Local) holds the record's Time value converted to "
+                 "UTC. The column headed Timestamp (UTC) holds the record's title text with each "
+                 "letter T replaced by a space; the time zone of that text is not established.",
         "paths": ('*/login_and_*_creation/logout_activity.json'),
         "output_types": "standard",  # or ["html", "tsv", "timeline", "lava"]
         "artifact_icon": "brand-instagram",

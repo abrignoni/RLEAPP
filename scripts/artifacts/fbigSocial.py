@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "notes": "One row per record of the Followers section of records.html and every preservation_N.html; Snapshot File names the file. "
                  "Per the provider's embedded definition the section lists all the accounts following the account holder at the time of production, and Time is when an account started following the account holder. "
                  "Follower is reported as stored, 'username (Instagram: numeric id) [display name]' on the tested return, and its three parts are also split into their own columns; Display Name is blank when the stored value carries no bracketed part. "
-                 "Each snapshot file is a separate capture and can list a different set of followers: on the return this was built against, one snapshot listed 92 followers and the other two listed 3.",
+                 "Each snapshot file is a separate capture and is read on its own, so the snapshot files can list different sets of followers.",
         "paths": ('*/records.html', '*/preservation*.html'),
         "output_types": "standard",
         "artifact_icon": "users",
@@ -40,7 +40,7 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Facebook - Instagram Returns",
         "notes": "One row per entry of the Incoming Follow Requests section of records.html and every preservation_N.html; Snapshot File names the file. "
-                 "Per the provider's embedded definition the section lists the accounts awaiting approval to follow the account holder. The section carries no time. "
+                 "Per the provider's embedded definition the section lists the accounts awaiting approval to follow the account holder. No time column is reported. Every text field of a record in this section is reported as a Requester row; whether the provider's section can carry a time field is not established here. "
                  "Requester is reported as stored, 'username (Instagram: numeric id) [display name]' on the tested return, and its three parts are also split into their own columns.",
         "paths": ('*/records.html', '*/preservation*.html'),
         "output_types": "standard",

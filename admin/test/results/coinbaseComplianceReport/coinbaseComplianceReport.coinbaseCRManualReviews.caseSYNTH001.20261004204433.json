@@ -1,0 +1,78 @@
+{
+  "metadata": {
+    "module_name": "coinbaseComplianceReport",
+    "artifact_name": "Coinbase Compliance Report - Manual Reviews",
+    "function_name": "coinbaseCRManualReviews",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 11,
+    "number_of_rows": 3,
+    "total_data_size_bytes": 497,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/coinbaseComplianceReport/testdata.coinbaseComplianceReport.coinbaseCRManualReviews.caseSYNTH001.zip",
+    "start_time": "2026-10-04T20:44:33.904711+00:00",
+    "end_time": "2026-10-04T20:44:33.933540+00:00",
+    "run_time_seconds": 0.0006127357482910156,
+    "last_commit": {
+      "hash": "6166d12ac78ec38163a14e23f3cb23e23368d7a8",
+      "author_name": "Brigs",
+      "author_email": "abrignoni@gmail.com",
+      "date": "2026-10-04T02:02:02-04:00",
+      "message": "Correct artifact descriptions and notes against the code and sources"
+    }
+  },
+  "headers": [
+    "Timestamp (UTC)",
+    "CREATED (as produced)",
+    "UPDATED",
+    "Time Basis",
+    "User ID",
+    "STATUS",
+    "REASON",
+    "REASON VALUE",
+    "Other Columns (as produced)",
+    "CSV Record",
+    "Source File"
+  ],
+  "data": [
+    [
+      1619884800,
+      "2021-05-01 09:00:00 -0700",
+      "2021-05-02 09:00:00 -0700",
+      "stated offset",
+      "SYNTHUSER000000000000000A",
+      "resolved",
+      "synthetic",
+      "1",
+      "",
+      114,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      1619884800,
+      "2021-05-01 09:00:00 -0700",
+      "2021-05-02 09:00:00 -0700",
+      "stated offset",
+      "SYNTHUSER000000000000000A",
+      "resolved",
+      "synthetic",
+      "1",
+      "",
+      114,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      1619884800,
+      "2021-05-01 09:00:00 -0700",
+      "2021-05-02 09:00:00 -0700",
+      "stated offset",
+      "SYNTHUSER000000000000000B",
+      "resolved",
+      "synthetic",
+      "1",
+      "",
+      114,
+      "0000bbbb/compliance_report.csv"
+    ]
+  ]
+}

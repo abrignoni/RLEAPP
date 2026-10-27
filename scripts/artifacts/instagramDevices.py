@@ -1,7 +1,7 @@
 __artifacts_v2__ = {
     "instagramDevices": {  # This should match the function name exactly
         "name": "Instagram Archive - Devices",
-        "description": "Parses device information the Instagram account was used on",
+        "description": "Parses device records (last login time, device ID and user agent) from an Instagram data archive (devices.json)",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-08-30",
         "last_update_date": "2025-07-03",

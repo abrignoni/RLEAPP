@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "module_name": "synchronoss",
+    "artifact_name": "Synchronoss - VZMOBILE Device Backup",
+    "function_name": "synchronoss_vzmobile",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 5,
+    "number_of_rows": 3,
+    "total_data_size_bytes": 429,
+    "media_checkins": 3,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/synchronoss/testdata.synchronoss.synchronoss_vzmobile.caseSYNTH001.zip",
+    "start_time": "2026-10-04T20:44:36.930828+00:00",
+    "end_time": "2026-10-04T20:44:36.964066+00:00",
+    "run_time_seconds": 0.0003368854522705078,
+    "last_commit": {
+      "hash": "6166d12ac78ec38163a14e23f3cb23e23368d7a8",
+      "author_name": "Brigs",
+      "author_email": "abrignoni@gmail.com",
+      "date": "2026-10-04T02:02:02-04:00",
+      "message": "Correct artifact descriptions and notes against the code and sources"
+    }
+  },
+  "headers": [
+    "Date Folder",
+    "Device",
+    "Media",
+    "Filename",
+    "Source File"
+  ],
+  "data": [
+    [
+      "2025-12-01",
+      "My Samsung SM-F966U",
+      "mock_hash_for_backup000001.png",
+      "backup000001.png",
+      "SYNTH001LCIDHASH/VZMOBILE/2025-12-01/My Samsung SM-F966U/backup000001.png"
+    ],
+    [
+      "2025-12-01",
+      "My Samsung SM-F966U",
+      "mock_hash_for_backup000002.png",
+      "backup000002.png",
+      "SYNTH001LCIDHASH/VZMOBILE/2025-12-01/My Samsung SM-F966U/backup000002.png"
+    ],
+    [
+      "2025-12-01",
+      "My Samsung SM-F966U",
+      "mock_hash_for_noext_image",
+      "noext_image",
+      "SYNTH001LCIDHASH/VZMOBILE/2025-12-01/My Samsung SM-F966U/noext_image"
+    ]
+  ]
+}

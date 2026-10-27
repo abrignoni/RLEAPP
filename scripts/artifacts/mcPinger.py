@@ -1,7 +1,7 @@
 __artifacts_v2__ = {
     "mcPinger": {
         "name": "Pinger - MC",
-        "description": "MC records from a Pinger law enforcement return (xlsx).",
+        "description": "Records from the '*MC.xlsx' workbook of a Pinger law enforcement return, with the workbook's own column names. What 'MC' stands for is not established here.",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-08-18",
         "last_update_date": "2026-06-28",

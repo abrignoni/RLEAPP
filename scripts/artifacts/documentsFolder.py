@@ -3,12 +3,17 @@ __artifacts_v2__ = {
         "name": "iCloud Documents Folders",
         "description": "Files in iCloud backup Documents folders, with detected type and a media "
                        "preview.",
-        "author": "@AlexisBrignoni",
+        "author": "@AlexisBrignoni, Codex",
         "creation_date": "2023-02-15",
-        "last_update_date": "2026-06-28",
+        "last_update_date": "2026-10-04",
         "requirements": "none",
         "category": "iCloud Documents Folders",
-        "notes": "Modified Date is the file's on-disk modification time (UTC).",
+        "notes": "Staged File mtime is the modification-time value of the extracted copy, in "
+                 "Unix seconds. It does not establish a source event time. For a ZIP member "
+                 "that carries an NTFS or extended timestamp field it is that field's UTC time. "
+                 "For a ZIP member with neither, the staging process interprets the zone-less "
+                 "member time in the examiner's local zone, so this value can depend on the "
+                 "machine running the tool.",
         "paths": ('*/backup/*/Documents/**',),
         "output_types": "standard",
         "artifact_icon": "folder",
@@ -16,7 +21,6 @@ __artifacts_v2__ = {
 }
 
 import os
-from datetime import datetime, timezone
 
 from scripts.filetype import guess_mime, guess_extension
 from scripts.ilapfuncs import artifact_processor, check_in_media
@@ -34,11 +38,11 @@ def documentsFolder(context):
         if filename.startswith('.'):
             continue
         source_path = file_found
-        modified = datetime.fromtimestamp(os.path.getmtime(file_found), tz=timezone.utc)
+        modified = str(os.path.getmtime(file_found))
         media = check_in_media(file_found, filename)
         data_list.append((modified, filename, media, guess_extension(file_found),
                           guess_mime(file_found), context.get_relative_path(file_found)))
 
-    data_headers = (('Modified Date', 'datetime'), 'Filename', ('Media', 'media'), 'EXT', 'MIME',
+    data_headers = ('Staged File mtime (Unix seconds)', 'Filename', ('Media', 'media'), 'EXT', 'MIME',
                     'Path')
     return data_headers, data_list, context.get_relative_path(source_path)

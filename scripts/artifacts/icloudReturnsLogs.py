@@ -1,7 +1,7 @@
 __artifacts_v2__ = {
     "icloudReturnsLogs": {
         "name": "iCloud - Logs",
-        "description": "iCloud access logs from an iCloud law enforcement return (xlsx).",
+        "description": "iCloud logs (*_iCloudLogs.xlsx) from an iCloud law enforcement return, with the workbook's own column names.",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-08-18",
         "last_update_date": "2026-06-27",

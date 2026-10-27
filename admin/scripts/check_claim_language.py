@@ -182,6 +182,10 @@ CHECKED_FIELDS = {
 # granted for and never the next claim added to the same text.
 # needs a comment justifying it. See the module docstring before adding one.
 ALLOWLIST = {
+    # 'User Initiated' is the provider's own field label and this artifact's column
+    # header; the notes name the column and say the value is reported as stored.
+    ('fbigAccount.py', 'fbigAccountChanges', 'notes', 'user initiated'),
+
     # "All Mail" is Gmail's own name for the system label, and the Takeout export
     # ships it as a file literally called "All mail Including Spam and Trash.mbox"
     # -- which is the glob this artifact searches for. The word names the mailbox

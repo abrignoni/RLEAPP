@@ -22,7 +22,8 @@ __artifacts_v2__ = {
         "last_update_date": "2026-07-09",
         "requirements": "none",
         "category": "Omega Chat",
-        "notes": "",
+        "notes": "First Name is the user named by the message's conversation record, not a "
+                 "per-message sender; the return's sender field, if any, is not read.",
         "paths": ('*/hicht.json',),
         "output_types": "standard",
         "artifact_icon": "message-circle",

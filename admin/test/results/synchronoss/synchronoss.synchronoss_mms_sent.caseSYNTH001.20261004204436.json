@@ -1,0 +1,48 @@
+{
+  "metadata": {
+    "module_name": "synchronoss",
+    "artifact_name": "Synchronoss - MMS Media Sent",
+    "function_name": "synchronoss_mms_sent",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 9,
+    "number_of_rows": 1,
+    "total_data_size_bytes": 129,
+    "media_checkins": 1,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/synchronoss/testdata.synchronoss.synchronoss_mms_sent.caseSYNTH001.zip",
+    "start_time": "2026-10-04T20:44:36.093398+00:00",
+    "end_time": "2026-10-04T20:44:36.130142+00:00",
+    "run_time_seconds": 0.000469207763671875,
+    "last_commit": {
+      "hash": "6166d12ac78ec38163a14e23f3cb23e23368d7a8",
+      "author_name": "Brigs",
+      "author_email": "abrignoni@gmail.com",
+      "date": "2026-10-04T02:02:02-04:00",
+      "message": "Correct artifact descriptions and notes against the code and sources"
+    }
+  },
+  "headers": [
+    "Date",
+    "Direction",
+    "Sender",
+    "Recipients",
+    "Media",
+    "Filename",
+    "Link Status",
+    "Message ID",
+    "Source File"
+  ],
+  "data": [
+    [
+      1764561600,
+      "out",
+      "",
+      "+12085551111",
+      "mock_hash_for_image000000.jpg",
+      "image000000.jpg",
+      "linked",
+      "1764561600000:d7",
+      "SYNTH001LCIDHASH/messages/20251201.csv"
+    ]
+  ]
+}

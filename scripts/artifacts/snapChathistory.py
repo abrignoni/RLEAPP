@@ -7,7 +7,11 @@ __artifacts_v2__ = {
         "last_update_date": "2026-07-03",
         "requirements": "none",
         "category": "Snapchat Archive",
-        "notes": "",
+        "notes": "Direction is derived, not stored: Received when the message has a From value, "
+                 "Sent when it has only a To value, and blank when it has neither. It has not been "
+                 "checked against archive layouts that record the sender another way. Text is read "
+                 "only from a key named Text. Message Type is the top-level key of the JSON the "
+                 "message was listed under.",
         "paths": ('*/chat_history.json',),
         "output_types": "standard",
         "artifact_icon": "message",

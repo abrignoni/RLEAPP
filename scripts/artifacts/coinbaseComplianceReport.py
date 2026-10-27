@@ -27,11 +27,12 @@ __artifacts_v2__ = {
                   "report's USER ATTRIBUTES section, repeated on each row so rows from several reports in one "
                   "case stay separable; it is constant when one report is parsed. Source File is the report's "
                   'path within the input. A production can hold the same report more than once, and each copy is '
-                  'reported, so compare Source File before counting rows as separate records. Layouts are those '
-                  'of synthetic returns and one 2025 production; other production years and layouts may differ. '
+                  'reported, so compare Source File before counting rows as separate records. The layouts handled '
+                  'are the ones this module was written against; other production years and layouts may differ. '
                   'After blank lines, repeated headers and uppercase header-like rows with at least two known '
                   'column labels start a new table. Uncertain header-like blocks are retained in Other Sections '
-                  'as unmapped table blocks; other blocks continue the preceding table. This heuristic does not '
+                  'as unmapped table blocks, and blocks that follow an uncertain block are kept there too until a '
+                  'recognised header resumes. Other blocks continue the preceding table. This heuristic does not '
                   'establish support for every future layout.'),
         'paths': ('*compliance_report*.csv',),
         'output_types': 'standard',
@@ -40,27 +41,31 @@ __artifacts_v2__ = {
     'coinbaseCRIdVerification': {
         'name': 'Coinbase Compliance Report - ID Verification Profiles',
         'description': 'Rows from the JUMIO PROFILES section of the report.',
-        'author': '@CyberMike81',
+        'author': '@CyberMike81, @AlexisBrignoni, Codex',
         'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-24',
+        'last_update_date': "2026-10-04",
         'requirements': 'none',
         'category': 'Coinbase Compliance Report',
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
                   'line reduced to one; line breaks inside a cell are kept. Timestamp (UTC) is converted only '
                   'when the value states an offset (-0800, Z) or a zone abbreviation; abbreviations are read as '
                   'fixed North American offsets as printed (PST = UTC-8). Values with no zone are left '
-                  'unconverted and Time Basis says so. Fractions beyond microseconds are truncated in the UTC '
-                  'column; the column as produced keeps every digit. Other Columns (as produced) is empty unless '
-                  'the file carries columns this artifact does not name; any such column is kept there as JSON, '
-                  "so a new column in a later production is not dropped. User ID is the USER ID from the report's "
-                  'USER ATTRIBUTES section, repeated on each row so rows from several reports in one case stay '
+                  'unconverted and Time Basis says so. A zone abbreviation is read on year-first and month-first values '
+                  "(for example 'January 5, 2025 3:04 PM PST'); a value in another form, or with an abbreviation "
+                  "outside the module's list, is also left unconverted and Time Basis reads 'unparsed' or names "
+                  'the unrecognized zone. Fractions beyond microseconds are truncated in the UTC column; the '
+                  'column as produced keeps every digit. Other Columns (as produced) is empty unless the file '
+                  'carries columns this artifact does not name; any such column is kept there as JSON, so a new '
+                  "column in a later production is not dropped. User ID is the USER ID from the report's USER "
+                  'ATTRIBUTES section, repeated on each row so rows from several reports in one case stay '
                   "separable; it is constant when one report is parsed. Source File is the report's path within "
                   'the input. A production can hold the same report more than once, and each copy is reported, so '
-                  'compare Source File before counting rows as separate records. Layouts are those of synthetic '
-                  'returns and one 2025 production; other production years and layouts may differ. After blank '
+                  'compare Source File before counting rows as separate records. The layouts handled are the ones '
+                  'this module was written against; other production years and layouts may differ. After blank '
                   'lines, repeated headers and uppercase header-like rows with at least two known column labels '
                   'start a new table. Uncertain header-like blocks are retained in Other Sections as unmapped '
-                  'table blocks; other blocks continue the preceding table. This heuristic does not establish '
+                  'table blocks, and blocks that follow an uncertain block are kept there too until a recognised '
+                  'header resumes. Other blocks continue the preceding table. This heuristic does not establish '
                   'support for every future layout.'),
         'paths': ('*compliance_report*.csv',),
         'output_types': 'standard',
@@ -81,11 +86,12 @@ __artifacts_v2__ = {
                   "report's USER ATTRIBUTES section, repeated on each row so rows from several reports in one "
                   "case stay separable; it is constant when one report is parsed. Source File is the report's "
                   'path within the input. A production can hold the same report more than once, and each copy is '
-                  'reported, so compare Source File before counting rows as separate records. Layouts are those '
-                  'of synthetic returns and one 2025 production; other production years and layouts may differ. '
+                  'reported, so compare Source File before counting rows as separate records. The layouts handled '
+                  'are the ones this module was written against; other production years and layouts may differ. '
                   'After blank lines, repeated headers and uppercase header-like rows with at least two known '
                   'column labels start a new table. Uncertain header-like blocks are retained in Other Sections '
-                  'as unmapped table blocks; other blocks continue the preceding table. This heuristic does not '
+                  'as unmapped table blocks, and blocks that follow an uncertain block are kept there too until a '
+                  'recognised header resumes. Other blocks continue the preceding table. This heuristic does not '
                   'establish support for every future layout.'),
         'paths': ('*compliance_report*.csv',),
         'output_types': 'standard',
@@ -94,24 +100,33 @@ __artifacts_v2__ = {
     'coinbaseCRPreviousEmails': {
         'name': 'Coinbase Compliance Report - Previous Emails',
         'description': 'Rows from the PREVIOUS EMAILS section of the report.',
-        'author': '@CyberMike81',
+        'author': '@CyberMike81, @AlexisBrignoni, Codex',
         'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-24',
+        'last_update_date': "2026-10-04",
         'requirements': 'none',
         'category': 'Coinbase Compliance Report',
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
-                  'line reduced to one; line breaks inside a cell are kept. Other Columns (as produced) is empty '
-                  'unless the file carries columns this artifact does not name; any such column is kept there as '
-                  'JSON, so a new column in a later production is not dropped. User ID is the USER ID from the '
-                  "report's USER ATTRIBUTES section, repeated on each row so rows from several reports in one "
-                  "case stay separable; it is constant when one report is parsed. Source File is the report's "
-                  'path within the input. A production can hold the same report more than once, and each copy is '
-                  'reported, so compare Source File before counting rows as separate records. Layouts are those '
-                  'of synthetic returns and one 2025 production; other production years and layouts may differ. '
-                  'After blank lines, repeated headers and uppercase header-like rows with at least two known '
-                  'column labels start a new table. Uncertain header-like blocks are retained in Other Sections '
-                  'as unmapped table blocks; other blocks continue the preceding table. This heuristic does not '
-                  'establish support for every future layout.'),
+                  'line reduced to one; line breaks inside a cell are kept. Timestamp (UTC) is derived from '
+                  'CHANGED AT. Timestamp (UTC) is converted only when the value states an offset (-0800, Z) or a '
+                  'zone abbreviation; abbreviations are read as fixed North American offsets as printed (PST = '
+                  'UTC-8). Values with no zone are left unconverted and Time Basis says so. A zone abbreviation '
+                  "is read on year-first and month-first values (for example 'January 5, 2025 3:04 PM PST'); a value in "
+                  "another form, or with an abbreviation outside the module's list, is also left unconverted and "
+                  "Time Basis reads 'unparsed' or names the unrecognized zone. Fractions beyond microseconds are "
+                  'truncated in the UTC column; the column as produced keeps every digit. CONFIRMED AT is '
+                  'reported as produced. Other Columns (as produced) is empty unless the file carries columns '
+                  'this artifact does not name; any such column is kept there as JSON, so a new column in a later '
+                  "production is not dropped. User ID is the USER ID from the report's USER ATTRIBUTES section, "
+                  'repeated on each row so rows from several reports in one case stay separable; it is constant '
+                  "when one report is parsed. Source File is the report's path within the input. A production can "
+                  'hold the same report more than once, and each copy is reported, so compare Source File before '
+                  'counting rows as separate records. The layouts handled are the ones this module was written '
+                  'against; other production years and layouts may differ. After blank lines, repeated headers '
+                  'and uppercase header-like rows with at least two known column labels start a new table. '
+                  'Uncertain header-like blocks are retained in Other Sections as unmapped table blocks, and '
+                  'blocks that follow an uncertain block are kept there too until a recognised header resumes. '
+                  'Other blocks continue the preceding table. This heuristic does not establish support for every '
+                  'future layout.'),
         'paths': ('*compliance_report*.csv',),
         'output_types': 'standard',
         'artifact_icon': 'mail',
@@ -131,11 +146,12 @@ __artifacts_v2__ = {
                   "report's USER ATTRIBUTES section, repeated on each row so rows from several reports in one "
                   "case stay separable; it is constant when one report is parsed. Source File is the report's "
                   'path within the input. A production can hold the same report more than once, and each copy is '
-                  'reported, so compare Source File before counting rows as separate records. Layouts are those '
-                  'of synthetic returns and one 2025 production; other production years and layouts may differ. '
+                  'reported, so compare Source File before counting rows as separate records. The layouts handled '
+                  'are the ones this module was written against; other production years and layouts may differ. '
                   'After blank lines, repeated headers and uppercase header-like rows with at least two known '
                   'column labels start a new table. Uncertain header-like blocks are retained in Other Sections '
-                  'as unmapped table blocks; other blocks continue the preceding table. This heuristic does not '
+                  'as unmapped table blocks, and blocks that follow an uncertain block are kept there too until a '
+                  'recognised header resumes. Other blocks continue the preceding table. This heuristic does not '
                   'establish support for every future layout.'),
         'paths': ('*compliance_report*.csv',),
         'output_types': 'standard',
@@ -156,11 +172,12 @@ __artifacts_v2__ = {
                   "report's USER ATTRIBUTES section, repeated on each row so rows from several reports in one "
                   "case stay separable; it is constant when one report is parsed. Source File is the report's "
                   'path within the input. A production can hold the same report more than once, and each copy is '
-                  'reported, so compare Source File before counting rows as separate records. Layouts are those '
-                  'of synthetic returns and one 2025 production; other production years and layouts may differ. '
+                  'reported, so compare Source File before counting rows as separate records. The layouts handled '
+                  'are the ones this module was written against; other production years and layouts may differ. '
                   'After blank lines, repeated headers and uppercase header-like rows with at least two known '
                   'column labels start a new table. Uncertain header-like blocks are retained in Other Sections '
-                  'as unmapped table blocks; other blocks continue the preceding table. This heuristic does not '
+                  'as unmapped table blocks, and blocks that follow an uncertain block are kept there too until a '
+                  'recognised header resumes. Other blocks continue the preceding table. This heuristic does not '
                   'establish support for every future layout.'),
         'paths': ('*compliance_report*.csv',),
         'output_types': 'standard',
@@ -183,10 +200,11 @@ __artifacts_v2__ = {
                   'several reports in one case stay separable; it is constant when one report is parsed. Source '
                   "File is the report's path within the input. A production can hold the same report more than "
                   'once, and each copy is reported, so compare Source File before counting rows as separate '
-                  'records. Layouts are those of synthetic returns and one 2025 production; other production '
+                  'records. The layouts handled are the ones this module was written against; other production '
                   'years and layouts may differ. After blank lines, repeated headers and uppercase header-like '
                   'rows with at least two known column labels start a new table. Uncertain header-like blocks are '
-                  'retained in Other Sections as unmapped table blocks; other blocks continue the preceding '
+                  'retained in Other Sections as unmapped table blocks, and blocks that follow an uncertain block '
+                  'are kept there too until a recognised header resumes. Other blocks continue the preceding '
                   'table. This heuristic does not establish support for every future layout.'),
         'paths': ('*compliance_report*.csv',),
         'output_types': 'standard',
@@ -196,9 +214,9 @@ __artifacts_v2__ = {
         'name': 'Coinbase Compliance Report - Crypto Addresses',
         'description': ('Rows from the section whose title lists asset symbols and ends in '
                         'ADDRESSES.'),
-        'author': '@CyberMike81',
+        'author': '@CyberMike81, @AlexisBrignoni, Codex',
         'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-24',
+        'last_update_date': "2026-10-04",
         'requirements': 'none',
         'category': 'Coinbase Compliance Report',
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
@@ -207,19 +225,23 @@ __artifacts_v2__ = {
                   'columns (ADDRESS and NETWORK). Timestamp (UTC) is converted only when the value states an '
                   'offset (-0800, Z) or a zone abbreviation; abbreviations are read as fixed North American '
                   'offsets as printed (PST = UTC-8). Values with no zone are left unconverted and Time Basis says '
-                  'so. Fractions beyond microseconds are truncated in the UTC column; the column as produced '
-                  'keeps every digit. Other Columns (as produced) is empty unless the file carries columns this '
-                  'artifact does not name; any such column is kept there as JSON, so a new column in a later '
-                  "production is not dropped. User ID is the USER ID from the report's USER ATTRIBUTES section, "
-                  'repeated on each row so rows from several reports in one case stay separable; it is constant '
-                  "when one report is parsed. Source File is the report's path within the input. A production can "
-                  'hold the same report more than once, and each copy is reported, so compare Source File before '
-                  'counting rows as separate records. Layouts are those of synthetic returns and one 2025 '
-                  'production; other production years and layouts may differ. After blank lines, repeated headers '
-                  'and uppercase header-like rows with at least two known column labels start a new table. '
-                  'Uncertain header-like blocks are retained in Other Sections as unmapped table blocks; other '
-                  'blocks continue the preceding table. This heuristic does not establish support for every '
-                  'future layout.'),
+                  "so. A zone abbreviation is read on year-first and month-first values (for example 'January 5, 2025 3:04 "
+                  "PM PST'); a value in another form, or with an abbreviation outside the module's list, is also "
+                  "left unconverted and Time Basis reads 'unparsed' or names the unrecognized zone. Fractions "
+                  'beyond microseconds are truncated in the UTC column; the column as produced keeps every digit. '
+                  'Other Columns (as produced) is empty unless the file carries columns this artifact does not '
+                  'name; any such column is kept there as JSON, so a new column in a later production is not '
+                  "dropped. User ID is the USER ID from the report's USER ATTRIBUTES section, repeated on each "
+                  'row so rows from several reports in one case stay separable; it is constant when one report is '
+                  "parsed. Source File is the report's path within the input. A production can hold the same "
+                  'report more than once, and each copy is reported, so compare Source File before counting rows '
+                  'as separate records. The layouts handled are the ones this module was written against; other '
+                  'production years and layouts may differ. After blank lines, repeated headers and uppercase '
+                  'header-like rows with at least two known column labels start a new table. Uncertain '
+                  'header-like blocks are retained in Other Sections as unmapped table blocks, and blocks that '
+                  'follow an uncertain block are kept there too until a recognised header resumes. Other blocks '
+                  'continue the preceding table. This heuristic does not establish support for every future '
+                  'layout.'),
         'paths': ('*compliance_report*.csv',),
         'output_types': 'standard',
         'artifact_icon': 'key',
@@ -235,16 +257,19 @@ __artifacts_v2__ = {
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
                   'line reduced to one; line breaks inside a cell are kept. These sections are grids: a row with '
                   'an empty first cell names the asset and the value columns, and the rows under it give a metric '
-                  'and its values. Asset and Value Columns come from that naming row. Amounts are as produced. '
-                  "User ID is the USER ID from the report's USER ATTRIBUTES section, repeated on each row so rows "
-                  'from several reports in one case stay separable; it is constant when one report is parsed. '
-                  "Source File is the report's path within the input. A production can hold the same report more "
-                  'than once, and each copy is reported, so compare Source File before counting rows as separate '
-                  'records. Layouts are those of synthetic returns and one 2025 production; other production '
-                  'years and layouts may differ. After blank lines, repeated headers and uppercase header-like '
-                  'rows with at least two known column labels start a new table. Uncertain header-like blocks are '
-                  'retained in Other Sections as unmapped table blocks; other blocks continue the preceding '
-                  'table. This heuristic does not establish support for every future layout.'),
+                  'and its values. Asset is the second cell of that naming row. Value Columns (as produced) lists '
+                  'every cell of that row after the first, so it begins with the cell reported as Asset. Amounts '
+                  "are as produced. User ID is the USER ID from the report's USER ATTRIBUTES section, repeated on "
+                  'each row so rows from several reports in one case stay separable; it is constant when one '
+                  "report is parsed. Source File is the report's path within the input. A production can hold the "
+                  'same report more than once, and each copy is reported, so compare Source File before counting '
+                  'rows as separate records. The layouts handled are the ones this module was written against; '
+                  'other production years and layouts may differ. After blank lines, repeated headers and '
+                  'uppercase header-like rows with at least two known column labels start a new table. Uncertain '
+                  'header-like blocks are retained in Other Sections as unmapped table blocks, and blocks that '
+                  'follow an uncertain block are kept there too until a recognised header resumes. Other blocks '
+                  'continue the preceding table. This heuristic does not establish support for every future '
+                  'layout.'),
         'paths': ('*compliance_report*.csv',),
         'output_types': 'standard',
         'artifact_icon': 'bar-chart-2',
@@ -252,27 +277,31 @@ __artifacts_v2__ = {
     'coinbaseCRTransactions': {
         'name': 'Coinbase Compliance Report - Transactions',
         'description': 'Rows from the TRANSACTIONS section of the report.',
-        'author': '@CyberMike81',
+        'author': '@CyberMike81, @AlexisBrignoni, Codex',
         'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-24',
+        'last_update_date': "2026-10-04",
         'requirements': 'none',
         'category': 'Coinbase Compliance Report',
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
                   'line reduced to one; line breaks inside a cell are kept. Amounts, balances and USD values are '
                   'as produced. Timestamp (UTC) is converted only when the value states an offset (-0800, Z) or a '
                   'zone abbreviation; abbreviations are read as fixed North American offsets as printed (PST = '
-                  'UTC-8). Values with no zone are left unconverted and Time Basis says so. Fractions beyond '
-                  'microseconds are truncated in the UTC column; the column as produced keeps every digit. Other '
-                  'Columns (as produced) is empty unless the file carries columns this artifact does not name; '
-                  'any such column is kept there as JSON, so a new column in a later production is not dropped. '
-                  "User ID is the USER ID from the report's USER ATTRIBUTES section, repeated on each row so rows "
-                  'from several reports in one case stay separable; it is constant when one report is parsed. '
-                  "Source File is the report's path within the input. A production can hold the same report more "
-                  'than once, and each copy is reported, so compare Source File before counting rows as separate '
-                  'records. Layouts are those of synthetic returns and one 2025 production; other production '
+                  'UTC-8). Values with no zone are left unconverted and Time Basis says so. A zone abbreviation '
+                  "is read on year-first and month-first values (for example 'January 5, 2025 3:04 PM PST'); a value in "
+                  "another form, or with an abbreviation outside the module's list, is also left unconverted and "
+                  "Time Basis reads 'unparsed' or names the unrecognized zone. Fractions beyond microseconds are "
+                  'truncated in the UTC column; the column as produced keeps every digit. Other Columns (as '
+                  'produced) is empty unless the file carries columns this artifact does not name; any such '
+                  'column is kept there as JSON, so a new column in a later production is not dropped. User ID is '
+                  "the USER ID from the report's USER ATTRIBUTES section, repeated on each row so rows from "
+                  'several reports in one case stay separable; it is constant when one report is parsed. Source '
+                  "File is the report's path within the input. A production can hold the same report more than "
+                  'once, and each copy is reported, so compare Source File before counting rows as separate '
+                  'records. The layouts handled are the ones this module was written against; other production '
                   'years and layouts may differ. After blank lines, repeated headers and uppercase header-like '
                   'rows with at least two known column labels start a new table. Uncertain header-like blocks are '
-                  'retained in Other Sections as unmapped table blocks; other blocks continue the preceding '
+                  'retained in Other Sections as unmapped table blocks, and blocks that follow an uncertain block '
+                  'are kept there too until a recognised header resumes. Other blocks continue the preceding '
                   'table. This heuristic does not establish support for every future layout.'),
         'paths': ('*compliance_report*.csv',),
         'output_types': 'standard',
@@ -281,9 +310,9 @@ __artifacts_v2__ = {
     'coinbaseCRExchangeActivity': {
         'name': 'Coinbase Compliance Report - Exchange Activity',
         'description': 'Rows from the EXCHANGE TRANSFERS and EXCHANGE TRANSACTIONS sections.',
-        'author': '@CyberMike81',
+        'author': '@CyberMike81, @AlexisBrignoni, Codex',
         'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-24',
+        'last_update_date': "2026-10-04",
         'requirements': 'none',
         'category': 'Coinbase Compliance Report',
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
@@ -291,17 +320,21 @@ __artifacts_v2__ = {
                   'pairs in the order produced, because the two sections have different columns. Timestamp (UTC) '
                   'is converted only when the value states an offset (-0800, Z) or a zone abbreviation; '
                   'abbreviations are read as fixed North American offsets as printed (PST = UTC-8). Values with '
-                  'no zone are left unconverted and Time Basis says so. Fractions beyond microseconds are '
-                  'truncated in the UTC column; the column as produced keeps every digit. User ID is the USER ID '
-                  "from the report's USER ATTRIBUTES section, repeated on each row so rows from several reports "
-                  'in one case stay separable; it is constant when one report is parsed. Source File is the '
-                  "report's path within the input. A production can hold the same report more than once, and each "
-                  'copy is reported, so compare Source File before counting rows as separate records. Layouts are '
-                  'those of synthetic returns and one 2025 production; other production years and layouts may '
-                  'differ. After blank lines, repeated headers and uppercase header-like rows with at least two '
-                  'known column labels start a new table. Uncertain header-like blocks are retained in Other '
-                  'Sections as unmapped table blocks; other blocks continue the preceding table. This heuristic '
-                  'does not establish support for every future layout.'),
+                  'no zone are left unconverted and Time Basis says so. A zone abbreviation is read on year-first and '
+                  "month-first values (for example 'January 5, 2025 3:04 PM PST'); a value in another form, or "
+                  "with an abbreviation outside the module's list, is also left unconverted and Time Basis reads "
+                  "'unparsed' or names the unrecognized zone. Fractions beyond microseconds are truncated in the "
+                  "UTC column; the column as produced keeps every digit. User ID is the USER ID from the report's "
+                  'USER ATTRIBUTES section, repeated on each row so rows from several reports in one case stay '
+                  "separable; it is constant when one report is parsed. Source File is the report's path within "
+                  'the input. A production can hold the same report more than once, and each copy is reported, so '
+                  'compare Source File before counting rows as separate records. The layouts handled are the ones '
+                  'this module was written against; other production years and layouts may differ. After blank '
+                  'lines, repeated headers and uppercase header-like rows with at least two known column labels '
+                  'start a new table. Uncertain header-like blocks are retained in Other Sections as unmapped '
+                  'table blocks, and blocks that follow an uncertain block are kept there too until a recognised '
+                  'header resumes. Other blocks continue the preceding table. This heuristic does not establish '
+                  'support for every future layout.'),
         'paths': ('*compliance_report*.csv',),
         'output_types': 'standard',
         'artifact_icon': 'repeat',
@@ -309,46 +342,19 @@ __artifacts_v2__ = {
     'coinbaseCREvents': {
         'name': 'Coinbase Compliance Report - Account Events',
         'description': 'Rows from the EVENTS section of the report.',
-        'author': '@CyberMike81',
+        'author': '@CyberMike81, @AlexisBrignoni, Codex',
         'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-24',
+        'last_update_date': "2026-10-04",
         'requirements': 'none',
         'category': 'Coinbase Compliance Report',
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
                   'line reduced to one; line breaks inside a cell are kept. IP, FINGERPRINT and LOCATION are '
                   'reported as produced. Timestamp (UTC) is converted only when the value states an offset '
                   '(-0800, Z) or a zone abbreviation; abbreviations are read as fixed North American offsets as '
-                  'printed (PST = UTC-8). Values with no zone are left unconverted and Time Basis says so. '
-                  'Fractions beyond microseconds are truncated in the UTC column; the column as produced keeps '
-                  'every digit. Other Columns (as produced) is empty unless the file carries columns this '
-                  'artifact does not name; any such column is kept there as JSON, so a new column in a later '
-                  "production is not dropped. User ID is the USER ID from the report's USER ATTRIBUTES section, "
-                  'repeated on each row so rows from several reports in one case stay separable; it is constant '
-                  "when one report is parsed. Source File is the report's path within the input. A production can "
-                  'hold the same report more than once, and each copy is reported, so compare Source File before '
-                  'counting rows as separate records. Layouts are those of synthetic returns and one 2025 '
-                  'production; other production years and layouts may differ. After blank lines, repeated headers '
-                  'and uppercase header-like rows with at least two known column labels start a new table. '
-                  'Uncertain header-like blocks are retained in Other Sections as unmapped table blocks; other '
-                  'blocks continue the preceding table. This heuristic does not establish support for every '
-                  'future layout.'),
-        'paths': ('*compliance_report*.csv',),
-        'output_types': 'standard',
-        'artifact_icon': 'activity',
-    },
-    'coinbaseCRManualReviews': {
-        'name': 'Coinbase Compliance Report - Manual Reviews',
-        'description': 'Rows from the MANUAL REVIEWS section of the report.',
-        'author': '@CyberMike81',
-        'creation_date': '2026-09-23',
-        'last_update_date': '2026-09-24',
-        'requirements': 'none',
-        'category': 'Coinbase Compliance Report',
-        'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
-                  'line reduced to one; line breaks inside a cell are kept. Timestamp (UTC) is derived from '
-                  'CREATED. Timestamp (UTC) is converted only when the value states an offset (-0800, Z) or a '
-                  'zone abbreviation; abbreviations are read as fixed North American offsets as printed (PST = '
-                  'UTC-8). Values with no zone are left unconverted and Time Basis says so. Fractions beyond '
+                  'printed (PST = UTC-8). Values with no zone are left unconverted and Time Basis says so. A zone '
+                  "abbreviation is read on year-first and month-first values (for example 'January 5, 2025 3:04 PM PST'); a "
+                  "value in another form, or with an abbreviation outside the module's list, is also left "
+                  "unconverted and Time Basis reads 'unparsed' or names the unrecognized zone. Fractions beyond "
                   'microseconds are truncated in the UTC column; the column as produced keeps every digit. Other '
                   'Columns (as produced) is empty unless the file carries columns this artifact does not name; '
                   'any such column is kept there as JSON, so a new column in a later production is not dropped. '
@@ -356,10 +362,44 @@ __artifacts_v2__ = {
                   'from several reports in one case stay separable; it is constant when one report is parsed. '
                   "Source File is the report's path within the input. A production can hold the same report more "
                   'than once, and each copy is reported, so compare Source File before counting rows as separate '
-                  'records. Layouts are those of synthetic returns and one 2025 production; other production '
+                  'records. The layouts handled are the ones this module was written against; other production '
                   'years and layouts may differ. After blank lines, repeated headers and uppercase header-like '
                   'rows with at least two known column labels start a new table. Uncertain header-like blocks are '
-                  'retained in Other Sections as unmapped table blocks; other blocks continue the preceding '
+                  'retained in Other Sections as unmapped table blocks, and blocks that follow an uncertain block '
+                  'are kept there too until a recognised header resumes. Other blocks continue the preceding '
+                  'table. This heuristic does not establish support for every future layout.'),
+        'paths': ('*compliance_report*.csv',),
+        'output_types': 'standard',
+        'artifact_icon': 'activity',
+    },
+    'coinbaseCRManualReviews': {
+        'name': 'Coinbase Compliance Report - Manual Reviews',
+        'description': 'Rows from the MANUAL REVIEWS section of the report.',
+        'author': '@CyberMike81, @AlexisBrignoni, Codex',
+        'creation_date': '2026-09-23',
+        'last_update_date': "2026-10-04",
+        'requirements': 'none',
+        'category': 'Coinbase Compliance Report',
+        'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
+                  'line reduced to one; line breaks inside a cell are kept. Timestamp (UTC) is derived from '
+                  'CREATED. Timestamp (UTC) is converted only when the value states an offset (-0800, Z) or a '
+                  'zone abbreviation; abbreviations are read as fixed North American offsets as printed (PST = '
+                  'UTC-8). Values with no zone are left unconverted and Time Basis says so. A zone abbreviation '
+                  "is read on year-first and month-first values (for example 'January 5, 2025 3:04 PM PST'); a value in "
+                  "another form, or with an abbreviation outside the module's list, is also left unconverted and "
+                  "Time Basis reads 'unparsed' or names the unrecognized zone. Fractions beyond microseconds are "
+                  'truncated in the UTC column; the column as produced keeps every digit. Other Columns (as '
+                  'produced) is empty unless the file carries columns this artifact does not name; any such '
+                  'column is kept there as JSON, so a new column in a later production is not dropped. User ID is '
+                  "the USER ID from the report's USER ATTRIBUTES section, repeated on each row so rows from "
+                  'several reports in one case stay separable; it is constant when one report is parsed. Source '
+                  "File is the report's path within the input. A production can hold the same report more than "
+                  'once, and each copy is reported, so compare Source File before counting rows as separate '
+                  'records. The layouts handled are the ones this module was written against; other production '
+                  'years and layouts may differ. After blank lines, repeated headers and uppercase header-like '
+                  'rows with at least two known column labels start a new table. Uncertain header-like blocks are '
+                  'retained in Other Sections as unmapped table blocks, and blocks that follow an uncertain block '
+                  'are kept there too until a recognised header resumes. Other blocks continue the preceding '
                   'table. This heuristic does not establish support for every future layout.'),
         'paths': ('*compliance_report*.csv',),
         'output_types': 'standard',
@@ -376,17 +416,18 @@ __artifacts_v2__ = {
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
                   'line reduced to one; line breaks inside a cell are kept. Rows are reported cell for cell, '
                   "joined with ' | ', with the section title and the CSV record number. The first row of each "
-                  "block is usually that section's header row. Sections present with no rows are listed with an "
-                  "empty Cells value. User ID is the USER ID from the report's USER ATTRIBUTES section, repeated "
-                  'on each row so rows from several reports in one case stay separable; it is constant when one '
-                  "report is parsed. Source File is the report's path within the input. A production can hold the "
-                  'same report more than once, and each copy is reported, so compare Source File before counting '
-                  'rows as separate records. Layouts are those of synthetic returns and one 2025 production; '
-                  'other production years and layouts may differ. After blank lines, repeated headers and '
-                  'uppercase header-like rows with at least two known column labels start a new table. Uncertain '
-                  'header-like blocks are retained in Other Sections as unmapped table blocks; other blocks '
-                  'continue the preceding table. This heuristic does not establish support for every future '
-                  'layout.'),
+                  "block is usually that section's header row. Sections present with no rows are listed with "
+                  "empty Cells (as produced) and CSV Record values. User ID is the USER ID from the report's USER "
+                  'ATTRIBUTES section, repeated on each row so rows from several reports in one case stay '
+                  "separable; it is constant when one report is parsed. Source File is the report's path within "
+                  'the input. A production can hold the same report more than once, and each copy is reported, so '
+                  'compare Source File before counting rows as separate records. The layouts handled are the ones '
+                  'this module was written against; other production years and layouts may differ. After blank '
+                  'lines, repeated headers and uppercase header-like rows with at least two known column labels '
+                  'start a new table. Uncertain header-like blocks are retained in Other Sections as unmapped '
+                  'table blocks, and blocks that follow an uncertain block are kept there too until a recognised '
+                  'header resumes. Other blocks continue the preceding table. This heuristic does not establish '
+                  'support for every future layout.'),
         'paths': ('*compliance_report*.csv',),
         'output_types': 'standard',
         'artifact_icon': 'file-text',
@@ -435,7 +476,7 @@ _MONTHS = {m: i + 1 for i, m in enumerate(("jan", "feb", "mar", "apr", "may", "j
 _TZ_ABBR = {"PST": -8, "PDT": -7, "MST": -7, "MDT": -6, "CST": -6, "CDT": -5, "EST": -5, "EDT": -4,
             "AKST": -9, "AKDT": -8, "HST": -10, "UTC": 0, "GMT": 0, "Z": 0}
 _ISO = re.compile(r"^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d+))?)?\s*"
-                  r"(Z|[+-]\d{2}:?\d{2})?$")
+                  r"(Z|[+-]\d{2}:?\d{2}|[A-Z]{2,4})?$")
 _MONTH_FIRST = re.compile(r"^([A-Za-z]+),?\s+(\d{1,2}),?\s+(\d{4}),?\s+(\d{1,2}):(\d{2})(?::(\d{2}))?"
                           r"\s*([aApP][mM])?\s*([A-Z]{1,4})?$")
 
@@ -464,6 +505,11 @@ def _to_utc(value):
                 return "", "zone not stated"
             if zone == "Z":
                 return base.replace(tzinfo=timezone.utc), "stated offset"
+            if zone in _TZ_ABBR:
+                return ((base - timedelta(hours=_TZ_ABBR[zone])).replace(tzinfo=timezone.utc),
+                        "stated zone abbreviation (fixed offset)")
+            if not zone.startswith(('+', '-')):
+                return "", f"zone '{zone}' not recognized"
             zz = zone.replace(":", "")
             minutes = (1 if zz[0] == "+" else -1) * (int(zz[1:3]) * 60 + int(zz[3:5]))
             return (base - timedelta(minutes=minutes)).replace(tzinfo=timezone.utc), "stated offset"
@@ -614,10 +660,16 @@ def _table_artifact(context, section, time_column=None):
     """Rows of one table section: User ID, [UTC, as produced, basis], named columns, other
     columns, CSV record."""
     known = _COLUMNS[section]
-    headers = ["User ID"]
+    headers = []
     if time_column:
-        headers += [("Timestamp (UTC)", "datetime"), f"{time_column} (as produced)", "Time Basis"]
-    headers += [c for c in known if c != time_column]      # column names as produced
+        headers += [("Timestamp (UTC)", "datetime"), f"{time_column} (as produced)"]
+    ordered_columns = [c for c in known if c in ("CONFIRMED AT", "UPDATED", "DOB") and c != time_column]
+    ordered_columns += [c for c in known if c != time_column and c not in ordered_columns]
+    date_columns = [c for c in ordered_columns if c in ("CONFIRMED AT", "UPDATED", "DOB")]
+    headers += date_columns
+    if time_column:
+        headers.append("Time Basis")
+    headers += ["User ID"] + [c for c in ordered_columns if c not in date_columns]      # column names as produced
     headers += ["Other Columns (as produced)", "CSV Record", "Source File"]
     rows, sources = [], set()
     for source, report in _reports(context):
@@ -626,11 +678,15 @@ def _table_artifact(context, section, time_column=None):
             for header, records in _tables(report["sections"].get(title, [])):
                 for number, cells in records:
                     rec = _record(header, cells)
-                    line = [report["user_id"]]
+                    line = []
                     if time_column:
                         utc, basis = _to_utc(rec.get(time_column, ""))
-                        line += [utc, rec.get(time_column, ""), basis]
-                    line += [rec.get(c, "") for c in known if c != time_column]
+                        line += [utc, rec.get(time_column, "")]
+                    line += [rec.get(c, "") for c in date_columns]
+                    if time_column:
+                        line.append(basis)
+                    line += [report["user_id"]]
+                    line += [rec.get(c, "") for c in ordered_columns if c not in date_columns]
                     line += [_extra(header, cells, known), number, context.get_relative_path(source)]
                     rows.append(line)
                     sources.add(source)
@@ -722,10 +778,10 @@ def coinbaseCRExchangeActivity(context):
                 for number, cells in records:
                     raw = _record(header, cells).get("TIMESTAMP", "")
                     utc, basis = _to_utc(raw)
-                    rows.append([report["user_id"], utc, raw, basis, section.title(), _pairs(header, cells),
+                    rows.append([utc, raw, report["user_id"], basis, section.title(), _pairs(header, cells),
                                  number, context.get_relative_path(source)])
                     sources.add(source)
-    headers = ("User ID", ("Timestamp (UTC)", "datetime"), "TIMESTAMP (as produced)", "Time Basis",
+    headers = (("Timestamp (UTC)", "datetime"), "TIMESTAMP (as produced)", "User ID", "Time Basis",
                "Section", "Record", "CSV Record", "Source File")
     return headers, rows, "\n".join(sorted(sources))
 

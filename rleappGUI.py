@@ -18,7 +18,9 @@ from tkinter import ttk, filedialog as tk_filedialog, messagebox as tk_msgbox
 from scripts.version_info import rleapp_version, leapp_name
 from scripts.search_files import *
 from scripts.raw_image import (RAW_IMAGE_LABEL, RAW_IMAGE_SUFFIXES, RAW_IMAGE_FILE_PATTERNS,
-                               names_an_image_folder, ask_image_keys)
+                               names_an_image_folder, ask_raw_input, input_text,
+                               names_raw_images, selected_paths, selection_text, PathsTooltip,
+                               logical_among, logical_refusal)
 from scripts.ilapfuncs import *
 from scripts.modules_to_exclude import modules_to_exclude
 from scripts.lavafuncs import *
@@ -37,6 +39,9 @@ from scripts.lavafuncs import lava_json_name
 # How often the main thread drains the worker's queue. Short enough that the log still
 # scrolls smoothly, long enough that polling is not itself the load.
 CRUNCH_POLL_MS = 50
+# The files picked together in the file dialog (the member images of a RAID set); the
+# input field shows the first and how many more while it still stands for them.
+input_selection = []
 
 
 def allow_output_folder_name_chars(proposed):
@@ -58,15 +63,42 @@ def show_history_menu(button, path_type):
         for path in paths:
             def set_path(p=path):
                 if path_type == 'input':
-                    input_entry.delete(0, tk.END)
-                    input_entry.insert(0, p)
+                    set_input_selection([p])
                 else:
                     output_entry.delete(0, tk.END)
                     output_entry.insert(0, p)
             menu.add_command(label=history.format_path_for_display(path), command=set_path)
+        if path_type == 'input':
+            # images given together in a run; the ones found beside them are found again
+            for input_set in history.get_input_sets():
+                given = [p for p in input_set.get('paths', [])
+                         if p not in input_set.get('found_automatically', [])]
+                if len(given) > 1:
+                    menu.add_command(
+                        label=selection_text([history.format_path_for_display(p) for p in given]),
+                        command=lambda g=given: set_input_selection(g))
     x = input_entry.winfo_rootx()
     y = button.winfo_rooty() + button.winfo_height()
+
+    # On X11 (XWayland included) a posted menu stays on screen until it is unposted:
+    # close it when the window moves or the menu loses focus, or it is left behind.
+    closed = False
+
+    def close_menu(event=None):
+        nonlocal closed
+        # child widgets inherit the window's <Configure> binding; only the window counts
+        if closed or (event is not None and event.type == tk.EventType.Configure
+                      and event.widget is not main_window):
+            return
+        closed = True
+        main_window.unbind('<Configure>', configure_binding)
+        menu.unpost()
+        menu.destroy()
+
+    configure_binding = main_window.bind('<Configure>', close_menu, add='+')
+    menu.bind('<FocusOut>', close_menu)
     menu.post(x, y)
+    menu.focus_set()
 
 
 def pickModules():
@@ -146,7 +178,7 @@ def filter_modules(*args):
                 cb.config(
                     background=theme_bgcolor,
                     fg=theme_fgcolor,
-                    selectcolor=theme_inputcolor,
+                    selectcolor=theme_bgcolor,
                     highlightthickness=0,
                     activebackground=theme_bgcolor,
                     activeforeground=theme_fgcolor)
@@ -211,9 +243,38 @@ def scroll(event):
     parent.event_generate('<MouseWheel>', delta=event.delta, when='now')
 
 
+def set_input_selection(paths):
+    '''Show the files picked in the input field: one path, or the first and how many more.'''
+    input_selection[:] = list(paths) if len(paths) > 1 else []
+    input_entry.delete(0, 'end')
+    input_entry.insert(0, selection_text(paths))
+
+
+def input_paths():
+    '''The input the field stands for: the files picked together, or the one path in it.'''
+    return selected_paths(input_entry.get(), input_selection)
+
+
 def ValidateInput():
     '''Returns tuple (success, extraction_type)'''
     i_path = input_entry.get()  # input file/folder
+    several = input_paths()
+    if len(several) > 1:
+        # The member images of a RAID set, read together as raw images
+        missing = [p for p in several if not os.path.isfile(p) and not names_an_image_folder(p)]
+        if missing:
+            tk_msgbox.showerror(title='Error', message=f'INPUT file does not exist: {missing[0]}',
+                                parent=main_window)
+            return False, '', None
+        if not names_raw_images(several):
+            tk_msgbox.showerror(title='Error', message='Several files are read together only as disk '
+                                'images, the member images of a RAID set.', parent=main_window)
+            return False, '', None
+        logical = logical_among(several)
+        if logical is not None:
+            tk_msgbox.showerror(title='Error', message=logical_refusal(logical), parent=main_window)
+            return False, '', None
+        i_path = several[0]
     o_path = output_entry.get()  # output folder
     ext_type = ''
 
@@ -244,6 +305,9 @@ def ValidateInput():
         # tar seeker opens it through tarfile's compression detection.
         elif i_path.lower().endswith('.tar.xz'):
             ext_type = 'tar'
+
+    if len(several) > 1:
+        ext_type = 'raw'
 
     # check output now
     if len(o_path) == 0:  # output path
@@ -455,7 +519,7 @@ def open_settings_window():
         command=toggle_history,
         background=theme_bgcolor,
         fg=theme_fgcolor,
-        selectcolor=theme_inputcolor,
+        selectcolor=theme_bgcolor,
         activebackground=theme_bgcolor,
         activeforeground=theme_fgcolor,
         highlightthickness=0,
@@ -493,16 +557,23 @@ def process(casedata):
     is_valid, extracttype, blah = ValidateInput()
 
     if is_valid:
-        # An encrypted image opens only with what locked it, and a BitLocker or APFS
-        # volume in an image with its own key: asked for here, checked against the image,
+        # An encrypted image opens only with what locked it, and a BitLocker, APFS or
+        # LUKS volume in an image with its own key: asked for here, checked against the image,
         # and handed to the run, never stored.
+        # One image that holds a RAID member has the other members looked for beside it,
+        # and the examiner is asked before files found that way are read.
         image_password = None
-        if extracttype == 'raw':
-            image_password = ask_image_keys(main_window, input_entry.get())
-            if image_password is None:
-                return
-        GuiWindow.window_handle = main_window
+        found_members = None
         input_path = input_entry.get()
+        if extracttype == 'raw':
+            raw_input = ask_raw_input(main_window, input_paths())
+            if raw_input is None:
+                return
+            image_password = raw_input.keys
+            input_path = raw_input.input_path
+            # what was found beside the image picked, and any image picked twice
+            found_members = raw_input
+        GuiWindow.window_handle = main_window
         output_folder = output_entry.get()
 
         # File system extractions contain paths > 260 char, which causes problems
@@ -529,7 +600,10 @@ def process(casedata):
         progress_bar_frame.pack(side='bottom', padx=2, pady=2, ipady=2, fill='x', before=logtext_frame)
 
         # Record history if enabled
-        history.record_input_path(input_path)
+        if isinstance(input_path, list):
+            history.record_input_set(input_path, getattr(found_members, 'found', found_members))
+        else:
+            history.record_input_path(input_path)
         history.record_output_path(output_folder)
 
         # crunch_artifacts blocks for the length of the run. Called here it blocks the Tk
@@ -540,23 +614,26 @@ def process(casedata):
         worker = threading.Thread(
             target=run_crunch,
             args=(GuiWindow.message_queue, selected_modules, extracttype, input_path,
-                  out_params, wrap_text, casedata, image_password),
+                  out_params, wrap_text, casedata, image_password, found_members,
+                  hash_files_var.get()),
             daemon=True)
         worker.start()
         main_window.after(CRUNCH_POLL_MS, poll_crunch, GuiWindow.message_queue, out_params)
 
 
 def run_crunch(message_queue, selected_modules, extracttype, input_path, out_params, wrap_text,
-               case_info, image_password=None):
+               case_info, image_password=None, found_members=None, hash_files=False):
     '''Do the processing off the main thread. Touches no widget; reports on the queue.'''
     try:
         # LAVA's SQLite connection is opened here rather than in process(): a sqlite3
         # object may only be used by the thread that created it, so a connection opened
         # on the main thread is unusable by the artifacts running on this one.
-        initialize_lava(input_path, out_params.output_folder_base, extracttype, profile_filename)
+        initialize_lava(input_text(input_path, found_members), out_params.output_folder_base,
+                        extracttype, profile_filename)
         crunch_successful = rleapp.crunch_artifacts(
             selected_modules, extracttype, input_path, out_params, wrap_text,
-            loader, case_info, profile_filename, image_password=image_password)
+            loader, case_info, profile_filename, image_password=image_password,
+            found_members=found_members, hash_files=hash_files)
         lava_finalize_output(out_params.output_folder_base)
     except Exception:  # pylint: disable=broad-exception-caught
         # Without this the GUI would poll an empty queue forever and look hung for real.
@@ -681,20 +758,24 @@ def close_main_window():
 def select_input(button_type):
     '''Select source and insert its path into input field'''
     if button_type == 'file':
-        input_filename = tk_filedialog.askopenfilename(parent=main_window,
-                                                       title='Select a file',
-                                                       filetypes=(('All supported files',
-                                                                   '*.tar *.zip *.gz *.xz ' + RAW_IMAGE_FILE_PATTERNS),
-                                                                  ('tar file', '*.tar'), ('zip file', '*.zip'),
-                                                                  ('gz file', '*.gz'),
-                                                                  ('tar.xz file', '*.xz'),
-                                                                  (RAW_IMAGE_LABEL, RAW_IMAGE_FILE_PATTERNS)))
+        # Several disk images can be picked together: the member images of a RAID set
+        picked = tk_filedialog.askopenfilenames(parent=main_window,
+                                                title='Select a file (or the disk images of a RAID set)',
+                                                filetypes=(('All supported files',
+                                                            '*.tar *.zip *.gz *.xz ' + RAW_IMAGE_FILE_PATTERNS),
+                                                           ('tar file', '*.tar'), ('zip file', '*.zip'),
+                                                           ('gz file', '*.gz'),
+                                                           ('tar.xz file', '*.xz'),
+                                                           (RAW_IMAGE_LABEL, RAW_IMAGE_FILE_PATTERNS)))
+        picked = list(main_window.tk.splitlist(picked)) if picked else []
     else:
-        input_filename = tk_filedialog.askdirectory(parent=main_window, title='Select a folder')
-    input_entry.delete(0, 'end')
-    input_entry.insert(0, input_filename)
-    if input_filename:
-        history.record_input_path(input_filename)
+        folder = tk_filedialog.askdirectory(parent=main_window, title='Select a folder')
+        picked = [folder] if folder else []
+    set_input_selection(picked)
+    if len(picked) > 1:
+        history.record_input_set(picked)
+    elif picked:
+        history.record_input_path(picked[0])
 
 
 def select_output():
@@ -994,6 +1075,17 @@ leapps_logo_label = ttk.Label(title_frame, image=leapps_logo, cursor="target")
 leapps_logo_label.pack(side='right')
 leapps_logo_label.bind("<Button-1>", lambda e: open_website("https://leapps.org"))
 
+# --selfcheck stops here, before the window is ever drawn, so a built binary can be smoke
+# tested without anyone clicking. By this point Tk has started, the images under assets/
+# have loaded and every artifact module has been imported: the three things built binaries
+# have been found without while the same code ran fine from source. The search icon is
+# loaded further down, and only off macOS, so it is loaded here too.
+if '--selfcheck' in sys.argv[1:]:
+    ImageTk.PhotoImage(file=resource_path("magnif_glass.png"))
+    print(f'selfcheck passed: {len(loader)} artifacts, Tk {main_window.tk.call("info", "patchlevel")}')
+    main_window.destroy()
+    sys.exit(0)
+
 ### Input output selection
 input_frame = ttk.LabelFrame(
     main_window,
@@ -1001,6 +1093,8 @@ input_frame = ttk.LabelFrame(
 input_frame.pack(padx=14, pady=2, fill='x')
 input_entry = ttk.Entry(input_frame)
 input_entry.pack(side='left', padx=5, pady=4, fill='x', expand=True)
+# the full list when several images were picked together
+input_tooltip = PathsTooltip(input_entry, input_paths)
 input_history_button = ttk.Button(input_frame, text='▼', width=3,
                                 command=lambda: show_history_menu(input_history_button, 'input'))
 input_history_button.pack(side='left', padx=2, pady=4)
@@ -1029,6 +1123,11 @@ output_folder_name_entry.configure(
     validate='key',
     validatecommand=(main_window.register(allow_output_folder_name_chars), '%P'))
 output_folder_name_entry.pack(side='left', fill='x', expand=True)
+# Off at every start, never remembered: a run hashes its staged files and records
+# their times only when this run asks for it (the command line's --hash)
+hash_files_var = tk.BooleanVar(value=False)
+ttk.Checkbutton(output_frame, text='Hash staged files (SHA-256) and record the times the evidence gives them',
+                variable=hash_files_var).pack(anchor='w', padx=5, pady=(0, 4))
 
 mlist_frame = ttk.LabelFrame(main_window, text=' Available Modules: ', name='f_list')
 mlist_frame.pack(padx=14, pady=5, expand=True, fill='both')

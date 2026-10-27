@@ -14,26 +14,34 @@ __artifacts_v2__ = {
     },
     "get_fritz_callog": {
         "name": "Fritz!Box Call Log",
-        "description": "Processes the Call Log from a Fritzbox Supportdata dump",
+        "description": "Call log entries from the calllog section of a Fritz!Box support data dump",
         "author": "@C_Peter",
         "creation_date": "2026-07-05",
         "last_update_date": "2026-07-05",
         "requirements": "none",
         "category": "FritzBox Supportdata",
-        "notes": "",
+        "notes": "Timestamp is the log's local time converted to UTC using the time zone "
+                 "abbreviation on the dump's date line; the log stores no zone. For CET or CEST "
+                 "and for EST or EDT the parser applies its own daylight saving rule; for other "
+                 "abbreviations it applies a fixed offset. Check times near a daylight saving "
+                 "change against the source file. Only the first support file found is read.",
         "paths": ('*/support_FRITZ*.txt'),
         "output_types": "standard",
         'artifact_icon': 'phone-call',
     },
     "get_fritz_events": {
         "name": "Fritz!Box Events",
-        "description": "Processes the Eventlog from a Fritzbox Supportdata dump",
+        "description": "Event log entries from the Events section of a Fritz!Box support data dump",
         "author": "@C_Peter",
         "creation_date": "2026-07-05",
         "last_update_date": "2026-07-05",
         "requirements": "none",
         "category": "FritzBox Supportdata",
-        "notes": "",
+        "notes": "Timestamp is the log's local time converted to UTC using the time zone "
+                 "abbreviation on the dump's date line; the log stores no zone. For CET or CEST "
+                 "and for EST or EDT the parser applies its own daylight saving rule; for other "
+                 "abbreviations it applies a fixed offset. Check times near a daylight saving "
+                 "change against the source file. Only the first support file found is read.",
         "paths": ('*/support_FRITZ*.txt'),
         "output_types": "standard",
         'artifact_icon': 'activity',
@@ -53,26 +61,34 @@ __artifacts_v2__ = {
     },
     "get_fritz_logs": {
         "name": "Fritz!Box Logs",
-        "description": "Processes the logs from a Fritzbox Supportdata dump",
+        "description": "Lines carrying a 'YYYY-MM-DD HH:MM:SS.mmm - ' stamp, with the section each came from, from a Fritz!Box support data dump",
         "author": "@C_Peter",
         "creation_date": "2026-07-05",
         "last_update_date": "2026-07-05",
         "requirements": "none",
         "category": "FritzBox Supportdata",
-        "notes": "",
+        "notes": "Timestamp is the log's local time converted to UTC using the time zone "
+                 "abbreviation on the dump's date line; the log stores no zone. For CET or CEST "
+                 "and for EST or EDT the parser applies its own daylight saving rule; for other "
+                 "abbreviations it applies a fixed offset. Check times near a daylight saving "
+                 "change against the source file. Only the first support file found is read.",
         "paths": ('*/support_FRITZ*.txt'),
         "output_types": "standard",
         'artifact_icon': 'logs',
     },
     "get_fritz_dmesg": {
         "name": "Fritz!Box dmesg",
-        "description": "Processes the dmesg logs from a Fritzbox Supportdata dump",
+        "description": "Kernel message (dmesg) lines from a Fritz!Box support data dump",
         "author": "@C_Peter",
         "creation_date": "2026-07-05",
         "last_update_date": "2026-07-05",
         "requirements": "none",
         "category": "FritzBox Supportdata",
-        "notes": "",
+        "notes": "Timestamp is estimated: the dump date minus the uptime the dump prints (to the "
+                 "minute) gives a boot time, and each line's seconds since boot are added to it. "
+                 "The dump stores no absolute time for these lines. When the dump has no uptime "
+                 "line the column shows dates in 1970. Only the first support file found is "
+                 "read.",
         "paths": ('*/support_FRITZ*.txt'),
         "output_types": "standard",
         'artifact_icon': 'cpu',

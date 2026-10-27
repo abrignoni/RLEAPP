@@ -48,6 +48,9 @@ jobs:
       - name: Open SQLite on a path longer than 260 characters
         run: python admin/test/scripts/test_sqlite_longpath_uri.py
 
+      - name: Open SQLite read-only on special-character and WAL-mode paths
+        run: python admin/test/scripts/test_sqlite_readonly_open.py
+
       # The entry points hand a directory input to the seeker with the extended-length
       # prefix on Windows, so the recorded evidence path and the staged path are
       # checked here with that prefix as well as without it.
@@ -75,3 +78,12 @@ jobs:
       # on Windows until sanitize_file_path covered them.
       - name: Stage archive members whose names hold characters Windows forbids
         run: python admin/test/scripts/test_extraction_illegal_filenames.py
+
+      # Free space and recovered deleted files are staged under folders named $Unallocated
+      # and $Deleted. These are the tests that write them, run here so the names are
+      # written on Windows too.
+      - name: Stage free space and deleted files from a raw image
+        run: python admin/test/scripts/test_raw_image_seeker.py -k free_space -k deleted
+
+      - name: Recover HTML run logging and close its handle
+        run: python admin/test/scripts/test_screen_log_recovery.py

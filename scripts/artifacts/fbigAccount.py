@@ -12,7 +12,7 @@ __artifacts_v2__ = {
                  "Sections carried: request parameters (Service, Internal Ticket Number, Target, Account Identifier, Account Type, Generated, Date Range), Name, Registered Email Addresses, Vanity Name, Registration Date, Registration IP, Account Closure Date, Account Read Receipts, Phone Numbers, Privacy Settings, Popular Block, Gender, Date Of Birth, Website, About Me, Linked Accounts, Threads Registration Date and Profile Picture. "
                  "Values are reported as stored, including the provider's 'No responsive records' placeholder, so a checked-and-empty field is visible. "
                  "The provider's own field definitions are embedded in the return beside each section; per those definitions the request parameter Target is the account's numeric identifier and Vanity is the username. "
-                 "On the return this was built against (one Instagram account, three snapshot files) the messages whose Author id equalled Target were exactly the messages whose Author username equalled the Vanity Name, in all three snapshots, while Account Identifier held a non-numeric value on two of the three files; Target is therefore the field the message artifacts use to tell the account's own messages from everyone else's. "
+                 "Target is the field the message artifacts use to tell the account's own messages from everyone else's. That mapping was made on a private return, where the messages whose Author id equalled Target were the messages whose Author username equalled the Vanity Name; no sample data is recorded for it. "
                  "Timestamps in this table are kept as text because the Value column is heterogeneous; the provider prints them as 'YYYY-MM-DD HH:MM:SS UTC'.",
         "paths": ('*/records.html', '*/preservation*.html', '*/linked_media/*'),
         "output_types": "standard",
@@ -29,7 +29,7 @@ __artifacts_v2__ = {
         "notes": "One row per change record in the Name Changes, Email Changes, Vanity Changes, Phone Number Changes, Password Changes and Account Status History sections, from records.html and every preservation_N.html. "
                  "Change Type names the section. Old Value and New Value are taken from the record's 'Old ...' and 'New ...' fields; a section whose record carries a single value (Email, Status) reports it as New Value; every other field of the record goes to Details as 'label: value'. "
                  "Only Vanity Changes carried a record on the return this was built against, so the other five sections are handled from the provider's embedded field definitions and are unexercised. "
-                 "A time that does not parse as 'YYYY-MM-DD HH:MM:SS UTC' is left blank in the Time column and kept in Details. The final column holds the provider's own flag for the change as stored (one value on the tested return's rows).",
+                 "A time that does not parse as 'YYYY-MM-DD HH:MM:SS UTC' is left blank in the Time column and kept in Details. User Initiated holds the provider's own flag for the change as stored (one value on the tested return's rows); Snapshot File names the file the record came from.",
         "paths": ('*/records.html', '*/preservation*.html'),
         "output_types": "standard",
         "artifact_icon": "edit",
@@ -45,7 +45,7 @@ __artifacts_v2__ = {
         "notes": "One row per record of the Ip Addresses section of records.html and every preservation_N.html; Snapshot File names the file. "
                  "IP Address is reported as stored: per the provider's embedded definition the source port, when available, follows the address after a colon, and IPv6 addresses are printed in brackets. "
                  "Action is the provider's own event name as stored (four distinct values on the tested return: v1_profile_changed, media_upload, v1_user_block and v1_logout); no meaning beyond the name is asserted. "
-                 "Records split across the return's page breaks are rejoined before reporting: on the return this was built against, the page break fell inside the Time field of a record on six occasions in one file, and the row count equalled the number of 'IP Address' labels in the source text.",
+                 "Records split across the return's page breaks are rejoined before reporting: on the private return this was built against, a page break fell inside the Time field of a record, and the row count equalled the number of 'IP Address' labels in the source text; no sample data is recorded for it.",
         "paths": ('*/records.html', '*/preservation*.html'),
         "output_types": "standard",
         "artifact_icon": "globe",
@@ -60,7 +60,7 @@ __artifacts_v2__ = {
         "category": "Facebook - Instagram Returns",
         "notes": "One row per record of the Devices section of records.html and every preservation_N.html. "
                  "Per the provider's embedded definition: Type is the model number of the device, Id an identifier associated with the device, Active whether Instagram was accessed by the device, and User the Instagram accounts seen on the device ID. "
-                 "A record can carry several User fields; they are joined one per line. On the return this was built against Type was the word 'UUID' on every record, Id an identifier reported as stored, and Users was filled on a minority of records (5 of 28, 3 of 26 and 5 of 28 across the three snapshots). "
+                 "A record can carry several User fields; they are joined one per line. On the return this was built against Type was the word 'UUID' on every record, Id an identifier reported as stored, and Users was filled on some records and blank on others; no sample data is recorded for it. "
                  "The richer per-device history (family device id, first and last seen, OS, associated users) is in the Devices Info artifact.",
         "paths": ('*/records.html', '*/preservation*.html'),
         "output_types": "standard",

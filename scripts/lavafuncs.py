@@ -18,6 +18,7 @@ Functions:
     lava_add_module: Adds module information to the LAVA data.
     lava_create_sqlite_table: Creates a SQLite table for artifact data.
     lava_insert_sqlite_data: Inserts data rows into a SQLite table.
+    lava_blank_invalid_media_refs: Logs and blanks media column values that are not media references.
     lava_iter_artifact_rows: Streams stored artifact rows back from LAVA.
     lava_get_media_item: Retrieves media item information from database.
     lava_insert_sqlite_media_item: Inserts media item metadata into database.
@@ -50,6 +51,9 @@ lava_json_name = '_lava_data.lava'
 lava_db_path = None
 _QUEUE_STOP = object()
 LAVA_SCHEMA_VERSION = 2
+# How many distinct invalid media references are logged per artifact before the rest are not.
+_INVALID_MEDIA_REF_LOG_LIMIT = 5
+_invalid_media_refs_logged = {}
 
 
 def sanitize_sql_name(name):
@@ -294,7 +298,12 @@ def initialize_lava(input_path, output_path, input_type, profile_filename=None):
         "parser_info": {
             "leapp_name": "RLEAPP",
             "leapp_version": rleapp_version,
-            "leapp_mode": "GUI" if "leappGUI" in sys.argv[0] else "CLI",
+            # From source the script's name says which program runs. A build is one
+            # executable that opens the window when started without arguments, so there the
+            # GUI module having been loaded is what says it.
+            "leapp_mode": ("GUI" if "leappGUI" in sys.argv[0]
+                           or any(name.endswith("leappGUI") for name in sys.modules)
+                           else "CLI"),
             "package": "Source code" if not getattr(sys, 'frozen', False) else "Binary",
             "OS": platform(),
             "start_timestamp": int(datetime.datetime.now(datetime.timezone.utc).timestamp())
@@ -315,6 +324,7 @@ def initialize_lava(input_path, output_path, input_type, profile_filename=None):
 
     lava_db_path = os.path.join(output_path, lava_db_name)
     lava_db = sqlite3.connect(lava_db_path)
+    _invalid_media_refs_logged.clear()
 
     cursor = lava_db.cursor()
     cursor.execute('''CREATE TABLE _artifact_search_patterns (
@@ -322,9 +332,13 @@ def initialize_lava(input_path, output_path, input_type, profile_filename=None):
                         module_name TEXT NOT NULL,
                         artifact_name TEXT NOT NULL,
                         regex TEXT NOT NULL)''')
+    # sha256 is the staged copy's digest when staged files are hashed (--hash) and
+    # its kind is one that is; kind is what the evidence holds at file_path
     cursor.execute('''CREATE TABLE _file_path_list (
                         id INTEGER PRIMARY KEY,
-                        file_path TEXT NOT NULL)''')
+                        file_path TEXT NOT NULL,
+                        sha256 TEXT,
+                        kind TEXT)''')
     cursor.execute('''CREATE TABLE _artifact_pattern_to_file (
                         id INTEGER PRIMARY KEY,
                         artifact_search_pattern_id INTEGER NOT NULL,
@@ -618,6 +632,72 @@ def lava_create_sqlite_table(table_name, data):
     return sanitized_table_name, column_map, object_columns
 
 
+def _log_invalid_media_ref(label, ref):
+    """Log one invalid media reference, at most _INVALID_MEDIA_REF_LOG_LIMIT per label."""
+    # ilapfuncs imports this module, so logfunc is imported when it is first needed.
+    from scripts.ilapfuncs import logfunc  # pylint: disable=import-outside-toplevel
+
+    shown = repr(ref)
+    if len(shown) > 80:
+        shown = shown[:77] + '...'
+    logged = _invalid_media_refs_logged.setdefault(label, set())
+    if shown in logged or len(logged) > _INVALID_MEDIA_REF_LOG_LIMIT:
+        return
+    logged.add(shown)
+    if len(logged) > _INVALID_MEDIA_REF_LOG_LIMIT:
+        logfunc(f"{label}: more media column values are not media references; not logging the rest")
+    else:
+        logfunc(f"{label}: media column value {shown} is not a reference from check_in_media; left blank")
+
+
+def lava_blank_invalid_media_refs(rows, media_indexes, label):
+    """
+    Yield rows with the media column values that are not media references removed.
+
+    A media column holds the IDs that check_in_media and check_in_embedded_media return.
+    Any other value (a file name, an ID from the source database) has no row in
+    _lava_media_references, so neither LAVA nor the HTML report can resolve it. Each such
+    value is logged and removed: a single value becomes None, and a list keeps only the
+    references that exist, or becomes None when none do.
+
+    Args:
+        rows (iterable): Rows of the artifact, each a sequence of values.
+        media_indexes (iterable): Positions of the media columns in a row.
+        label (str): Name used in the log message, normally the artifact name.
+    Yields:
+        tuple or the original row: The row, as a new tuple when a value was removed.
+    """
+    media_indexes = list(media_indexes)
+    known = {}
+
+    def is_reference(ref):
+        if not isinstance(ref, str):
+            return False
+        if ref not in known:
+            known[ref] = lava_get_media_references(ref) is not None
+        return known[ref]
+
+    for row in rows:
+        checked_row = None
+        for idx in media_indexes:
+            cell = row[idx]
+            if not cell:
+                continue
+            refs = cell if isinstance(cell, list) else [cell]
+            invalid = [ref for ref in refs if not is_reference(ref)]
+            if not invalid:
+                continue
+            for ref in invalid:
+                _log_invalid_media_ref(label, ref)
+            if checked_row is None:
+                checked_row = list(row)
+            if isinstance(cell, list):
+                checked_row[idx] = [ref for ref in refs if is_reference(ref)] or None
+            else:
+                checked_row[idx] = None
+        yield row if checked_row is None else tuple(checked_row)
+
+
 def lava_insert_sqlite_data(
         table_name,
         data,
@@ -626,7 +706,8 @@ def lava_insert_sqlite_data(
         column_map,  # pylint: disable=unused-argument
         batch_size=10000,
         async_write=False,
-        queue_size=5000):
+        queue_size=5000,
+        label=None):
     """
     Insert data into a SQLite database table with automatic column sanitization and type conversion.
     This function handles the insertion of multiple rows of data into a specified SQLite table,
@@ -645,6 +726,8 @@ def lava_insert_sqlite_data(
         batch_size (int): Maximum rows to insert per SQLite executemany call.
         async_write (bool): If True, prepare and insert rows on a writer thread.
         queue_size (int): Maximum rows waiting for the async writer.
+        label (str): Name used when logging a media column value that is not a media
+                     reference (see lava_blank_invalid_media_refs). Defaults to table_name.
     Returns:
         int: Number of rows inserted.
     """
@@ -662,6 +745,12 @@ def lava_insert_sqlite_data(
     query = f"INSERT INTO {quote_sql_name(table_name)} ({quoted_columns}) VALUES ({placeholders})"
 
     column_types = [object_columns.get(column) for column in sanitized_columns]
+
+    # Checked here, before any writer thread, so every LAVA write is covered, streamed
+    # rows included. The lookup needs lava_db, which belongs to this thread.
+    media_indexes = [index for index, column_type in enumerate(column_types) if column_type == 'media']
+    if media_indexes:
+        data = lava_blank_invalid_media_refs(data, media_indexes, label or table_name)
 
     def prepare_row(row):
         if isinstance(row, sqlite3.Row):
@@ -993,21 +1082,40 @@ def lava_insert_sqlite_artifact_search_pattern(artifact_regex_id, module_name, a
         print(str(e))
 
 
-def lava_insert_sqlite_file_path(file_id, file_path):
+def lava_add_file_path_columns(columns):
+    """
+    Add columns to the _file_path_list table, for the staged files' times when they
+    are recorded (--hash); without them the table keeps the columns it is created with.
+    Args:
+        columns (iterable): (column name, SQLite type) pairs.
+    """
+    cursor = lava_db.cursor()
+    for name, sql_type in columns:
+        cursor.execute(f'ALTER TABLE _file_path_list ADD COLUMN {quote_sql_name(name)} {sql_type}')
+
+
+def lava_insert_sqlite_file_path(file_id, file_path, sha256=None, kind=None, times=None):
     """
     Insert a file path record into the _file_path_list table.
     Args:
         file_id (int): Unique identifier for the file path entry.
         file_path (str): Relative file path to store.
+        sha256 (str): The staged copy's SHA-256, when staged files are hashed.
+        kind (str): What the evidence holds at file_path (FileInfo.kind).
+        times (dict): {column: value} for the columns lava_add_file_path_columns
+            added, when staged files are hashed; None leaves them out.
     """
-
     global lava_db
-    cursor = lava_db.cursor()
-    sql = '''INSERT INTO _file_path_list
-                ("id", "file_path")
-                VALUES (?, ?)'''
 
-    data = (file_id, file_path)
+    columns = ['id', 'file_path', 'sha256', 'kind']
+    data = [file_id, file_path, sha256, kind]
+    for name, value in (times or {}).items():
+        columns.append(name)
+        data.append(value)
+    cursor = lava_db.cursor()
+    sql = f'''INSERT INTO _file_path_list
+                ({", ".join(quote_sql_name(name) for name in columns)})
+                VALUES ({", ".join("?" for _ in columns)})'''
 
     try:
         cursor.execute(sql, data)

@@ -13,6 +13,7 @@ wrapped value, or one whose text holds a colon, must stay with its field.
 Every line here is made up; none comes from a return.
 """
 import pathlib
+import re
 import sys
 import unittest
 
@@ -27,6 +28,8 @@ from scripts.artifacts.tikTokReturnPdf import (  # pylint: disable=wrong-import-
 NORMAL_TOP = 58      # first line of a page with no repeat
 REPEAT_TOP = 52      # where the repeat of a split line is printed
 LINE_HEIGHT = 14
+# The field names of the made-up sections below, in the shape _Parser.head has.
+LABELS = re.compile(r'^(Comment ID|Comment|Date|IP)(?: \d+)?:[ \t]?')
 
 
 def page(texts, top=NORMAL_TOP, x0=33):
@@ -36,7 +39,7 @@ def page(texts, top=NORMAL_TOP, x0=33):
 
 def read(pages):
     pdf = _Pdf()
-    _drop_page_break_repeats(pages, pdf)
+    _drop_page_break_repeats(pages, pdf, LABELS)
     return [[line.text for line in lines] for lines in pages], pdf
 
 
@@ -82,7 +85,29 @@ class PageBreakRepeats(unittest.TestCase):
         self.assertEqual(pdf.kept_repeats, [2])
 
 
+    def test_a_dropped_free_text_line_is_logged_without_its_words(self):
+        # A wrapped comment line that happens to look like 'Word: text' is printed again
+        # above the normal position. It is dropped, and its first word is not logged.
+        pages = [page(['Comment ID: 1', 'Comment: first', 'Madeupword: second']),
+                 page(['Madeupword: second'], top=REPEAT_TOP) + page(['Comment ID: 2'], top=66),
+                 page(['Comment ID: 3'])]
+        texts, pdf = read(pages)
+        self.assertEqual(texts[1], ['Comment ID: 2'])
+        self.assertEqual(pdf.dropped, [(2, '(unlabelled line)')])
+
+
 class LabelledFields(unittest.TestCase):
+
+    def test_a_field_name_with_digits_or_punctuation_starts_a_field(self):
+        lines = page(['Country: Somewhere', 'Zip/Postal Code: 00000', 'IP Address 2: 192.0.2.1',
+                      'Empty field:'], x0=39)
+        self.assertEqual(_labelled_fields(lines), [
+            ('Country', 'Somewhere'), ('Zip/Postal Code', '00000'),
+            ('IP Address 2', '192.0.2.1'), ('Empty field', '')])
+
+    def test_an_address_at_the_margin_is_not_a_field_name(self):
+        lines = page(['Last IP: 192.0.2.1', 'FE80::1'], x0=39)
+        self.assertEqual(_labelled_fields(lines), [('Last IP', '192.0.2.1\nFE80::1')])
 
     def test_a_value_is_kept_with_its_field_when_it_wraps_or_holds_a_colon(self):
         lines = page(['Country: Somewhere', 'Region: A long region name that'], x0=39)

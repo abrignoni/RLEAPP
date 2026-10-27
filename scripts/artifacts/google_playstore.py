@@ -14,7 +14,7 @@ __artifacts_v2__ = {
     },
     "playstore_devices": {
         "name": "Google Play Store - Devices",
-        "description": "Metadata about devices that have accessed the Google Play Store.",
+        "description": "Device records (registration, user added and last active times, model and carrier fields) from Google Play Store Takeout data (Devices.json).",
         "author": "@stark4n6",
         "creation_date": "2021-08-22",
         "last_update_date": "2026-06-19",
@@ -27,7 +27,7 @@ __artifacts_v2__ = {
     },
     "playstore_library": {
         "name": "Google Play Store - Library",
-        "description": "List of Google Play downloads including music, movies and apps",
+        "description": "Google Play library entries (title, document type and acquisition time) from Takeout Library.json.",
         "author": "@stark4n6",
         "creation_date": "2021-08-22",
         "last_update_date": "2026-06-19",
