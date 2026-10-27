@@ -8,8 +8,13 @@ __artifacts_v2__ = {
         "last_update_date": "2026-06-28",
         "requirements": "openpyxl",
         "category": "TikTok Returns",
-        "notes": "Source File column added so per-subscriber provenance (originally encoded in the "
-                 "report title) survives when multiple returns are merged into one table.",
+        "notes": "Reads the active sheet of each '- video metadata.xlsx' file. The first row is "
+                 "skipped as the header and the first three columns are reported, by position, as "
+                 "Media ID, Timestamp Upload and Media Caption; the spreadsheet's own column titles "
+                 "are not checked. Media is linked when a matched file's name equals the Media ID "
+                 "value exactly. A date with no time zone is stored as UTC; the zone the provider "
+                 "uses was not established here. Source File names the spreadsheet each row came "
+                 "from. No tested return is recorded for this artifact.",
         "paths": ('*/*/*- video metadata.xlsx', '*/*/*/Video Content/*'),
         "output_types": "standard",
         "artifact_icon": "video",

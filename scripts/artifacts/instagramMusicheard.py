@@ -1,7 +1,7 @@
 __artifacts_v2__ = {
     "instagramMusicheard": {
         "name": "Instagram Archive - Music Heard In Stories",
-        "description": "Parses music heard in stories from an Instagram data archive (music_heard_in_stories.json)",
+        "description": "Parses the provider's music heard in stories list (impressions_history_music_heard_in_stories) from an Instagram data archive (music_heard_in_stories.json); the label is the provider's",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-08-27",
         "last_update_date": "2026-06-27",

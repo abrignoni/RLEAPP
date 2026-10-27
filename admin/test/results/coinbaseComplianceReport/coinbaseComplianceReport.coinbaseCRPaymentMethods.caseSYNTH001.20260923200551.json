@@ -1,0 +1,106 @@
+{
+  "metadata": {
+    "module_name": "coinbaseComplianceReport",
+    "artifact_name": "Coinbase Compliance Report - Other Payment Methods",
+    "function_name": "coinbaseCRPaymentMethods",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 6,
+    "number_of_rows": 9,
+    "total_data_size_bytes": 1847,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/coinbaseComplianceReport/testdata.coinbaseComplianceReport.coinbaseCRPaymentMethods.caseSYNTH001.zip",
+    "start_time": "2026-09-23T20:05:51.865873+00:00",
+    "end_time": "2026-09-23T20:05:51.872557+00:00",
+    "run_time_seconds": 0.0008854866027832031,
+    "last_commit": {
+      "hash": "Uncommitted",
+      "author_name": "N/A",
+      "author_email": "N/A",
+      "date": "2026-09-23T16:05:51.869447",
+      "message": "File not yet committed to git"
+    }
+  },
+  "headers": [
+    "User ID",
+    "Section",
+    "Header Row (as produced)",
+    "Record",
+    "CSV Record",
+    "Source File"
+  ],
+  "data": [
+    [
+      "SYNTHUSER000000000000000A",
+      "Payment Card (Legacy) Payment Method",
+      "CARD PART | TYPE | EXP | NAME | VERIFIED",
+      "CARD PART: 400000; TYPE: visa; EXP: 01/2030; NAME: Alex Sample; VERIFIED: true",
+      51,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Payment Card (Legacy) Payment Method",
+      "PAN | TYPE | EXP | NAME | STATUS",
+      "PAN: 4000********0001; TYPE: Card visa debit; EXP: 11/2030; NAME: Alex Sample; STATUS: cdv_required",
+      54,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Paypal Accounts",
+      "EMAIL | VERIFIED",
+      "EMAIL: alex@example.test; VERIFIED: false",
+      59,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Payment Card (Legacy) Payment Method",
+      "CARD PART | TYPE | EXP | NAME | VERIFIED",
+      "CARD PART: 400000; TYPE: visa; EXP: 01/2030; NAME: Alex Sample; VERIFIED: true",
+      51,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Payment Card (Legacy) Payment Method",
+      "PAN | TYPE | EXP | NAME | STATUS",
+      "PAN: 4000********0001; TYPE: Card visa debit; EXP: 11/2030; NAME: Alex Sample; STATUS: cdv_required",
+      54,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Paypal Accounts",
+      "EMAIL | VERIFIED",
+      "EMAIL: alex@example.test; VERIFIED: false",
+      59,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "Payment Card (Legacy) Payment Method",
+      "CARD PART | TYPE | EXP | NAME | VERIFIED",
+      "CARD PART: 400000; TYPE: visa; EXP: 01/2030; NAME: Blair Example; VERIFIED: true",
+      51,
+      "0000bbbb/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "Payment Card (Legacy) Payment Method",
+      "PAN | TYPE | EXP | NAME | STATUS",
+      "PAN: 4000********0001; TYPE: Card visa debit; EXP: 11/2030; NAME: Blair Example; STATUS: cdv_required",
+      54,
+      "0000bbbb/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "Paypal Accounts",
+      "EMAIL | VERIFIED",
+      "EMAIL: blair@example.test; VERIFIED: false",
+      59,
+      "0000bbbb/compliance_report.csv"
+    ]
+  ]
+}

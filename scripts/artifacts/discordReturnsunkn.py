@@ -1,13 +1,18 @@
 __artifacts_v2__ = {
     "discordReturnsunkn": {
         "name": "Discord - Unknown Messages",
-        "description": "Unknown-channel messages from a Discord law enforcement return (messages/unknown/*.csv).",
+        "description": "Messages from the messages/unknown folder of a Discord law enforcement return "
+                       "(messages/unknown/*.csv).",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-12-04",
-        "last_update_date": "2026-06-28",
+        "last_update_date": "2026-10-09",
         "requirements": "none",
         "category": "Discord Returns",
-        "notes": "",
+        "notes": "Columns are assigned by position after the header row is skipped; the header "
+                 "names are not read. ID is taken from the first column and Channel ID from the "
+                 "second, the reverse of the Discord direct message reader. Which order a return "
+                 "uses was not checked: no test return is available, so one of the two orders "
+                 "may be wrong.",
         "paths": ('*/attachments/*.*', '*/messages/unknown/*.csv'),
         "output_types": "standard",
         "artifact_icon": "help-circle",

@@ -1,0 +1,82 @@
+{
+  "metadata": {
+    "module_name": "coinbaseComplianceReport",
+    "artifact_name": "Coinbase Compliance Report - Crypto Addresses",
+    "function_name": "coinbaseCRCryptoAddresses",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 12,
+    "number_of_rows": 3,
+    "total_data_size_bytes": 527,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/coinbaseComplianceReport/testdata.coinbaseComplianceReport.coinbaseCRCryptoAddresses.caseSYNTH001.zip",
+    "start_time": "2026-09-23T20:05:51.800659+00:00",
+    "end_time": "2026-09-23T20:05:51.813066+00:00",
+    "run_time_seconds": 0.0014262199401855469,
+    "last_commit": {
+      "hash": "Uncommitted",
+      "author_name": "N/A",
+      "author_email": "N/A",
+      "date": "2026-09-23T16:05:51.806468",
+      "message": "File not yet committed to git"
+    }
+  },
+  "headers": [
+    "User ID",
+    "Timestamp (UTC)",
+    "CREATED (as produced)",
+    "Time Basis",
+    "ACCOUNT",
+    "NETWORK",
+    "ADDRESS",
+    "LABEL",
+    "CALLBACK URL",
+    "Other Columns (as produced)",
+    "CSV Record",
+    "Source File"
+  ],
+  "data": [
+    [
+      "SYNTHUSER000000000000000A",
+      1612202400,
+      "2021-02-01 10:00:00 -0800",
+      "stated offset",
+      "BTC Wallet",
+      "bitcoin",
+      "bc1qsynthetic000000000000000000000001",
+      "",
+      "",
+      "",
+      64,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      1612202400,
+      "2021-02-01 10:00:00 -0800",
+      "stated offset",
+      "BTC Wallet",
+      "bitcoin",
+      "bc1qsynthetic000000000000000000000001",
+      "",
+      "",
+      "",
+      64,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      1612202400,
+      "2021-02-01 10:00:00 -0800",
+      "stated offset",
+      "BTC Wallet",
+      "bitcoin",
+      "bc1qsynthetic000000000000000000000001",
+      "",
+      "",
+      "",
+      64,
+      "0000bbbb/compliance_report.csv"
+    ]
+  ]
+}

@@ -1,13 +1,14 @@
 __artifacts_v2__ = {
     "instagramMessages": {  # This should match the function name exactly
         "name": "Instagram Archive - Messages",
-        "description": "Parses Instagram messages",
+        "description": "Parses Instagram messages from each thread's message_1.json in an Instagram data archive",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-08-30",
         "last_update_date": "2025-07-03",
         "requirements": "none",
         "category": "Instagram Archive",
-        "notes": "",
+        "notes": "Only message_1.json of each thread folder is read; check the folder for "
+                 "further message_N.json files.",
         "paths": ('*/messages/inbox/*'),
         "output_types": "standard",  # or ["html", "tsv", "timeline", "lava"]
         "artifact_icon": "brand-instagram",
@@ -30,6 +31,13 @@ def instagramMessages(context):
         file_found = str(file_found)
 
         filename = os.path.basename(file_found)
+
+        # The Facebook "Download Your Information" export uses the same
+        # messages/inbox layout, under your_facebook_activity. Those threads
+        # belong to the Facebook Archive module, so skip them here rather than
+        # reporting Facebook messages under the Instagram category.
+        if 'your_facebook_activity' in file_found.replace('\\', '/'):
+            continue
 
         if filename.startswith('message_1.json'):
             source_paths.add(file_found)

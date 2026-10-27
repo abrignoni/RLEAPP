@@ -1,3 +1,4 @@
+import hashlib
 import json
 import argparse
 import io
@@ -5,6 +6,7 @@ import os.path
 import pathlib
 import typing
 import scripts.report as report
+import scripts.artifact_report as artifact_report
 import traceback
 import sys
 
@@ -12,6 +14,7 @@ import scripts.plugin_loader as plugin_loader
 import leapp_functions.app.history as history
 
 from scripts.search_files import *
+from scripts.raw_image import FileSeekerRaw, cli_raw_input, input_text, logical_among, logical_refusal
 from scripts.ilapfuncs import *
 from leapp_functions.app.output import validate_output_folder_available
 from scripts.version_info import rleapp_version
@@ -41,9 +44,20 @@ def validate_args(args):
     # Check existence of paths
     if not os.path.exists(args.input_path):
         raise argparse.ArgumentError(None, f'INPUT path \'{args.input_path}\' does not exist! Run the program again.')
+    # Several images are read together only as a raw image set (the members of a RAID set)
+    more_paths = getattr(args, 'input_paths', [args.input_path])[1:]
+    if more_paths and args.t != 'raw':
+        raise argparse.ArgumentError(None, 'Several INPUT paths are read together only with -t raw, as '
+                                           'the member images of a RAID set. Run the program again.')
+    for more_path in more_paths:
+        if not os.path.exists(more_path):
+            raise argparse.ArgumentError(None, f'INPUT path \'{more_path}\' does not exist! Run the program again.')
+    logical = logical_among(getattr(args, 'input_paths', [args.input_path]))
+    if logical is not None:
+        raise argparse.ArgumentError(None, logical_refusal(logical))
 
     if not os.path.exists(args.output_path):
-        raise argparse.ArgumentError(None, 'OUTPUT path \'{args.output_path}\' does not exist! Run the program again.')
+        raise argparse.ArgumentError(None, f'OUTPUT path \'{args.output_path}\' does not exist! Run the program again.')
     if not os.path.isdir(os.path.abspath(args.output_path)):
         raise argparse.ArgumentError(None, f'OUTPUT path \'{args.output_path}\' must be a directory! Run the program again.')
 
@@ -166,14 +180,50 @@ def create_casedata(path):
 
 def main():
     parser = argparse.ArgumentParser(description='RLEAPP: Returns, Logs, Events, and Protobuf Parser.')
-    parser.add_argument('-t', choices=['fs', 'tar', 'zip', 'gz'], required=False, action="store",
+    parser.add_argument('-t', choices=['fs', 'tar', 'zip', 'gz', 'raw'], required=False, action="store",
                         help=("Specify the input type. "
                               "'fs' for a folder containing extracted files with normal paths and names, "
                               "'tar', 'zip', or 'gz' for compressed packages containing files with normal names, "
+                              "'raw' for a disk image (.img, .dd, .bin, or any numbered .001 segment of a split "
+                              "set) or an acquisition (EnCase/EWF .E01, SMART .s01, EWF2 .Ex01, AFF .aff, AFM "
+                              ".afm, or any .aff in an AFD folder, AFF4 .aff4, an Apple .dmg, with any "
+                              ".dmgpart files beside it, .sparseimage, or .sparsebundle folder, or a virtual "
+                              "machine disk, .vhd, .vhdx, .vmdk or .qcow2), read in "
+                              "place without mounting (logical evidence, an EnCase .L01 or FTK Imager "
+                              ".ad1, is read as the files it holds): its "
+                              "NTFS, FAT32, FAT16, FAT12, exFAT, ext2/3/4, F2FS, HFS+, APFS, QNX6, QNX4, "
+                              "ETFS, EFS, SquashFS, JFFS2, UBI/UBIFS, YAFFS and QNX IFS volumes "
+                              "are searched directly, "
                               "'file' for a single file input."))
     parser.add_argument('-o', '--output_path', required=False, action="store",
                         help='Path to base output folder (this must exist)')
-    parser.add_argument('-i', '--input_path', required=False, action="store", help='Path to input file/folder')
+    parser.add_argument('-i', '--input_path', required=False, action="store", nargs='+',
+                        help='Path to input file/folder. With -t raw, several disk images can be given, '
+                             'the member images of a RAID set (Linux md, or LVM2 across disks), and they '
+                             'are read together')
+    parser.add_argument('--no-find-members', dest='no_find_members', required=False, action='store_true',
+                        help='With -t raw and one image that holds a RAID member: read only that image. '
+                             'Without this, the other members are looked for in its folder, by what each '
+                             'file records about itself, listed with what was left out and why, and read '
+                             'with it')
+    parser.add_argument('--image_password_file', required=False, action="store",
+                        help='For an encrypted image (-t raw; an Apple disk image, an encrypted '
+                             'AFF or an FTK Imager AD-encrypted set), or a BitLocker, encrypted '
+                             'APFS or LUKS volume in an image: read its password (for BitLocker, a '
+                             'password or recovery password; for APFS, a password or personal '
+                             'recovery key; for LUKS, a passphrase) from the first line of this '
+                             'file')
+    parser.add_argument('--image_password_env', required=False, action="store",
+                        help='For an encrypted image, or a BitLocker, encrypted APFS or LUKS '
+                             'volume in one (-t raw): take its password from this environment '
+                             'variable. Without either, it is asked for at a terminal')
+    parser.add_argument('--image_private_key', required=False, action="store",
+                        help='For an image sealed to a certificate (-t raw; an Apple disk image, '
+                             'an AFF or an FTK Imager AD-encrypted set): the certificate\'s RSA '
+                             'private key file, unencrypted, as PEM or DER')
+    parser.add_argument('--bitlocker_key', required=False, action="append", default=[],
+                        help='For a BitLocker volume in an image (-t raw): its startup key '
+                             '(.BEK) file. Repeatable')
     parser.add_argument('-w', '--wrap_text', required=False, action="store_false", default=True,
                         help='Do not wrap text for output of data files')
     parser.add_argument('-m', '--load_profile', required=False, action="store", help="Path to RLEAPP Profile file (.rlprofile).")
@@ -185,7 +235,22 @@ def main():
                         help=("Generate a text file list of artifact paths. "
                               "This argument is meant to be used alone, without any other arguments."))
     parser.add_argument('--custom_output_folder', required=False, action="store", help="Custom name for the output folder")
+    parser.add_argument('--html_row_limit', required=False, action="store", type=int,
+                        default=artifact_report.HTML_TABLE_ROW_LIMIT,
+                        help="Rows above which an artifact's table is left off its HTML page, which then points at "
+                             "the LAVA database and the TSV export instead (default %(default)s). 0 writes every table.")
+    parser.add_argument('--hash', required=False, action='store_true',
+                        help="Hash each staged file (SHA-256) after it is staged and before any "
+                             "artifact opens it, and record the times its archive or image records "
+                             "for it (UTC; a zip member's DOS date and time and a FAT or exFAT "
+                             "entry's times are kept as text with no zone, and exFAT's UTC offsets "
+                             "as stored, not applied) and where they came from, into LAVA's "
+                             "_file_path_list and "
+                             "'_TSV Exports/_Staged files SHA-256.tsv'. A folder or single-file input "
+                             "records no times. Off by default; links and folders are recorded by "
+                             "kind without a digest.")
     parser.add_argument('--custom_artifacts_path', required=False, action="store", help="Additional path to load artifacts from (e.g., scripts/alternate_artifacts)")
+    parser.add_argument('--version', action='version', version=f'{leapp_name} {rleapp_version}')
 
 
     # Check if no arguments were provided
@@ -194,6 +259,12 @@ def main():
         sys.exit()
 
     args = parser.parse_args()
+    # -i takes one path, or with -t raw the several images of a RAID set
+    args.input_paths = list(args.input_path or [])
+    args.input_path = args.input_paths[0] if args.input_paths else None
+    if args.html_row_limit < 0:
+        parser.error('--html_row_limit must be 0 or a positive number of rows')
+    artifact_report.set_html_row_limit(args.html_row_limit)
 
     available_plugins = []
     loader_paths = [plugin_loader.PLUGINPATH]
@@ -330,22 +401,81 @@ def main():
         if input_path[1] == ':' and extracttype =='fs': input_path = '\\\\?\\' + input_path.replace('/', '\\')
         if output_path[1] == ':': output_path = '\\\\?\\' + output_path.replace('/', '\\')
 
+    # An encrypted image opens only with what locked it, and a BitLocker, APFS or LUKS
+    # volume in an image with its own key: from a file, an environment variable or the options
+    # naming key files, or asked for at a terminal, and checked before the run.
+    # One image that holds a RAID member has the other members looked for beside it,
+    # unless --no-find-members, and what was found and left out is printed first.
+    image_password = None
+    found_members = None
+    if extracttype == 'raw':
+        try:
+            raw_input = cli_raw_input(args.input_paths, args.image_password_file,
+                                      args.image_password_env, args.image_private_key,
+                                      args.bitlocker_key, look_beside=not args.no_find_members)
+        except ValueError as exc:
+            print(exc)
+            return
+        image_password = raw_input.keys
+        input_path = raw_input.input_path
+        # what was found beside the image given, and any image given twice
+        found_members = raw_input
+
     out_params = OutputParameters(output_path, custom_output_folder)
     Context.set_output_params(out_params)
 
-    initialize_lava(input_path, out_params.output_folder_base, extracttype, profile_filename)
+    initialize_lava(input_text(input_path, found_members),
+                    out_params.output_folder_base, extracttype, profile_filename)
 
     # Record history if enabled
-    history.record_input_path(input_path)
+    if isinstance(input_path, list):
+        history.record_input_set(input_path, getattr(found_members, 'found', found_members))
+    else:
+        history.record_input_path(input_path)
     history.record_output_path(output_path)
 
-    crunch_artifacts(selected_plugins, extracttype, input_path, out_params, wrap_text, loader, casedata, profile_filename)
+    crunch_successful = crunch_artifacts(selected_plugins, extracttype, input_path, out_params, wrap_text, loader, casedata, profile_filename,
+        image_password=image_password, found_members=found_members, hash_files=args.hash)
 
     lava_finalize_output(out_params.output_folder_base)
+    if crunch_successful:
+        # _lava_data.lava exists only after finalize; recording earlier is a no-op.
+        lava_project_path = os.path.join(out_params.output_folder_base, lava_json_name)
+        history.record_recent_run(leapp_name.lower(), rleapp_version, lava_project_path)
 
+def staged_file_record(seeker, staged, file_info, hash_files):
+    """(SHA-256 or None, kind) for one staged path, as _file_path_list records it.
+
+    Only the kinds whose staged copy holds what the evidence holds under that name
+    are hashed (HASHED_KINDS); a link or a folder is recorded by kind alone. A file a
+    raw image read with zeros where its acquisition's data ran out is hashed and its
+    kind says so, so the digest is not read as the evidence's."""
+    base = getattr(file_info, 'kind', 'file')
+    kind = base
+    if staged in getattr(seeker, 'padded_files', {}):
+        kind += "; read with zeros where the acquisition's data ran out"
+    if not hash_files or base not in HASHED_KINDS:
+        return None, kind
+    if getattr(file_info, 'sha256', None) is None:
+        digest = hashlib.sha256()
+        try:
+            with open(staged, 'rb') as handle:
+                for chunk in iter(lambda: handle.read(1 << 20), b''):
+                    digest.update(chunk)
+        except OSError as ex:
+            logfunc(f'Could not hash {file_info.source_path}: {ex}')
+            return None, kind
+        file_info.sha256 = digest.hexdigest()
+    return file_info.sha256, kind
+
+
+@screen_log_session
 def crunch_artifacts(
         plugins: typing.Sequence[plugin_loader.PluginSpec], extracttype, input_path, out_params, wrap_text,
-        loader: plugin_loader.PluginLoader, casedata, profile_filename):
+        loader: plugin_loader.PluginLoader, casedata, profile_filename, image_password=None,
+        found_members=None, hash_files=False):
+    # input_path is one path, or for -t raw the list of images read together; then
+    # found_members says what was found beside the image given (a RawInput, a MemberSearch, or paths)
     start = process_time()
     start_wall = perf_counter()
 
@@ -371,6 +501,10 @@ def crunch_artifacts(
         elif extracttype == 'zip':
             seeker = FileSeekerZip(input_path, out_params.data_folder)
 
+        elif extracttype == 'raw':
+            seeker = FileSeekerRaw(input_path, out_params.data_folder, password=image_password,
+                                   found=found_members)
+
         else:
             logfunc('Error on argument -o (input type)')
             return False
@@ -382,150 +516,181 @@ def crunch_artifacts(
         temp_file.close()
         return False
 
-    # Now ready to run
-    logfunc(f'Info: {len(loader)} modules loaded.')
-    if profile_filename:
-        logfunc(f'Loaded profile: {profile_filename}')
-    logfunc(f'Artifact to parse: {len(plugins)}')
-    logfunc(f'File/Directory selected: {input_path}')
-    logfunc('\n--------------------------------------------------------------------------------------')
+    try:
+        # Now ready to run
+        logfunc(f'Info: {len(loader)} modules loaded.')
+        if profile_filename:
+            logfunc(f'Loaded profile: {profile_filename}')
+        logfunc(f'Artifact to parse: {len(plugins)}')
+        input_path = input_text(input_path, found_members)
+        logfunc(f'File/Directory selected: {input_path}')
+        hashes = None
+        if hash_files:
+            # opt in (--hash): each staged file is hashed once, after it is staged and
+            # before any artifact opens it, so the digest is of the bytes staged
+            logfunc("Staged files are hashed (SHA-256) as they are staged, and their recorded "
+                    "times kept: in LAVA's _file_path_list and _TSV Exports/_Staged files SHA-256.tsv")
+            tsv_folder = os.path.join(out_params.output_folder_base, '_TSV Exports')
+            os.makedirs(tsv_folder, exist_ok=True)
+            hashes = open(os.path.join(tsv_folder, '_Staged files SHA-256.tsv'), 'w',
+                          encoding='utf8', newline='')
+            hashes.write(STAGED_FILES_TSV_HEADER)
+            lava_add_file_path_columns(STAGED_TIME_SQL_COLUMNS)
+        hash_counts = {}
+        logfunc('\n--------------------------------------------------------------------------------------')
 
-    log = open(os.path.join(out_params.output_folder_base, '_HTML', '_Script_Logs', 'ProcessedFilesLog.html'), 'w+', encoding='utf8')
-    log.write(f'Extraction/Path selected: {input_path}<br><br>')
-    
-    # Search for the files per the arguments
-    parsed_modules = 0
-    plugin_run_times = []
-    lava_only = False
-    artifact_search_pattern_id = 0
-    file_path_ids = set()
+        log = open(os.path.join(out_params.output_folder_base, '_HTML', '_Script_Logs', 'ProcessedFilesLog.html'), 'w+', encoding='utf8')
+        log.write(f'Extraction/Path selected: {input_path}<br><br>')
+        
+        # Search for the files per the arguments
+        parsed_modules = 0
+        plugin_run_times = []
+        lava_only = False
+        artifact_search_pattern_id = 0
+        file_path_ids = set()
 
-    for plugin_number, plugin in enumerate(plugins, start=1):
-        # Timed from here, before the file search, because the search runs after the
-        # "artifact started" line is printed and is itself a place a run can sit.
-        plugin_start = perf_counter()
-        logfunc()
-        logfunc('[{}/{}] {} [{}] artifact started at {} UTC'.format(plugin_number, len(plugins),
-                                                              plugin.name, plugin.module_name,
-                                                              strftime('%H:%M:%S', gmtime())))
-        output_types = plugin.artifact_info.get('output_types', '')
-        if isinstance(plugin.search, list) or isinstance(plugin.search, tuple):
-            search_regexes = plugin.search
-        elif plugin.search is None:
-            search_regexes = plugin.search
-        else:
-            search_regexes = [plugin.search]
-        files_found = []
-        log.write(f'<b>For {plugin.name} artifact</b>')
-        if search_regexes is None:
-            log.write(f'<ul><li>No search regexes provided for {plugin.name} artifact.')
-            log.write("<ul><li><i>'_lava_artifacts.db'</i> used as source file.</li></ul></li></ul>")
-            files_found = [os.path.join(out_params.output_folder_base, '_lava_artifacts.db')]
-        else:
-            for artifact_search_regex in search_regexes:
-                artifact_search_pattern_id += 1
-                lava_insert_sqlite_artifact_search_pattern(
-                    artifact_search_pattern_id, plugin.module_name, plugin.name, artifact_search_regex)
-                pattern_already_searched = artifact_search_regex in seeker.searched
-                found = seeker.search(artifact_search_regex)
-                if not found:
-                    log.write(f'<ul><li>No file found for regex <i>{artifact_search_regex}</i></li></ul>')
-                else:
-                    log.write(f'<ul><li>{len(found)} {"files" if len(found) > 1 else "file"} for regex <i>{artifact_search_regex}</i> located at:')
-                    for pathh in found:
-                        # Strip \\?\ only for log display; file_infos is keyed with the
-                        # original long-path form on Windows.
-                        display_path = pathh[4:] if pathh.startswith('\\\\?\\') else pathh
-                        log.write(f'<ul><li>{Context.get_relative_path(display_path)}</li></ul>')
-                        if seeker.file_infos.get(pathh):
-                            file_path_id = id(seeker.file_infos.get(pathh))
-                            if not pattern_already_searched and file_path_id not in file_path_ids:
-                                lava_insert_sqlite_file_path(file_path_id, seeker.file_infos.get(pathh).source_path)
-                                file_path_ids.add(file_path_id)
-                            lava_insert_sqlite_artifact_link_pattern_to_file(artifact_search_pattern_id, file_path_id)
-                    log.write(f'</li></ul>')
-                    files_found.extend(found)
-        if files_found:
-            if not lava_only and 'lava_only' in output_types:
-                lava_only = True
-            category_folder = os.path.join(out_params.output_folder_base, '_HTML',
-                                           sanitize_report_name(plugin.category, 'category'))
-            if not os.path.exists(category_folder):
+        for plugin_number, plugin in enumerate(plugins, start=1):
+            # Timed from here, before the file search, because the search runs after the
+            # "artifact started" line is printed and is itself a place a run can sit.
+            plugin_start = perf_counter()
+            logfunc()
+            logfunc('[{}/{}] {} [{}] artifact started at {} UTC'.format(plugin_number, len(plugins),
+                                                                  plugin.name, plugin.module_name,
+                                                                  strftime('%H:%M:%S', gmtime())))
+            output_types = plugin.artifact_info.get('output_types', '')
+            if isinstance(plugin.search, list) or isinstance(plugin.search, tuple):
+                search_regexes = plugin.search
+            elif plugin.search is None:
+                search_regexes = plugin.search
+            else:
+                search_regexes = [plugin.search]
+            files_found = []
+            log.write(f'<b>For {plugin.name} artifact</b>')
+            if search_regexes is None:
+                log.write(f'<ul><li>No search regexes provided for {plugin.name} artifact.')
+                log.write("<ul><li><i>'_lava_artifacts.db'</i> used as source file.</li></ul></li></ul>")
+                files_found = [os.path.join(out_params.output_folder_base, '_lava_artifacts.db')]
+            else:
+                for artifact_search_regex in search_regexes:
+                    artifact_search_pattern_id += 1
+                    lava_insert_sqlite_artifact_search_pattern(
+                        artifact_search_pattern_id, plugin.module_name, plugin.name, artifact_search_regex)
+                    pattern_already_searched = artifact_search_regex in seeker.searched
+                    found = seeker.search(artifact_search_regex)
+                    if not found:
+                        log.write(f'<ul><li>No file found for regex <i>{artifact_search_regex}</i></li></ul>')
+                    else:
+                        log.write(f'<ul><li>{len(found)} {"files" if len(found) > 1 else "file"} for regex <i>{artifact_search_regex}</i> located at:')
+                        for pathh in found:
+                            # Strip \\?\ only for log display; file_infos is keyed with the
+                            # original long-path form on Windows.
+                            display_path = pathh[4:] if pathh.startswith('\\\\?\\') else pathh
+                            log.write(f'<ul><li>{Context.get_relative_path(display_path)}</li></ul>')
+                            if seeker.file_infos.get(pathh):
+                                file_path_id = id(seeker.file_infos.get(pathh))
+                                if not pattern_already_searched and file_path_id not in file_path_ids:
+                                    file_info = seeker.file_infos.get(pathh)
+                                    digest, kind = staged_file_record(seeker, pathh, file_info,
+                                                                      hash_files)
+                                    lava_insert_sqlite_file_path(file_path_id, file_info.source_path,
+                                                                 digest, kind,
+                                                                 staged_time_values(file_info) if hash_files else None)
+                                    if hashes is not None:
+                                        hashes.write(staged_files_tsv_line(file_info, kind, digest))
+                                        hash_counts[digest is not None] = \
+                                            hash_counts.get(digest is not None, 0) + 1
+                                    file_path_ids.add(file_path_id)
+                                lava_insert_sqlite_artifact_link_pattern_to_file(artifact_search_pattern_id, file_path_id)
+                        log.write(f'</li></ul>')
+                        files_found.extend(found)
+            if files_found:
+                if not lava_only and 'lava_only' in output_types:
+                    lava_only = True
+                category_folder = os.path.join(out_params.output_folder_base, '_HTML',
+                                               sanitize_report_name(plugin.category, 'category'))
+                if not os.path.exists(category_folder):
+                    try:
+                        os.makedirs(category_folder)
+                    except (FileExistsError, FileNotFoundError) as ex:
+                        logfunc('Error creating {} report directory at path {}'.format(plugin.name, category_folder))
+                        logfunc('Error was {}'.format(str(ex)))
+                        lava_add_module(plugin.module_name, "Error", len(files_found), plugin.name)
+                        continue  # cannot do work
                 try:
-                    os.makedirs(category_folder)
-                except (FileExistsError, FileNotFoundError) as ex:
-                    logfunc('Error creating {} report directory at path {}'.format(plugin.name, category_folder))
+                    plugin.method(files_found, category_folder, seeker, wrap_text)
+                    lava_commit()
+                except Exception as ex:
+                    logfunc('Reading {} artifact had errors!'.format(plugin.name))
                     logfunc('Error was {}'.format(str(ex)))
+                    logfunc('Exception Traceback: {}'.format(traceback.format_exc()))
+                    plugin_elapsed = perf_counter() - plugin_start
+                    plugin_run_times.append((plugin.name, plugin_elapsed))
+                    logfunc('{} [{}] artifact failed after {:.1f}s'.format(
+                        plugin.name, plugin.module_name, plugin_elapsed))
                     lava_add_module(plugin.module_name, "Error", len(files_found), plugin.name)
-                    continue  # cannot do work
-            try:
-                plugin.method(files_found, category_folder, seeker, wrap_text)
-            except Exception as ex:
-                logfunc('Reading {} artifact had errors!'.format(plugin.name))
-                logfunc('Error was {}'.format(str(ex)))
-                logfunc('Exception Traceback: {}'.format(traceback.format_exc()))
-                plugin_elapsed = perf_counter() - plugin_start
-                plugin_run_times.append((plugin.name, plugin_elapsed))
-                logfunc('{} [{}] artifact failed after {:.1f}s'.format(
-                    plugin.name, plugin.module_name, plugin_elapsed))
-                lava_add_module(plugin.module_name, "Error", len(files_found), plugin.name)
-                continue  # nope
-            lava_add_module(plugin.module_name, "Complete", len(files_found), plugin.name)
-        else:
-            lava_add_module(plugin.module_name, "No files found", 0, plugin.name)
-            logfunc(f"No file found")
-        plugin_elapsed = perf_counter() - plugin_start
-        plugin_run_times.append((plugin.name, plugin_elapsed))
-        logfunc('{} [{}] artifact completed in {:.1f}s'.format(
-            plugin.name, plugin.module_name, plugin_elapsed))
-        parsed_modules += 1
-        GuiWindow.SetProgressBar(parsed_modules, len(plugins))
-        log.flush()
-    log.close()
+                    lava_commit()
+                    continue  # nope
+                lava_add_module(plugin.module_name, "Complete", len(files_found), plugin.name)
+            else:
+                lava_add_module(plugin.module_name, "No files found", 0, plugin.name)
+                logfunc(f"No file found")
+            plugin_elapsed = perf_counter() - plugin_start
+            plugin_run_times.append((plugin.name, plugin_elapsed))
+            logfunc('{} [{}] artifact completed in {:.1f}s'.format(
+                plugin.name, plugin.module_name, plugin_elapsed))
+            parsed_modules += 1
+            GuiWindow.SetProgressBar(parsed_modules, len(plugins))
+            log.flush()
+        log.close()
+        if hashes is not None:
+            hashes.close()
+            logfunc(f'Staged files hashed: {hash_counts.get(True, 0):,}; recorded without a '
+                    f'digest (folders, links): {hash_counts.get(False, 0):,}')
 
-    if lava_only:
-        write_lava_only_log()
-    logfunc('')
-    logfunc('Processes completed.')
-    end = process_time()
-    end_wall = perf_counter()
-    run_time_secs =  end - start
-    run_time_HMS = strftime('%H:%M:%S', gmtime(run_time_secs))
-    logfunc("Processing time (CPU) = {}".format(run_time_HMS))
-    run_time_secs =  end_wall - start_wall
-    run_time_HMS = strftime('%H:%M:%S', gmtime(run_time_secs))
-    logfunc("Run time (wall clock) = {}".format(run_time_HMS))
-
-    # Filtered on the rounded value so the list holds exactly what the per-artifact
-    # lines showed as 1.0s or more, with no artifact visible above the cut but missing here.
-    slowest = sorted((entry for entry in plugin_run_times if round(entry[1], 1) >= 1.0),
-                     key=lambda item: item[1], reverse=True)[:SLOWEST_ARTIFACTS_TO_REPORT]
-    if slowest:
+        if lava_only:
+            write_lava_only_log()
         logfunc('')
-        logfunc('Slowest artifacts:')
-        for artifact_name, elapsed in slowest:
-            logfunc('  {:>8.1f}s  {}'.format(elapsed, artifact_name))
+        logfunc('Processes completed.')
+        end = process_time()
+        end_wall = perf_counter()
+        run_time_secs =  end - start
+        run_time_HMS = strftime('%H:%M:%S', gmtime(run_time_secs))
+        logfunc("Processing time (CPU) = {}".format(run_time_HMS))
+        run_time_secs =  end_wall - start_wall
+        run_time_HMS = strftime('%H:%M:%S', gmtime(run_time_secs))
+        logfunc("Run time (wall clock) = {}".format(run_time_HMS))
 
-    logfunc('')
-    logfunc('Report generation started.')
-    # remove the \\?\ prefix we added to input and output paths, so it does not reflect in report
-    if is_platform_windows():
-        if out_params.output_folder_base.startswith('\\\\?\\'):
-            out_params.output_folder_base = out_params.output_folder_base[4:]
-        if input_path.startswith('\\\\?\\'):
-            input_path = input_path[4:]
+        # Filtered on the rounded value so the list holds exactly what the per-artifact
+        # lines showed as 1.0s or more, with no artifact visible above the cut but missing here.
+        slowest = sorted((entry for entry in plugin_run_times if round(entry[1], 1) >= 1.0),
+                         key=lambda item: item[1], reverse=True)[:SLOWEST_ARTIFACTS_TO_REPORT]
+        if slowest:
+            logfunc('')
+            logfunc('Slowest artifacts:')
+            for artifact_name, elapsed in slowest:
+                logfunc('  {:>8.1f}s  {}'.format(elapsed, artifact_name))
 
-    report.generate_report(out_params.output_folder_base, run_time_secs, run_time_HMS, extracttype, input_path, casedata, profile_filename, icons, lava_only)
-    logfunc('Report generation Completed.')
+        logfunc('')
+        logfunc('Report generation started.')
+        # remove the \\?\ prefix we added to input and output paths, so it does not reflect in report
+        if is_platform_windows():
+            if out_params.output_folder_base.startswith('\\\\?\\'):
+                out_params.output_folder_base = out_params.output_folder_base[4:]
+            if input_path.startswith('\\\\?\\'):
+                input_path = input_path[4:]
 
-    # Record the run in history
-    lava_project_path = os.path.join(out_params.output_folder_base, lava_json_name)
-    history.record_recent_run(leapp_name.lower(), rleapp_version, lava_project_path)
+        report.generate_report(out_params.output_folder_base, run_time_secs, run_time_HMS, extracttype, input_path, casedata, profile_filename, icons, lava_only)
+        logfunc('Report generation Completed.')
 
-    logfunc('')
-    logfunc(f'Report location: {out_params.output_folder_base}')
+        logfunc('')
+        logfunc(f'Report location: {out_params.output_folder_base}')
 
-    return True
+        return True
+    finally:
+        # A raw image seeker holds the image open and the other seekers hold an
+        # archive handle; cleanup() releases whatever the seeker holds. Nothing
+        # else does, so run it on every exit path, not just the success return.
+        seeker.cleanup()
 
 if __name__ == '__main__':
     main()

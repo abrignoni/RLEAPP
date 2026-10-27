@@ -5,6 +5,7 @@ import hashlib
 import inspect
 import json
 import os
+import atexit
 import re
 import shutil
 import sqlite3
@@ -32,6 +33,8 @@ from leapp_functions.app.output import (
     resolve_output_folder_name,
     validate_output_folder_available,
 )
+from leapp_functions.app.artifact_result import ArtifactResult
+from leapp_functions.app.screen_log import ScreenLogWriter
 
 _console_write = sys.stdout.write
 
@@ -39,15 +42,17 @@ _console_write = sys.stdout.write
 import pytz
 import simplekml
 from bs4 import BeautifulSoup
-from scripts.filetype import guess_mime, guess_extension
+from scripts.filetype import get_signature_bytes, guess_mime, guess_extension
 from functools import wraps
 
 # LEAPP version unique imports
 from typing import Pattern
 from scripts.html_safe import esc, safe_local_path
-from scripts.lavafuncs import lava_process_artifact, lava_insert_sqlite_data, lava_get_media_item, \
+from scripts.lavafuncs import lava_process_artifact, lava_insert_sqlite_data, lava_iter_artifact_rows, lava_update_record_count, \
+    lava_get_media_item, \
     lava_insert_sqlite_media_item, lava_insert_sqlite_media_references, lava_get_media_references, \
-    lava_get_full_media_info
+    lava_get_full_media_info, bind_dates_as_text, _python_text, \
+    lava_blank_invalid_media_refs
 
 os.path.basename = lru_cache(maxsize=None)(os.path.basename)
 
@@ -79,10 +84,27 @@ class OutputParameters:
 class GuiWindow:
     '''This only exists to hold window handle if script is run from GUI'''
     window_handle = None  # static variable
+    # Set to a queue.Queue by the GUI while a run is on a worker thread, and back to None
+    # when it finishes. Tk is not thread-safe: while this is set, nothing below may touch a
+    # widget, so progress and log lines are handed to the GUI's poller instead.
+    message_queue = None
+
+    @staticmethod
+    def end_worker_run():
+        '''Called on the main thread once the worker is finished.
+
+        logfunc points sys.stdout.write at queue_logs for as long as message_queue is set.
+        Clearing the queue on its own leaves that binding in place, so the next print()
+        that does not go through logfunc raises AttributeError on a queue that is gone.
+        '''
+        GuiWindow.message_queue = None
+        sys.stdout.write = _console_write
 
     @staticmethod
     def SetProgressBar(n, total):  # pylint: disable=unused-argument
-        if GuiWindow.window_handle:
+        if GuiWindow.message_queue is not None:
+            GuiWindow.message_queue.put(('progress', n))
+        elif GuiWindow.window_handle:
             progress_bar = GuiWindow.window_handle.nametowidget('progress_bar_frame.progress_bar')
             progress_bar.config(value=n)
 
@@ -123,6 +145,26 @@ class MediaReferences():
         self.name = media_ref_info[4]
 
 
+_screen_log = ScreenLogWriter()
+
+
+def close_screen_log():
+    """Flush pending run messages and release the HTML log handle."""
+    _screen_log.close()
+
+
+atexit.register(close_screen_log)
+
+
+def screen_log_session(func):
+    """Keep the HTML log open during processing and close it on every exit."""
+    @wraps(func)
+    def wrapped(*args, **kwargs):
+        with _screen_log.session(OutputParameters.screen_output_file_path):
+            return func(*args, **kwargs)
+    return wrapped
+
+
 def logfunc(message=""):
     def redirect_logs(string):
         _console_write(string)
@@ -130,13 +172,23 @@ def logfunc(message=""):
         log_text.see('end')
         log_text.update()
 
-    if GuiWindow.window_handle:
+    def queue_logs(string):
+        _console_write(string)
+        GuiWindow.message_queue.put(('log', string))
+
+    if GuiWindow.message_queue is not None:
+        # On a worker thread. The poller on the main thread does the insert, so the run no
+        # longer depends on log_text.update() to keep the event loop alive.
+        sys.stdout.write = queue_logs
+    elif GuiWindow.window_handle:
         log_text = GuiWindow.window_handle.nametowidget('logs_frame.log_text')
         sys.stdout.write = redirect_logs
 
     if OutputParameters.screen_output_file_path:
-        with open(OutputParameters.screen_output_file_path, 'a', encoding='utf8') as a:
-            a.write(message + '<br>' + OutputParameters.nl)
+        _screen_log.write(OutputParameters.screen_output_file_path,
+                          message + '<br>' + OutputParameters.nl)
+    else:
+        _screen_log.write('', '')
     print(message)
 
 
@@ -189,6 +241,49 @@ def set_media_references(media_ref_id, media_id, module_name, artifact_name, nam
     ))
     lava_insert_sqlite_media_references(media_references)
 
+def _resolve_media_source(source_path):
+    '''
+    Find the staged file behind a media source path, and the path to record for it.
+
+    The recorded path is where the file sits in the evidence, never a path on the
+    examiner's machine:
+
+      1. A staged file the seeker holds a FileInfo for is recorded by that FileInfo,
+         whether or not the current artifact's files_found lists it.
+      2. A file read out of a staged archive, '<staged archive> >> <member>' as
+         get_sysdiagnose_files yields it, is recorded as the archive's evidence path
+         and the member. It is not looked up by its basename, which resolves it to any
+         other file of that name the artifact found.
+      3. Anything else is looked up through files_found.
+      4. A source still without a FileInfo is recorded without the data folder or
+         report folder in it (Context.get_relative_path), not as given.
+
+    Args:
+        source_path: The source path passed to check_in_media or check_in_embedded_media.
+    Returns:
+        (extraction_path, file_info, recorded_path). extraction_path and file_info are
+        None when no staged file was found.
+    '''
+    # A pathlib.Path resolved before, when the lookup only took its basename.
+    source_path = os.fspath(source_path)
+    seeker = Context.get_seeker()
+    file_info = seeker.file_infos.get(source_path)
+    if file_info:
+        return source_path, file_info, file_info.source_path
+
+    archive, separator, member = source_path.partition(' >> ')
+    if separator:
+        archive_info = seeker.file_infos.get(archive)
+        if archive_info:
+            return None, None, f'{archive_info.source_path}{separator}{member}'
+        return None, None, Context.get_relative_path(source_path)
+
+    extraction_path = Context.get_source_file_path(source_path)
+    file_info = seeker.file_infos.get(extraction_path)
+    if file_info:
+        return extraction_path, file_info, file_info.source_path
+    return extraction_path, None, Context.get_relative_path(source_path)
+
 def _check_in_media(media_id, source_path, is_embedded, name, media_data=None, converted_file_path=None, force_type=None,
                     force_extension=None, force_creation_date=None, force_modification_date=None):
     '''
@@ -208,7 +303,6 @@ def _check_in_media(media_id, source_path, is_embedded, name, media_data=None, c
         The media reference ID or None.
     '''
     output_params = Context.get_output_params()
-    seeker = Context.get_seeker()
 
     media_ref_id = get_media_references_id(media_id, Context.get_artifact_name(), name)
     if lava_get_media_references(media_ref_id):
@@ -234,12 +328,7 @@ def _check_in_media(media_id, source_path, is_embedded, name, media_data=None, c
         if suffix and not suffix.startswith('.'):
             suffix = f".{suffix}"
 
-        extraction_path = Context.get_source_file_path(source_path)
-        file_info = seeker.file_infos.get(extraction_path)
-        if file_info:
-            media_item.source_path = file_info.source_path
-        else:
-            media_item.source_path = source_path
+        extraction_path, file_info, media_item.source_path = _resolve_media_source(source_path)
 
         if is_embedded:
             media_item.created_at = force_creation_date if force_creation_date else 0
@@ -308,16 +397,24 @@ def check_in_media(file_path, name="", converted_file_path=False, force_type=Non
     Returns:
         The media reference ID or None.
     '''
-    extraction_path = Context.get_source_file_path(file_path)
-    if not extraction_path:
-        logfunc(f'No matching file found for "{file_path}"')
-        return None
-
-    file_info = Context.get_seeker().file_infos.get(extraction_path)
+    # A file the seeker staged is checked in as itself, whether or not the current artifact's
+    # files_found lists it. An artifact that stages a file with its own seeker search would
+    # otherwise get no media, or, when files_found holds another file of the same name, have
+    # the media identified by that other file's evidence path.
+    seeker = Context.get_seeker()
+    extraction_path = os.fspath(file_path)
+    file_info = seeker.file_infos.get(extraction_path)
+    if not file_info:
+        extraction_path = Context.get_source_file_path(file_path)
+        if not extraction_path:
+            logfunc(f'No matching file found for "{file_path}"')
+            return None
+        file_info = seeker.file_infos.get(extraction_path)
     if file_info:
         media_id = hashlib.sha1(f"{file_info.source_path}".encode()).hexdigest()
-        with open(extraction_path, "rb") as f:
-            file_data = f.read()
+        # Only the type sniffer reads media_data for a file on disk, and it looks at no more
+        # than the first 8,192 bytes, so read just those instead of the whole file.
+        file_data = get_signature_bytes(extraction_path)
         return _check_in_media(media_id, file_path, False, name, media_data=file_data, converted_file_path=converted_file_path,
                                force_type=force_type, force_extension=force_extension,
                                force_creation_date=force_creation_date, force_modification_date=force_modification_date)
@@ -437,7 +534,75 @@ def get_data_list_with_media(media_header_info, data_list):
 
     return html_data_list, txt_data_list
 
+
+def iter_data_list_with_media(media_header_info, data_list, html_output=False):
+    """
+    Stream rows with media reference columns converted for the requested output.
+    """
+    output_params = Context.get_output_params()
+
+    for data in data_list:
+        row = list(data)
+
+        for idx, style in media_header_info.items():
+            media_ref_id_cell = row[idx]
+            if not media_ref_id_cell:
+                row[idx] = ''
+                continue
+
+            html_code = ''
+            path_list = []
+            media_ref_ids = media_ref_id_cell if isinstance(media_ref_id_cell, list) else [media_ref_id_cell]
+
+            for ref_id in media_ref_ids:
+                media_item = lava_get_full_media_info(ref_id)
+                if not (media_item and media_item['extraction_path']):
+                    continue
+
+                canonical_path = os.path.join(output_params.output_folder_base, media_item['extraction_path'])
+                html_path = os.path.join(output_params.html_media_folder, Path(canonical_path).name)
+
+                if os.path.exists(canonical_path) and not os.path.exists(html_path):
+                    try:
+                        os.link(canonical_path, html_path)
+                    except OSError:
+                        shutil.copy2(canonical_path, html_path)
+
+                if html_output:
+                    html_code += html_media_tag(
+                        media_item['extraction_path'], media_item['type'], style, media_item['name'])
+                else:
+                    path_list.append(media_item['extraction_path'])
+
+            if html_output:
+                row[idx] = html_code
+            elif isinstance(media_ref_id_cell, list):
+                row[idx] = ' | '.join(path_list)
+            else:
+                row[idx] = path_list[0] if path_list else ''
+
+        yield tuple(row)
+
+
 _reported_unsafe_report_names = set()
+
+# Tables left off their HTML page for exceeding artifact_report.HTML_TABLE_ROW_LIMIT, listed
+# on the index page so an examiner sees them without opening each artifact. Mutated in
+# place only: report.py imports the list itself.
+html_tables_held_back = []
+
+
+def record_html_table_held_back(category, artifact_name, safe_artifact_name, rows):
+    """Remember a table the HTML report held back, for the index page and the run log."""
+    html_tables_held_back.append({
+        'category': category,
+        'artifact_name': artifact_name,
+        # report.generate_report names the final page from the .temphtml file this way
+        'page': safe_artifact_name.replace(' ', '_') + '.html',
+        'rows': rows,
+    })
+    logfunc(f'{artifact_name}: {rows:,} rows, above the {artifact_report.HTML_TABLE_ROW_LIMIT:,}-row '
+            f'limit for HTML pages; the table is left off the page and stays in the other outputs')
 
 def sanitize_report_name(name, kind='name'):
     """
@@ -492,12 +657,37 @@ def artifact_processor(func):
         Context.set_module_name(module_name)
         Context.set_module_file_path(module_file_path)
         Context.set_artifact_name(artifact_name)
+        Context.set_artifact_func_name(func_name)
 
         sig = inspect.signature(func)
-        if len(sig.parameters) == 1:
-            data_headers, data_list, source_path = func(Context)
+        try:
+            if len(sig.parameters) == 1:
+                artifact_result = func(Context)
+            else:
+                artifact_result = func(files_found, report_folder, seeker, wrap_text)
+        except BaseException:
+            # A streaming module has already written rows by the time it raises. Drop them
+            # with the manifest entry, so the report cannot show a table that is short
+            # while the run log says the artifact failed. A list-returning module that
+            # raises leaves nothing behind, and this keeps the two paths alike.
+            partial = Context.get_artifact_result()
+            if partial is not None:
+                partial.discard()
+            raise
+
+        is_artifact_result = isinstance(artifact_result, ArtifactResult)
+        if is_artifact_result:
+            data_headers = artifact_result.headers
+            data_list = artifact_result
+            source_path = artifact_result.source_path
         else:
-            data_headers, data_list, source_path = func(files_found, report_folder, seeker, wrap_text)
+            data_headers, data_list, source_path = artifact_result
+            is_artifact_result = isinstance(data_list, ArtifactResult)
+            if is_artifact_result:
+                if data_list.headers is None:
+                    data_list.set_headers(data_headers)
+                if source_path and not data_list.source_path:
+                    data_list.set_source_path(source_path)
 
         if data_list and not source_path:
             logfunc("No source_path provided")
@@ -510,59 +700,134 @@ def artifact_processor(func):
             data_list, html_data_list = data_list
         else:
             html_data_list = data_list
-        if len(data_list):
-            logfunc(f"Found {len(data_list):,} {'records' if len(data_list)>1 else 'record'} for {artifact_name}")
-            # Path separators would break (or misplace) the report files, so the HTML, TSV
-            # and KML outputs are written under a path safe name. The sidebar keys off the
-            # on-disk names, so the icon lookup has to use the same safe names.
-            safe_artifact_name = sanitize_report_name(artifact_name)
-            safe_category = sanitize_report_name(category, 'category')
-            icons.setdefault(safe_category, {safe_artifact_name: icon}).update({safe_artifact_name: icon})
+        txt_data_list = data_list
 
-            # Strip tuples from headers for HTML, TSV, and timeline
-            stripped_headers = strip_tuple_from_headers(data_headers)
+        try:
+            if data_list:
+                if data_headers is None:
+                    raise ValueError(f"No data_headers provided for {artifact_name}")
 
-            # Check if headers contains a 'media' type
-            media_header_info = get_media_header_info(data_headers)
-            if media_header_info:
-                html_columns.extend([data_headers[idx][0] for idx in media_header_info])
-                html_data_list, txt_data_list = get_data_list_with_media(media_header_info, data_list)
+                row_count = len(data_list)
+                if row_count:
+                    logfunc(f"Found {row_count:,} {'records' if row_count>1 else 'record'} for {artifact_name}")
+                else:
+                    logfunc(f"Processing streamed records for {artifact_name}")
 
-            if check_output_types('html', output_types):
-                report = artifact_report.ArtifactHtmlReport(artifact_name)
-                report.start_artifact_report(report_folder, safe_artifact_name, description)
-                report.add_script()
-                report.write_artifact_data_table(stripped_headers, html_data_list, source_path, html_no_escape=html_columns)
-                report.end_artifact_report()
+                # Path separators would break (or misplace) report files, so
+                # file outputs use safe names while LAVA keeps display names.
+                safe_artifact_name = sanitize_report_name(artifact_name)
+                safe_category = sanitize_report_name(category, 'category')
+                icons.setdefault(safe_category, {safe_artifact_name: icon}).update({safe_artifact_name: icon})
 
-            if check_output_types('tsv', output_types):
-                tsv(report_folder, stripped_headers, txt_data_list if media_header_info else data_list, safe_artifact_name)
+                # Strip tuples from headers for HTML, TSV, and timeline
+                stripped_headers = strip_tuple_from_headers(data_headers)
 
-            if check_output_types('timeline', output_types):
-                timeline(report_folder, artifact_name, txt_data_list if media_header_info else data_list, stripped_headers)
+                # Check if headers contains a 'media' type
+                media_header_info = get_media_header_info(data_headers)
+                if media_header_info and not is_artifact_result:
+                    # Streamed rows are checked as they are written to LAVA
+                    checked_list = list(lava_blank_invalid_media_refs(data_list, media_header_info, artifact_name))
+                    if html_data_list is data_list:
+                        html_data_list = checked_list
+                    data_list = txt_data_list = checked_list
+                needs_text_or_html_data = any(
+                    check_output_types(output_type, output_types)
+                    for output_type in ('html', 'tsv', 'timeline', 'kml')
+                )
+                if media_header_info and needs_text_or_html_data:
+                    html_columns.extend([data_headers[idx][0] for idx in media_header_info])
+                    if not is_artifact_result:
+                        html_data_list, txt_data_list = get_data_list_with_media(media_header_info, data_list)
 
-            if check_output_types('lava', output_types):
-                table_name, object_columns, column_map = lava_process_artifact(category,
-                                                                               module_name,
-                                                                               artifact_name,
-                                                                               data_headers,
-                                                                               len(data_list),
-                                                                               func_name=func_name,
-                                                                               data_views=artifact_info.get("data_views"),
-                                                                               artifact_icon=icon,
-                                                                               source_path=source_path)
-                if is_lava_only:
-                    lava_only_info(category, artifact_name, table_name, len(data_list))
-                lava_insert_sqlite_data(table_name, data_list, object_columns, data_headers, column_map)
+                table_name = None
+                object_columns = None
+                inserted_count = row_count
+                if is_artifact_result and data_list.is_lava_backed:
+                    data_list.close()
+                    table_name = data_list.table_name
+                    object_columns = data_list.object_columns
+                    inserted_count = data_list.row_count
+                    logfunc(f"Inserted {inserted_count:,} streamed records for {artifact_name}")
+                    if is_lava_only:
+                        lava_only_info(category, artifact_name, table_name, inserted_count)
+                elif is_artifact_result or check_output_types('lava', output_types):
+                    record_count = None if is_artifact_result else len(data_list)
+                    table_name, object_columns, column_map = lava_process_artifact(category,
+                                                                                   module_name,
+                                                                                   artifact_name,
+                                                                                   data_headers,
+                                                                                   record_count,
+                                                                                   func_name=func_name,
+                                                                                   data_views=artifact_info.get("data_views"),
+                                                                                   artifact_icon=icon,
+                                                                                   source_path=source_path)
+                    inserted_count = lava_insert_sqlite_data(
+                        table_name,
+                        data_list,
+                        object_columns,
+                        data_headers,
+                        column_map,
+                        async_write=getattr(data_list, 'async_write', False),
+                        queue_size=getattr(data_list, 'queue_size', 5000),
+                        label=artifact_name,
+                    )
+                    if is_artifact_result:
+                        data_list.set_row_count(inserted_count)
+                        lava_update_record_count(category, table_name, inserted_count)
+                        logfunc(f"Inserted {inserted_count:,} streamed records for {artifact_name}")
+                    if is_lava_only:
+                        lava_only_info(category, artifact_name, table_name, inserted_count)
 
-            if check_output_types('kml', output_types):
-                kmlgen(report_folder, safe_artifact_name, txt_data_list if media_header_info else data_list, stripped_headers)
+                def output_rows(html_output=False):
+                    rows = data_list
+                    if is_artifact_result:
+                        rows = lava_iter_artifact_rows(table_name, data_headers, object_columns, inserted_count)
+                    if media_header_info and needs_text_or_html_data:
+                        return iter_data_list_with_media(media_header_info, rows, html_output)
+                    return rows
 
-        else:
-            if output_types != 'none':
+                if check_output_types('html', output_types):
+                    report = artifact_report.ArtifactHtmlReport(artifact_name)
+                    report.start_artifact_report(report_folder, safe_artifact_name, description)
+                    report.add_script()
+                    full_data_locations = []
+                    if check_output_types('lava', output_types):
+                        full_data_locations.append(artifact_report.LAVA_DATABASE_LOCATION)
+                    if check_output_types('tsv', output_types):
+                        full_data_locations.append(artifact_report.tsv_export_location(safe_artifact_name))
+                    # A streamed table above the row limit is held back before its rows are
+                    # read out of LAVA, so the notice costs no replay.
+                    held_back = report.write_artifact_data_table(
+                        stripped_headers,
+                        output_rows(html_output=True) if is_artifact_result else html_data_list,
+                        source_path,
+                        html_no_escape=html_columns,
+                        row_count=inserted_count if is_artifact_result else None,
+                        full_data_locations=full_data_locations)
+                    report.end_artifact_report()
+                    if held_back:
+                        record_html_table_held_back(category, artifact_name, safe_artifact_name,
+                                                    inserted_count if is_artifact_result else len(data_list))
+
+                if check_output_types('tsv', output_types):
+                    tsv_rows = output_rows() if is_artifact_result else txt_data_list if media_header_info else data_list
+                    tsv(report_folder, stripped_headers, tsv_rows, safe_artifact_name)
+
+                if check_output_types('timeline', output_types):
+                    timeline_rows = output_rows() if is_artifact_result else txt_data_list if media_header_info else data_list
+                    timeline(report_folder, artifact_name, timeline_rows, stripped_headers)
+
+                if check_output_types('kml', output_types):
+                    kml_rows = output_rows() if is_artifact_result else txt_data_list if media_header_info else data_list
+                    kmlgen(report_folder, safe_artifact_name, kml_rows, stripped_headers)
+
+            elif output_types != 'none':
                 logfunc(f"No data found for {artifact_name}")
                 if is_lava_only:
                     lava_only_info(category, artifact_name, artifact_name, 0)
+        finally:
+            if is_artifact_result:
+                data_list.cleanup()
 
         return data_headers, data_list, source_path
     return wrapper
@@ -663,12 +928,37 @@ def get_sqlite_db_path(path):
     else:
         return quote(str(path), safe='/')
 
+def get_sqlite_db_uri_query(path):
+    '''Return the URI query for a read-only open of the SQLite file at path.
+
+    A database in WAL mode (header bytes 18 and 19 both 2) with no -wal beside
+    it can only be read as the database file alone. For such a file SQLite
+    either refuses a mode=ro open (Apple's SQLite 3.54.0, at the first
+    statement) or creates an empty -wal and a -shm beside it, and a -wal staged
+    there later is then written under another name. immutable=1 reads the file
+    alone and creates neither. It is used only when there is no -wal and no
+    -journal beside the file, because it ignores both, and the open is logged.'''
+    path = str(path)
+    try:
+        with open(path, 'rb') as db_file:
+            header = db_file.read(20)
+    except OSError:
+        return 'mode=ro'
+    if (header[:16] == b'SQLite format 3\x00' and header[18:20] == b'\x02\x02'
+            and not os.path.exists(path + '-wal')
+            and not os.path.exists(path + '-journal')):
+        logfunc(f'{path} is in WAL mode and no -wal is beside it. Opened read-only '
+                'with immutable=1, which reads the database file alone.')
+        return 'mode=ro&immutable=1'
+    return 'mode=ro'
+
 def open_sqlite_db_readonly(path):
     '''Opens a sqlite db in read-only mode, so original db (and -wal/journal are intact)'''
     try:
         if path:
+            query = get_sqlite_db_uri_query(path)
             path = get_sqlite_db_path(path)
-            with sqlite3.connect(f"file:{path}?mode=ro", uri=True) as db:
+            with sqlite3.connect(f"file:{path}?{query}", uri=True) as db:
                 return db
     except sqlite3.OperationalError as e:
         logfunc(f"Error with {path}:")
@@ -679,24 +969,82 @@ def attach_sqlite_db_readonly(path, db_name):
     '''Return the query to attach a sqlite db in read-only mode.
     path: str --> Path of the SQLite DB to attach
     db_name: str --> Name of the SQLite DB in the query'''
+    query = get_sqlite_db_uri_query(path)
     path = get_sqlite_db_path(path)
-    return  f'''ATTACH DATABASE "file:{path}?mode=ro" AS {db_name}'''
+    return f'''ATTACH DATABASE "file:{path}?{query}" AS {db_name}'''
+
+class SqliteRecords:
+    """The rows of one query, read as the caller iterates.
+
+    Closes its cursor and connection when the rows run out, when a read fails,
+    on close(), and when the object is dropped. `description` is the cursor's.
+    """
+    def __init__(self, db, cursor):
+        self._db = db
+        self._cursor = cursor
+        self.description = cursor.description
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self._cursor is None:
+            raise StopIteration
+        try:
+            return next(self._cursor)
+        except BaseException:
+            # StopIteration ends the rows; a read error still reaches the caller.
+            self.close()
+            raise
+
+    def close(self):
+        """Release the cursor and the connection. Safe to call more than once."""
+        cursor, db = self._cursor, self._db
+        self._cursor = self._db = None
+        try:
+            if cursor is not None:
+                cursor.close()
+        finally:
+            if db is not None:
+                db.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except sqlite3.Error:
+            pass
+
 
 def get_sqlite_db_records(path, query, attach_query=None):
+    """Run a query and return its rows as a SqliteRecords, or [] when it fails.
+
+    The query runs here, not on first iteration. The connection is closed once
+    the rows are exhausted; a caller that keeps the result and stops early
+    should call close() or use contextlib.closing.
+    """
     db = open_sqlite_db_readonly(path)
-    if db:
+    if db is None:
+        return []
+    cursor = None
+    try:
         db.row_factory = sqlite3.Row  # For fetching columns by name
+        cursor = db.cursor()
+        if attach_query:
+            cursor.execute(attach_query)
+        cursor.execute(query)
+        records = SqliteRecords(db, cursor)
+        db = cursor = None
+        return records
+    except sqlite3.DatabaseError as e:
+        logfunc(f"Error with {path}:")
+        logfunc(f" - {str(e)}")
+    finally:
         try:
-            cursor = db.cursor()
-            if attach_query:
-                cursor.execute(attach_query)
-            cursor.execute(query)
-            # NOTE: we return the cursor directly, to be iterated by the caller
-            #   to keep it as a generator
-            return cursor
-        except sqlite3.DatabaseError as e:
-            logfunc(f"Error with {path}:")
-            logfunc(f" - {str(e)}")
+            if cursor is not None:
+                cursor.close()
+        finally:
+            if db is not None:
+                db.close()
     return []
 
 def does_column_exist_in_db(path, table_name, col_name):
@@ -865,7 +1213,8 @@ def timeline(report_folder, tlactivity, data_list, data_headers):
         db.commit()
     
     for entry in data_list:
-        entry = [str(field) for field in entry]
+        # None is written blank, as the HTML and TSV show it, not as the text 'None'.
+        entry = ['' if field is None else str(field) for field in entry]
         
         data_dict = dict(zip(data_headers, entry))
 
@@ -882,10 +1231,8 @@ def kmlgen(report_folder, kmlactivity, data_list, data_headers):
 
     data = []
     kml = simplekml.Kml(open=1)    
-    a = 0
-    length = len(data_list)
-    while a < length:
-        modifiedDict = dict(zip(data_headers, data_list[a]))
+    for row in data_list:
+        modifiedDict = dict(zip(data_headers, row))
         lon = modifiedDict['Longitude']
         lat = modifiedDict['Latitude']
         times_header = "Timestamp"
@@ -901,8 +1248,9 @@ def kmlgen(report_folder, kmlactivity, data_list, data_headers):
             pnt.name = times
             pnt.description = f"{times_header}: {times} - {kmlactivity}"
             pnt.coords = [(lon, lat)]
-            data.append((times, lat, lon, kmlactivity))
-        a += 1
+            # Python's text for the coordinates, as the .kml file carries: bound as floats,
+            # the text SQLite stores depends on its version (see lavafuncs._python_text).
+            data.append((bind_dates_as_text(times), _python_text(lat), _python_text(lon), kmlactivity))
 
     if len(data) > 0:
         report_folder = report_folder.rstrip('/')
@@ -932,77 +1280,6 @@ def kmlgen(report_folder, kmlactivity, data_list, data_headers):
         db.commit()
         db.close()
         kml.save(os.path.join(kml_report_folder, f'{kmlactivity}.kml'))
-
-def media_to_html(media_path, files_found, report_folder):
-
-    def media_path_filter(name):
-        return media_path in name
-
-    def relative_paths(source, splitter):
-        splitted_a = source.split(splitter)
-        for x in splitted_a:
-            if '_HTML' in x:
-                splitted_b = source.split(x)
-                return '.' + splitted_b[1]
-            elif 'data' in x:
-                index = splitted_a.index(x)
-                splitted_b = source.split(splitted_a[index - 1])
-                return '..' + splitted_b[1]
-
-
-    platform = is_platform_windows()
-    if platform:
-        media_path = media_path.replace('/', '\\')
-        splitter = '\\'
-    else:
-        splitter = '/'
-
-    thumb = media_path
-    for match in filter(media_path_filter, files_found):
-        filename = os.path.basename(match)
-        if filename.startswith('~') or filename.startswith('._') or filename != media_path:
-            continue
-
-        dirs = os.path.dirname(report_folder)
-        dirs = os.path.dirname(dirs)
-        env_path = os.path.join(dirs, 'data')
-        if env_path in match:
-            source = match
-            source = relative_paths(source, splitter)
-        else:
-            path = os.path.dirname(match)
-            dirname = os.path.basename(path)
-            filename = Path(match)
-            filename = filename.name
-            locationfiles = Path(report_folder).joinpath(dirname)
-            Path(f'{locationfiles}').mkdir(parents=True, exist_ok=True)
-            shutil.copy2(match, locationfiles)
-            source = Path(locationfiles, filename)
-            source = relative_paths(str(source), splitter)
-
-        mimetype = guess_mime(match)
-        if mimetype is None:
-            mimetype = ''
-
-        # allow_parent: relative_paths() above deliberately emits ../data/... to reach
-        # the extraction folder beside the report. The evidence filename in the
-        # fallback link text is escaped -- it used to be interpolated raw.
-        # Bind the escaped values to their own names rather than writing back over
-        # `source`, which is assigned several times above. Reading a name that only
-        # ever holds a checked value makes the safety local and obvious, to a reader
-        # and to admin/scripts/check_html_safety.py alike.
-        safe_source = safe_local_path(source, allow_parent=True)
-        safe_filename = esc(filename)
-
-        if 'video' in mimetype:
-            thumb = f'<video width="320" height="240" controls="controls"><source src="{safe_source}" type="video/mp4" preload="none">Your browser does not support the video tag.</video>'
-        elif 'image' in mimetype:
-            thumb = f'<a href="{safe_source}" target="_blank"><img src="{safe_source}" width="300"></img></a>'
-        elif 'audio' in mimetype:
-            thumb = f'<audio controls><source src="{safe_source}" type="audio/ogg"><source src="{safe_source}" type="audio/mpeg">Your browser does not support the audio element.</audio>'
-        else:
-            thumb = f'<a href="{safe_source}" target="_blank"> Link to {safe_filename} file</a>'
-    return thumb
 
 
 # pylint: disable-next=pointless-string-statement
@@ -1098,12 +1375,11 @@ def write_lava_only_log():
         lava_log.write(
             """
                 <p class="note alert-info mb-4">
-                The artifacts listed below are likely to return too much data to be viewed \
-                in a Web browser, so they have been stored in the <i>'_lava_artifacts.db'</i> \
-                SQLite database.<br>
-                They are not available from the side bar of the HTML report, but they can \
-                currently be viewed with any SQLite database viewer until we release <b>LAVA</b> \
-                (LEAPP Artifact Viewer App).<br></p>
+                The artifacts listed below are declared LAVA only because of the amount of data \
+                they return, so their rows are written to the <i>'_lava_artifacts.db'</i> \
+                SQLite database and they have no page in the side bar of the HTML report.<br>
+                Open the report folder in <b>LAVA</b> (LEAPP Artifact Viewer App) to review them; \
+                any SQLite database viewer can also read the database.<br></p>
             """
         )
         for category, artifacts in lava_only_artifacts.items():

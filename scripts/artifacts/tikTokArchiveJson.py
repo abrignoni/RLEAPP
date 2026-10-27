@@ -9,7 +9,7 @@ import json
 import os
 from datetime import datetime, timezone
 
-from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc
+from scripts.ilapfuncs import artifact_processor
 
 # Every artifact in this module reads the same TikTok "Download My Data" JSON
 # export. Both the old (user_data.json) and new (user_data_tiktok.json)
@@ -28,32 +28,38 @@ def _load(file_found):
 def _tt_ts(value):
     '''Best-effort convert a TikTok timestamp to an aware UTC datetime.
     Handles epoch seconds/ms (numeric), "YYYY-MM-DD HH:MM:SS" and ISO-8601
-    strings (all UTC in the export). Unparseable/empty values are kept
-    verbatim so the LAVA datetime column stores them as text.'''
+    strings. Zone-less date strings remain text. Unparseable/empty values are kept
+    verbatim in the text time columns.'''
     if value in (None, '', 'N/A'):
         return ''
     s = str(value).strip()
     if not s:
         return ''
     if s.isdigit():
-        return convert_unix_ts_to_utc(s)
+        return value
     for fmt in ('%Y-%m-%d %H:%M:%S', '%Y-%m-%dT%H:%M:%S'):
         try:
-            return datetime.strptime(s, fmt).replace(tzinfo=timezone.utc)
+            datetime.strptime(s, fmt)
+            return value
         except ValueError:
             pass
     try:
         dt = datetime.fromisoformat(s.replace('Z', '+00:00'))
         if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
+            return value
         return dt.astimezone(timezone.utc)
     except ValueError:
         return value
 
 
-def _register(key, name, icon, headers, extractor):
+def _register(key, name, icon, headers, extractor, description=None):
     '''Build and register a context-form @artifact_processor for one report
     section of the TikTok export.'''
+    time_indexes = [i for i, header in enumerate(headers)
+                    if isinstance(header, tuple) and header[1] == 'datetime']
+    order = time_indexes + [i for i in range(len(headers)) if i not in time_indexes]
+    ordered_headers = tuple(headers[i][0] if isinstance(headers[i], tuple) and headers[i][1] == 'datetime' else headers[i] for i in order)
+
     def fn(context):
         data_list = []
         source_path = ''
@@ -63,21 +69,30 @@ def _register(key, name, icon, headers, extractor):
                 continue
             source_path = file_found
             data = _load(file_found)
-            data_list.extend(extractor(data))
-        return headers, data_list, context.get_relative_path(source_path)
+            for row in extractor(data):
+                data_list.append(tuple(row[i] for i in order))
+        return ordered_headers, data_list, context.get_relative_path(source_path)
 
     fn.__name__ = key
     fn.__qualname__ = key
     globals()[key] = artifact_processor(fn)
     __artifacts_v2__[key] = {
         "name": name,
-        "description": f"Parses the '{name}' section of the TikTok 'Download My Data' JSON export.",
-        "author": "@upintheairsheep and @Jadoo4QFan",
+        "description": description or f"Rows this parser labels '{name}', read from the TikTok 'Download My Data' "
+                       "JSON export. The label is the parser's own and the export's key names can "
+                       "differ.",
+        "author": "@upintheairsheep and @Jadoo4QFan, @AlexisBrignoni, Codex",
         "creation_date": "2025-06-15",
-        "last_update_date": "2025-06-15",
+        "last_update_date": "2026-10-04",
         "requirements": "none",
         "category": "TikTok",
-        "notes": "Gemini Code Assist was used during the script's development, however the code was then heavily tested against real exports.",
+        "notes": "Time columns preserve mixed values as text and do not populate timeline/date filters. "
+                 "Gemini Code Assist was used during the script's development. No registered real "
+                 "export has been validated for this artifact. Where this artifact converts a "
+                 "date, a value with no time zone remains stored text; an all-digit value is read "
+                 "as stored text because its epoch and unit are not established. The export's time zone is not established here. Where the export does not carry a key, the cell holds this "
+                 "parser's default (blank, 'N/A' or 0, depending on the column), which is not a "
+                 "value the export held.",
         "paths": _PATHS,
         "output_types": "standard",
         "artifact_icon": icon,
@@ -574,7 +589,9 @@ _register('tikTokFavoriteEffects', 'TikTok Favorite Effects', 'star',
 _register('tikTokBlockedUsers', 'TikTok Blocked Users', 'user-off',
           ('Username', ('Date', 'datetime')), _x_blocked_users)
 _register('tikTokVideoHistory', 'TikTok Video History', 'history',
-          ('URL', ('Date', 'datetime'), 'Time Per TikTok (s)'), _x_video_history)
+          ('URL', ('Date', 'datetime'), 'Time Per TikTok (as stored)'), _x_video_history,
+          description="Selects top-level Your Activity when present; otherwise Activity, then Watch History when present; otherwise Video Browsing History. For supported mappings, each VideoList entry supplies Link, Date and the raw timepertiktok value. A missing Link or Date uses the parser's blank default; Date follows the existing timestamp handling. Missing timepertiktok is shown as the parser's 0 default; present values, including null, false, empty values, lists and dictionaries, are retained. Missing VideoList produces no rows. The timepertiktok source key does not establish seconds, a duration or watch completion.")
+__artifacts_v2__['tikTokVideoHistory']['last_update_date'] = '2026-10-07'
 _register('tikTokComments', 'TikTok Comments', 'message',
           ('Comment', ('Date', 'datetime')), _x_comments)
 _register('tikTokFavoriteHashtags', 'TikTok Favorite Hashtags', 'hash',
@@ -587,8 +604,11 @@ _register('tikTokFollowers', 'TikTok Followers', 'users',
           ('Username', ('Date', 'datetime')), _x_followers)
 _register('tikTokFollowing', 'TikTok Following', 'users',
           ('Username', ('Date', 'datetime')), _x_following)
-_register('tikTokHashtagsUsed', 'TikTok Hashtags Used', 'hash',
-          ('Hashtag Name', 'URL'), _x_hashtags_used)
+_register('tikTokHashtagsUsed', 'TikTok Hashtag List', 'hash',
+          ('Hashtag Name', 'URL'), _x_hashtags_used,
+          description="Parses HashtagName and HashtagLink from Hashtag > HashtagList under Your Activity, "
+                      "or Activity when Your Activity is absent. List membership does not establish hashtag use.")
+__artifacts_v2__['tikTokHashtagsUsed']['last_update_date'] = '2026-10-07'
 _register('tikTokLikedVideos', 'TikTok Liked Videos', 'heart',
           ('Link', ('Date', 'datetime')), _x_liked_videos)
 _register('tikTokLoginHistory', 'TikTok Login History', 'login',
@@ -606,27 +626,49 @@ _register('tikTokUploadedVideos', 'TikTok Uploaded Videos', 'video',
 _register('tikTokOffTikTokActivity', 'TikTok Off-TikTok Activity', 'external-link',
           (('Timestamp', 'datetime'), 'Source', 'Event'), _x_off_tiktok_activity)
 _register('tikTokDirectMessages', 'TikTok Direct Messages', 'message-2',
-          (('Date', 'datetime'), 'Chat With', 'Sender', 'Content'), _x_direct_messages)
+          (('Date', 'datetime'), 'Chat With', 'Sender', 'Content'), _x_direct_messages,
+          description="Date, From and Content of each message under Direct Message (or Direct Messages) > "
+                      "Direct Messages (or Chat History) > ChatHistory. Chat With is the ChatHistory key "
+                      "with the text 'Chat History with ' and any trailing colon removed.")
+__artifacts_v2__['tikTokDirectMessages']['last_update_date'] = '2026-10-09'
 _register('tikTokProfileAutoFill', 'TikTok Profile Auto Fill', 'forms',
           (('Phone Number', 'phonenumber'), 'Email', 'First Name', 'Last Name', 'Address', 'Zip Code',
-           'Unit', 'City', 'State', 'Country'), _x_profile_auto_fill)
+           'Unit', 'City', 'State', 'Country'), _x_profile_auto_fill,
+          description="One row from Profile > Autofill (or Auto Fill) when that mapping holds any key: "
+                      "PhoneNumber, Email, FirstName, LastName, Address, ZipCode, Unit, City, State and "
+                      "Country as stored. A key the export does not carry shows the parser's 'N/A'.")
+__artifacts_v2__['tikTokProfileAutoFill']['last_update_date'] = '2026-10-09'
 _register('tikTokProfileInformation', 'TikTok Profile Information', 'user',
           ('Username', 'Bio Description', 'Birth Date', 'Email Address', ('Telephone Number', 'phonenumber'),
            'Likes Received', 'Profile Photo URL', 'Profile Video URL'), _x_profile_information)
 _register('tikTokAiMoji', 'TikTok AI-Moji', 'mood-smile',
           (('Create Date', 'datetime'), 'AI Moji List (JSON)'), _x_ai_moji)
 _register('tikTokWatchLiveHistory', 'TikTok Watch Live History', 'device-tv',
-          ('Live ID', ('Watch Time', 'datetime'), 'Link'), _x_watch_live_history)
+          ('Live ID', ('Watch Time', 'datetime'), 'Link'), _x_watch_live_history,
+          description="One row per entry of Tiktok Live > Watch Live History > WatchLiveMap: the entry's key "
+                      "as Live ID, with its WatchTime and Link. An entry keyed '-1' that has no Link is "
+                      "skipped.")
+__artifacts_v2__['tikTokWatchLiveHistory']['last_update_date'] = '2026-10-09'
 _register('tikTokWatchLiveSettings', 'TikTok Watch Live Settings', 'settings',
           ('App Setting', 'Web Setting', ('App Mod Time', 'datetime'), ('Web Mod Time', 'datetime')), _x_watch_live_settings)
 _register('tikTokWatchLiveInteractions', 'TikTok Watch Live Interactions', 'messages',
-          ('Live ID', ('Live Watch Time', 'datetime'), 'Interaction Type', ('Interaction Time', 'datetime'), 'Content'), _x_watch_live_interactions)
+          ('Live ID', ('Live Watch Time', 'datetime'), 'Interaction Type', ('Interaction Time', 'datetime'), 'Content'), _x_watch_live_interactions,
+          description="One row per item of the Comments and Questions lists of each entry of Tiktok Live > "
+                      "Watch Live History > WatchLiveMap, with the entry's key as Live ID and its WatchTime. "
+                      "Interaction Type is the parser's label for the list the item came from. An entry "
+                      "keyed '-1' that has no Link is skipped, and an entry with neither list gives no row.")
+__artifacts_v2__['tikTokWatchLiveInteractions']['last_update_date'] = '2026-10-09'
 _register('tikTokAppSettings', 'TikTok App Settings', 'settings',
           ('Setting Name', 'Setting Value'), _x_app_settings)
 _register('tikTokGoLiveSettings', 'TikTok Go Live Settings', 'settings',
           ('Setting Name', 'Setting Value'), _x_go_live_settings)
 _register('tikTokShopCommunicationHistory', 'TikTok Shop Communication History', 'shopping-cart',
-          (('Send Time', 'datetime'), 'Shop Name', 'Direction', 'Content (Encrypted)'), _x_shop_communication_history)
+          (('Send Time', 'datetime'), 'Shop Name', 'Direction', 'Content (as stored)'), _x_shop_communication_history,
+          description="CommunicationHistories message entries from the TikTok Shop export. Six other "
+                      "Shop sections (payment information, customer support, order disputes, orders, "
+                      "product reviews, returns/refunds) are each represented as one raw-JSON row "
+                      "when present. For those rows Send Time holds the section label, Shop Name "
+                      "holds 'See JSON', and Direction holds 'N/A'; these cells are parser labels.")
 _register('tikTokShopProductBrowsingHistory', 'TikTok Shop Product Browsing History', 'shopping-cart',
           (('Browsing Date', 'datetime'), 'Shop Name', 'Product Name'), _x_shop_product_browsing)
 _register('tikTokShopSavedAddresses', 'TikTok Shop Saved Addresses', 'map-pin',
@@ -642,14 +684,31 @@ _register('tikTokSentGifts', 'TikTok Purchase History - Sent Gifts', 'gift',
 _register('tikTokBoughtGifts', 'TikTok Purchase History - Bought Gifts', 'gift',
           (('Date', 'datetime'), 'Price'), _x_bought_gifts)
 _register('tikTokAdsConfiguration', 'TikTok Ads Configuration', 'ad',
-          ('Setting Name', 'Setting Value'), _x_ads_configuration)
+          ('Setting Name', 'Setting Value'), _x_ads_configuration,
+          description="Reports AdInterestCategories from Ads and data > Ad Interests, and DataPartnerList and AdvertiserList "
+                      "from Ads and data > Ads Based On Data Received From Partners. One row holds each retained value. "
+                      "Missing, null, false, zero and empty values emit no row.")
+__artifacts_v2__['tikTokAdsConfiguration']['last_update_date'] = '2026-10-07'
 _register('tikTokGoLiveHistory', 'TikTok Go Live History', 'device-tv',
           (('Start Time', 'datetime'), ('End Time', 'datetime'), 'Duration', 'Room ID', 'Room Title', 'Cover URI',
            'Replay URL', 'Total Earning', 'Total Likes', 'Total Views', 'Total Gifters', 'Quality Setting', 'Muted List'), _x_go_live_history)
 _register('tikTokMostRecentLocation', 'TikTok Most Recent Location Data', 'map-pin',
-          (('Date', 'datetime'), 'GPS Data', 'Last Region'), _x_most_recent_location)
+          (('Date', 'datetime'), 'GPS Data', 'Last Region'), _x_most_recent_location,
+          description="One row from Most Recent Location Data > LocationData under Your Activity (or Activity "
+                      "when Your Activity is absent), when that mapping holds any key: Date, GpsData and "
+                      "LastRegion as stored. A missing GpsData or LastRegion shows the parser's 'N/A'. "
+                      "What the Date marks is not established.")
+__artifacts_v2__['tikTokMostRecentLocation']['last_update_date'] = '2026-10-09'
 _register('tikTokActivitySummary', 'TikTok Your Activity Summary', 'chart-bar',
-          ('Videos Commented On', 'Videos Shared', 'Videos Watched to End'), _x_activity_summary)
+          ('Videos Commented On', 'Videos Shared', 'Videos Watched to End'), _x_activity_summary,
+          description='Selects top-level Your Activity when present; otherwise Activity, then reads the nested Your Activity > '
+                      'Activity Summary > ActivitySummaryMap. A truthy summary mapping produces one row from '
+                      'videosCommentedOnSinceAccountRegistration, videosSharedSinceAccountRegistration and '
+                      "videosWatchedToTheEndSinceAccountRegistration. A missing field is shown as the parser's 0 default; "
+                      'present values, including null, false, empty values, lists and dictionaries, are retained. '
+                      'A missing or falsey summary produces no row. These source-key names do not establish count semantics, '
+                      'account coverage or a time span.')
+__artifacts_v2__['tikTokActivitySummary']['last_update_date'] = '2026-10-07'
 _register('tikTokLocationReviews', 'TikTok Location Reviews', 'map-pin',
           ('Place Name', ('Date', 'datetime'), 'Rating', 'Status', 'Likes', 'Review Text'), _x_location_reviews)
 _register('tikTokRecentlyDeletedPosts', 'TikTok Recently Deleted Posts', 'trash',

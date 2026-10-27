@@ -1,0 +1,78 @@
+{
+  "metadata": {
+    "module_name": "coinbaseComplianceReport",
+    "artifact_name": "Coinbase Compliance Report - Bank Accounts",
+    "function_name": "coinbaseCRBankAccounts",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 11,
+    "number_of_rows": 3,
+    "total_data_size_bytes": 460,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/coinbaseComplianceReport/testdata.coinbaseComplianceReport.coinbaseCRBankAccounts.caseSYNTH001.zip",
+    "start_time": "2026-09-23T20:05:51.821877+00:00",
+    "end_time": "2026-09-23T20:05:51.830771+00:00",
+    "run_time_seconds": 0.0009961128234863281,
+    "last_commit": {
+      "hash": "Uncommitted",
+      "author_name": "N/A",
+      "author_email": "N/A",
+      "date": "2026-09-23T16:05:51.827238",
+      "message": "File not yet committed to git"
+    }
+  },
+  "headers": [
+    "User ID",
+    "CUSTOMER NAME",
+    "BANK NAME",
+    "ACCOUNT NUMBER",
+    "ROUTING NUMBER",
+    "ACCOUNT TYPE",
+    "VERIFIED",
+    "VERIFICATION METHOD",
+    "Other Columns (as produced)",
+    "CSV Record",
+    "Source File"
+  ],
+  "data": [
+    [
+      "SYNTHUSER000000000000000A",
+      "ALEX SAMPLE",
+      "Example Bank\nBranch 2",
+      "000000000001",
+      "000000001",
+      "checking",
+      "true",
+      "micro_deposits",
+      "",
+      46,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "ALEX SAMPLE",
+      "Example Bank\nBranch 2",
+      "000000000001",
+      "000000001",
+      "checking",
+      "true",
+      "micro_deposits",
+      "",
+      46,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "BLAIR EXAMPLE",
+      "Example Bank\nBranch 2",
+      "000000000001",
+      "000000001",
+      "checking",
+      "true",
+      "micro_deposits",
+      "",
+      46,
+      "0000bbbb/compliance_report.csv"
+    ]
+  ]
+}

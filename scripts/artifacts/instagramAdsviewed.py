@@ -1,7 +1,7 @@
 __artifacts_v2__ = {
     "instagramAdsviewed": {  # must match the function name exactly
         "name": "Instagram Archive - Ads Viewed",
-        "description": "Parses ads viewed from an Instagram data archive (ads_viewed.json)",
+        "description": "Parses the provider's ads viewed list (impressions_history_ads_seen) from an Instagram data archive (ads_viewed.json); the label is the provider's",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-08-27",
         "last_update_date": "2026-06-26",

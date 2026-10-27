@@ -1,0 +1,242 @@
+{
+  "metadata": {
+    "module_name": "robinhoodReturns",
+    "artifact_name": "Robinhood - Account Master",
+    "function_name": "robinhoodAccountMaster",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 7,
+    "number_of_rows": 23,
+    "total_data_size_bytes": 4166,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/robinhoodReturns/testdata.robinhoodReturns.robinhoodAccountMaster.caseSYNTH001.zip",
+    "start_time": "2026-09-23T20:16:41.208960+00:00",
+    "end_time": "2026-09-23T20:16:41.256752+00:00",
+    "run_time_seconds": 0.04177522659301758,
+    "last_commit": {
+      "hash": "Uncommitted",
+      "author_name": "N/A",
+      "author_email": "N/A",
+      "date": "2026-09-23T16:16:41.212831",
+      "message": "File not yet committed to git"
+    }
+  },
+  "headers": [
+    "Account",
+    "Section",
+    "Field",
+    "Value",
+    "Location",
+    "Source Text",
+    "Source File"
+  ],
+  "data": [
+    [
+      "SYNTH00009",
+      "Account Information",
+      "Account Number",
+      "SYNTH00009",
+      "page 1, y 115 to page 1, y 133",
+      "Account Number\nSYNTH00009",
+      "Final Production-SYNTH/Account Master address.pdf"
+    ],
+    [
+      "SYNTH00009",
+      "Residential Address",
+      "Line1",
+      "100 Example Street",
+      "page 1, y 185 to page 1, y 203",
+      "Line1\n100 Example Street",
+      "Final Production-SYNTH/Account Master address.pdf"
+    ],
+    [
+      "SYNTH00009",
+      "Residential Address",
+      "Line2",
+      "Apt 7",
+      "page 1, y 225 to page 1, y 243",
+      "Line2\nApt 7",
+      "Final Production-SYNTH/Account Master address.pdf"
+    ],
+    [
+      "SYNTH00009",
+      "Residential Address",
+      "City",
+      "Testville",
+      "page 1, y 265 to page 1, y 283",
+      "City\nTestville",
+      "Final Production-SYNTH/Account Master address.pdf"
+    ],
+    [
+      "SYNTH00009",
+      "Residential Address",
+      "State",
+      "KY",
+      "page 1, y 305 to page 1, y 323",
+      "State\nKY",
+      "Final Production-SYNTH/Account Master address.pdf"
+    ],
+    [
+      "SYNTH00009",
+      "Residential Address",
+      "Postal Code",
+      "40324",
+      "page 1, y 345 to page 1, y 363",
+      "Postal Code\n40324",
+      "Final Production-SYNTH/Account Master address.pdf"
+    ],
+    [
+      "SYNTH00009",
+      "Residential Address",
+      "Country",
+      "US",
+      "page 1, y 385 to page 1, y 403",
+      "Country\nUS",
+      "Final Production-SYNTH/Account Master address.pdf"
+    ],
+    [
+      "",
+      "Identification Information",
+      "First Name",
+      "Test",
+      "page 1, y 115 to page 1, y 133",
+      "First Name Mystery Label Email\nTest mystery value tester@example.test",
+      "Final Production-SYNTH/Account Master edit logs.pdf"
+    ],
+    [
+      "",
+      "Identification Information",
+      "(unrecognized label) Mystery Label",
+      "mystery value",
+      "page 1, y 115 to page 1, y 133",
+      "First Name Mystery Label Email\nTest mystery value tester@example.test",
+      "Final Production-SYNTH/Account Master edit logs.pdf"
+    ],
+    [
+      "",
+      "Identification Information",
+      "Email",
+      "tester@example.test",
+      "page 1, y 115 to page 1, y 133",
+      "First Name Mystery Label Email\nTest mystery value tester@example.test",
+      "Final Production-SYNTH/Account Master edit logs.pdf"
+    ],
+    [
+      "",
+      "Employment",
+      "Status",
+      "Employed",
+      "page 1, y 375 to page 1, y 393",
+      "Status Employer\nEmployed After Edit Employer",
+      "Final Production-SYNTH/Account Master edit logs.pdf"
+    ],
+    [
+      "",
+      "Employment",
+      "Employer",
+      "After Edit Employer",
+      "page 1, y 375 to page 1, y 393",
+      "Status Employer\nEmployed After Edit Employer",
+      "Final Production-SYNTH/Account Master edit logs.pdf"
+    ],
+    [
+      "SYNTH00001",
+      "Identification Information",
+      "First Name",
+      "Test",
+      "page 1, y 205 to page 1, y 223",
+      "First Name Last Name Email\nTest Person tester@example.test",
+      "Final Production-SYNTH/Account Master; AC Document.pdf"
+    ],
+    [
+      "SYNTH00001",
+      "Identification Information",
+      "Last Name",
+      "Person",
+      "page 1, y 205 to page 1, y 223",
+      "First Name Last Name Email\nTest Person tester@example.test",
+      "Final Production-SYNTH/Account Master; AC Document.pdf"
+    ],
+    [
+      "SYNTH00001",
+      "Identification Information",
+      "Email",
+      "tester@example.test",
+      "page 1, y 205 to page 1, y 223",
+      "First Name Last Name Email\nTest Person tester@example.test",
+      "Final Production-SYNTH/Account Master; AC Document.pdf"
+    ],
+    [
+      "SYNTH00001",
+      "Account Information",
+      "Account Number",
+      "SYNTH00001",
+      "page 1, y 378 to page 1, y 396",
+      "Account Number UUID Account Status\nSYNTH00001 00000000-1111-2222-3333-4444 Open",
+      "Final Production-SYNTH/Account Master; AC Document.pdf"
+    ],
+    [
+      "SYNTH00001",
+      "Account Information",
+      "UUID",
+      "00000000-1111-2222-3333-444455556666",
+      "page 1, y 378 to page 1, y 396; full value from print footer URL",
+      "Account Number UUID Account Status\nSYNTH00001 00000000-1111-2222-3333-4444 Open\nhttps://oak.robinhood.com/accounts/master/v3/00000000-1111-2222-3333-444455556666?x=1",
+      "Final Production-SYNTH/Account Master; AC Document.pdf"
+    ],
+    [
+      "SYNTH00001",
+      "Account Information",
+      "Account Status",
+      "Open",
+      "page 1, y 378 to page 1, y 396",
+      "Account Number UUID Account Status\nSYNTH00001 00000000-1111-2222-3333-4444 Open",
+      "Final Production-SYNTH/Account Master; AC Document.pdf"
+    ],
+    [
+      "SYNTH00001",
+      "Novel Section",
+      "(unrecognized label) Brand New Label",
+      "surprising value",
+      "page 1, y 455 to page 1, y 473",
+      "Brand New Label\nsurprising value",
+      "Final Production-SYNTH/Account Master; AC Document.pdf"
+    ],
+    [
+      "SYNTH00001",
+      "Employment",
+      "Status",
+      "Employed",
+      "page 1, y 752 to page 2, y 30",
+      "Status Occupation Employer\nEmployed tester Example Employer",
+      "Final Production-SYNTH/Account Master; AC Document.pdf"
+    ],
+    [
+      "SYNTH00001",
+      "Employment",
+      "Occupation",
+      "tester",
+      "page 1, y 752 to page 2, y 30",
+      "Status Occupation Employer\nEmployed tester Example Employer",
+      "Final Production-SYNTH/Account Master; AC Document.pdf"
+    ],
+    [
+      "SYNTH00001",
+      "Employment",
+      "Employer",
+      "Example Employer",
+      "page 1, y 752 to page 2, y 30",
+      "Status Occupation Employer\nEmployed tester Example Employer",
+      "Final Production-SYNTH/Account Master; AC Document.pdf"
+    ],
+    [
+      "SYNTH00001",
+      "Cash Management Agreements / CASH MANAGEMENT CUSTOMER AGREEMENT",
+      "(unlabelled text)",
+      "ACCEPTED No",
+      "page 2, y 112",
+      "ACCEPTED No",
+      "Final Production-SYNTH/Account Master; AC Document.pdf"
+    ]
+  ]
+}

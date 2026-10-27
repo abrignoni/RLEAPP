@@ -7,10 +7,13 @@ __artifacts_v2__ = {
         "last_update_date": "2026-06-28",
         "requirements": "none",
         "category": "Google Returns",
-        "notes": "Parses the same mbox as the Takeout 'Google Takeout - Mail (MBOX)' artifact, plus "
-                 "the warrant-return *.Mail.MessageContent_* folder. Attachments are embedded "
-                 "in-memory via check_in_embedded_media (the original wrote each attachment to disk "
-                 "in the report folder).",
+        "notes": "Parses the same mbox as the Takeout 'Google Takeout - Mail (MBOX)' artifact, "
+                 "plus the warrant-return *.Mail.MessageContent_* folder. Attachments are the "
+                 "parts carrying a Content-Disposition header. Body is the message's last "
+                 "text/plain part decoded as Latin-1, so text sent in another character set can "
+                 "show wrong characters; a message with no text/plain part shows 'Check source "
+                 "data.' and no other part is shown as its body. A Date header with no zone is "
+                 "read as UTC.",
         "paths": ('*/*.Mail.MessageContent_*/Mail/All mail Including Spam and Trash.mbox',
                   '*/Mail/All mail Including Spam and Trash.mbox'),
         "output_types": "standard",

@@ -7,7 +7,9 @@ __artifacts_v2__ = {
         "last_update_date": "2026-06-27",
         "requirements": "none",
         "category": "Instagram Archive",
-        "notes": "",
+        "notes": "The column headed Following holds the blocked account's value as stored in "
+                 "relationships_blocked_users. The heading does not mean the account is "
+                 "followed.",
         "paths": ('*/followers_and_following/blocked_accounts.json'),
         "output_types": "standard",
         "artifact_icon": "brand-instagram",

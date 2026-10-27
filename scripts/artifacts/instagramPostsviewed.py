@@ -1,7 +1,7 @@
 __artifacts_v2__ = {
     "instagramPostsviewed": {
         "name": "Instagram Archive - Posts Viewed",
-        "description": "Parses posts viewed from an Instagram data archive (posts_viewed.json)",
+        "description": "Parses the provider's posts viewed list (impressions_history_posts_seen) from an Instagram data archive (posts_viewed.json); the label is the provider's",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-08-27",
         "last_update_date": "2026-06-27",

@@ -1,0 +1,413 @@
+{
+  "metadata": {
+    "module_name": "coinbaseComplianceReport",
+    "artifact_name": "Coinbase Compliance Report - Subscriber Details",
+    "function_name": "coinbaseCRSubscriber",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 7,
+    "number_of_rows": 42,
+    "total_data_size_bytes": 4356,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/coinbaseComplianceReport/testdata.coinbaseComplianceReport.coinbaseCRSubscriber.caseSYNTH001.zip",
+    "start_time": "2026-09-23T20:05:51.902813+00:00",
+    "end_time": "2026-09-23T20:05:51.912062+00:00",
+    "run_time_seconds": 0.0017316341400146484,
+    "last_commit": {
+      "hash": "Uncommitted",
+      "author_name": "N/A",
+      "author_email": "N/A",
+      "date": "2026-09-23T16:05:51.907020",
+      "message": "File not yet committed to git"
+    }
+  },
+  "headers": [
+    "User ID",
+    "Section",
+    "Field",
+    "Value",
+    "Further Cells (as produced)",
+    "CSV Record",
+    "Source File"
+  ],
+  "data": [
+    [
+      "SYNTHUSER000000000000000A",
+      "User Attributes",
+      "USER ID",
+      "SYNTHUSER000000000000000A",
+      "",
+      2,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "User Attributes",
+      "NAME",
+      "Alex Sample",
+      "",
+      3,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "User Attributes",
+      "EMAIL",
+      "alex@example.test",
+      "",
+      4,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "User Attributes",
+      "CREATED",
+      "January, 5 2021 04:28pm PST",
+      "",
+      5,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "User Attributes",
+      "NOTE",
+      "synthetic",
+      "stray third cell",
+      6,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Identity",
+      "FIRST NAME",
+      "Alex",
+      "",
+      10,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Identity",
+      "LAST NAME",
+      "Sample",
+      "",
+      11,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Identity",
+      "SSN",
+      "900-00-0001",
+      "",
+      12,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Identity",
+      "ADDRESS1",
+      "100 Synthetic Way",
+      "",
+      13,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Identity",
+      "CITY",
+      "Testville",
+      "",
+      14,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Identity",
+      "STATE",
+      "KY",
+      "",
+      15,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Identity",
+      "ZIP",
+      "40000",
+      "",
+      16,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Identity",
+      "BIRTHDATE M/D/Y",
+      "01/02/1990",
+      "",
+      17,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Personal Details",
+      "OCCUPATION",
+      "Tester",
+      "",
+      21,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "User Attributes",
+      "USER ID",
+      "SYNTHUSER000000000000000A",
+      "",
+      2,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "User Attributes",
+      "NAME",
+      "Alex Sample",
+      "",
+      3,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "User Attributes",
+      "EMAIL",
+      "alex@example.test",
+      "",
+      4,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "User Attributes",
+      "CREATED",
+      "January, 5 2021 04:28pm PST",
+      "",
+      5,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "User Attributes",
+      "NOTE",
+      "synthetic",
+      "stray third cell",
+      6,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Identity",
+      "FIRST NAME",
+      "Alex",
+      "",
+      10,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Identity",
+      "LAST NAME",
+      "Sample",
+      "",
+      11,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Identity",
+      "SSN",
+      "900-00-0001",
+      "",
+      12,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Identity",
+      "ADDRESS1",
+      "100 Synthetic Way",
+      "",
+      13,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Identity",
+      "CITY",
+      "Testville",
+      "",
+      14,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Identity",
+      "STATE",
+      "KY",
+      "",
+      15,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Identity",
+      "ZIP",
+      "40000",
+      "",
+      16,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Identity",
+      "BIRTHDATE M/D/Y",
+      "01/02/1990",
+      "",
+      17,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Personal Details",
+      "OCCUPATION",
+      "Tester",
+      "",
+      21,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "User Attributes",
+      "USER ID",
+      "SYNTHUSER000000000000000B",
+      "",
+      2,
+      "0000bbbb/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "User Attributes",
+      "NAME",
+      "Blair Example",
+      "",
+      3,
+      "0000bbbb/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "User Attributes",
+      "EMAIL",
+      "blair@example.test",
+      "",
+      4,
+      "0000bbbb/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "User Attributes",
+      "CREATED",
+      "January, 5 2021 04:28pm PST",
+      "",
+      5,
+      "0000bbbb/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "User Attributes",
+      "NOTE",
+      "synthetic",
+      "stray third cell",
+      6,
+      "0000bbbb/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "Identity",
+      "FIRST NAME",
+      "Blair",
+      "",
+      10,
+      "0000bbbb/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "Identity",
+      "LAST NAME",
+      "Example",
+      "",
+      11,
+      "0000bbbb/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "Identity",
+      "SSN",
+      "900-00-0001",
+      "",
+      12,
+      "0000bbbb/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "Identity",
+      "ADDRESS1",
+      "100 Synthetic Way",
+      "",
+      13,
+      "0000bbbb/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "Identity",
+      "CITY",
+      "Testville",
+      "",
+      14,
+      "0000bbbb/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "Identity",
+      "STATE",
+      "KY",
+      "",
+      15,
+      "0000bbbb/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "Identity",
+      "ZIP",
+      "40000",
+      "",
+      16,
+      "0000bbbb/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "Identity",
+      "BIRTHDATE M/D/Y",
+      "01/02/1990",
+      "",
+      17,
+      "0000bbbb/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "Personal Details",
+      "OCCUPATION",
+      "Tester",
+      "",
+      21,
+      "0000bbbb/compliance_report.csv"
+    ]
+  ]
+}

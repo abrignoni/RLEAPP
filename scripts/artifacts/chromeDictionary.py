@@ -1,10 +1,10 @@
 __artifacts_v2__ = {
     "chromeDictionary": {
         "name": "Google Chrome User Dictionary",
-        "description": "Words added by the user to the Google Chrome custom spelling "
-                       "dictionary, parsed from a Google Takeout archive "
-                       "(Chrome/Dictionary.csv). The Entry Order column preserves the "
-                       "order in which the words appear in the file.",
+        "description": "Words in the Google Chrome custom spelling dictionary, parsed "
+                       "from a Google Takeout archive (Chrome/Dictionary.csv). The "
+                       "Entry Order column preserves the order in which the words "
+                       "appear in the file.",
         "author": "@upintheairsheep2",
         "creation_date": "2023-08-02",
         "last_update_date": "2026-07-09",

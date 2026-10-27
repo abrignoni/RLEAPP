@@ -1,7 +1,7 @@
 __artifacts_v2__ = {
     "playStoreInstalls": {
         "name": "Google Play Store Installs",
-        "description": "List of your Google Play app installs.",
+        "description": "Google Play Store app install records from Takeout (Installs.json).",
         "author": "@KevinPagano3",
         "creation_date": "2021-08-22",
         "last_update_date": "2026-06-27",

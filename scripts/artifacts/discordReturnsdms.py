@@ -1,13 +1,20 @@
 __artifacts_v2__ = {
     "discordReturnsdms": {
         "name": "Discord - Direct Messages",
-        "description": "Direct messages from a Discord law enforcement return (messages/dms/*.csv).",
+        "description": "Direct messages from a Discord law enforcement return "
+                       "(messages/dms/*.csv). Columns are named by position; the file's own header "
+                       "row is not read.",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-12-04",
-        "last_update_date": "2026-06-28",
+        "last_update_date": "2026-10-09",
         "requirements": "none",
         "category": "Discord Returns",
-        "notes": "",
+        "notes": "Columns are assigned by position after the header row is skipped; the header "
+                 "names are not read. ID is taken from the second column and Channel ID from the "
+                 "first, the reverse of the Discord server and unknown-folder readers, which "
+                 "take ID from the first and Channel ID from the second. Which order a return "
+                 "uses was not checked: no test return is available, so one of the two orders "
+                 "may be wrong.",
         "paths": ('*/attachments/*.*', '*/messages/dms/*.csv'),
         "output_types": "standard",
         "artifact_icon": "message-circle",

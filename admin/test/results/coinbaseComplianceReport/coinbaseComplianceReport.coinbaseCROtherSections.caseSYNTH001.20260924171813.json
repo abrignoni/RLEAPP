@@ -1,0 +1,131 @@
+{
+  "metadata": {
+    "module_name": "coinbaseComplianceReport",
+    "artifact_name": "Coinbase Compliance Report - Other Sections",
+    "function_name": "coinbaseCROtherSections",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 5,
+    "number_of_rows": 14,
+    "total_data_size_bytes": 1635,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/coinbaseComplianceReport/testdata.coinbaseComplianceReport.coinbaseCROtherSections.caseSYNTH001.zip",
+    "start_time": "2026-09-24T17:18:13.193686+00:00",
+    "end_time": "2026-09-24T17:18:13.212140+00:00",
+    "run_time_seconds": 0.0007607936859130859,
+    "last_commit": {
+      "hash": "56605e78e12a11a169e08f9ed120e57c484f7ce8",
+      "author_name": "CyberMike81",
+      "author_email": "mikewlitt@pm.me",
+      "date": "2026-09-23T16:18:30-04:00",
+      "message": "Add coinbaseComplianceReport: Coinbase IdvComplianceReport returns"
+    }
+  },
+  "headers": [
+    "User ID",
+    "Section",
+    "Cells (as produced)",
+    "CSV Record",
+    "Source File"
+  ],
+  "data": [
+    [
+      "SYNTHUSER000000000000000A",
+      "Transactions (unmapped table block)",
+      "CUSTOM LABEL | CUSTOM VALUE",
+      92,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Transactions (unmapped table block)",
+      "alpha | beta",
+      93,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Mystery Section",
+      "KEY A | VALUE A",
+      118,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Mystery Section",
+      "KEY B | VALUE B | THIRD COL",
+      119,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Wires",
+      "CREATED | AMOUNT",
+      123,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Empty Thing",
+      "",
+      "",
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Transactions (unmapped table block)",
+      "CUSTOM LABEL | CUSTOM VALUE",
+      92,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Transactions (unmapped table block)",
+      "alpha | beta",
+      93,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Mystery Section",
+      "KEY A | VALUE A",
+      118,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Mystery Section",
+      "KEY B | VALUE B | THIRD COL",
+      119,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Wires",
+      "CREATED | AMOUNT",
+      123,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "Empty Thing",
+      "",
+      "",
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "Transactions (unmapped table block)",
+      "CUSTOM LABEL | CUSTOM VALUE",
+      92,
+      "0000bbbb/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "Transactions (unmapped table block)",
+      "alpha | beta",
+      93,
+      "0000bbbb/compliance_report.csv"
+    ]
+  ]
+}

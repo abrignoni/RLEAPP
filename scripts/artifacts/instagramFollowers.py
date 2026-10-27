@@ -8,7 +8,8 @@ __artifacts_v2__ = {
         "requirements": "none",
         "category": "Instagram Archive",
         "notes": "",
-        "paths": ('*/followers_and_following/followers.json'),
+        "paths": ('*/followers_and_following/followers.json',
+                  '*/followers_and_following/followers_*.json'),
         "output_types": "standard",  # or ["html", "tsv", "timeline", "lava"]
         "artifact_icon": "brand-instagram",
     }
@@ -29,13 +30,15 @@ def instagramFollowers(context):
 
         filename = os.path.basename(file_found)
 
-        if filename.startswith('followers.json'):
+        if filename.startswith('followers') and 'following' not in filename:
             source_paths.add(file_found)
 
             with open(file_found, "r", encoding="utf-8") as fp:
                 deserialized = json.load(fp)
         
-            for x in deserialized['relationships_followers']:
+            records = deserialized.get('relationships_followers', deserialized) \
+                if isinstance(deserialized, dict) else deserialized
+            for x in records:
                 href = x['string_list_data'][0].get('href', '')
                 value = x['string_list_data'][0].get('value', '')
                 timestamp = x['string_list_data'][0].get('timestamp', '')

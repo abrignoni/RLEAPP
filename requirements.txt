@@ -2,14 +2,15 @@ beautifulsoup4==4.8.2
 bencoding
 ijson
 mammoth
+# The zip seeker reads a CLBX zip's file times from its metadata.msgpack.
+msgpack==1.2.3
 openpyxl
-packaging==20.1
+packaging>=24.0
 pillow-heif
 PyCryptodome
 simplekml
 xmltodict
 xlrd==1.2.0
-PyMuPDF
 openpyxl
 pypdf
 ijson
@@ -17,5 +18,4 @@ pillow-heif
 mammoth
 bencoding
 pytz
-requests
 pdfminer.six

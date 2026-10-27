@@ -1,13 +1,16 @@
 __artifacts_v2__ = {
     "icloudReturnsphotolibrary": {
         "name": "iCloud Returns - Photo Library",
-        "description": "Photo library (Metadata.txt) from an iCloud law enforcement return, with media, EXIF and GPS.",
+        "description": "Photo library (Metadata.txt) from an iCloud law enforcement return, with media, and with EXIF and GPS for HEIC files.",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-09-16",
         "last_update_date": "2026-06-28",
         "requirements": "Pillow, pillow-heif",
         "category": "iCloud Returns",
-        "notes": "",
+        "notes": "Timestamp is the record's originalCreationDate. Latitude, Longitude and Exif "
+                 "are filled only for HEIC files found in the return; blank on other file types "
+                 "does not mean the file has none. A record whose file name does not decode as "
+                 "ASCII, or ends in txt, is not reported.",
         "paths": ('*/*/cloudphotolibrary/*',),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
         "html_columns": ["Exif"],

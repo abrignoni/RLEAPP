@@ -1,7 +1,7 @@
 __artifacts_v2__ = {
     "instagramNointerest": {
         "name": "Instagram Archive - Accounts No Interest",
-        "description": "Parses accounts marked as not interested from an Instagram data archive",
+        "description": "Parses the provider's list of accounts under impressions_history_recs_hidden_authors from an Instagram data archive (accounts_you're_not_interested_in.json); the file name is the provider's label",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-08-27",
         "last_update_date": "2026-06-27",

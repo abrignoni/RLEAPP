@@ -8,8 +8,12 @@ __artifacts_v2__ = {
         "last_update_date": "2026-06-28",
         "requirements": "none",
         "category": "Apple Notes",
-        "notes": "Created/Modified are CloudKit millisecond timestamps normalized to UTC (the "
-                 "original rendered them in local/Pacific time).",
+        "notes": "Timestamp Created and Timestamp Modified are the record's created and modified "
+                 "timestamp values, read as Unix epoch values whose unit is taken from the size "
+                 "of the number, and shown in UTC to the second. Attachments holds every matched "
+                 "file whose path contains the Record Name, the note body file included. Note is "
+                 "the text of the last such file whose path does not contain 'content'; a blank "
+                 "Note does not establish the note had no text.",
         "paths": ('*/Notes/Metadata.txt', '*/Notes/*/**'),
         "output_types": "standard",
         "html_columns": ["Note"],
@@ -27,12 +31,12 @@ from scripts.html_safe import safe_source
 @artifact_processor
 def iNotes(context):
     data_list = []
-    source_path = ''
+    source_paths = []
     files = [str(f) for f in context.get_files_found()]
     for file_found in files:
         if not file_found.endswith('Metadata.txt'):
             continue
-        source_path = file_found
+        source_paths.append(file_found)
         with open(file_found, encoding='utf-8') as f:
             data = json.load(f)
         for record in data:
@@ -56,7 +60,9 @@ def iNotes(context):
                 if ref:
                     refs.append(ref)
                 notapath = match
-                if 'content' not in match:
+                # Test the evidence path, not the staged path, so the examiner's own
+                # output folder name cannot decide which file holds the note body.
+                if 'content' not in context.get_relative_path(match):
                     with open(match, encoding='utf-8', errors='backslashreplace') as g:
                         note_text = safe_source(g.read())
 
@@ -67,4 +73,4 @@ def iNotes(context):
 
     data_headers = (('Timestamp Created', 'datetime'), ('Timestamp Modified', 'datetime'), 'Note',
                     'Record Name', ('Attachments', 'media'), 'Deleted?', 'Participants', 'Source')
-    return data_headers, data_list, context.get_relative_path(source_path)
+    return data_headers, data_list, '\n'.join(source_paths)

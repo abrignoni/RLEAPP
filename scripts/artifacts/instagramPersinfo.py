@@ -1,7 +1,7 @@
 __artifacts_v2__ = {
     "instagramPersinfo": {
         "name": "Instagram Archive - Personal Info",
-        "description": "Parses Instagram personal information about the local user account",
+        "description": "Parses the Profile Photo, Email, Phone Number, Gender, Date of birth and Website entries of personal_information.json in an Instagram data archive; other keys in the file are not reported",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-08-30",
         "last_update_date": "2025-07-06",
@@ -74,5 +74,5 @@ def instagramPersinfo(context):
                                                    
     data_headers = (('Timestamp', 'datetime'), 'Key', 'Value', ('URI','media'), 'HREF')
     #('HREF/URI','media'))
-    source_files = "\n\n".join(context.get_relative_path(s) for s in sources)
+    source_files = "\n".join(context.get_relative_path(s) for s in sources)
     return data_headers, data_list, source_files

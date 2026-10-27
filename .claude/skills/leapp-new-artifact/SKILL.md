@@ -73,6 +73,16 @@ Get these right, because they are the ones most often wrong:
   after, then identifiers, then descriptive fields.
 - **Never write to evidence.** Use `open_sqlite_db_readonly()`, and
   `attach_sqlite_db_readonly()` if you attach. See the `leapp-evidence-readonly` rule.
+- **Prefer a reader to a scan.** When a library that reads the store's format is already
+  available, vendored in the core under `scripts/` (the `ccl` readers, `ccl_leveldb`,
+  `blackboxprotobuf`) or used by another module, parse the store with it. Do not run a
+  regex or byte scan over the raw file. A reader knows the framing a scan cannot see: a
+  LevelDB log record split across 32 KiB blocks, a key whose latest record is a deletion,
+  a value that only means something next to its key. Grep `scripts/` and the other cores'
+  artifacts for the format before writing a parser. Write your own only when no reader
+  exists, and then from the format's published source. ALEAPP #1758 read a WebView Local
+  Storage value with a regex over the `.log` bytes while `scripts/ccl/ccl_leveldb.py` sat
+  vendored in the same repo.
 
 If the app has attachments, surface the media itself rather than its filename. See the
 `lava-media` rule. Link media by something the extraction **records** — a content hash, a
@@ -217,11 +227,16 @@ Pass `--compare MULTI_REPORT_DIR` to add the multi-container arithmetic above as
 than a manual diff.
 
 It is not a gate. A finding is a prompt, and the answer is usually one of two things: fix the
-column, or, when the blank or the constant is a real result, **name that column in the notes**.
-A column the notes name is not reported, so the documented way to keep a uniform column, saying
-it was uniform and why it still earns its place, is exactly what clears the finding. An empty
-column on a messages or location artifact is frequently a forensic negative worth stating (no
-group chats, no disappearing timers, coarse location denied), not a column to delete.
+column, or, when the blank or the constant is a real result, **write that finding into the
+notes**. What clears it is a sentence naming the column and saying what the checker says, so
+"ChargeLimit held 100 on all 247 rows" clears it and "ChargeLimit is an integer code reported
+as stored" does not. The key is the finding, not the column: naming a column for an unrelated
+reason does not silence a defect, and the name has to appear as a word, so "timestamp" and
+"timezone" do not stand in for a column named TIME. A one-word header has to be written as the
+header spells it, because most one-word headers are ordinary words: "Name held an empty string"
+clears an empty Name column, "a name not applied" does not. An empty column on a messages or location
+artifact is frequently a forensic negative worth stating (no group chats, no disappearing
+timers, coarse location denied), not a column to delete.
 
 ## 6. Before opening the PR
 

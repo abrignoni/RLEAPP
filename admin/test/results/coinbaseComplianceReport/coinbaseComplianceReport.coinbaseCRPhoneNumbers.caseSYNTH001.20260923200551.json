@@ -1,0 +1,62 @@
+{
+  "metadata": {
+    "module_name": "coinbaseComplianceReport",
+    "artifact_name": "Coinbase Compliance Report - Phone Numbers",
+    "function_name": "coinbaseCRPhoneNumbers",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 7,
+    "number_of_rows": 3,
+    "total_data_size_bytes": 269,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/coinbaseComplianceReport/testdata.coinbaseComplianceReport.coinbaseCRPhoneNumbers.caseSYNTH001.zip",
+    "start_time": "2026-09-23T20:05:51.813680+00:00",
+    "end_time": "2026-09-23T20:05:51.821296+00:00",
+    "run_time_seconds": 0.000823974609375,
+    "last_commit": {
+      "hash": "Uncommitted",
+      "author_name": "N/A",
+      "author_email": "N/A",
+      "date": "2026-09-23T16:05:51.817976",
+      "message": "File not yet committed to git"
+    }
+  },
+  "headers": [
+    "User ID",
+    "NUMBER",
+    "COUNTRY",
+    "VERIFIED",
+    "Other Columns (as produced)",
+    "CSV Record",
+    "Source File"
+  ],
+  "data": [
+    [
+      "SYNTHUSER000000000000000A",
+      "5550100001",
+      "US",
+      "true",
+      "",
+      36,
+      "0000aaaa/Coinbase-SYNTHUSER-IdvComplianceReport-2025-01-01/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000A",
+      "5550100001",
+      "US",
+      "true",
+      "",
+      36,
+      "0000aaaa/compliance_report.csv"
+    ],
+    [
+      "SYNTHUSER000000000000000B",
+      "5550100001",
+      "US",
+      "true",
+      "",
+      36,
+      "0000bbbb/compliance_report.csv"
+    ]
+  ]
+}
