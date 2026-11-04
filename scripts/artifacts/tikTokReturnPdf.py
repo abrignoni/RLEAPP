@@ -6,7 +6,7 @@ __artifacts_v2__ = {
                        "no-data notice printed in it, and which artifact parses it.",
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
-        "last_update_date": "2026-09-28",
+        "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Lists the PDFs under App, Content and Profile whose first page ends with the "
@@ -16,7 +16,7 @@ __artifacts_v2__ = {
                  "when a section says it holds no data for the requested range; a blank notice does "
                  "not mean the section had records. PDF Created is the CreationDate in each PDF's "
                  "document metadata, converted to UTC with the offset the value carries; a value "
-                 "with no offset is stored as UTC. In the tested return all 20 fell within the "
+                 "with no offset is stored as UTC. In the tested return they all fell within the "
                  "same minute.",
         "paths": ('*/App/*.pdf', '*/Content/*.pdf', '*/Profile/*.pdf'),
         "output_types": "standard",
@@ -29,12 +29,15 @@ __artifacts_v2__ = {
         "name": "TikTok PDF Return - Subscriber Info",
         "description": "Basic subscriber information (Profile/BSI.pdf) and location information "
                        "(App/LocationInfo.pdf) from a TikTok law enforcement return, one row "
-                       "per field. In LocationInfo.pdf a field is any line holding a colon, split "
-                       "at the first colon, and a line with no colon is not reported; a no-data "
-                       "notice is added as a 'Provider Notice' row.",
+                       "per field. In LocationInfo.pdf a field starts at a line that begins with a "
+                       "capitalised name and a colon, followed by a space or the line end, at the "
+                       "field-name margin; any other line "
+                       "continues the previous field's value, and a line before the first field is "
+                       "reported under '(unlabelled)'. A no-data notice is added as a 'Provider "
+                       "Notice' row.",
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
-        "last_update_date": "2026-09-28",
+        "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "In the tested return BSI is a two-column table; fields are paired by row "
@@ -56,12 +59,12 @@ __artifacts_v2__ = {
                        "enforcement return.",
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
-        "last_update_date": "2026-09-28",
+        "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Action is 'logout' when the record prints a 'User logout time' field and 'login' "
-                 "otherwise. Country is the country the return prints beside each IP. Country was "
-                 "uniform across the tested return, and IP was uniform on its 10 rows.",
+                 "otherwise. Country is the country the return prints beside each IP. Country and "
+                 "IP were each uniform in the tested return.",
         "paths": ('*/App/LoginLogoutHistory.pdf',),
         "output_types": "standard",
         "artifact_icon": "log-in",
@@ -75,7 +78,7 @@ __artifacts_v2__ = {
                        "TikTok law enforcement return.",
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
-        "last_update_date": "2026-09-28",
+        "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Multi-part sections are read in part order and combined. Country is the "
@@ -94,7 +97,7 @@ __artifacts_v2__ = {
                        "enforcement return.",
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
-        "last_update_date": "2026-09-28",
+        "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Event is the provider's event name as printed (observed in the tested return: "
@@ -117,13 +120,13 @@ __artifacts_v2__ = {
                        "law enforcement return.",
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
-        "last_update_date": "2026-09-28",
+        "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Country is the country the return prints beside each IP. Country was uniform "
-                 "across the tested return. Video ID is not limited to Videos: of 331 IDs "
-                 "in the tested return, 318 were Stories post IDs, 38 Photo post IDs and 4 "
-                 "Videos IDs (these overlap), and 5 appeared in no other section.",
+                 "across the tested return. Video ID is not limited to Content/Videos: in the "
+                 "tested return it also carried Stories and Photo post IDs, and some IDs "
+                 "appeared in no other section.",
         "paths": ('*/Content/VideoIP.pdf',),
         "output_types": "standard",
         "artifact_icon": "globe",
@@ -137,15 +140,15 @@ __artifacts_v2__ = {
                        "return, with the video file from Content/Videos where one was provided.",
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
-        "last_update_date": "2026-09-28",
+        "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Media is linked by the video ID, which is the name, without extension, of each "
                  "file in Content/Videos (or of the folder a file sits in). Video Link is the "
                  "hyperlink behind the printed word 'URL'; blank where the PDF carries the word "
-                 "with no hyperlink. Video Type was 'deleted' on all 4 rows of the tested return. "
-                 "Glyphs drawn from a font that carries no Unicode mapping cannot be decoded; each "
-                 "is shown as U+FFFD (2 captions in the tested return).",
+                 "with no hyperlink. Video Type was uniform in the tested return. Glyphs drawn "
+                 "from a font that carries no Unicode mapping cannot be decoded; each is shown as "
+                 "U+FFFD.",
         "paths": ('*/Content/VideoMetadata.pdf', '*/Content/Videos/*'),
         "output_types": "standard",
         "artifact_icon": "video",
@@ -159,11 +162,11 @@ __artifacts_v2__ = {
                        "enforcement return, with the files from Content/Stories/<Post ID>.",
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
-        "last_update_date": "2026-09-28",
+        "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Media is linked by the post ID, which is the folder name in Content/Stories; "
-                 "in the tested return 300 of 318 rows had a folder. Caption was blank on every "
+                 "in the tested return some rows had no folder. Caption was blank on every "
                  "row of the tested return and is kept because the section prints the field. "
                  "Media folders with no metadata row are listed in 'TikTok PDF Return - Media "
                  "Files'.",
@@ -181,7 +184,7 @@ __artifacts_v2__ = {
                        "Content/Photo Post/<Photo Post ID>.",
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
-        "last_update_date": "2026-09-28",
+        "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Media is linked by the photo post ID, which is the folder name in "
@@ -205,7 +208,7 @@ __artifacts_v2__ = {
                        "names.",
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
-        "last_update_date": "2026-09-28",
+        "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Comment image media is linked by the file name the return prints for it "
@@ -213,11 +216,10 @@ __artifacts_v2__ = {
                  "came from (Content/Video Comments or Content/Photo Comments). Source File "
                  "is kept beside Post Type because Post Type does not separate two returns "
                  "parsed in one input. 'ReplyToComment (as stored)' is kept verbatim: in the "
-                 "tested return it equalled the Comment text on all 86 of 229 rows that "
-                 "carried it, so it is not labelled as the parent comment. Post URL is the hyperlink behind the "
-                 "printed word 'URL'. Glyphs drawn from a font that carries no Unicode mapping "
-                 "cannot be decoded; each is shown as U+FFFD (56 comment cells in the tested "
-                 "return).",
+                 "tested return it equalled the Comment text on every row that carried it, so "
+                 "it is not labelled as the parent comment. Post URL is the hyperlink behind "
+                 "the printed word 'URL'. Glyphs drawn from a font that carries no Unicode "
+                 "mapping cannot be decoded; each is shown as U+FFFD.",
         "paths": ('*/Content/Video Comments/*', '*/Content/Photo Comments/*'),
         "output_types": "standard",
         "artifact_icon": "message-square",
@@ -231,7 +233,7 @@ __artifacts_v2__ = {
                        "enforcement return.",
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
-        "last_update_date": "2026-09-28",
+        "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Room ID, Host User ID and Device IP are split out of the printed lines. The "
@@ -253,7 +255,7 @@ __artifacts_v2__ = {
                        "taken from each path and whether a metadata section lists that ID.",
         "author": "@OneSixForensics, Claude",
         "creation_date": "2026-09-28",
-        "last_update_date": "2026-09-28",
+        "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
         "category": "TikTok Returns",
         "notes": "Covers files the metadata sections do not reference, which the per-section "
@@ -263,9 +265,9 @@ __artifacts_v2__ = {
                  "no rows. 'ID In Metadata PDF' was 'Yes' on every row of the "
                  "tested return (no unreferenced files); a 'No' marks a file no parsed section "
                  "lists. The tested return was delivered in zip parts, with the metadata and some "
-                 "media in part 1 and the rest in parts 2 and 3. When a return comes in several "
-                 "parts, extract every part into one folder and parse that, or media in the "
-                 "other parts is neither linked nor listed.",
+                 "media in the first part and the rest of the media in later parts. When a return "
+                 "comes in several parts, extract every part into one folder and parse that, or "
+                 "media in the other parts is neither linked nor listed.",
         "paths": ('*/Content/VideoMetadata.pdf', '*/Content/Videos/*',
                   '*/Content/StoriesMetadata.pdf', '*/Content/Stories/*',
                   '*/Content/PhotoMetadata.pdf', '*/Content/Photo Post/*',
@@ -303,9 +305,10 @@ from scripts.ilapfuncs import artifact_processor, check_in_media, logfunc
 #   * every page ends with a footer (page number, provider name, 'Confidential &
 #     Proprietary') that can fall in the middle of a record;
 #   * a line that straddles a page break is printed whole at the foot of one page and
-#     again at the head of the next, sometimes clipped into fragments. The repeat is
-#     dropped when it equals the previous page's last line, or when its characters
-#     are a subsequence of it;
+#     again at the head of the next, above where the next page's text normally starts.
+#     The repeat is dropped only when it equals the previous page's last line and sits
+#     above the first-line position of the document's other pages; each drop is logged
+#     by page and field name;
 #   * a record occasionally starts on the same line as the end of the previous one
 #     ('...text Comment ID: 123'), so the record-start label is also split mid-line
 #     when a digit follows it.
@@ -354,7 +357,8 @@ class _Line:
 
 
 class _Pdf:
-    __slots__ = ('title', 'lines', 'pages', 'notice', 'is_tiktok', 'dropped', 'created')
+    __slots__ = ('title', 'lines', 'pages', 'notice', 'is_tiktok', 'dropped', 'kept_repeats',
+                 'created')
 
     def __init__(self):
         self.title = ''
@@ -362,17 +366,13 @@ class _Pdf:
         self.pages = 0
         self.notice = ''
         self.is_tiktok = False
-        self.dropped = 0
+        self.dropped = []       # (page number, field name) of each page-break repeat dropped
+        self.kept_repeats = []  # page numbers whose repeat-like first line was kept
         self.created = ''
 
 
 def _nospace(text):
     return re.sub(r'\s+', '', text)
-
-
-def _is_subsequence(needle, haystack):
-    it = iter(haystack)
-    return all(ch in it for ch in needle)
 
 
 def _text_lines(layout):
@@ -440,28 +440,40 @@ def _strip_footer(lines):
     return is_tiktok
 
 
-def _drop_page_break_repeat(lines, prev_last, is_label_start):
-    '''Returns how many leading lines repeat the previous page's last line.'''
-    if lines and _nospace(lines[0].text) == _nospace(prev_last):
-        return 1
-    k = 0
-    while k < len(lines) and not is_label_start(lines[k].text):
-        k += 1
-    if 0 < k < len(lines):
-        fragment = ''.join(_nospace(line.text) for line in lines[:k])
-        if _is_subsequence(fragment, _nospace(prev_last)):
-            return k
-    return 0
+def _drop_page_break_repeats(pages, pdf, label_re=None):
+    '''Drops the copy of a line that a page break printed twice.
+
+    A page's first line is dropped only when it equals the previous page's last line
+    and sits above the first-line position of the document's other pages, where the
+    repeat is printed. Without both, it is kept: a duplicated line is visible in the
+    output, a dropped one is not. label_re matches the section's own field names; a
+    dropped line is logged by that name only, so text from a user-written line is never
+    logged.'''
+    repeats = {n for n in range(1, len(pages))
+               if pages[n] and pages[n - 1]
+               and _nospace(pages[n][0].text) == _nospace(pages[n - 1][-1].text)}
+    if not repeats:
+        return
+    others = [pages[n][0].rect.y0 for n in range(1, len(pages)) if pages[n] and n not in repeats]
+    normal_top = min(others) if others else None
+    for n in sorted(repeats):
+        line = pages[n][0]
+        if normal_top is not None and line.rect.y0 < normal_top - 1:
+            name = label_re.match(line.text) if label_re is not None else None
+            pdf.dropped.append((n + 1, name.group(1) if name else '(unlabelled line)'))
+            del pages[n][0]
+        else:
+            pdf.kept_repeats.append(n + 1)
 
 
-def _read_pdf(path, is_label_start=None, max_pages=None):
+def _read_pdf(path, label_re=None, max_pages=None):
     '''Reads a TikTok return PDF into one list of content lines across all pages.
 
-    is_label_start(text) says whether a line begins a field; it is used to find the
-    repeat of a line split over a page break. Pass None for sections whose lines are
-    not labelled (the BSI table).'''
+    label_re: the field-name pattern of a section printed as 'Label: value' lines, where
+    a line split by a page break is printed twice and the repeat is dropped. None for the
+    BSI table and single-page reads.'''
     pdf = _Pdf()
-    prev_last = None
+    pages = []
     with open(path, 'rb') as fh:
         doc = PDFDocument(PDFParser(fh))
         info = doc.info[0] if doc.info else {}
@@ -484,17 +496,14 @@ def _read_pdf(path, is_label_start=None, max_pages=None):
                     if not pdf.title:
                         pdf.title = lines[0].text
                     lines.pop(0)
-            elif prev_last is not None and is_label_start is not None:
-                drop = _drop_page_break_repeat(lines, prev_last, is_label_start)
-                if drop:
-                    pdf.dropped += drop
-                    del lines[:drop]
             for line in lines:
                 if _NO_DATA.match(line.text):
                     pdf.notice = line.text
-            pdf.lines.extend(lines)
-            if lines:
-                prev_last = lines[-1].text
+            pages.append(lines)
+    if label_re is not None:
+        _drop_page_break_repeats(pages, pdf, label_re)
+    for lines in pages:
+        pdf.lines.extend(lines)
     return pdf
 
 
@@ -515,9 +524,6 @@ class _Parser:
         self.mid = re.compile(rf'\s(?=(?:{start_alt}):\s?\d)')
         self.starts = set(starts)
         self.unknown = re.compile(r'^([A-Z][A-Za-z ]{0,40}):\s')
-
-    def is_label_start(self, text):
-        return bool(self.head.match(text))
 
     def parse(self, lines):
         '''Returns (records, unknown_labels). Each record maps label -> list of
@@ -623,15 +629,30 @@ def _parse_section(context, name_re, labels, starts):
     '''Yields (file, records) for each matching PDF, logging anything unusual.'''
     parser = _Parser(labels, starts)
     for file_found in _pdfs(context, name_re):
-        pdf = _read_pdf(file_found, parser.is_label_start)
+        pdf = _read_pdf(file_found, parser.head)
         records, unknown = parser.parse(pdf.lines)
         rel = context.get_relative_path(file_found)
+        _log_repeats(rel, pdf)
         if unknown:
             logfunc(f'{rel}: field names not recognised, kept as text of the previous field: '
                     f'{", ".join(sorted(unknown))}')
-        if pdf.dropped:
-            logfunc(f'{rel}: {pdf.dropped} page-break duplicate line fragments dropped')
         yield file_found, records
+
+
+def _log_repeats(rel, pdf):
+    '''Logs each page-break repeat dropped or kept, by page and field name only; the
+    line's text can be user-written and is never logged.'''
+    if pdf.dropped:
+        fields = {}
+        for page, field in pdf.dropped:
+            fields.setdefault(field, []).append(str(page))
+        detail = '; '.join(f'{field} on page {", ".join(pages)}' for field, pages in fields.items())
+        logfunc(f'{rel}: dropped {len(pdf.dropped)} line(s) printed again at the top of the '
+                f'next page ({detail})')
+    if pdf.kept_repeats:
+        logfunc(f'{rel}: kept the first line of page {", ".join(map(str, pdf.kept_repeats))}, '
+                f'which repeats the previous page\'s last line but is not above the normal '
+                f'first-line position; check for a duplicated field')
 
 
 def _media_index(context, section):
@@ -733,6 +754,32 @@ def _table_fields(lines):
     return [(name, value) for name, value, _ in fields]
 
 
+_LABEL_LINE = re.compile(r"^([A-Z][A-Za-z0-9 /()&.,'_-]{0,60}?):(?:[ \t]+(.*))?$")
+
+
+def _labelled_fields(lines):
+    '''Reads a page of 'Name: value' lines whose field names are not known in advance.
+
+    A line starts a field only when it begins, at the left margin of the page's field
+    names, with a capitalised name and a colon followed by a space or the line end. Any
+    other line, including one that holds a colon (a time, an IPv6 address), continues the
+    previous value.'''
+    lines = [line for line in lines if not _NO_DATA.match(line.text)]
+    starts = [line for line in lines if _LABEL_LINE.match(line.text)]
+    margin = min((line.rect.x0 for line in starts), default=None)
+    fields = []
+    for line in lines:
+        match = _LABEL_LINE.match(line.text)
+        if match and abs(line.rect.x0 - margin) < 3:
+            fields.append([match.group(1).strip(), (match.group(2) or '').strip()])
+        elif fields:
+            value = fields[-1][1]
+            fields[-1][1] = f'{value}\n{line.text}' if value else line.text
+        else:
+            fields.append(['(unlabelled)', line.text])
+    return [tuple(field) for field in fields]
+
+
 @artifact_processor
 def tikTokReturnPdfSubscriber(context):
     data_list = []
@@ -746,8 +793,7 @@ def tikTokReturnPdfSubscriber(context):
         if os.path.basename(file_found).lower() == 'bsi.pdf':
             fields = _table_fields(pdf.lines)
         else:
-            fields = [tuple(p.strip() for p in line.text.split(':', 1))
-                      for line in pdf.lines if ':' in line.text]
+            fields = _labelled_fields(pdf.lines)
         for name, value in fields:
             data_list.append((pdf.title, name, value, rel))
         if pdf.notice:
