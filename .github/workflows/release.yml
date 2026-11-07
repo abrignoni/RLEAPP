@@ -386,7 +386,7 @@ jobs:
           STEM="RLEAPP-$VERSION-${{ matrix.platform }}-$ARCH"
           case "$RUNNER_OS" in
             Windows)
-              powershell -NoProfile -Command "Compress-Archive -Path 'dist/rleapp.exe','LICENSES' -DestinationPath 'release-assets/$STEM-portable.zip'"
+              powershell -NoProfile -Command "Copy-Item -Recurse 'build/licences/bundled' 'LICENSES/bundled'; Compress-Archive -Path 'dist/rleapp.exe','LICENSES' -DestinationPath 'release-assets/$STEM-portable.zip'"
               ;;
             macOS)
               mv "dist/RLEAPP-$VERSION.dmg" "release-assets/$STEM.dmg"
