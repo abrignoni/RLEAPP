@@ -6,7 +6,7 @@ mammoth
 msgpack==1.2.3
 openpyxl
 packaging>=24.0
-pillow-heif
+pillow-heif==1.8.1
 PyCryptodome
 simplekml
 xmltodict
@@ -14,7 +14,6 @@ xlrd==1.2.0
 openpyxl
 pypdf
 ijson
-pillow-heif
 mammoth
 bencoding
 pytz
