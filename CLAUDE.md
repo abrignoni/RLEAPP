@@ -34,8 +34,7 @@ they are silently unchecked. Prefer a literal dict in new modules.
   data file kept outside `scripts/`, `leapp_functions/` or `assets/`: expect a working dev
   run and a broken build, and run `python packaging/build.py smoke` or `test_builds.yml`.
   See `.claude/rules/rleapp-build-and-release.md`.
-- `scripts/parse3.py` is a self-contained protobuf decoder. This repo does not depend on
-  protobuf or blackboxprotobuf, and should not start.
+- This repo does not depend on protobuf or blackboxprotobuf, and should not start.
 - Returns routinely contain real personal data for real people. See
   `.claude/rules/leapp-claims.md`, and never put values from a return into a commit
   message, a PR body or a test fixture.
