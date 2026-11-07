@@ -65,7 +65,7 @@ def _exif_summary(image_path):
     """Return (lat, lon, exif_html) for an image, or ('', '', '') on failure."""
     try:
         if str(image_path).upper().endswith(('.HEIC', '.HEIF')):
-            # The Exif block as stored in the file, read with heicreader.
+            # The Exif TIFF block from the file, read with heicreader.
             exif = Image.Exif()
             raw = heicreader.raw_exif(image_path)
             if raw:
@@ -118,7 +118,8 @@ def icloudReturnsphotolibrary(context):
 
             latitude = longitude = exifdata = ''
             media_path = media_lookup.get(filename)
-            # check_in_media attaches a HEIC as a JPEG copy the report can show.
+            # check_in_media attaches a HEIC as a JPEG or PNG copy the report can show, or as
+            # itself when it cannot be decoded.
             media_ref = check_in_media(filename, filename)
             if filename.upper().endswith('HEIC') and media_path:
                 latitude, longitude, exifdata = _exif_summary(media_path)
