@@ -4,8 +4,8 @@ __artifacts_v2__ = {
         "description": "Photo library (Metadata.txt) from an iCloud law enforcement return, with media, and with EXIF and GPS for HEIC files.",
         "author": "@AlexisBrignoni",
         "creation_date": "2021-09-16",
-        "last_update_date": "2026-06-28",
-        "requirements": "Pillow, pillow-heif",
+        "last_update_date": "2026-11-07",
+        "requirements": "Pillow, heicreader",
         "category": "iCloud Returns",
         "notes": "Timestamp is the record's originalCreationDate. Latitude, Longitude and Exif "
                  "are filled only for HEIC files found in the return; blank on other file types "
@@ -19,15 +19,13 @@ __artifacts_v2__ = {
 }
 
 import base64
-import io
 import json
 import os
 
+import heicreader
 from PIL import Image
-from pillow_heif import register_heif_opener
 
-from scripts.ilapfuncs import (artifact_processor, check_in_media, check_in_embedded_media,
-                               convert_unix_ts_to_utc)
+from scripts.ilapfuncs import artifact_processor, check_in_media, convert_unix_ts_to_utc
 from scripts.html_safe import esc
 
 _EXIF_TAGS = {271: 'Manufacturer', 272: 'Model', 305: 'Software', 274: 'Orientation',
@@ -66,7 +64,14 @@ def _gps_decimal(info):
 def _exif_summary(image_path):
     """Return (lat, lon, exif_html) for an image, or ('', '', '') on failure."""
     try:
-        exif = Image.open(image_path).getexif()
+        if str(image_path).upper().endswith(('.HEIC', '.HEIF')):
+            # The Exif TIFF block from the file, read with heicreader.
+            exif = Image.Exif()
+            raw = heicreader.raw_exif(image_path)
+            if raw:
+                exif.load(raw)
+        else:
+            exif = Image.open(image_path).getexif()
     except Exception:  # pylint: disable=broad-except
         return '', '', ''
     lat, lon = _gps_decimal(_geotagging(exif.get_ifd(0x8825)))
@@ -76,7 +81,6 @@ def _exif_summary(image_path):
 
 @artifact_processor
 def icloudReturnsphotolibrary(context):
-    register_heif_opener()
     media_lookup = {os.path.basename(str(f)): str(f) for f in context.get_files_found()}
 
     data_list = []
@@ -114,16 +118,11 @@ def icloudReturnsphotolibrary(context):
 
             latitude = longitude = exifdata = ''
             media_path = media_lookup.get(filename)
+            # check_in_media attaches a HEIC as a JPEG or PNG copy the report can show, or as
+            # itself when it cannot be decoded.
+            media_ref = check_in_media(filename, filename)
             if filename.upper().endswith('HEIC') and media_path:
-                try:
-                    buf = io.BytesIO()
-                    Image.open(media_path).convert('RGB').save(buf, format='JPEG')
-                    media_ref = check_in_embedded_media(media_path, buf.getvalue(), f'{filename}.jpg')
-                except Exception:  # pylint: disable=broad-except
-                    media_ref = check_in_media(filename, filename)
                 latitude, longitude, exifdata = _exif_summary(media_path)
-            else:
-                media_ref = check_in_media(filename, filename)
 
             data_list.append((timestamp, media_ref, filename, latitude, longitude, exifdata,
                               filename_enc, is_deleted, is_expunged))

@@ -128,7 +128,7 @@ class TestSpec(unittest.TestCase):
 
     def test_what_is_bundled_comes_from_the_driver(self):
         analysis = _run_spec('linux', onefile=False)[0]['Analysis'].kwargs
-        self.assertEqual(analysis['binaries'], [])
+        self.assertEqual(analysis['binaries'], self.driver.licenses.heicreader_binaries())
         self.assertEqual(analysis['datas'], self.driver.bundle_datas())
         hidden = analysis['hiddenimports']
         for name in self.driver.hidden_imports():
@@ -318,7 +318,7 @@ class TestBundleContents(unittest.TestCase):
         self.assertEqual(set(self.driver.artifact_modules()), expected)
         hidden = self.driver.hidden_imports()
         self.assertTrue(expected <= set(hidden))
-        self.assertIn('pillow_heif', hidden)
+        self.assertIn('heicreader', hidden)
 
     @unittest.skipIf(sys.version_info < (3, 14), 'compression.zstd exists from Python 3.14')
     def test_the_zstd_codec_imported_by_name_is_a_hidden_import(self):
