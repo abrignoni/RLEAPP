@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "module_name": "binanceReturns",
+    "artifact_name": "Binance - Binance Card",
+    "function_name": "binanceCards",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 12,
+    "number_of_rows": 1,
+    "total_data_size_bytes": 129,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/binanceReturns/testdata.binanceReturns.binanceCards.caseSYNTH001.zip",
+    "start_time": "2026-11-09T21:30:36.059742+00:00",
+    "end_time": "2026-11-09T21:30:36.087311+00:00",
+    "run_time_seconds": 0.022833585739135742,
+    "last_commit": {
+      "hash": "9063758c1f47e6c250c4e0395389eef29b62372a",
+      "author_name": "Claude",
+      "author_email": "noreply@anthropic.com",
+      "date": "2026-11-09T21:22:03+00:00",
+      "message": "Add binanceReturns: Binance law enforcement returns (.xlsx)"
+    }
+  },
+  "headers": [
+    "Create Date",
+    "Swipe Card ID",
+    "Swipe User ID",
+    "Card Number",
+    "Card Type",
+    "Locked",
+    "Freeze",
+    "Activated",
+    "Card Status",
+    "Other Columns (as produced)",
+    "Sheet Row",
+    "Source File"
+  ],
+  "data": [
+    [
+      "2021-11-01 00:00:00",
+      "SYNTH-CARD-1",
+      "90000001",
+      "0000-SYNTH-0000",
+      "VIRTUAL",
+      "false",
+      "false",
+      "true",
+      "ACTIVE",
+      "",
+      2,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ]
+  ]
+}

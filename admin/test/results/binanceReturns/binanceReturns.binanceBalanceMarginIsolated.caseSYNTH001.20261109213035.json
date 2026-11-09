@@ -1,0 +1,52 @@
+{
+  "metadata": {
+    "module_name": "binanceReturns",
+    "artifact_name": "Binance - Account Balance - Margin Isolated",
+    "function_name": "binanceBalanceMarginIsolated",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 11,
+    "number_of_rows": 1,
+    "total_data_size_bytes": 83,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/binanceReturns/testdata.binanceReturns.binanceBalanceMarginIsolated.caseSYNTH001.zip",
+    "start_time": "2026-11-09T21:30:35.686544+00:00",
+    "end_time": "2026-11-09T21:30:35.711977+00:00",
+    "run_time_seconds": 0.021241426467895508,
+    "last_commit": {
+      "hash": "9063758c1f47e6c250c4e0395389eef29b62372a",
+      "author_name": "Claude",
+      "author_email": "noreply@anthropic.com",
+      "date": "2026-11-09T21:22:03+00:00",
+      "message": "Add binanceReturns: Binance law enforcement returns (.xlsx)"
+    }
+  },
+  "headers": [
+    "Block (as produced)",
+    "Trading Pair",
+    "Risk Ratio",
+    "Effective Multiple",
+    "Currency",
+    "Total Balance",
+    "Available Balance",
+    "Borrowed",
+    "Other Columns (as produced)",
+    "Sheet Row",
+    "Source File"
+  ],
+  "data": [
+    [
+      "Margin - Isolated",
+      "SYCUSDT",
+      "999",
+      "1",
+      "SYC",
+      "1",
+      "1",
+      "0",
+      "",
+      79,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ]
+  ]
+}

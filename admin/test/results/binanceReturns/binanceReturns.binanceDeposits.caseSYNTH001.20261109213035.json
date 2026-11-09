@@ -1,0 +1,90 @@
+{
+  "metadata": {
+    "module_name": "binanceReturns",
+    "artifact_name": "Binance - Deposit History",
+    "function_name": "binanceDeposits",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 14,
+    "number_of_rows": 3,
+    "total_data_size_bytes": 666,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/binanceReturns/testdata.binanceReturns.binanceDeposits.caseSYNTH001.zip",
+    "start_time": "2026-11-09T21:30:35.712482+00:00",
+    "end_time": "2026-11-09T21:30:35.740448+00:00",
+    "run_time_seconds": 0.023766279220581055,
+    "last_commit": {
+      "hash": "9063758c1f47e6c250c4e0395389eef29b62372a",
+      "author_name": "Claude",
+      "author_email": "noreply@anthropic.com",
+      "date": "2026-11-09T21:22:03+00:00",
+      "message": "Add binanceReturns: Binance law enforcement returns (.xlsx)"
+    }
+  },
+  "headers": [
+    "Create Time",
+    "User ID",
+    "Currency",
+    "Amount",
+    "BUSD",
+    "Deposit Address",
+    "Source Address",
+    "TXID",
+    "Status",
+    "Network",
+    "CounterParty ID",
+    "Other Columns (as produced)",
+    "Sheet Row",
+    "Source File"
+  ],
+  "data": [
+    [
+      "2021-05-01 12:00:00",
+      "90000001",
+      "SYC",
+      "1.5",
+      "150",
+      "synthaddr0000000000000000000001",
+      "synthsrc0000000000000000000009",
+      "synthtx0000000000000000000000000000000000000000000000000000000001",
+      "Completed",
+      "SYNTHNET",
+      "",
+      "{\"SYNTH Extra Column\": \"extra-value-1\"}",
+      2,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "2021-05-02 12:00:00",
+      "90000001",
+      "TST",
+      "20",
+      "0.2",
+      "synthaddr0000000000000000000002",
+      "",
+      "synthtx0000000000000000000000000000000000000000000000000000000002",
+      "Completed",
+      "SYNTHNET",
+      "SYNTH-CP-1",
+      "",
+      3,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "2021-02-01 12:00:00",
+      "90000002",
+      "SYC",
+      "2",
+      "200",
+      "synthaddr0000000000000000000003",
+      "",
+      "synthtx0000000000000000000000000000000000000000000000000000000004",
+      "Completed",
+      "SYNTHNET",
+      "",
+      "",
+      2,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ]
+  ]
+}

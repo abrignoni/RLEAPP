@@ -1,0 +1,359 @@
+{
+  "metadata": {
+    "module_name": "binanceReturns",
+    "artifact_name": "Binance - Account Balance - Block Index",
+    "function_name": "binanceBalanceBlocks",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 7,
+    "number_of_rows": 36,
+    "total_data_size_bytes": 4101,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/binanceReturns/testdata.binanceReturns.binanceBalanceBlocks.caseSYNTH001.zip",
+    "start_time": "2026-11-09T21:30:35.920684+00:00",
+    "end_time": "2026-11-09T21:30:35.956149+00:00",
+    "run_time_seconds": 0.03126955032348633,
+    "last_commit": {
+      "hash": "9063758c1f47e6c250c4e0395389eef29b62372a",
+      "author_name": "Claude",
+      "author_email": "noreply@anthropic.com",
+      "date": "2026-11-09T21:22:03+00:00",
+      "message": "Add binanceReturns: Binance law enforcement returns (.xlsx)"
+    }
+  },
+  "headers": [
+    "Block (as produced)",
+    "Header (as produced)",
+    "Records",
+    "Note (as produced)",
+    "Reported In",
+    "Sheet Row",
+    "Source File"
+  ],
+  "data": [
+    [
+      "Spot",
+      "Currency Name; Currency Code; All Positions; Available Positions; In Withdrawal; Pending Order; BTC Equivalent",
+      2,
+      "",
+      "Binance - Account Balance - Spot",
+      2,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Futures USDT position",
+      "Symbol; Position Amount; Entry Price; Mark Price; Unrealized Profit",
+      2,
+      "",
+      "Binance - Account Balance - Futures Positions",
+      8,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Futures USDT balance",
+      "Asset; Wallet Balance; Unrealized Profit; Available For Order",
+      1,
+      "",
+      "Binance - Account Balance - Futures Balances",
+      16,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Futures USDT Collateral",
+      "asset; locked; Loan Amount(USDT); Total Principal For Interest(USDT); Current Rate; Initial Rate; Liquidation Collateral Rate; Liquidation Price; Total Interest(USDT)",
+      1,
+      "",
+      "Binance - Account Balance - Futures Collateral",
+      21,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Futures \u5e01\u672c\u4f4d position",
+      "Symbol; Position Amount; Entry Price; Mark Price; Unrealized Profit",
+      1,
+      "",
+      "Binance - Account Balance - Futures Positions",
+      26,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Futures \u5e01\u672c\u4f4d balance",
+      "Asset; Wallet Balance; Unrealized Profit; Available For Order",
+      1,
+      "",
+      "Binance - Account Balance - Futures Balances",
+      31,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Earn - \u5e01\u5b89\u5b9d\u8d26\u6237 - \u6d3b\u671f",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      36,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Earn - \u5e01\u5b89\u5b9d\u8d26\u6237 - \u5b9a\u671f",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      40,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Earn - \u5e01\u5b89\u5b9d\u8d26\u6237 - \u6d3b\u52a8",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      44,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Earn - \u5e01\u5b89\u5b9d\u8d26\u6237 - \u4f53\u9a8c\u91d1",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      48,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Earn - \u9501\u4ed3\u6536\u76ca - \u6d3b\u671f",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      52,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Earn - \u9501\u4ed3\u6536\u76ca - \u5b9a\u671f",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      56,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Earn - defi\u6316\u77ff - \u6d3b\u671f",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      60,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Earn - defi\u6316\u77ff - \u5b9a\u671f",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      64,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Fiat",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      68,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Margin - Cross",
+      "Currency; Total Balance; Available Balance; Borrowed; Interest",
+      1,
+      "",
+      "Binance - Account Balance - Margin Cross",
+      72,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Margin - Isolated",
+      "Trading Pair; Risk Ratio; Effective Multiple; Currency; Total Balance; Available Balance; Borrowed",
+      1,
+      "",
+      "Binance - Account Balance - Margin Isolated",
+      77,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Pool",
+      "SYNTH Pool Name; SYNTH Pool Amount",
+      1,
+      "",
+      "Binance - Account Balance - Other Blocks",
+      82,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Spot",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      2,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ],
+    [
+      "Futures USDT position",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      6,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ],
+    [
+      "Futures USDT balance",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      10,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ],
+    [
+      "Futures USDT Collateral",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      14,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ],
+    [
+      "Futures \u5e01\u672c\u4f4d position",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      18,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ],
+    [
+      "Futures \u5e01\u672c\u4f4d balance",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      22,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ],
+    [
+      "Earn - \u5e01\u5b89\u5b9d\u8d26\u6237 - \u6d3b\u671f",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      26,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ],
+    [
+      "Earn - \u5e01\u5b89\u5b9d\u8d26\u6237 - \u5b9a\u671f",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      30,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ],
+    [
+      "Earn - \u5e01\u5b89\u5b9d\u8d26\u6237 - \u6d3b\u52a8",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      34,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ],
+    [
+      "Earn - \u5e01\u5b89\u5b9d\u8d26\u6237 - \u4f53\u9a8c\u91d1",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      38,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ],
+    [
+      "Earn - \u9501\u4ed3\u6536\u76ca - \u6d3b\u671f",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      42,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ],
+    [
+      "Earn - \u9501\u4ed3\u6536\u76ca - \u5b9a\u671f",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      46,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ],
+    [
+      "Earn - defi\u6316\u77ff - \u6d3b\u671f",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      50,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ],
+    [
+      "Earn - defi\u6316\u77ff - \u5b9a\u671f",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      54,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ],
+    [
+      "Fiat",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      58,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ],
+    [
+      "Margin - Cross",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      62,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ],
+    [
+      "Margin - Isolated",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      66,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ],
+    [
+      "Pool",
+      "",
+      0,
+      "Note: empty data",
+      "",
+      70,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ]
+  ]
+}
