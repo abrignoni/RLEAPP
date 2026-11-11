@@ -130,7 +130,7 @@ __artifacts_v2__ = {
                  "is reported blank; Borrowed and Interest held one value throughout.",
         "paths": ("*.xlsx",),
         "output_types": "standard",
-        "artifact_icon": "layers",
+        "artifact_icon": "stack-2",
     },
     "binanceBalanceMarginIsolated": {
         "name": "Binance - Account Balance - Margin Isolated",
@@ -145,7 +145,7 @@ __artifacts_v2__ = {
                  "Borrowed held the same value on every row, as in the source.",
         "paths": ("*.xlsx",),
         "output_types": "standard",
-        "artifact_icon": "layers",
+        "artifact_icon": "stack-2",
     },
     "binanceBalanceBlocks": {
         "name": "Binance - Account Balance - Block Index",
@@ -179,7 +179,7 @@ __artifacts_v2__ = {
                  "only been exercised on synthetic data.",
         "paths": ("*.xlsx",),
         "output_types": "standard",
-        "artifact_icon": "grid",
+        "artifact_icon": "layout-grid",
     },
     "binanceCurrentAssets": {
         "name": "Binance - Current Assets & Wallets",
@@ -287,7 +287,7 @@ __artifacts_v2__ = {
                  "reported as produced.",
         "paths": ("*.xlsx",),
         "output_types": "standard",
-        "artifact_icon": "log-in",
+        "artifact_icon": "login",
     },
     "binanceDevices": {
         "name": "Binance - Approved Devices",
@@ -305,7 +305,7 @@ __artifacts_v2__ = {
                  "blank when the value is not in the form YYYY-MM-DD HH:MM:SS.",
         "paths": ("*.xlsx",),
         "output_types": "standard",
-        "artifact_icon": "smartphone",
+        "artifact_icon": "device-mobile",
     },
     "binanceDeviceAttributes": {
         "name": "Binance - Approved Devices - Attributes",
@@ -479,10 +479,9 @@ import os
 import posixpath
 import re
 import zipfile
-from datetime import datetime, timezone
 from xml.etree import ElementTree
 
-from scripts.ilapfuncs import artifact_processor, check_in_embedded_media, logfunc
+from scripts.ilapfuncs import artifact_processor, check_in_embedded_media, convert_ts_human_to_utc, logfunc
 
 import openpyxl
 from openpyxl.utils.exceptions import InvalidFileException
@@ -625,16 +624,21 @@ def _column_letter(index):
 
 
 def _utc(value):
+    """A value the return labels UTC, as an aware datetime; None when not YYYY-MM-DD HH:MM:SS."""
     if not _UTC_FORM.match(value):
-        return ""
+        return None
     try:
-        return datetime.strptime(value, "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+        return convert_ts_human_to_utc(value)
     except ValueError:
-        return ""
+        return None
 
 
 def _blank(cells):
     return not any(cells)
+
+
+def _at(cells, index):
+    return cells[index] if index is not None and index < len(cells) else ""
 
 
 def _record(header, cells):
@@ -850,14 +854,13 @@ def _device_rows(sheet_rows):
         cells = sheet_rows[index]
         if _blank(cells):
             continue
-        get = lambda col, c=cells: c[col] if col is not None and col < len(c) else ""  # noqa: E731
         number = index + 1
-        if any(get(i) for i in device_cols):
+        if any(_at(cells, i) for i in device_cols):
             record = _record(header, cells)
             devices.append({"number": len(devices) + 1, "record": record, "row": number,
                             "extra": _extra(header, cells, set(_DEVICE_COLUMNS) | {"Key", "Value"}),
                             "pairs": 0})
-        key, value = get(key_col), get(value_col)
+        key, value = _at(cells, key_col), _at(cells, value_col)
         if key or value:
             if devices:
                 devices[-1]["pairs"] += 1
