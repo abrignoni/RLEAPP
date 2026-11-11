@@ -34,7 +34,8 @@ __artifacts_v2__ = {
                  "heading time range. The return does not state a time zone for Registration time or the "
                  "other times in this block, so they are reported as produced and not converted. "
                  "In the observed returns the heading used an ASCII or a full-width opening parenthesis; "
-                 "both are read.",
+                 "both are read. Mobile, User nationality, 2FA Opening time and SMS were empty in every observed "
+                 "return; Heading ID and Heading Email matched User ID and Email.",
         "paths": ("*.xlsx",),
         "output_types": "standard",
         "artifact_icon": "user",
@@ -64,7 +65,9 @@ __artifacts_v2__ = {
         "category": "Binance Returns",
         "notes": "A block is assigned to this artifact by its header row, not its title; Block (as "
                  "produced) is the block's title row. Amounts are reported as the text the return holds. "
-                 "The return does not say at what time the balances were taken.",
+                 "The return does not say at what time the balances were taken. In the observed returns All "
+                 "Positions equalled Available Positions on every row, and In Withdrawal and Pending Order held "
+                 "one value throughout, as in the source.",
         "paths": ("*.xlsx",),
         "output_types": "standard",
         "artifact_icon": "wallet",
@@ -122,7 +125,9 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-09",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "notes": "A block is assigned by its header row. Amounts are reported as the text the return holds.",
+        "notes": "A block is assigned by its header row. Amounts are reported as the text the return holds. "
+                 "In the one observed return with records, Total Balance held a single space on every row and "
+                 "is reported blank; Borrowed and Interest held one value throughout.",
         "paths": ("*.xlsx",),
         "output_types": "standard",
         "artifact_icon": "layers",
@@ -136,7 +141,8 @@ __artifacts_v2__ = {
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "notes": "A block is assigned by its header row. Amounts and ratios are reported as the text the "
-                 "return holds.",
+                 "return holds. In the one observed return with records, Total Balance, Available Balance and "
+                 "Borrowed held the same value on every row, as in the source.",
         "paths": ("*.xlsx",),
         "output_types": "standard",
         "artifact_icon": "layers",
@@ -216,7 +222,7 @@ __artifacts_v2__ = {
         "notes": "Columns are named as the return names them; a header with a trailing space ('Destination "
                  "Address ', seen in two observed returns) is read the same as one without. The return "
                  "does not state a time zone for Apply Time, so it is reported as produced and not "
-                 "converted.",
+                 "converted. Label/Tag/Memo was empty on every row of the observed returns.",
         "paths": ("*.xlsx",),
         "output_types": "standard",
         "artifact_icon": "upload",
@@ -231,7 +237,8 @@ __artifacts_v2__ = {
         "category": "Binance Returns",
         "notes": "Columns are named as the return names them. The return does not state a time zone for Time "
                  "or Update Time, so they are reported as produced and not converted. The sheet was absent "
-                 "from one observed return.",
+                 "from one observed return. In the one observed return with records, Type held a single space "
+                 "on every row and is reported blank.",
         "paths": ("*.xlsx",),
         "output_types": "standard",
         "artifact_icon": "shopping-cart",
