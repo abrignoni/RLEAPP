@@ -24,6 +24,13 @@ Covered:
   - images anchored on KYC Documents, an image stored in the workbook but anchored on no
     sheet, and PNG bytes stored under a .jpeg name
   - a sheet the module does not recognise, and a decoy .xlsx without the Binance sheets
+  - a workbook in the 2024 layout: First/Last Name, Tax ID and TnC columns, the KYC Approved
+    Info, Address Validation and Sub-accounts blocks and an unrecognised block in Customer
+    Information; Assets Overview with its total overview lines above the first block and every
+    block layout seen there; asset logs, P2P, attempted withdrawals, margin orders, gift cards,
+    loans and repayments; the camel-case Fiat layout on two sheets and a Fiat sheet whose header
+    matches no layout; extra columns on the sheets the 2022 layout already had; an empty KYC
+    Documents sheet; and Approved Devices with English-only headers and two empty columns
 
 Usage:
     python admin/test/scripts/gen_binance_synth.py [output_dir]
@@ -302,6 +309,225 @@ def workbook_8(path):
     wb.save(path)
 
 
+# ------------------------------------------------------------------ the 2024 layout
+FIAT_ORDER_HDR = ["userId", "userEmail", "userName", "orderId", "businessType", "currency", "cryptoCurrency",
+                  "grossAmount", "cryptoAmount", "cryptoObtainAmount", "orderExecutePrice", "cryptoNetwork",
+                  "cryptoAddress", "cryptoAddressMemo", "userFee", "merchantFee", "networkFee", "channelName",
+                  "transactionMethod", "cardBin", "cardLast4Digital", "statusName", "viban", "orderCreateTime",
+                  "channelOrderId", "iban", "accountNumber", "receivableAccount", "payableAccount",
+                  "cryptoTransactionHash", "grossAmountUsd"]
+ASSET_LOG_HDR = ["Order Number", "Commission ID", "User ID", "Currency", "Type", "Amount", "Available", "Locked",
+                 "Freeze", "Processing", "Description", "Time"]
+ORDER24_HDR = ORDER_HDR + ["USDT equivalent", "Operation Source"]
+
+
+def customer_2024(wb, user_id, email):
+    ws = wb.active
+    ws.title = "Customer Information"
+    heading = (f"User Basic Information(id: {user_id}  email: {email} "
+               f"time: 2023-01-01 00:00:00 - 2024-01-01 00:00:00)")
+    put(ws, [[heading], None, ["Basic Information"],
+             ["User ID", "Email", "Mobile", "Registration time", "First Name", "Last Name", "User nationality",
+              "User ID number", "User authentication type", "User authentication time", "Status", "2FA",
+              "2FA Opening time", "SMS", "SMS Opening time", "2FA Reset Information", "Tax ID", "TnC",
+              "TnC Sign Date"],
+             [user_id, email, "'+000000000000", "2022-03-04 05:06:07", "SYNTH", "PERSON THREE", "XX",
+              "SYNTH-ID-0003", "SYNTH_KYC", "2022-03-05 06:07:08", "Normal", "true", "", "0000000000", "", "",
+              "SYNTH-TAX-3", "true", "2022-03-04 05:06:07"],
+             None, None, None, ["API Information"], API_HDR, None, None, None,
+             ["KYC Approved Info"],
+             ["Birthday", "ID issue Country", "ID Address", "ID type", "ID Sub-type", "issuing Authority",
+              "Issuing Date", "ID expiry Date"],
+             ["1900-01-01", "XX", "", "SYNTH_ID", "SYNTH_SUB", "", "", "2099-12-31"],
+             None, None, None,
+             ["Address Validation"], ["Residence", "Region/State", "City", "Address", "Postal/Zip Code"],
+             None, None, None,
+             ["Sub-accounts"], ["Has Sub-account", "Sub-account Number"], ["false", "0"],
+             None, None,
+             ["SYNTH Extra Block"], ["SYNTH Field A", "SYNTH Field B"], ["synth-value-a", "synth-value-b"]])
+
+
+def assets_overview(wb):
+    ws = wb.create_sheet("Assets Overview")
+    rows = [None, None, ["total overview"], ["Estimate Total Balance(BTC)"], ["0.123456789"], None, None, None,
+            ["single overview"],
+            ["Spot(BTC)", "Futures(BTC)", "Earn(BTC)", "MARGIN(BTC)", "Pool(BTC)", "Funding(BTC)", "Option(BTC)"],
+            ["0.1", "0", "0.02", "0", "0", "0.003", "0"]]
+    rows += balance_rows([
+        ("Spot", SPOT_HDR + ["USDT Equivalent"],
+         [["SynthCoin", "SYC", "2.5", "2.0", "0.5", "0", "0.0002", "25.5"]]),
+        ("Futures USDT balance", FUT_BAL_HDR + ["USDT Equivalent"], [["USDT", "5", "0", "5", "5"]]),
+        ("Futures USDT Collateral", None, []),
+        ("Futures USDT position", FUT_POS_HDR + ["USDT Equivalent"], [["SYCUSDT", "0.5", "10", "11", "0.5", "5.5"]]),
+        ("Futures Coin balance", FUT_BAL_HDR + ["USDT Equivalent"], [["SYC", "0.1", "0", "0.1", "1.1"]]),
+        ("Futures Coin position", FUT_POS_HDR + ["USDT Equivalent"], [["SYCUSD_PERP", "1", "10", "10", "0", "0"]]),
+        ("Earn - flexible savings",
+         ["Product Name", "Total Amount", "Accruing Interest", "Today Purchased Amount", "Redeeming Amount",
+          "Total Interest", "Average Annual Interest Rate", "USDT Equivalent"],
+         [["SYC", "3.0", "3.0", "", "0", "0.001", "", "33"]]),
+        ("Earn - Saving - Locked Staking",
+         ["Currency Name", "Currency Code", "All Positions", "BTC Equivalent", "USDT Equivalent",
+          "Position Status"], [["SynthCoin", "SYC", "100.5", "0.01", "110.5", "HOLDING"]]),
+        ("Earn - fixed savings", None, []),
+        ("Earn - Autoinvest - My Index-Linked",
+         ["Currency Name", "Currency Code", "All Positions", "BTC Equivalent", "USDT Equivalent"],
+         [["TestToken", "TST", "7", "0", "0.7"]]),
+        ("Fiat", None, []),
+        ("Margin - Cross", CROSS_HDR + ["USDT Equivalent"], [["SYC", "", "1", "0", "0", "11"]]),
+        ("Margin - Isolated", ISOLATED_HDR + ["USDT Equivalent"],
+         [["SYC/USDT", "'-", "'-", "'-", "'-", "'-", "'-", "'-"]]),
+        ("Pool", None, []),
+        ("Funding", ["Currency Name", "Currency Code", "All Positions", "BTC Equivalent", "USDT Equivalent"],
+         [["TestToken", "TST", "1", "0", "0.1"]]),
+    ])
+    put(ws, rows)
+
+
+def workbook_2024(path):
+    uid = "90000003"
+    wb = openpyxl.Workbook()
+    customer_2024(wb, uid, "synth.three@example.com")
+    wb.create_sheet("KYC Documents")
+    table(wb, "Funding Wallet", ["User ID", "TotalAsset", "TotalAsset USDT", "AssetCode", "AssetName", "Freeze",
+                                 "Withdrawing", "Free", "Locked"],
+          [[uid, "1.5E-5", "1.5E-5", "TST", "TestToken", "0", "0", "1.5E-5", "0"]], trailing_blank=8)
+    assets_overview(wb)
+    table(wb, "Spot Asset Log", ASSET_LOG_HDR,
+          [["900000000001", "", uid, "SYC", "SYNTH TRANSFER", "1", "1", "0", "0", "0", "synth note",
+            "2023-02-01 10:00:00"],
+           ["900000000002", "", uid, "TST", "SYNTH TRADE", "-2", "8", "0", "0", "0", "",
+            "2023-02-02 10:00:00"]])
+    table(wb, "Funding Asset Log", ASSET_LOG_HDR,
+          [["900000000003", "", uid, "TST", "SYNTH P2P", "-5", "3", "0", "0", "0", "SYNTH-P2P-1",
+            "2023-02-03 10:00:00"]])
+    table(wb, "Fiat payment methods",
+          ["User ID", "Card ID", "Card Number", "First Name", "Family Name", "Card Country", "Card Scheme",
+           "Bind Type", "Security Type", "expired date", "bank", "cardType", "Create Time", "Update Time"],
+          [[uid, "SYNTH-CARD-ID", "0000-SYNTH", "SYNTH", "PERSON", "XX", "SYNTHSCHEME", "SYNTH", "SYNTH",
+            "2099-01", "SYNTH BANK", "DEBIT", "2023-01-01 00:00:00", "2023-01-02 00:00:00"]])
+    fiat_record = [uid, "synth.three@example.com", "SYNTH PERSON", "SYNTH-ORDER-1", "BUY", "EUR", "SYC", "10",
+                   "1", "1", "10", "SYNTHNET", "synthaddr0000000000000000000004", "", "0.1", "0", "0",
+                   "SYNTHCHANNEL", "CARD", "000000", "0000", "Completed", "", "2023-03-01 00:00:00",
+                   "SYNTH-CH-1", "", "", "", "", "synthtx0000000000000000000000000000000000000000000000000000000006",
+                   "11"]
+    table(wb, "Fiat Deposit History", FIAT_ORDER_HDR, [fiat_record])
+    table(wb, "Fiat Withdrawal History", ["SYNTH Unknown Fiat Header", "SYNTH Other"], [["synth-x", "1"]])
+    table(wb, "Fiat Trades", FIAT_ORDER_HDR, [fiat_record[:3] + ["SYNTH-ORDER-2"] + fiat_record[4:]])
+    table(wb, "Deposit History",
+          ["User ID", "Currency", "Amount", "Account Type", "USDT", "Deposit Address", "Source Address", "TXID",
+           "Create Time", "Status", "Network", "CounterParty ID"],
+          [[uid, "SYC", "3", "Spot Account", "30", "synthaddr0000000000000000000005", "synthsrc000000000000000002",
+            "synthtx0000000000000000000000000000000000000000000000000000000007", "2023-04-01 00:00:00",
+            "Completed", "SYNTHNET", ""]])
+    table(wb, "Withdrawal History",
+          ["User ID", "Currency", "Amount", "Account Type", "USDT", "Destination Address", "Label/Tag/Memo",
+           "txId", "Apply Time", "Status", "Network", "CounterParty ID"],
+          [[uid, "SYC", "1", "Funding Account", "10", "synthdest000000000000000000003", "",
+            "synthtx0000000000000000000000000000000000000000000000000000000008", "2023-04-02 00:00:00",
+            "Completed", "SYNTHNET", ""]])
+    table(wb, "ATTEMPTED WITHDRAWAL HISTORY",
+          ["User ID", "Asset", "Network", "Amount", "Address", "Date", "Business Type", "Source", "DecisionCode",
+           "USDT Equivalent"],
+          [[uid, "SYC", "SYNTHNET", "9", "synthdest000000000000000000004", "2023-04-03 00:00:00", "WITHDRAW",
+            "APP", "SYNTH-CODE", "90"]])
+    table(wb, "Binance Pay",
+          ["User ID", "Transaction wallet ID", "Merchant Name", "Counterparty Wallet ID", "Counterparty Binance ID",
+           "Order ID", "Transaction ID", "Transaction Type", "Currency", "Amount", "Transaction Time",
+           "USDT equivalent"],
+          [[uid, "900000001", "", "900000002", "900000003", "900000000000000001", "S_P_900000000000000001", "C2C",
+            "TST", "-1.5", "2023-05-01 00:00:00", "-0.15"]])
+    table(wb, "P2P",
+          ["Target UID", "Order ID", "Ad number", "Buy or Sell", "Crypto", "Amount", "Fiat Currency",
+           "Total Amount", "Unit Price", "Take ID", "Ad publisher ID", "Create Time", "Status", "Payment method",
+           "Client", "Payment Time", "Release time", "Update time", "USDT equivalent"],
+          [["90000009", "90000000000000000001", "90000000000000000002", "Buy", "TST", "100", "XXX", "1000.5",
+            "10.005", "90000008", "900000007", "2023-06-01 00:00:00", "Completed", "SYNTHPAY", "web",
+            "2023-06-01 00:05:00", "2023-06-01 00:10:00", "2023-06-01 00:10:00", "100"]])
+    table(wb, "Order History", ORDER24_HDR,
+          [[uid, "SYCUSDT", "11", "1", "11", "0", "1", "2023-07-01 00:00:00", "2023-07-01 00:00:01", "SELL",
+            "FILLED", "LIMIT_MAKER", "0", "USDT", "SYC", "11", "WEB"]])
+    table(wb, "OTC Payment ID History",
+          ["User Id", "Payment ID", "Action", "Client", "Status", "Handler", "Update time", "Payment Method",
+           "Payment Detail"],
+          [[uid, "90000010", "ADD", "web", "Active", "90000011", "2023-08-01 00:00:00(UTC+0)", "SYNTH TRANSFER",
+            "Name:SYNTH PERSON,Account:00000000000,"]])
+    table(wb, "OTC Trading",
+          ["OrderId", "UserId", "ChannelCode", "QuoteId", "PayType", "UserStatus", "UserCurrentPhase",
+           "ChannelStatus", "ChannelCurrentPhase", "symbol", "BaseCoin", "QuoteCoin", "BaseCoinAmount",
+           "QuoteCoinAmount", "USDT Equivalent", "SpreadAmount", "SpreadCoin", "UserQuotePrice", "UserSpreadPrice",
+           "ChannelQuotePrice", "RequestAmount", "RequestAmountCoin", "TransId", "CreateTime", "UpdateTime",
+           "UserCompletedTime", "ChannelCompletedTime", "UserRemark", "ChannelRemark"],
+          [["9000000000000000001", uid, "SYNTHCH", "SYNTHQUOTE0001", "WALLET", "DONE", "FINAL_PHASE", "DONE_OK",
+            "FINAL_OK", "SYCTST", "SYC", "TST", "0.1", "1.0", "1.1", "0", "TST", "10", "10", "10", "0.1", "SYC",
+            "", "2023-09-01 00:00:00(UTC)", "2023-09-01 00:00:01(UTC)", "2023-09-01 00:00:01(UTC)",
+            "2023-09-01 00:00:01(UTC)", "", ""]])
+    table(wb, "Binance Card", ["UID"] + CARD_HDR,
+          [[uid, "SYNTH-CARD-2", uid, "0000-SYNTH-0002", "VIRTUAL", "false", "false", "true", "ACTIVE",
+            "2023-10-01 00:00:00"]])
+    table(wb, "Binance Card transactions",
+          ["UID", "Swipe Card ID", "Transaction ID", "Merchant Name", "Status", "Type", "Currency", "Channel",
+           "Approved", "Total", "USDT equivalent", "Created date"],
+          [[uid, "SYNTH-CARD-2", "SYNTH-CTX-2", "SYNTH SHOP", "APPROVED", "PURCHASE", "EUR", "POS", "true", "5",
+            "5.5", "2023-10-02 00:00:00"]])
+    table(wb, "Margin Order", ORDER24_HDR,
+          [[uid, "SYCTST", "1", "1", "1", "0", "1", "2023-11-01 00:00:00", "2023-11-01 00:00:01", "BUY",
+            "FILLED", "MARKET", "0", "TST", "SYC", "0.1", "APP"]])
+    table(wb, "Gift Card Creation",
+          ["minter_id", "card_no", "card_assets", "token", "card_status_text", "mint_time", "redeemer_id",
+           "redeemed_time", "amt_usd", "asset_quantity"],
+          [[uid, "SYNTH-GIFT-1", "TST", "SYNTHTOKEN", "Redeemed", "2023-12-01 00:00:00", "90000012",
+            "2023-12-02 00:00:00", "5", "50"]])
+    table(wb, "Gift Card Transfer",
+          ["user_id", "card_no", "is_redeemed", "counterparty_user_id", "token", "card_redeem_time", "amt_usd",
+           "asset_quantity"],
+          [[uid, "SYNTH-GIFT-1", "true", "90000012", "SYNTHTOKEN", "2023-12-02 00:00:00", "5", "50"]])
+    access(wb, uid, [["User login", "web", "2.0", "203.0.113.20", "Synthland", "SynthBrowser/2.0", "",
+                      "2023-01-15 08:00:00"],
+                     ["User login", "web", "2.0", "203.0.113.21", "Synthland", "SynthBrowser/2.0", "50000",
+                      "2023-01-16 08:00:00"]])
+    ws = wb["Access Logs"]
+    ws.delete_rows(1, ws.max_row)
+    put(ws, [["User ID", "Operation", "Client", "Client Version", "Real IP", "Geolocation", "Browser",
+              "Port Number", "Timestamp (UTC)"],
+             [uid, "User login", "web", "2.0", "203.0.113.20", "Synthland", "SynthBrowser/2.0", "",
+              "2023-01-15 08:00:00"],
+             [uid, "User login", "web", "2.0", "203.0.113.21", "Synthland", "SynthBrowser/2.0", "50000",
+              "2023-01-16 08:00:00"]])
+    devices(wb, DEVICE_HDR_EN + [None, None], [
+        ["SYNTH-LAPTOP", "web", "203.0.113.20", "Synthland", "2023-01-16 08:00:00", "Normal", "fvideo_id",
+         "SYNTHFV"],
+        [None, None, None, None, None, None, "macintosh_uuid", "SYNTH-UUID-0001"],
+    ])
+    table(wb, "Loan Order",
+          ["Seq", "Order ID", "User ID", "Confirmed Time[UTC]", "Collateral Level", "Loan Coin",
+           "Left Repay Amount", "Init Loan Amount", "USDT equivalent", "Left Repay Interest", "Interest Accrual",
+           "Daily Interest Rate", "Collateral Coin", "Initial Collateral Amount", "Remaining Collateral Amount",
+           "Duration", "Deadline[UTC)", "ActualInterestDays", "OverdueDays", "Type", "Init Collateral Rate",
+           "Margin Call Collateral Rate", "liquidation Collateral Rate", "Order Status", "Status Details",
+           "Late Editor"],
+          [["1", "SYNTH-LOAN-1", uid, "2023-12-10 00:00:00", "1", "TST", "0", "10", "1", "0", "0.01", "0.0001",
+            "SYC", "1", "0", "7", "2023-12-17 00:00:00", "7", "0", "FLEXIBLE", "0.65", "0.8", "0.9", "Repaid",
+            "", ""]])
+    table(wb, "Repayment History",
+          ["Seq", "UID", "Repaid Time[UTC + 8]", "Order ID", "Order Group Id", "Event No", "Coin", "Amount",
+           "USDT equivalent", "Interest", "Principal", "Borrowed Time[UTC + 8]", "CollateralCoin",
+           "Repay Collateral", "Loan / Collateral Price", "Released Collateral", "LTV after repayment",
+           "Repay Type", "Status", "Staking Order"],
+          [["1", uid, "2023-12-17 08:00:00", "SYNTH-LOAN-1", "SYNTH-GROUP-1", "SYNTH-EVENT-1", "TST", "10", "1",
+            "0.01", "10", "2023-12-10 08:00:00", "SYC", "0", "10", "1", "0", "MANUAL", "SUCCESS", "false"]])
+    table(wb, "Binance Send",
+          ["Send number", "Payer ID", "Payer account type", "Payer nickname", "Payer phone area code",
+           "Payer phone number", "Payer email", "Payer type", "Payee ID", "Payee account type", "Payee nickname",
+           "Payee phone area code", "Payee phone number", "Payee email", "Amount", "Asset", "Assets BTC rate",
+           "Send note", "Send type", "Send source", "Send status", "Send time", "Complete time", "Update time",
+           "USDT equivalent"],
+          [["SYNTH-SEND-2", uid, "SPOT", "synthnick", "+00", "0000000000", "synth.three@example.com", "USER",
+            "90000013", "SPOT", "synthnick2", "+00", "0000000001", "synth.four@example.com", "2", "TST", "0.0001",
+            "", "TRANSFER", "APP", "SUCCESS", "2024-01-01 00:00:00", "2024-01-01 00:00:05",
+            "2024-01-01 00:00:05", "0.2"]])
+    wb.save(path)
+
+
 def decoy(path):
     wb = openpyxl.Workbook()
     wb.active.title = "Customer Information"
@@ -314,8 +540,10 @@ def main():
         shutil.rmtree(BASE)
     os.makedirs(os.path.join(BASE, "account_one"))
     os.makedirs(os.path.join(BASE, "account_two"))
+    os.makedirs(os.path.join(BASE, "account_three"))
     workbook_18(os.path.join(BASE, "account_one", "SYNTH_binance_return_18_sheets.xlsx"))
     workbook_8(os.path.join(BASE, "account_two", "SYNTH_binance_return_8_sheets.xlsx"))
+    workbook_2024(os.path.join(BASE, "account_three", "SYNTH_binance_return_2024_layout.xlsx"))
     decoy(os.path.join(BASE, "SYNTH_not_a_binance_return.xlsx"))
     print(f"Synthetic Binance return written to {BASE}")
 

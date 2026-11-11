@@ -1,0 +1,71 @@
+{
+  "metadata": {
+    "module_name": "binanceReturns",
+    "artifact_name": "Binance - Funding Wallet",
+    "function_name": "binanceFundingWallet",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 13,
+    "number_of_rows": 2,
+    "total_data_size_bytes": 167,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/binanceReturns/testdata.binanceReturns.binanceFundingWallet.caseSYNTH001.zip",
+    "start_time": "2026-11-11T18:55:16.348328+00:00",
+    "end_time": "2026-11-11T18:55:16.416796+00:00",
+    "run_time_seconds": 0.061081647872924805,
+    "last_commit": {
+      "hash": "108c9981448b724a8754068d47376b2584f4ef7e",
+      "author_name": "Claude",
+      "author_email": "noreply@anthropic.com",
+      "date": "2026-11-11T18:17:58+00:00",
+      "message": "binanceReturns: follow the LEAPPs contributor guide"
+    }
+  },
+  "headers": [
+    "User ID",
+    "TotalAsset",
+    "TotalAsset BUSD",
+    "TotalAsset USDT",
+    "AssetCode",
+    "AssetName",
+    "Freeze",
+    "Withdrawing",
+    "Free",
+    "Locked",
+    "Other Columns (as produced)",
+    "Sheet Row",
+    "Source File"
+  ],
+  "data": [
+    [
+      "90000001",
+      "1",
+      "1",
+      "",
+      "SYC",
+      "SynthCoin",
+      "0",
+      "0",
+      "1",
+      "0",
+      "",
+      2,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "90000003",
+      "1.5E-5",
+      "",
+      "1.5E-5",
+      "TST",
+      "TestToken",
+      "0",
+      "0",
+      "1.5E-5",
+      "0",
+      "",
+      2,
+      "account_three/SYNTH_binance_return_2024_layout.xlsx"
+    ]
+  ]
+}

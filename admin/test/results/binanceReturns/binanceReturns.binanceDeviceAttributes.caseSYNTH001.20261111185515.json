@@ -1,0 +1,114 @@
+{
+  "metadata": {
+    "module_name": "binanceReturns",
+    "artifact_name": "Binance - Approved Devices - Attributes",
+    "function_name": "binanceDeviceAttributes",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 6,
+    "number_of_rows": 10,
+    "total_data_size_bytes": 778,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/binanceReturns/testdata.binanceReturns.binanceDeviceAttributes.caseSYNTH001.zip",
+    "start_time": "2026-11-11T18:55:15.391399+00:00",
+    "end_time": "2026-11-11T18:55:15.438096+00:00",
+    "run_time_seconds": 0.04200291633605957,
+    "last_commit": {
+      "hash": "108c9981448b724a8754068d47376b2584f4ef7e",
+      "author_name": "Claude",
+      "author_email": "noreply@anthropic.com",
+      "date": "2026-11-11T18:17:58+00:00",
+      "message": "binanceReturns: follow the LEAPPs contributor guide"
+    }
+  },
+  "headers": [
+    "Device Number",
+    "Device Name",
+    "Key",
+    "Value",
+    "Sheet Row",
+    "Source File"
+  ],
+  "data": [
+    [
+      "",
+      "",
+      "orphan_key",
+      "orphan-value",
+      2,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      1,
+      "SYNTH-PHONE",
+      "a_sdk",
+      "30",
+      3,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      1,
+      "SYNTH-PHONE",
+      "device_name",
+      "SYNTH-PHONE",
+      4,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      1,
+      "SYNTH-PHONE",
+      "a_imei",
+      "",
+      5,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      2,
+      "SYNTH-BROWSER",
+      "user_agent",
+      "SynthBrowser/1.0",
+      6,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      2,
+      "SYNTH-BROWSER",
+      "screen_resolution",
+      "640,480",
+      7,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      1,
+      "SYNTH-LAPTOP",
+      "fvideo_id",
+      "SYNTHFV",
+      2,
+      "account_three/SYNTH_binance_return_2024_layout.xlsx"
+    ],
+    [
+      1,
+      "SYNTH-LAPTOP",
+      "macintosh_uuid",
+      "SYNTH-UUID-0001",
+      3,
+      "account_three/SYNTH_binance_return_2024_layout.xlsx"
+    ],
+    [
+      1,
+      "SYNTH-TABLET",
+      "platform",
+      "ios",
+      2,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ],
+    [
+      1,
+      "SYNTH-TABLET",
+      "system_lang",
+      "xx",
+      3,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ]
+  ]
+}

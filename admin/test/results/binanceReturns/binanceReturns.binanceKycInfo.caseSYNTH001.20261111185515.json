@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "module_name": "binanceReturns",
+    "artifact_name": "Binance - KYC Approved Info",
+    "function_name": "binanceKycInfo",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 12,
+    "number_of_rows": 1,
+    "total_data_size_bytes": 100,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/binanceReturns/testdata.binanceReturns.binanceKycInfo.caseSYNTH001.zip",
+    "start_time": "2026-11-11T18:55:15.109333+00:00",
+    "end_time": "2026-11-11T18:55:15.189411+00:00",
+    "run_time_seconds": 0.07024025917053223,
+    "last_commit": {
+      "hash": "108c9981448b724a8754068d47376b2584f4ef7e",
+      "author_name": "Claude",
+      "author_email": "noreply@anthropic.com",
+      "date": "2026-11-11T18:17:58+00:00",
+      "message": "binanceReturns: follow the LEAPPs contributor guide"
+    }
+  },
+  "headers": [
+    "Heading ID",
+    "Birthday",
+    "ID issue Country",
+    "ID Address",
+    "ID type",
+    "ID Sub-type",
+    "issuing Authority",
+    "Issuing Date",
+    "ID expiry Date",
+    "Other Columns (as produced)",
+    "Sheet Row",
+    "Source File"
+  ],
+  "data": [
+    [
+      "90000003",
+      "1900-01-01",
+      "XX",
+      "",
+      "SYNTH_ID",
+      "SYNTH_SUB",
+      "",
+      "",
+      "2099-12-31",
+      "",
+      16,
+      "account_three/SYNTH_binance_return_2024_layout.xlsx"
+    ]
+  ]
+}

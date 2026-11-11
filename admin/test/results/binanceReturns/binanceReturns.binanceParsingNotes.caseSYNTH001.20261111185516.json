@@ -1,0 +1,104 @@
+{
+  "metadata": {
+    "module_name": "binanceReturns",
+    "artifact_name": "Binance - Parsing Notes",
+    "function_name": "binanceParsingNotes",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 4,
+    "number_of_rows": 12,
+    "total_data_size_bytes": 2586,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/binanceReturns/testdata.binanceReturns.binanceParsingNotes.caseSYNTH001.zip",
+    "start_time": "2026-11-11T18:55:16.105975+00:00",
+    "end_time": "2026-11-11T18:55:16.166366+00:00",
+    "run_time_seconds": 0.05471229553222656,
+    "last_commit": {
+      "hash": "108c9981448b724a8754068d47376b2584f4ef7e",
+      "author_name": "Claude",
+      "author_email": "noreply@anthropic.com",
+      "date": "2026-11-11T18:17:58+00:00",
+      "message": "binanceReturns: follow the LEAPPs contributor guide"
+    }
+  },
+  "headers": [
+    "Sheet",
+    "Sheet Row",
+    "Note",
+    "Source File"
+  ],
+  "data": [
+    [
+      "",
+      "",
+      "not read as a Binance return: no sheet named 'Access Logs'",
+      "SYNTH_not_a_binance_return.xlsx"
+    ],
+    [
+      "",
+      "",
+      "read as a Binance return; 19 sheets: Customer Information; Account Balance; Current Assets & Wallets; Order History; Deposit History; Fiat Deposit History; Withdrawal History; Fiat Withdrawal History; Access Logs; Approved Devices; KYC Documents; OTC Payment; Funding Wallet; Binance Send; Binance Pay; OTC Trading; Binance Card; Binance Card transaction histor; SYNTH Unknown Sheet",
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "",
+      "",
+      "sheets not recognised, or whose header matches no known layout, reported under Other Sheets: SYNTH Unknown Sheet",
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Account Balance",
+      82,
+      "block 'Pool' has a header no known layout matches, reported under Binance - Account Balance - Other Blocks",
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Approved Devices",
+      2,
+      "Key/Value pair above the first device; reported with a blank Device Number",
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "",
+      "",
+      "read as a Binance return; 28 sheets: Customer Information; KYC Documents; Funding Wallet; Assets Overview; Spot Asset Log; Funding Asset Log; Fiat payment methods; Fiat Deposit History; Fiat Withdrawal History; Fiat Trades; Deposit History; Withdrawal History; ATTEMPTED WITHDRAWAL HISTORY; Binance Pay; P2P; Order History; OTC Payment ID History; OTC Trading; Binance Card; Binance Card transactions; Margin Order; Gift Card Creation; Gift Card Transfer; Access Logs; Approved Devices; Loan Order; Repayment History; Binance Send",
+      "account_three/SYNTH_binance_return_2024_layout.xlsx"
+    ],
+    [
+      "",
+      "",
+      "sheets not recognised, or whose header matches no known layout, reported under Other Sheets: Fiat Withdrawal History",
+      "account_three/SYNTH_binance_return_2024_layout.xlsx"
+    ],
+    [
+      "Customer Information",
+      30,
+      "block 'SYNTH Extra Block' not recognised, reported under Binance - Customer Information - Other Blocks",
+      "account_three/SYNTH_binance_return_2024_layout.xlsx"
+    ],
+    [
+      "Assets Overview",
+      3,
+      "row before the first block, reported under Binance - Account Balance - Other Blocks",
+      "account_three/SYNTH_binance_return_2024_layout.xlsx"
+    ],
+    [
+      "Assets Overview",
+      4,
+      "row before the first block, reported under Binance - Account Balance - Other Blocks",
+      "account_three/SYNTH_binance_return_2024_layout.xlsx"
+    ],
+    [
+      "Assets Overview",
+      5,
+      "row before the first block, reported under Binance - Account Balance - Other Blocks",
+      "account_three/SYNTH_binance_return_2024_layout.xlsx"
+    ],
+    [
+      "",
+      "",
+      "read as a Binance return; 8 sheets: Customer Information; Account Balance; Current Assets & Wallets; Deposit History; Withdrawal History; Access Logs; Approved Devices; KYC Documents",
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ]
+  ]
+}
