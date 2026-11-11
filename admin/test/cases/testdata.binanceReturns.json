@@ -5,13 +5,13 @@
         "make_data": {
             "input_data_path": "binance-synthetic.zip",
             "os": "Linux-6.18.44-fc-v378-x86_64-with-glibc2.39",
-            "timestamp": "2026-11-11T23:06:42.040383",
+            "timestamp": "2026-11-11T23:32:07.147856",
             "last_commit": {
-                "hash": "7063d4a1a89120c76f7a5b54e6a8efd1cd19d8f9",
+                "hash": "1edf779f1a999dcb7fbf4147eaa7469d320abe63",
                 "author_name": "Maxitelmo",
                 "author_email": "50964800+Maxitelmo@users.noreply.github.com",
-                "date": "2026-11-11T19:07:39+00:00",
-                "message": "binanceReturns: support the 2024 return layout"
+                "date": "2026-11-11T23:19:11+00:00",
+                "message": "binanceReturns: list only balances held, merge related artifacts"
             }
         },
         "artifacts": {
@@ -55,7 +55,7 @@
                     "data": []
                 }
             },
-            "binanceBalanceSpot": {
+            "binanceBalanceHoldings": {
                 "search_patterns": [
                     "*.xlsx"
                 ],
@@ -105,7 +105,7 @@
                     "data": []
                 }
             },
-            "binanceBalanceMarginCross": {
+            "binanceBalanceMargin": {
                 "search_patterns": [
                     "*.xlsx"
                 ],
@@ -125,7 +125,7 @@
                     "data": []
                 }
             },
-            "binanceBalanceOther": {
+            "binanceOtherBlocks": {
                 "search_patterns": [
                     "*.xlsx"
                 ],
@@ -205,7 +205,7 @@
                     "data": []
                 }
             },
-            "binanceFiatDeposits": {
+            "binanceFiatHistory": {
                 "search_patterns": [
                     "*.xlsx"
                 ],
@@ -325,7 +325,7 @@
                     "data": []
                 }
             },
-            "binanceGiftCardCreation": {
+            "binanceGiftCards": {
                 "search_patterns": [
                     "*.xlsx"
                 ],
@@ -335,7 +335,7 @@
                     "data": []
                 }
             },
-            "binanceLoanOrders": {
+            "binanceLoans": {
                 "search_patterns": [
                     "*.xlsx"
                 ],

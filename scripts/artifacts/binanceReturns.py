@@ -96,7 +96,7 @@ __artifacts_v2__ = {
         "output_types": "standard",
         "artifact_icon": "chart-pie",
     },
-    "binanceBalanceSpot": {
+    "binanceBalanceHoldings": {
         "name": "Binance - Account Balance - Holdings",
         "description": "Records from Account Balance and Assets Overview blocks that list currencies with their "
                  "positions (Spot, Funding, Earn staking and Autoinvest).",
@@ -189,7 +189,7 @@ __artifacts_v2__ = {
         "output_types": "standard",
         "artifact_icon": "lock",
     },
-    "binanceBalanceMarginCross": {
+    "binanceBalanceMargin": {
         "name": "Binance - Account Balance - Margin",
         "description": "Records from Account Balance and Assets Overview blocks with the Margin - Cross or Margin - "
                  "Isolated column layout.",
@@ -227,7 +227,7 @@ __artifacts_v2__ = {
         "output_types": "standard",
         "artifact_icon": "list",
     },
-    "binanceBalanceOther": {
+    "binanceOtherBlocks": {
         "name": "Binance - Other Blocks",
         "description": "Records from Customer Information, Account Balance and Assets Overview blocks this module does "
                  "not recognise, and rows above the first block, reported cell for cell.",
@@ -367,7 +367,7 @@ __artifacts_v2__ = {
         "output_types": "standard",
         "artifact_icon": "arrows-exchange",
     },
-    "binanceFiatDeposits": {
+    "binanceFiatHistory": {
         "name": "Binance - Fiat History",
         "description": "Records from the Fiat Deposit History and Fiat Withdrawal History sheets in the layout with an "
                  "Internal Serial Number column.",
@@ -572,7 +572,7 @@ __artifacts_v2__ = {
         "output_types": "standard",
         "artifact_icon": "receipt",
     },
-    "binanceGiftCardCreation": {
+    "binanceGiftCards": {
         "name": "Binance - Gift Cards",
         "description": "Records from the Gift Card Creation and Gift Card Transfer sheets.",
         "notes": "Columns are named as the return names them. Other Columns (as produced) is empty unless the "
@@ -589,7 +589,7 @@ __artifacts_v2__ = {
         "output_types": "standard",
         "artifact_icon": "gift",
     },
-    "binanceLoanOrders": {
+    "binanceLoans": {
         "name": "Binance - Loans",
         "description": "Records from the Loan Order and Repayment History sheets.",
         "notes": "Columns are named as the return names them. Other Columns (as produced) is empty unless the "
@@ -743,7 +743,7 @@ _TABLES = {
                     "Ad number", "Buy or Sell", "Crypto", "Amount", "Fiat Currency", "Total Amount",
                     "Unit Price", "USDT equivalent", "Take ID", "Ad publisher ID", "Status", "Payment method",
                     "Client")},
-    "binanceFiatDeposits": {
+    "binanceFiatHistory": {
         "sheets": ("Fiat Deposit History", "Fiat Withdrawal History"),
         "require": ("Internal Serial Number",),
         "columns": ("Create Time", "Completed Time", "Arrived Time", "Update Time", "Status", "UserID",
@@ -814,12 +814,12 @@ _TABLES = {
         "sheets": ("Binance Card transaction*",),
         "columns": ("Created date", "UID", "Swipe Card ID", "Transaction ID", "Merchant Name", "Status",
                     "Type", "Currency", "Channel", "Approved", "Total", "USDT equivalent")},
-    "binanceGiftCardCreation": {
+    "binanceGiftCards": {
         "sheets": ("Gift Card Creation", "Gift Card Transfer"),
         "columns": ("mint_time", "redeemed_time", "card_redeem_time", "minter_id", "redeemer_id", "user_id",
                     "counterparty_user_id", "card_no", "card_assets", "token", "card_status_text", "is_redeemed",
                     "amt_usd", "asset_quantity")},
-    "binanceLoanOrders": {
+    "binanceLoans": {
         "sheets": ("Loan Order", "Repayment History"),
         "columns": ("Confirmed Time[UTC]", "Deadline[UTC)", "Repaid Time[UTC + 8]", "Borrowed Time[UTC + 8]",
                     "Seq", "Order ID", "Order Group Id", "Event No", "User ID", "UID", "Collateral Level",
@@ -838,9 +838,9 @@ _UTC_COLUMNS = ("Timestamp (UTC)", "Recent Usage Timestamp (UTC)")
 # Block layouts of Account Balance and Assets Overview, matched on the header row in this order:
 # (artifact, columns every observed header of that layout holds).
 _BALANCE_MATCH = (
-    ("binanceBalanceSpot", ("Currency Name", "Currency Code", "All Positions", "Available Positions",
+    ("binanceBalanceHoldings", ("Currency Name", "Currency Code", "All Positions", "Available Positions",
                             "In Withdrawal", "Pending Order", "BTC Equivalent")),
-    ("binanceBalanceSpot", ("Currency Name", "Currency Code", "All Positions", "BTC Equivalent")),
+    ("binanceBalanceHoldings", ("Currency Name", "Currency Code", "All Positions", "BTC Equivalent")),
     ("binanceBalanceEarnProducts", ("Product Name", "Total Amount")),
     ("binanceBalanceOverview", ("Spot(BTC)", "Futures(BTC)")),
     ("binanceBalanceFuturesPositions", ("Symbol", "Position Amount", "Entry Price", "Mark Price",
@@ -850,15 +850,15 @@ _BALANCE_MATCH = (
                                          "Total Principal For Interest(USDT)", "Current Rate", "Initial Rate",
                                          "Liquidation Collateral Rate", "Liquidation Price",
                                          "Total Interest(USDT)")),
-    ("binanceBalanceMarginCross", ("Trading Pair", "Risk Ratio", "Effective Multiple", "Currency",
+    ("binanceBalanceMargin", ("Trading Pair", "Risk Ratio", "Effective Multiple", "Currency",
                                    "Total Balance", "Available Balance", "Borrowed")),
-    ("binanceBalanceMarginCross", ("Currency", "Total Balance", "Available Balance", "Borrowed", "Interest")),
+    ("binanceBalanceMargin", ("Currency", "Total Balance", "Available Balance", "Borrowed", "Interest")),
 )
 # Columns each balance artifact reports: the union of its layouts, named as produced.
 _BALANCE_LAYOUTS = {
     "binanceBalanceOverview": ("Spot(BTC)", "Futures(BTC)", "Earn(BTC)", "MARGIN(BTC)", "Pool(BTC)",
                                "Funding(BTC)", "Option(BTC)"),
-    "binanceBalanceSpot": ("Currency Name", "Currency Code", "All Positions", "Available Positions",
+    "binanceBalanceHoldings": ("Currency Name", "Currency Code", "All Positions", "Available Positions",
                            "In Withdrawal", "Pending Order", "BTC Equivalent", "USDT Equivalent",
                            "Position Status"),
     "binanceBalanceEarnProducts": ("Product Name", "Total Amount", "Accruing Interest", "Today Purchased Amount",
@@ -871,7 +871,7 @@ _BALANCE_LAYOUTS = {
     "binanceBalanceFuturesCollateral": ("asset", "locked", "Loan Amount(USDT)",
                                         "Total Principal For Interest(USDT)", "Current Rate", "Initial Rate",
                                         "Liquidation Collateral Rate", "Liquidation Price", "Total Interest(USDT)"),
-    "binanceBalanceMarginCross": ("Trading Pair", "Currency", "Risk Ratio", "Effective Multiple", "Total Balance",
+    "binanceBalanceMargin": ("Trading Pair", "Currency", "Risk Ratio", "Effective Multiple", "Total Balance",
                                   "Available Balance", "Borrowed", "Interest", "USDT Equivalent"),
 }
 # Columns that name what a balance row is about rather than an amount; the others decide whether it is empty.
@@ -1361,8 +1361,8 @@ def binanceBalanceOverview(context):
 
 
 @artifact_processor
-def binanceBalanceSpot(context):
-    return _balance_artifact(context, "binanceBalanceSpot")
+def binanceBalanceHoldings(context):
+    return _balance_artifact(context, "binanceBalanceHoldings")
 
 
 @artifact_processor
@@ -1386,8 +1386,8 @@ def binanceBalanceFuturesCollateral(context):
 
 
 @artifact_processor
-def binanceBalanceMarginCross(context):
-    return _balance_artifact(context, "binanceBalanceMarginCross")
+def binanceBalanceMargin(context):
+    return _balance_artifact(context, "binanceBalanceMargin")
 
 
 @artifact_processor
@@ -1405,7 +1405,7 @@ def binanceBalanceBlocks(context):
                     reported = names[layout]
                     not_listed = sum(1 for _n, cells in block["records"] if _empty_balance(block["header"], cells))
                 elif block["records"]:
-                    reported, not_listed = __artifacts_v2__["binanceBalanceOther"]["name"], 0
+                    reported, not_listed = __artifacts_v2__["binanceOtherBlocks"]["name"], 0
                 else:
                     reported, not_listed = "", 0
                 header = "; ".join(c for c in (block["header_raw"] or ()) if c)
@@ -1415,7 +1415,7 @@ def binanceBalanceBlocks(context):
 
 
 @artifact_processor
-def binanceBalanceOther(context):
+def binanceOtherBlocks(context):
     headers = ("Sheet", "Block (as produced)", "Record (as produced)", "Sheet Row", "Source File")
     rows, sources = [], set()
     for source, sheets in _workbooks(context):
@@ -1482,8 +1482,8 @@ def binanceP2P(context):
 
 
 @artifact_processor
-def binanceFiatDeposits(context):
-    return _table_artifact(context, "binanceFiatDeposits")
+def binanceFiatHistory(context):
+    return _table_artifact(context, "binanceFiatHistory")
 
 
 @artifact_processor
@@ -1542,13 +1542,13 @@ def binanceCardTransactions(context):
 
 
 @artifact_processor
-def binanceGiftCardCreation(context):
-    return _table_artifact(context, "binanceGiftCardCreation")
+def binanceGiftCards(context):
+    return _table_artifact(context, "binanceGiftCards")
 
 
 @artifact_processor
-def binanceLoanOrders(context):
-    return _table_artifact(context, "binanceLoanOrders")
+def binanceLoans(context):
+    return _table_artifact(context, "binanceLoans")
 
 
 @artifact_processor
@@ -1631,7 +1631,7 @@ def binanceParsingNotes(context):
     headers = ("Sheet", "Sheet Row", "Note", "Source File")
     notes = []
     workbooks = _workbooks(context, notes)
-    other_blocks = __artifacts_v2__["binanceBalanceOther"]["name"]
+    other_blocks = __artifacts_v2__["binanceOtherBlocks"]["name"]
     for source, sheets in workbooks:
         titles = list(sheets)
         notes.append((source, "", "", f"read as a Binance return; {len(titles)} sheets: " + "; ".join(titles)))

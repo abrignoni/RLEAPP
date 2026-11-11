@@ -1,0 +1,68 @@
+{
+  "metadata": {
+    "module_name": "binanceReturns",
+    "artifact_name": "Binance - Other Blocks",
+    "function_name": "binanceOtherBlocks",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 5,
+    "number_of_rows": 5,
+    "total_data_size_bytes": 601,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/binanceReturns/testdata.binanceReturns.binanceOtherBlocks.caseSYNTH001.zip",
+    "start_time": "2026-11-11T23:32:14.979286+00:00",
+    "end_time": "2026-11-11T23:32:15.054318+00:00",
+    "run_time_seconds": 0.06861209869384766,
+    "last_commit": {
+      "hash": "1edf779f1a999dcb7fbf4147eaa7469d320abe63",
+      "author_name": "Maxitelmo",
+      "author_email": "50964800+Maxitelmo@users.noreply.github.com",
+      "date": "2026-11-11T23:19:11+00:00",
+      "message": "binanceReturns: list only balances held, merge related artifacts"
+    }
+  },
+  "headers": [
+    "Sheet",
+    "Block (as produced)",
+    "Record (as produced)",
+    "Sheet Row",
+    "Source File"
+  ],
+  "data": [
+    [
+      "Account Balance",
+      "Pool",
+      "SYNTH Pool Name: synth-pool; SYNTH Pool Amount: 3.0",
+      87,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Customer Information",
+      "SYNTH Extra Block",
+      "SYNTH Field A: synth-value-a; SYNTH Field B: synth-value-b",
+      32,
+      "account_three/SYNTH_binance_return_2024_layout.xlsx"
+    ],
+    [
+      "Assets Overview",
+      "(before the first block)",
+      "A: total overview",
+      3,
+      "account_three/SYNTH_binance_return_2024_layout.xlsx"
+    ],
+    [
+      "Assets Overview",
+      "(before the first block)",
+      "A: Estimate Total Balance(BTC)",
+      4,
+      "account_three/SYNTH_binance_return_2024_layout.xlsx"
+    ],
+    [
+      "Assets Overview",
+      "(before the first block)",
+      "A: 0.123456789",
+      5,
+      "account_three/SYNTH_binance_return_2024_layout.xlsx"
+    ]
+  ]
+}

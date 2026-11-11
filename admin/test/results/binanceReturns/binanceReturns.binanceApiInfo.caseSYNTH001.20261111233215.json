@@ -1,0 +1,50 @@
+{
+  "metadata": {
+    "module_name": "binanceReturns",
+    "artifact_name": "Binance - API Information",
+    "function_name": "binanceApiInfo",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 10,
+    "number_of_rows": 1,
+    "total_data_size_bytes": 136,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/binanceReturns/testdata.binanceReturns.binanceApiInfo.caseSYNTH001.zip",
+    "start_time": "2026-11-11T23:32:15.399356+00:00",
+    "end_time": "2026-11-11T23:32:15.460992+00:00",
+    "run_time_seconds": 0.05529665946960449,
+    "last_commit": {
+      "hash": "1edf779f1a999dcb7fbf4147eaa7469d320abe63",
+      "author_name": "Maxitelmo",
+      "author_email": "50964800+Maxitelmo@users.noreply.github.com",
+      "date": "2026-11-11T23:19:11+00:00",
+      "message": "binanceReturns: list only balances held, merge related artifacts"
+    }
+  },
+  "headers": [
+    "Heading ID",
+    "Create Time",
+    "Update Time",
+    "Rule ID",
+    "API Name",
+    "Trade IP",
+    "Withdraw IP",
+    "Other Columns (as produced)",
+    "Sheet Row",
+    "Source File"
+  ],
+  "data": [
+    [
+      "90000001",
+      "2021-03-04 05:06:07",
+      "2021-03-05 05:06:07",
+      "SYNTH-RULE-1",
+      "synth-api",
+      "192.0.2.10",
+      "192.0.2.11",
+      "",
+      11,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ]
+  ]
+}

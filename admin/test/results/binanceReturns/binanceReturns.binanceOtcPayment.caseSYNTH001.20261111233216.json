@@ -1,0 +1,37 @@
+{
+  "metadata": {
+    "module_name": "binanceReturns",
+    "artifact_name": "Binance - OTC Payment",
+    "function_name": "binanceOtcPayment",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 10,
+    "number_of_rows": 0,
+    "total_data_size_bytes": 0,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/binanceReturns/testdata.binanceReturns.binanceOtcPayment.caseSYNTH001.zip",
+    "start_time": "2026-11-11T23:32:16.280627+00:00",
+    "end_time": "2026-11-11T23:32:16.352495+00:00",
+    "run_time_seconds": 0.06438446044921875,
+    "last_commit": {
+      "hash": "1edf779f1a999dcb7fbf4147eaa7469d320abe63",
+      "author_name": "Maxitelmo",
+      "author_email": "50964800+Maxitelmo@users.noreply.github.com",
+      "date": "2026-11-11T23:19:11+00:00",
+      "message": "binanceReturns: list only balances held, merge related artifacts"
+    }
+  },
+  "headers": [
+    "User ID",
+    "Receiving Payment ID",
+    "Name",
+    "Payment method",
+    "Bank account number",
+    "Bank name",
+    "Account opening branch",
+    "Other Columns (as produced)",
+    "Sheet Row",
+    "Source File"
+  ],
+  "data": []
+}
