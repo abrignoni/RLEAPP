@@ -200,7 +200,7 @@ def workbook_18(path):
                             ["TestToken", "TST", "20", "20", "0", "0", "0.00000100"]]),
         ("Futures USDT position", FUT_POS_HDR, [["SYCUSDT", "0.010", "100.0", "101.5", "0.015"], None, None,
                                                 ["TSTUSDT", "-2", "3.00", "2.90", "0.20"]]),
-        ("Futures USDT balance", FUT_BAL_HDR, [["USDT", "10.00000000", "0.21500000", "9.00000000"]]),
+        ("Futures USDT balance", FUT_BAL_HDR, [["USDT", "10.00000000", "0.21712345", "9.00000000"]]),
         ("Futures USDT Collateral", FUT_COL_HDR, [["SYC", "0.5", "20", "20", "0.0001", "0.65", "0.91", "40",
                                                    "0.01"]]),
         ("Futures 币本位 position", FUT_POS_HDR, [["SYCUSD_PERP", "1", "100", "99", "-0.0001"]]),
