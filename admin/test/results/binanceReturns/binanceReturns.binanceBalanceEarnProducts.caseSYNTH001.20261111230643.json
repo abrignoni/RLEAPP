@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "module_name": "binanceReturns",
+    "artifact_name": "Binance - Account Balance - Earn Products",
+    "function_name": "binanceBalanceEarnProducts",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 13,
+    "number_of_rows": 1,
+    "total_data_size_bytes": 108,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/binanceReturns/testdata.binanceReturns.binanceBalanceEarnProducts.caseSYNTH001.zip",
+    "start_time": "2026-11-11T23:06:43.822958+00:00",
+    "end_time": "2026-11-11T23:06:43.877972+00:00",
+    "run_time_seconds": 0.049608707427978516,
+    "last_commit": {
+      "hash": "7063d4a1a89120c76f7a5b54e6a8efd1cd19d8f9",
+      "author_name": "Maxitelmo",
+      "author_email": "50964800+Maxitelmo@users.noreply.github.com",
+      "date": "2026-11-11T19:07:39+00:00",
+      "message": "binanceReturns: support the 2024 return layout"
+    }
+  },
+  "headers": [
+    "Sheet",
+    "Block (as produced)",
+    "Product Name",
+    "Total Amount",
+    "Accruing Interest",
+    "Today Purchased Amount",
+    "Redeeming Amount",
+    "Total Interest",
+    "Average Annual Interest Rate",
+    "USDT Equivalent",
+    "Other Columns (as produced)",
+    "Sheet Row",
+    "Source File"
+  ],
+  "data": [
+    [
+      "Assets Overview",
+      "Earn - flexible savings",
+      "SYC",
+      "3.0",
+      "3.0",
+      "",
+      "0",
+      "0.001",
+      "",
+      "33",
+      "",
+      44,
+      "account_three/SYNTH_binance_return_2024_layout.xlsx"
+    ]
+  ]
+}

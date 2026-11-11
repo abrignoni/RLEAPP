@@ -60,12 +60,15 @@ __artifacts_v2__ = {
         "output_types": "standard",
         "artifact_icon": "key",
     },
-    "binanceKycInfo": {
-        "name": "Binance - KYC Approved Info",
-        "description": "Records from the KYC Approved Info block of the Customer Information sheet.",
-        "notes": "Seen only in the 2024 return. Columns are named as the return names them and dates are reported "
-                 "as produced. Heading ID is the id from the sheet's heading line, so rows from several workbooks "
-                 "stay separable.",
+    "binanceCustomerDetails": {
+        "name": "Binance - Customer Information - KYC and Address",
+        "description": "Records from the KYC Approved Info, Address Validation and Sub-accounts blocks of the Customer "
+                 "Information sheet.",
+        "notes": "Block (as produced) names the block each row came from; columns of the other blocks are blank on"
+                 " its row. Seen only in the 2024 return; there Address Validation held a header and no records, "
+                 "so its columns have only been exercised on synthetic data. Columns are named as the return names"
+                 " them and dates are reported as produced. Heading ID is the id from the sheet's heading line, so"
+                 " rows from several workbooks stay separable.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-11",
         "last_update_date": "2026-11-11",
@@ -75,56 +78,15 @@ __artifacts_v2__ = {
         "output_types": "standard",
         "artifact_icon": "id",
     },
-    "binanceAddressValidation": {
-        "name": "Binance - Address Validation",
-        "description": "Records from the Address Validation block of the Customer Information sheet.",
-        "notes": "Seen only in the 2024 return, where the block held a header and no records, so this artifact has"
-                 " only been exercised on synthetic data. Heading ID is the id from the sheet's heading line.",
-        "author": "@Maxitelmo, Claude",
-        "creation_date": "2026-11-11",
-        "last_update_date": "2026-11-11",
-        "requirements": "openpyxl",
-        "category": "Binance Returns",
-        "paths": ("*.xlsx",),
-        "output_types": "standard",
-        "artifact_icon": "home",
-    },
-    "binanceSubAccounts": {
-        "name": "Binance - Sub-accounts",
-        "description": "Records from the Sub-accounts block of the Customer Information sheet.",
-        "notes": "Seen only in the 2024 return. Values are reported as produced. Heading ID is the id from the "
-                 "sheet's heading line.",
-        "author": "@Maxitelmo, Claude",
-        "creation_date": "2026-11-11",
-        "last_update_date": "2026-11-11",
-        "requirements": "openpyxl",
-        "category": "Binance Returns",
-        "paths": ("*.xlsx",),
-        "output_types": "standard",
-        "artifact_icon": "users",
-    },
-    "binanceCustomerOther": {
-        "name": "Binance - Customer Information - Other Blocks",
-        "description": "Records from Customer Information blocks this module does not recognise, reported cell for cell.",
-        "notes": "Record (as produced) is every non-empty cell of the row as 'header: value' pairs, named by the "
-                 "block's own header row. Rows above the first block, other than the heading line, are listed with"
-                 " Block '(before the first block)' and column letters. No observed return had such a block.",
-        "author": "@Maxitelmo, Claude",
-        "creation_date": "2026-11-11",
-        "last_update_date": "2026-11-11",
-        "requirements": "openpyxl",
-        "category": "Binance Returns",
-        "paths": ("*.xlsx",),
-        "output_types": "standard",
-        "artifact_icon": "layout-grid",
-    },
     "binanceBalanceOverview": {
         "name": "Binance - Account Balance - Overview",
         "description": "Records from Assets Overview blocks with the per-account BTC overview layout.",
-        "notes": "Seen only in the Assets Overview sheet of the 2024 return, in the block titled 'single "
+                "notes": "Seen only in the Assets Overview sheet of the 2024 return, in the block titled 'single "
                  "overview'. The estimated total balance lines above the first block are reported under Account "
                  "Balance - Other Blocks. Values are reported as the text the return holds. The return does not "
-                 "say at what time the balances were taken.",
+                 "say at what time the balances were taken. A row is listed only when one of its amounts is not "
+                 "zero (blank, '-' and 0 count as zero). Block Index gives, per block, how many rows were left out"
+                 " this way.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-11",
         "last_update_date": "2026-11-11",
@@ -135,14 +97,17 @@ __artifacts_v2__ = {
         "artifact_icon": "chart-pie",
     },
     "binanceBalanceSpot": {
-        "name": "Binance - Account Balance - Spot",
-        "description": "Records from Account Balance and Assets Overview blocks with the Spot column layout.",
-        "notes": "A block is assigned to this artifact by its header row, not its title. Sheet is the sheet it "
+        "name": "Binance - Account Balance - Holdings",
+        "description": "Records from Account Balance and Assets Overview blocks that list currencies with their "
+                 "positions (Spot, Funding, Earn staking and Autoinvest).",
+                "notes": "A block is assigned to this artifact by its header row, not its title. Sheet is the sheet it "
                  "came from (Account Balance in the 2022 returns, Assets Overview in the 2024 return) and Block "
-                 "(as produced) its title row. USDT Equivalent appears only in the 2024 layout. Amounts are "
-                 "reported as the text the return holds. The return does not say at what time the balances were "
-                 "taken. In the 2022 returns compared cell by cell, All Positions equalled Available Positions on "
-                 "every row, and In Withdrawal and Pending Order held one value throughout, as in the source.",
+                 "(as produced) its title row. Spot blocks carry Available Positions, In Withdrawal and Pending "
+                 "Order; the 2024 Funding, staking and Autoinvest blocks do not, and Position Status appears in "
+                 "some of them only; a column a block lacks is blank. USDT Equivalent appears only in the 2024 "
+                 "layout. Amounts are reported as the text the return holds. The return does not say at what time "
+                 "the balances were taken. A row is listed only when one of its amounts is not zero (blank, '-' "
+                 "and 0 count as zero). Block Index gives, per block, how many rows were left out this way.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
         "last_update_date": "2026-11-11",
@@ -152,27 +117,13 @@ __artifacts_v2__ = {
         "output_types": "standard",
         "artifact_icon": "wallet",
     },
-    "binanceBalanceHoldings": {
-        "name": "Binance - Account Balance - Asset Positions",
-        "description": "Records from Assets Overview blocks whose header has currency and BTC Equivalent columns "
-                       "but no Available Positions column.",
-        "notes": "In the 2024 return this layout held the blocks titled 'Earn - Saving - Locked Staking', 'Earn - "
-                 "Autoinvest - My Index-Linked' and 'Funding'; Block (as produced) names which. Position Status "
-                 "appears in some of those blocks only. Amounts are reported as the text the return holds.",
-        "author": "@Maxitelmo, Claude",
-        "creation_date": "2026-11-11",
-        "last_update_date": "2026-11-11",
-        "requirements": "openpyxl",
-        "category": "Binance Returns",
-        "paths": ("*.xlsx",),
-        "output_types": "standard",
-        "artifact_icon": "coins",
-    },
     "binanceBalanceEarnProducts": {
         "name": "Binance - Account Balance - Earn Products",
         "description": "Records from Assets Overview blocks with the Earn product layout.",
-        "notes": "Seen only in the 2024 return, in the block titled 'Earn - flexible savings'. Rates and amounts "
-                 "are reported as the text the return holds.",
+                "notes": "Seen only in the 2024 return, in the block titled 'Earn - flexible savings'. Rates and amounts "
+                 "are reported as the text the return holds. A row is listed only when one of its amounts is not "
+                 "zero (blank, '-' and 0 count as zero). Block Index gives, per block, how many rows were left out"
+                 " this way.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-11",
         "last_update_date": "2026-11-11",
@@ -185,10 +136,14 @@ __artifacts_v2__ = {
     "binanceBalanceFuturesPositions": {
         "name": "Binance - Account Balance - Futures Positions",
         "description": "Records from Account Balance and Assets Overview blocks with the futures position column layout.",
-        "notes": "Blocks with this layout were titled 'Futures USDT position' and 'Futures 币本位 position' in the "
+                        "notes": "Blocks with this layout were titled 'Futures USDT position' and 'Futures 币本位 position' in the "
                  "2022 returns, and 'Futures USDT position' and 'Futures Coin position' in the 2024 return; Block "
                  "(as produced) keeps the title untranslated. A block is assigned by its header row. USDT "
-                 "Equivalent appears only in the 2024 layout. Amounts are reported as the text the return holds.",
+                 "Equivalent appears only in the 2024 layout. Amounts are reported as the text the return holds. A"
+                 " row is listed only when one of its amounts is not zero (blank, '-' and 0 count as zero); in the"
+                 " 2022 returns compared cell by cell, more than 90% of the rows of these blocks were all zero, "
+                 "one row per asset or pair listed. Block Index gives, per block, how many rows were left out this"
+                 " way.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
         "last_update_date": "2026-11-11",
@@ -201,10 +156,13 @@ __artifacts_v2__ = {
     "binanceBalanceFuturesBalances": {
         "name": "Binance - Account Balance - Futures Balances",
         "description": "Records from Account Balance and Assets Overview blocks with the futures balance column layout.",
-        "notes": "Blocks with this layout were titled 'Futures USDT balance' and 'Futures 币本位 balance' in the 2022"
+                        "notes": "Blocks with this layout were titled 'Futures USDT balance' and 'Futures 币本位 balance' in the 2022"
                  " returns, and 'Futures USDT balance' and 'Futures Coin balance' in the 2024 return; Block (as "
                  "produced) keeps the title untranslated. A block is assigned by its header row. USDT Equivalent "
-                 "appears only in the 2024 layout. Amounts are reported as the text the return holds.",
+                 "appears only in the 2024 layout. Amounts are reported as the text the return holds. A row is "
+                 "listed only when one of its amounts is not zero (blank, '-' and 0 count as zero); in the 2022 "
+                 "returns compared cell by cell, more than 90% of the rows of these blocks were all zero, one row "
+                 "per asset or pair listed. Block Index gives, per block, how many rows were left out this way.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
         "last_update_date": "2026-11-11",
@@ -218,8 +176,10 @@ __artifacts_v2__ = {
         "name": "Binance - Account Balance - Futures Collateral",
         "description": "Records from Account Balance and Assets Overview blocks with the futures collateral column "
                  "layout.",
-        "notes": "Columns are named as the return names them, lower-case asset and locked included. A block is "
-                 "assigned by its header row. Amounts and rates are reported as the text the return holds.",
+                "notes": "Columns are named as the return names them, lower-case asset and locked included. A block is "
+                 "assigned by its header row. Amounts and rates are reported as the text the return holds. A row "
+                 "is listed only when one of its amounts is not zero (blank, '-' and 0 count as zero). Block Index"
+                 " gives, per block, how many rows were left out this way.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
         "last_update_date": "2026-11-11",
@@ -230,29 +190,16 @@ __artifacts_v2__ = {
         "artifact_icon": "lock",
     },
     "binanceBalanceMarginCross": {
-        "name": "Binance - Account Balance - Margin Cross",
-        "description": "Records from Account Balance and Assets Overview blocks with the Margin - Cross column layout.",
-        "notes": "A block is assigned by its header row. USDT Equivalent appears only in the 2024 layout. Amounts "
-                 "are reported as the text the return holds. In the 2022 returns compared cell by cell, the one "
-                 "with records held a single space in Total Balance on every row, reported blank, and one value "
-                 "throughout in Borrowed and Interest.",
-        "author": "@Maxitelmo, Claude",
-        "creation_date": "2026-11-09",
-        "last_update_date": "2026-11-11",
-        "requirements": "openpyxl",
-        "category": "Binance Returns",
-        "paths": ("*.xlsx",),
-        "output_types": "standard",
-        "artifact_icon": "stack-2",
-    },
-    "binanceBalanceMarginIsolated": {
-        "name": "Binance - Account Balance - Margin Isolated",
-        "description": "Records from Account Balance and Assets Overview blocks with the Margin - Isolated column "
-                 "layout.",
-        "notes": "A block is assigned by its header row. USDT Equivalent appears only in the 2024 layout. Amounts "
-                 "and ratios are reported as the text the return holds. In the 2022 returns compared cell by cell,"
-                 " the one with records held the same value in Total Balance, Available Balance and Borrowed on "
-                 "every row, as in the source.",
+        "name": "Binance - Account Balance - Margin",
+        "description": "Records from Account Balance and Assets Overview blocks with the Margin - Cross or Margin - "
+                 "Isolated column layout.",
+                        "notes": "Block (as produced) says which: Margin - Cross rows carry Interest, Margin - Isolated rows carry"
+                 " Trading Pair, Risk Ratio and Effective Multiple; a column a block lacks is blank. A block is "
+                 "assigned by its header row. USDT Equivalent appears only in the 2024 layout. Amounts and ratios "
+                 "are reported as the text the return holds; '-' is reported as produced. A row is listed only "
+                 "when one of its amounts is not zero (blank, '-' and 0 count as zero); in the 2022 returns "
+                 "compared cell by cell, more than 90% of the rows of these blocks were all zero, one row per "
+                 "asset or pair listed. Block Index gives, per block, how many rows were left out this way.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
         "last_update_date": "2026-11-11",
@@ -269,7 +216,8 @@ __artifacts_v2__ = {
         "notes": "Titles are kept as produced, untranslated. Note (as produced) is the text of a block that holds "
                  "a note instead of records, such as 'Note: empty data'. A block with no records says only that "
                  "the return listed none for it. A block whose header matches no known layout is reported under "
-                 "Account Balance - Other Blocks.",
+                 "Account Balance - Other Blocks. Rows Not Listed counts the records of the block whose amounts "
+                 "were all zero, which the balance artifacts leave out.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
         "last_update_date": "2026-11-11",
@@ -280,13 +228,14 @@ __artifacts_v2__ = {
         "artifact_icon": "list",
     },
     "binanceBalanceOther": {
-        "name": "Binance - Account Balance - Other Blocks",
-        "description": "Records from Account Balance and Assets Overview blocks whose header no known layout matches, "
-                 "and rows above the first block.",
+        "name": "Binance - Other Blocks",
+        "description": "Records from Customer Information, Account Balance and Assets Overview blocks this module does "
+                 "not recognise, and rows above the first block, reported cell for cell.",
         "notes": "Record (as produced) is every non-empty cell of the row as 'header: value' pairs, named by the "
                  "block's own header row, or by column letter for rows above the first block, which are listed "
                  "with Block '(before the first block)'. In the 2024 return those were the total overview lines of"
-                 " Assets Overview.",
+                 " Assets Overview. The heading line of Customer Information is reported under Customer "
+                 "Information, not here.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
         "last_update_date": "2026-11-11",
@@ -301,7 +250,10 @@ __artifacts_v2__ = {
         "description": "Records from the Current Assets & Wallets sheet.",
         "notes": "Columns are named as the return names them. Other Columns (as produced) is empty unless the "
                  "sheet carries columns this artifact does not name; such columns are kept there as JSON. Amounts "
-                 "are reported as the text the return holds. Seen in the 2022 returns only.",
+                 "are reported as the text the return holds. Seen in the 2022 returns only. A row is listed only "
+                 "when Total Position or Estimated BTC Value is not zero, or it carries a Deposit Wallet Address, "
+                 "a Label/Tag/Memo or another column; in the 2022 returns compared cell by cell, 96% of rows had "
+                 "none of these. Parsing Notes gives how many rows were left out per workbook.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
         "last_update_date": "2026-11-11",
@@ -365,30 +317,16 @@ __artifacts_v2__ = {
     },
     "binanceOrders": {
         "name": "Binance - Order History",
-        "description": "Records from the Order History sheet.",
+        "description": "Records from the Order History and Margin Order sheets.",
         "notes": "Columns are named as the return names them. Other Columns (as produced) is empty unless the "
-                 "sheet carries columns this artifact does not name; such columns are kept there as JSON. USDT "
-                 "equivalent and Operation Source appear only in the 2024 layout. Time and Update Time carry no "
-                 "zone in the return and are reported as produced. In the 2022 returns compared cell by cell, the "
-                 "one with records held a single space in Type on every row, reported blank.",
+                 "sheet carries columns this artifact does not name; such columns are kept there as JSON. Sheet "
+                 "names the sheet each row came from; the two share one header. USDT equivalent and Operation "
+                 "Source appear only in the 2024 layout. Time and Update Time carry no zone in the return and are "
+                 "reported as produced. In the 2022 returns compared cell by cell, the one with records held a "
+                 "single space in Type on every row, reported blank. Margin Order held a header and no records in "
+                 "the 2024 return, so it has only been exercised on synthetic data.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
-        "last_update_date": "2026-11-11",
-        "requirements": "openpyxl",
-        "category": "Binance Returns",
-        "paths": ("*.xlsx",),
-        "output_types": "standard",
-        "artifact_icon": "shopping-cart",
-    },
-    "binanceMarginOrders": {
-        "name": "Binance - Margin Order",
-        "description": "Records from the Margin Order sheet.",
-        "notes": "Columns are named as the return names them. Other Columns (as produced) is empty unless the "
-                 "sheet carries columns this artifact does not name; such columns are kept there as JSON. The "
-                 "sheet has the same columns as Order History. Seen only in the 2024 return, where the sheet held "
-                 "a header and no records, so this artifact has only been exercised on synthetic data.",
-        "author": "@Maxitelmo, Claude",
-        "creation_date": "2026-11-11",
         "last_update_date": "2026-11-11",
         "requirements": "openpyxl",
         "category": "Binance Returns",
@@ -430,13 +368,16 @@ __artifacts_v2__ = {
         "artifact_icon": "arrows-exchange",
     },
     "binanceFiatDeposits": {
-        "name": "Binance - Fiat Deposit History",
-        "description": "Records from the Fiat Deposit History sheet in the layout with an Internal Serial Number column.",
+        "name": "Binance - Fiat History",
+        "description": "Records from the Fiat Deposit History and Fiat Withdrawal History sheets in the layout with an "
+                 "Internal Serial Number column.",
         "notes": "Columns are named as the return names them. Other Columns (as produced) is empty unless the "
-                 "sheet carries columns this artifact does not name; such columns are kept there as JSON. The "
-                 "sheet held a header row and no records in every 2022 return checked, so this artifact has only "
-                 "been exercised on synthetic data. Times carry no zone in the return and are reported as "
-                 "produced. In the 2024 return the sheet had another layout, reported under Fiat Orders.",
+                 "sheet carries columns this artifact does not name; such columns are kept there as JSON. Sheet "
+                 "names the sheet each row came from; deposit-only and withdrawal-only columns are blank on the "
+                 "other sheet's rows. The sheets held a header row and no records in every 2022 return checked, so"
+                 " this artifact has only been exercised on synthetic data. Times carry no zone in the return and "
+                 "are reported as produced. In the 2024 return the sheets had another layout, reported under Fiat "
+                 "Orders.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
         "last_update_date": "2026-11-11",
@@ -444,25 +385,7 @@ __artifacts_v2__ = {
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
         "output_types": "standard",
-        "artifact_icon": "download",
-    },
-    "binanceFiatWithdrawals": {
-        "name": "Binance - Fiat Withdrawal History",
-        "description": "Records from the Fiat Withdrawal History sheet in the layout with an Internal Serial Number "
-                 "column.",
-        "notes": "Columns are named as the return names them. Other Columns (as produced) is empty unless the "
-                 "sheet carries columns this artifact does not name; such columns are kept there as JSON. The "
-                 "sheet held a header row and no records in every 2022 return checked, so this artifact has only "
-                 "been exercised on synthetic data. Times carry no zone in the return and are reported as "
-                 "produced. In the 2024 return the sheet had another layout, reported under Fiat Orders.",
-        "author": "@Maxitelmo, Claude",
-        "creation_date": "2026-11-09",
-        "last_update_date": "2026-11-11",
-        "requirements": "openpyxl",
-        "category": "Binance Returns",
-        "paths": ("*.xlsx",),
-        "output_types": "standard",
-        "artifact_icon": "upload",
+        "artifact_icon": "building-bank",
     },
     "binanceFiatOrders": {
         "name": "Binance - Fiat Orders",
@@ -650,30 +573,13 @@ __artifacts_v2__ = {
         "artifact_icon": "receipt",
     },
     "binanceGiftCardCreation": {
-        "name": "Binance - Gift Card Creation",
-        "description": "Records from the Gift Card Creation sheet.",
+        "name": "Binance - Gift Cards",
+        "description": "Records from the Gift Card Creation and Gift Card Transfer sheets.",
         "notes": "Columns are named as the return names them. Other Columns (as produced) is empty unless the "
-                 "sheet carries columns this artifact does not name; such columns are kept there as JSON. Seen "
-                 "only in the 2024 return, where the sheet held a header and no records, so this artifact has only"
-                 " been exercised on synthetic data. Times carry no zone in the return and are reported as "
-                 "produced.",
-        "author": "@Maxitelmo, Claude",
-        "creation_date": "2026-11-11",
-        "last_update_date": "2026-11-11",
-        "requirements": "openpyxl",
-        "category": "Binance Returns",
-        "paths": ("*.xlsx",),
-        "output_types": "standard",
-        "artifact_icon": "gift",
-    },
-    "binanceGiftCardTransfer": {
-        "name": "Binance - Gift Card Transfer",
-        "description": "Records from the Gift Card Transfer sheet.",
-        "notes": "Columns are named as the return names them. Other Columns (as produced) is empty unless the "
-                 "sheet carries columns this artifact does not name; such columns are kept there as JSON. Seen "
-                 "only in the 2024 return, where the sheet held a header and no records, so this artifact has only"
-                 " been exercised on synthetic data. Times carry no zone in the return and are reported as "
-                 "produced.",
+                 "sheet carries columns this artifact does not name; such columns are kept there as JSON. Sheet "
+                 "names the sheet each row came from; a column the other sheet lacks is blank. Seen only in the "
+                 "2024 return, where both sheets held a header and no records, so this artifact has only been "
+                 "exercised on synthetic data. Times carry no zone in the return and are reported as produced.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-11",
         "last_update_date": "2026-11-11",
@@ -684,30 +590,15 @@ __artifacts_v2__ = {
         "artifact_icon": "gift",
     },
     "binanceLoanOrders": {
-        "name": "Binance - Loan Order",
-        "description": "Records from the Loan Order sheet.",
+        "name": "Binance - Loans",
+        "description": "Records from the Loan Order and Repayment History sheets.",
         "notes": "Columns are named as the return names them. Other Columns (as produced) is empty unless the "
-                 "sheet carries columns this artifact does not name; such columns are kept there as JSON. Seen "
-                 "only in the 2024 return, where the sheet held a header and no records, so this artifact has only"
-                 " been exercised on synthetic data. The headers label Confirmed Time and Deadline UTC; they are "
-                 "reported as produced and not converted, since no value has been seen to confirm their form.",
-        "author": "@Maxitelmo, Claude",
-        "creation_date": "2026-11-11",
-        "last_update_date": "2026-11-11",
-        "requirements": "openpyxl",
-        "category": "Binance Returns",
-        "paths": ("*.xlsx",),
-        "output_types": "standard",
-        "artifact_icon": "moneybag",
-    },
-    "binanceRepayments": {
-        "name": "Binance - Repayment History",
-        "description": "Records from the Repayment History sheet.",
-        "notes": "Columns are named as the return names them. Other Columns (as produced) is empty unless the "
-                 "sheet carries columns this artifact does not name; such columns are kept there as JSON. Seen "
-                 "only in the 2024 return, where the sheet held a header and no records, so this artifact has only"
-                 " been exercised on synthetic data. The headers label Repaid Time and Borrowed Time 'UTC + 8'; "
-                 "they are reported as produced and not converted.",
+                 "sheet carries columns this artifact does not name; such columns are kept there as JSON. Sheet "
+                 "names the sheet each row came from; a column the other sheet lacks is blank. Seen only in the "
+                 "2024 return, where both sheets held a header and no records, so this artifact has only been "
+                 "exercised on synthetic data. The headers label Confirmed Time and Deadline UTC, and Repaid Time "
+                 "and Borrowed Time 'UTC + 8'; all are reported as produced and not converted, since no value has "
+                 "been seen to confirm their form.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-11",
         "last_update_date": "2026-11-11",
@@ -786,7 +677,8 @@ __artifacts_v2__ = {
         "description": "What the module could not read or place, per workbook.",
         "notes": "Lists every .xlsx matched that was not read as a Binance return and why, workbooks that could "
                  "not be opened, the sheets of each recognised workbook, and every sheet, block or row reported "
-                 "under one of the Other artifacts. Review the source workbook for each note.",
+                 "under one of the Other artifacts, and how many Current Assets & Wallets rows were left out for "
+                 "holding no position. Review the source workbook for each note.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
         "last_update_date": "2026-11-11",
@@ -797,7 +689,6 @@ __artifacts_v2__ = {
         "artifact_icon": "alert-triangle",
     },
 }
-
 
 import functools
 import json
@@ -822,6 +713,7 @@ _OTHER_BLOCKS = "(before the first block)"
 _TABLES = {
     "binanceCurrentAssets": {
         "sheets": ("Current Assets & Wallets",),
+        "skip_empty": (("Total Position", "Estimated BTC Value"), ("Deposit Wallet Address", "Label/Tag/Memo")),
         "columns": ("Asset Ticker", "Asset Name", "Total Position", "Estimated BTC Value",
                     "Deposit Wallet Address", "Label/Tag/Memo")},
     "binanceDeposits": {
@@ -837,12 +729,7 @@ _TABLES = {
         "columns": ("Date", "User ID", "Asset", "Network", "Amount", "USDT Equivalent", "Address",
                     "Business Type", "Source", "DecisionCode")},
     "binanceOrders": {
-        "sheets": ("Order History",),
-        "columns": ("Time", "Update Time", "User ID", "Market ID", "Side", "Type", "Status", "Price", "Qty",
-                    "Average Price", "Remain Qty", "Trade Qty", "Stop Price", "Price Unit", "Amount Unit",
-                    "USDT equivalent", "Operation Source")},
-    "binanceMarginOrders": {
-        "sheets": ("Margin Order",),
+        "sheets": ("Order History", "Margin Order"),
         "columns": ("Time", "Update Time", "User ID", "Market ID", "Side", "Type", "Status", "Price", "Qty",
                     "Average Price", "Remain Qty", "Trade Qty", "Stop Price", "Price Unit", "Amount Unit",
                     "USDT equivalent", "Operation Source")},
@@ -857,22 +744,15 @@ _TABLES = {
                     "Unit Price", "USDT equivalent", "Take ID", "Ad publisher ID", "Status", "Payment method",
                     "Client")},
     "binanceFiatDeposits": {
-        "sheets": ("Fiat Deposit History",),
+        "sheets": ("Fiat Deposit History", "Fiat Withdrawal History"),
         "require": ("Internal Serial Number",),
         "columns": ("Create Time", "Completed Time", "Arrived Time", "Update Time", "Status", "UserID",
                     "Email", "Amount", "Currency", "Internal Serial Number", "External Serial Number",
                     "Second External Serial Number", "Source Account Id", "Source Account Name",
-                    "Source Account", "Golden Channel", "Remark", "Is Replacement Order?", "Abnormal Reason",
-                    "Error Code", "Error Reason", "Channel Fee", "Platform Fee", "Network Provider",
-                    "Expect Recharge Amount", "Narrative", "Order Type")},
-    "binanceFiatWithdrawals": {
-        "sheets": ("Fiat Withdrawal History",),
-        "require": ("Internal Serial Number",),
-        "columns": ("Create Time", "Completed Time", "Arrived Time", "Update Time", "Status", "UserID",
-                    "Email", "Amount", "Currency", "Internal Serial Number", "External Serial Number",
-                    "Target Account Id", "Target Name", "Target Account", "Withdraw Channel", "Remark",
-                    "Is Replacement Order?", "Abnormal Reason", "Error Reason", "Channel Fee", "Platform Fee",
-                    "Network Provider", "Withdrawer", "Narrative", "Bic", "Bank", "Country", "Sortcode",
+                    "Source Account", "Target Account Id", "Target Name", "Target Account", "Golden Channel",
+                    "Withdraw Channel", "Remark", "Is Replacement Order?", "Abnormal Reason", "Error Code",
+                    "Error Reason", "Channel Fee", "Platform Fee", "Network Provider", "Expect Recharge Amount",
+                    "Withdrawer", "Narrative", "Order Type", "Bic", "Bank", "Country", "Sortcode",
                     "Bank Address", "Bank City", "Iban", "Flutterwave Proof")},
     "binanceFiatOrders": {
         "sheets": ("Fiat Deposit History", "Fiat Withdrawal History", "Fiat Trades"),
@@ -935,89 +815,89 @@ _TABLES = {
         "columns": ("Created date", "UID", "Swipe Card ID", "Transaction ID", "Merchant Name", "Status",
                     "Type", "Currency", "Channel", "Approved", "Total", "USDT equivalent")},
     "binanceGiftCardCreation": {
-        "sheets": ("Gift Card Creation",),
-        "columns": ("mint_time", "redeemed_time", "minter_id", "redeemer_id", "card_no", "card_assets",
-                    "token", "card_status_text", "amt_usd", "asset_quantity")},
-    "binanceGiftCardTransfer": {
-        "sheets": ("Gift Card Transfer",),
-        "columns": ("card_redeem_time", "user_id", "counterparty_user_id", "card_no", "is_redeemed", "token",
+        "sheets": ("Gift Card Creation", "Gift Card Transfer"),
+        "columns": ("mint_time", "redeemed_time", "card_redeem_time", "minter_id", "redeemer_id", "user_id",
+                    "counterparty_user_id", "card_no", "card_assets", "token", "card_status_text", "is_redeemed",
                     "amt_usd", "asset_quantity")},
     "binanceLoanOrders": {
-        "sheets": ("Loan Order",),
-        "columns": ("Confirmed Time[UTC]", "Deadline[UTC)", "Seq", "Order ID", "User ID", "Collateral Level",
-                    "Loan Coin", "Init Loan Amount", "Left Repay Amount", "USDT equivalent",
-                    "Left Repay Interest", "Interest Accrual", "Daily Interest Rate", "Collateral Coin",
-                    "Initial Collateral Amount", "Remaining Collateral Amount", "Duration",
-                    "ActualInterestDays", "OverdueDays", "Type", "Init Collateral Rate",
-                    "Margin Call Collateral Rate", "liquidation Collateral Rate", "Order Status",
-                    "Status Details", "Late Editor")},
-    "binanceRepayments": {
-        "sheets": ("Repayment History",),
-        "columns": ("Repaid Time[UTC + 8]", "Borrowed Time[UTC + 8]", "Seq", "UID", "Order ID",
-                    "Order Group Id", "Event No", "Coin", "Amount", "USDT equivalent", "Interest", "Principal",
-                    "CollateralCoin", "Repay Collateral", "Loan / Collateral Price", "Released Collateral",
-                    "LTV after repayment", "Repay Type", "Status", "Staking Order")},
+        "sheets": ("Loan Order", "Repayment History"),
+        "columns": ("Confirmed Time[UTC]", "Deadline[UTC)", "Repaid Time[UTC + 8]", "Borrowed Time[UTC + 8]",
+                    "Seq", "Order ID", "Order Group Id", "Event No", "User ID", "UID", "Collateral Level",
+                    "Loan Coin", "Coin", "Init Loan Amount", "Left Repay Amount", "Amount", "USDT equivalent",
+                    "Left Repay Interest", "Interest Accrual", "Interest", "Principal", "Daily Interest Rate",
+                    "Collateral Coin", "CollateralCoin", "Initial Collateral Amount", "Remaining Collateral Amount",
+                    "Repay Collateral", "Released Collateral", "Loan / Collateral Price", "LTV after repayment",
+                    "Duration", "ActualInterestDays", "OverdueDays", "Type", "Repay Type", "Init Collateral Rate",
+                    "Margin Call Collateral Rate", "liquidation Collateral Rate", "Order Status", "Status",
+                    "Status Details", "Staking Order", "Late Editor")},
 }
 
 # Columns the return labels UTC in a form this module converts: reported converted and as produced.
 _UTC_COLUMNS = ("Timestamp (UTC)", "Recent Usage Timestamp (UTC)")
 
 # Block layouts of Account Balance and Assets Overview, matched on the header row in this order:
-# artifact -> (columns every observed header of the layout holds, columns reported).
+# (artifact, columns every observed header of that layout holds).
+_BALANCE_MATCH = (
+    ("binanceBalanceSpot", ("Currency Name", "Currency Code", "All Positions", "Available Positions",
+                            "In Withdrawal", "Pending Order", "BTC Equivalent")),
+    ("binanceBalanceSpot", ("Currency Name", "Currency Code", "All Positions", "BTC Equivalent")),
+    ("binanceBalanceEarnProducts", ("Product Name", "Total Amount")),
+    ("binanceBalanceOverview", ("Spot(BTC)", "Futures(BTC)")),
+    ("binanceBalanceFuturesPositions", ("Symbol", "Position Amount", "Entry Price", "Mark Price",
+                                        "Unrealized Profit")),
+    ("binanceBalanceFuturesBalances", ("Asset", "Wallet Balance", "Unrealized Profit", "Available For Order")),
+    ("binanceBalanceFuturesCollateral", ("asset", "locked", "Loan Amount(USDT)",
+                                         "Total Principal For Interest(USDT)", "Current Rate", "Initial Rate",
+                                         "Liquidation Collateral Rate", "Liquidation Price",
+                                         "Total Interest(USDT)")),
+    ("binanceBalanceMarginCross", ("Trading Pair", "Risk Ratio", "Effective Multiple", "Currency",
+                                   "Total Balance", "Available Balance", "Borrowed")),
+    ("binanceBalanceMarginCross", ("Currency", "Total Balance", "Available Balance", "Borrowed", "Interest")),
+)
+# Columns each balance artifact reports: the union of its layouts, named as produced.
 _BALANCE_LAYOUTS = {
-    "binanceBalanceSpot": (
-        ("Currency Name", "Currency Code", "All Positions", "Available Positions", "In Withdrawal",
-         "Pending Order", "BTC Equivalent"),
-        ("Currency Name", "Currency Code", "All Positions", "Available Positions", "In Withdrawal",
-         "Pending Order", "BTC Equivalent", "USDT Equivalent")),
-    "binanceBalanceHoldings": (
-        ("Currency Name", "Currency Code", "All Positions", "BTC Equivalent"),
-        ("Currency Name", "Currency Code", "All Positions", "BTC Equivalent", "USDT Equivalent",
-         "Position Status")),
-    "binanceBalanceEarnProducts": (
-        ("Product Name", "Total Amount"),
-        ("Product Name", "Total Amount", "Accruing Interest", "Today Purchased Amount", "Redeeming Amount",
-         "Total Interest", "Average Annual Interest Rate", "USDT Equivalent")),
-    "binanceBalanceOverview": (
-        ("Spot(BTC)", "Futures(BTC)"),
-        ("Spot(BTC)", "Futures(BTC)", "Earn(BTC)", "MARGIN(BTC)", "Pool(BTC)", "Funding(BTC)",
-         "Option(BTC)")),
-    "binanceBalanceFuturesPositions": (
-        ("Symbol", "Position Amount", "Entry Price", "Mark Price", "Unrealized Profit"),
-        ("Symbol", "Position Amount", "Entry Price", "Mark Price", "Unrealized Profit", "USDT Equivalent")),
-    "binanceBalanceFuturesBalances": (
-        ("Asset", "Wallet Balance", "Unrealized Profit", "Available For Order"),
-        ("Asset", "Wallet Balance", "Unrealized Profit", "Available For Order", "USDT Equivalent")),
-    "binanceBalanceFuturesCollateral": (
-        ("asset", "locked", "Loan Amount(USDT)", "Total Principal For Interest(USDT)", "Current Rate",
-         "Initial Rate", "Liquidation Collateral Rate", "Liquidation Price", "Total Interest(USDT)"),
-        ("asset", "locked", "Loan Amount(USDT)", "Total Principal For Interest(USDT)", "Current Rate",
-         "Initial Rate", "Liquidation Collateral Rate", "Liquidation Price", "Total Interest(USDT)")),
-    "binanceBalanceMarginCross": (
-        ("Currency", "Total Balance", "Available Balance", "Borrowed", "Interest"),
-        ("Currency", "Total Balance", "Available Balance", "Borrowed", "Interest", "USDT Equivalent")),
-    "binanceBalanceMarginIsolated": (
-        ("Trading Pair", "Risk Ratio", "Effective Multiple", "Currency", "Total Balance", "Available Balance",
-         "Borrowed"),
-        ("Trading Pair", "Risk Ratio", "Effective Multiple", "Currency", "Total Balance", "Available Balance",
-         "Borrowed", "USDT Equivalent")),
+    "binanceBalanceOverview": ("Spot(BTC)", "Futures(BTC)", "Earn(BTC)", "MARGIN(BTC)", "Pool(BTC)",
+                               "Funding(BTC)", "Option(BTC)"),
+    "binanceBalanceSpot": ("Currency Name", "Currency Code", "All Positions", "Available Positions",
+                           "In Withdrawal", "Pending Order", "BTC Equivalent", "USDT Equivalent",
+                           "Position Status"),
+    "binanceBalanceEarnProducts": ("Product Name", "Total Amount", "Accruing Interest", "Today Purchased Amount",
+                                   "Redeeming Amount", "Total Interest", "Average Annual Interest Rate",
+                                   "USDT Equivalent"),
+    "binanceBalanceFuturesPositions": ("Symbol", "Position Amount", "Entry Price", "Mark Price",
+                                       "Unrealized Profit", "USDT Equivalent"),
+    "binanceBalanceFuturesBalances": ("Asset", "Wallet Balance", "Unrealized Profit", "Available For Order",
+                                      "USDT Equivalent"),
+    "binanceBalanceFuturesCollateral": ("asset", "locked", "Loan Amount(USDT)",
+                                        "Total Principal For Interest(USDT)", "Current Rate", "Initial Rate",
+                                        "Liquidation Collateral Rate", "Liquidation Price", "Total Interest(USDT)"),
+    "binanceBalanceMarginCross": ("Trading Pair", "Currency", "Risk Ratio", "Effective Multiple", "Total Balance",
+                                  "Available Balance", "Borrowed", "Interest", "USDT Equivalent"),
 }
+# Columns that name what a balance row is about rather than an amount; the others decide whether it is empty.
+_BALANCE_LABELS = {"Currency Name", "Currency Code", "Product Name", "Symbol", "Asset", "asset", "Currency",
+                   "Trading Pair", "Position Status"}
 
 # Customer Information blocks: title -> (artifact, columns reported).
 _CUSTOMER_BLOCKS = {
-    "Basic Information": ("binanceCustomerInfo", (
+    "Basic Information": "binanceCustomerInfo",
+    "API Information": "binanceApiInfo",
+    "KYC Approved Info": "binanceCustomerDetails",
+    "Address Validation": "binanceCustomerDetails",
+    "Sub-accounts": "binanceCustomerDetails",
+}
+# Columns each Customer Information artifact reports: the union of its blocks, named as produced.
+_CUSTOMER_COLUMNS = {
+    "binanceCustomerInfo": (
         "Registration time", "User ID", "Email", "Mobile", "Name", "First Name", "Last Name",
         "User nationality", "User ID number", "User authentication type", "User authentication time",
         "Status", "2FA", "2FA Opening time", "SMS", "SMS Opening time", "2FA Reset Information", "Tax ID",
-        "TnC", "TnC Sign Date")),
-    "API Information": ("binanceApiInfo", (
-        "Create Time", "Update Time", "Rule ID", "API Name", "Trade IP", "Withdraw IP")),
-    "KYC Approved Info": ("binanceKycInfo", (
+        "TnC", "TnC Sign Date"),
+    "binanceApiInfo": ("Create Time", "Update Time", "Rule ID", "API Name", "Trade IP", "Withdraw IP"),
+    "binanceCustomerDetails": (
         "Birthday", "ID issue Country", "ID Address", "ID type", "ID Sub-type", "issuing Authority",
-        "Issuing Date", "ID expiry Date")),
-    "Address Validation": ("binanceAddressValidation", (
-        "Residence", "Region/State", "City", "Address", "Postal/Zip Code")),
-    "Sub-accounts": ("binanceSubAccounts", ("Has Sub-account", "Sub-account Number")),
+        "Issuing Date", "ID expiry Date", "Residence", "Region/State", "City", "Address", "Postal/Zip Code",
+        "Has Sub-account", "Sub-account Number"),
 }
 _DEVICE_COLUMNS = ("Device Name", "Client", "IP Address", "Geolocation", "Recent Usage Timestamp (UTC)",
                    "Status")
@@ -1214,10 +1094,41 @@ def _blocks(rows):
 
 def _layout_for(header):
     names = set(header or ())
-    for artifact, (required, _columns) in _BALANCE_LAYOUTS.items():
+    for artifact, required in _BALANCE_MATCH:
         if set(required) <= names:
             return artifact
     return None
+
+
+def _zero(value):
+    """Blank, '-' and any number equal to zero (0, 0.00000000, 0E-8) count as zero."""
+    text = value.lstrip("'").strip()
+    if text in ("", "-"):
+        return True
+    try:
+        return float(text) == 0
+    except ValueError:
+        return False
+
+
+def _empty_balance(header, cells):
+    """True when every amount of a balance record is zero and it carries no column the artifact does not name."""
+    known = _BALANCE_LAYOUTS[_layout_for(header)]
+    if _extra(header, cells, known):
+        return False
+    record = _record(header, cells)
+    return all(_zero(v) for k, v in record.items() if k in known and k not in _BALANCE_LABELS)
+
+
+def _empty_table_row(spec, header, cells):
+    """True when a table row holds no position and none of the columns that keep it (its 'skip_empty')."""
+    if "skip_empty" not in spec:
+        return False
+    amounts, keepers = spec["skip_empty"]
+    if _extra(header, cells, spec["columns"]):
+        return False
+    record = _record(header, cells)
+    return all(_zero(record.get(c, "")) for c in amounts) and not any(record.get(c, "") for c in keepers)
 
 
 def _block_sheets(sheets):
@@ -1268,6 +1179,8 @@ def _table_artifact(context, artifact):
                 cells = sheet_rows[index]
                 if _blank(cells):
                     continue
+                if _empty_table_row(spec, header, cells):
+                    continue
                 record = _record(header, cells)
                 line = [title] if several else []
                 for column in known:
@@ -1281,11 +1194,14 @@ def _table_artifact(context, artifact):
     return tuple(headers), rows, "\n".join(sorted(sources))
 
 
-def _customer_artifact(context, title):
-    artifact, known = _CUSTOMER_BLOCKS[title]
+def _customer_artifact(context, artifact):
+    known = _CUSTOMER_COLUMNS[artifact]
+    titles = [title for title, owner in _CUSTOMER_BLOCKS.items() if owner == artifact]
     basic = artifact == "binanceCustomerInfo"
     headers = (["Heading (as produced)", "Heading ID", "Heading Email", "Heading Time (as produced)"] if basic
                else ["Heading ID"])
+    if len(titles) > 1:
+        headers.append("Block (as produced)")
     headers += list(known) + ["Other Columns (as produced)", "Sheet Row", "Source File"]
     rows, sources = [], set()
     for source, sheets in _workbooks(context):
@@ -1293,11 +1209,13 @@ def _customer_artifact(context, title):
         sources.add(source)
         parsed = _heading_parts(heading)
         for block in blocks:
-            if block["title"] != title or not block["header"]:
+            if block["title"] not in titles or not block["header"]:
                 continue
             for number, cells in block["records"]:
                 record = _record(block["header"], cells)
                 line = [heading] + parsed if basic else [parsed[0]]
+                if len(titles) > 1:
+                    line.append(block["title"])
                 line += [record.get(c, "") for c in known]
                 line += [_extra(block["header"], cells, known), number, context.get_relative_path(source)]
                 rows.append(tuple(line))
@@ -1305,7 +1223,7 @@ def _customer_artifact(context, title):
 
 
 def _balance_artifact(context, artifact):
-    _required, known = _BALANCE_LAYOUTS[artifact]
+    known = _BALANCE_LAYOUTS[artifact]
     headers = ["Sheet", "Block (as produced)"] + list(known) + ["Other Columns (as produced)", "Sheet Row",
                                                                  "Source File"]
     rows, sources = [], set()
@@ -1316,6 +1234,8 @@ def _balance_artifact(context, artifact):
                 if _layout_for(block["header"]) != artifact:
                     continue
                 for number, cells in block["records"]:
+                    if _empty_balance(block["header"], cells):
+                        continue
                     record = _record(block["header"], cells)
                     rows.append(tuple([title, block["title"]] + [record.get(c, "") for c in known]
                                       + [_extra(block["header"], cells, known), number,
@@ -1422,49 +1342,17 @@ def _image_type(data):
 # ------------------------------------------------------------------ artifacts
 @artifact_processor
 def binanceCustomerInfo(context):
-    return _customer_artifact(context, "Basic Information")
+    return _customer_artifact(context, "binanceCustomerInfo")
 
 
 @artifact_processor
 def binanceApiInfo(context):
-    return _customer_artifact(context, "API Information")
+    return _customer_artifact(context, "binanceApiInfo")
 
 
 @artifact_processor
-def binanceKycInfo(context):
-    return _customer_artifact(context, "KYC Approved Info")
-
-
-@artifact_processor
-def binanceAddressValidation(context):
-    return _customer_artifact(context, "Address Validation")
-
-
-@artifact_processor
-def binanceSubAccounts(context):
-    return _customer_artifact(context, "Sub-accounts")
-
-
-@artifact_processor
-def binanceCustomerOther(context):
-    headers = ("Block (as produced)", "Record (as produced)", "Sheet Row", "Source File")
-    rows, sources = [], set()
-    for source, sheets in _workbooks(context):
-        if "Customer Information" not in sheets:
-            continue
-        sources.add(source)
-        _heading, preamble, blocks = _customer_blocks(sheets)
-        for number, cells in preamble:
-            if not cells[0].startswith("User Basic Information"):
-                rows.append((_OTHER_BLOCKS, _pairs(_letters(cells), cells), number,
-                             context.get_relative_path(source)))
-        for block in blocks:
-            if block["title"] in _CUSTOMER_BLOCKS:
-                continue
-            for number, cells in block["records"]:
-                rows.append((block["title"], _pairs(block["header"] or [], cells), number,
-                             context.get_relative_path(source)))
-    return headers, rows, "\n".join(sorted(sources))
+def binanceCustomerDetails(context):
+    return _customer_artifact(context, "binanceCustomerDetails")
 
 
 @artifact_processor
@@ -1475,11 +1363,6 @@ def binanceBalanceOverview(context):
 @artifact_processor
 def binanceBalanceSpot(context):
     return _balance_artifact(context, "binanceBalanceSpot")
-
-
-@artifact_processor
-def binanceBalanceHoldings(context):
-    return _balance_artifact(context, "binanceBalanceHoldings")
 
 
 @artifact_processor
@@ -1508,15 +1391,10 @@ def binanceBalanceMarginCross(context):
 
 
 @artifact_processor
-def binanceBalanceMarginIsolated(context):
-    return _balance_artifact(context, "binanceBalanceMarginIsolated")
-
-
-@artifact_processor
 def binanceBalanceBlocks(context):
     names = {artifact: __artifacts_v2__[artifact]["name"] for artifact in _BALANCE_LAYOUTS}
-    headers = ("Sheet", "Block (as produced)", "Header (as produced)", "Records", "Note (as produced)",
-               "Reported In", "Sheet Row", "Source File")
+    headers = ("Sheet", "Block (as produced)", "Header (as produced)", "Records", "Rows Not Listed",
+               "Note (as produced)", "Reported In", "Sheet Row", "Source File")
     rows, sources = [], set()
     for source, sheets in _workbooks(context):
         for title, _preamble, blocks in _block_sheets(sheets):
@@ -1525,13 +1403,14 @@ def binanceBalanceBlocks(context):
                 layout = _layout_for(block["header"])
                 if layout:
                     reported = names[layout]
+                    not_listed = sum(1 for _n, cells in block["records"] if _empty_balance(block["header"], cells))
                 elif block["records"]:
-                    reported = __artifacts_v2__["binanceBalanceOther"]["name"]
+                    reported, not_listed = __artifacts_v2__["binanceBalanceOther"]["name"], 0
                 else:
-                    reported = ""
+                    reported, not_listed = "", 0
                 header = "; ".join(c for c in (block["header_raw"] or ()) if c)
-                rows.append((title, block["title"], header, len(block["records"]), block["note"], reported,
-                             block["row"], context.get_relative_path(source)))
+                rows.append((title, block["title"], header, len(block["records"]), not_listed, block["note"],
+                             reported, block["row"], context.get_relative_path(source)))
     return headers, rows, "\n".join(sorted(sources))
 
 
@@ -1540,6 +1419,19 @@ def binanceBalanceOther(context):
     headers = ("Sheet", "Block (as produced)", "Record (as produced)", "Sheet Row", "Source File")
     rows, sources = [], set()
     for source, sheets in _workbooks(context):
+        if "Customer Information" in sheets:
+            sources.add(source)
+            _heading, preamble, blocks = _customer_blocks(sheets)
+            for number, cells in preamble:
+                if not cells[0].startswith("User Basic Information"):
+                    rows.append(("Customer Information", _OTHER_BLOCKS, _pairs(_letters(cells), cells), number,
+                                 context.get_relative_path(source)))
+            for block in blocks:
+                if block["title"] in _CUSTOMER_BLOCKS:
+                    continue
+                for number, cells in block["records"]:
+                    rows.append(("Customer Information", block["title"], _pairs(block["header"] or [], cells),
+                                 number, context.get_relative_path(source)))
         for title, preamble, blocks in _block_sheets(sheets):
             sources.add(source)
             for number, cells in preamble:
@@ -1580,11 +1472,6 @@ def binanceOrders(context):
 
 
 @artifact_processor
-def binanceMarginOrders(context):
-    return _table_artifact(context, "binanceMarginOrders")
-
-
-@artifact_processor
 def binanceAssetLogs(context):
     return _table_artifact(context, "binanceAssetLogs")
 
@@ -1597,11 +1484,6 @@ def binanceP2P(context):
 @artifact_processor
 def binanceFiatDeposits(context):
     return _table_artifact(context, "binanceFiatDeposits")
-
-
-@artifact_processor
-def binanceFiatWithdrawals(context):
-    return _table_artifact(context, "binanceFiatWithdrawals")
 
 
 @artifact_processor
@@ -1665,18 +1547,8 @@ def binanceGiftCardCreation(context):
 
 
 @artifact_processor
-def binanceGiftCardTransfer(context):
-    return _table_artifact(context, "binanceGiftCardTransfer")
-
-
-@artifact_processor
 def binanceLoanOrders(context):
     return _table_artifact(context, "binanceLoanOrders")
-
-
-@artifact_processor
-def binanceRepayments(context):
-    return _table_artifact(context, "binanceRepayments")
 
 
 @artifact_processor
@@ -1759,7 +1631,7 @@ def binanceParsingNotes(context):
     headers = ("Sheet", "Sheet Row", "Note", "Source File")
     notes = []
     workbooks = _workbooks(context, notes)
-    other_blocks = {key: __artifacts_v2__[key]["name"] for key in ("binanceCustomerOther", "binanceBalanceOther")}
+    other_blocks = __artifacts_v2__["binanceBalanceOther"]["name"]
     for source, sheets in workbooks:
         titles = list(sheets)
         notes.append((source, "", "", f"read as a Binance return; {len(titles)} sheets: " + "; ".join(titles)))
@@ -1768,29 +1640,37 @@ def binanceParsingNotes(context):
         if unknown:
             notes.append((source, "", "", "sheets not recognised, or whose header matches no known layout, "
                           "reported under Other Sheets: " + "; ".join(unknown)))
+        for title, artifact in claims.items():
+            spec = _TABLES[artifact]
+            if "skip_empty" not in spec:
+                continue
+            index, header = _header_row(sheets[title])
+            skipped = sum(1 for cells in sheets[title][index + 1:]
+                          if any(cells) and _empty_table_row(spec, header, cells)) if index is not None else 0
+            if skipped:
+                notes.append((source, title, "", f"{skipped} rows with no position and no "
+                              + " or ".join(spec["skip_empty"][1]) + " not listed"))
         heading, preamble, blocks = _customer_blocks(sheets)
         if "Customer Information" in sheets and not _HEADING.match(heading):
             notes.append((source, "Customer Information", "",
                           "heading line not found or not in the expected form; Heading ID, Heading Email "
                           "and Heading Time are blank"))
-        for number, _cells in preamble:
-            if not _cells[0].startswith("User Basic Information"):
+        for number, cells in preamble:
+            if not cells[0].startswith("User Basic Information"):
                 notes.append((source, "Customer Information", number,
-                              f"row before the first block, reported under {other_blocks['binanceCustomerOther']}"))
+                              f"row before the first block, reported under {other_blocks}"))
         for block in blocks:
             if block["title"] not in _CUSTOMER_BLOCKS:
                 notes.append((source, "Customer Information", block["row"],
-                              f"block '{block['title']}' not recognised, reported under "
-                              f"{other_blocks['binanceCustomerOther']}"))
+                              f"block '{block['title']}' not recognised, reported under {other_blocks}"))
         for title, preamble, blocks in _block_sheets(sheets):
             for number, _cells in preamble:
-                notes.append((source, title, number,
-                              f"row before the first block, reported under {other_blocks['binanceBalanceOther']}"))
+                notes.append((source, title, number, f"row before the first block, reported under {other_blocks}"))
             for block in blocks:
                 if block["records"] and not _layout_for(block["header"]):
                     notes.append((source, title, block["row"],
                                   f"block '{block['title']}' has a header no known layout matches, reported "
-                                  f"under {other_blocks['binanceBalanceOther']}"))
+                                  f"under {other_blocks}"))
         if "Approved Devices" in sheets:
             _devices, _attributes, orphans = _device_rows(sheets["Approved Devices"])
             for number in orphans:

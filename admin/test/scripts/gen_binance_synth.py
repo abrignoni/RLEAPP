@@ -23,6 +23,8 @@ Covered:
     each device row, a pair with an empty value and a pair above the first device
   - images anchored on KYC Documents, an image stored in the workbook but anchored on no
     sheet, and PNG bytes stored under a .jpeg name
+  - balance and Current Assets rows whose amounts are all zero (0, 0.00000000, 0E-8, '-'), which
+    must be left out and counted, beside zero rows kept for a deposit address or a memo
   - a sheet the module does not recognise, and a decoy .xlsx without the Binance sheets
   - a workbook in the 2024 layout: First/Last Name, Tax ID and TnC columns, the KYC Approved
     Info, Address Validation and Sub-accounts blocks and an unrecognised block in Customer
@@ -204,9 +206,11 @@ def workbook_18(path):
     ws = wb.create_sheet("Account Balance")
     put(ws, balance_rows([
         ("Spot", SPOT_HDR, [["SynthCoin", "SYC", "1.50000000", "1.00000000", "0.50000000", "0", "0.00010000"],
-                            ["TestToken", "TST", "20", "20", "0", "0", "0.00000100"]]),
+                            ["TestToken", "TST", "20", "20", "0", "0", "0.00000100"],
+                            ["ZeroCoin", "ZRO", "0", "0.00000000", "0", "0", "0E-8"]]),
         ("Futures USDT position", FUT_POS_HDR, [["SYCUSDT", "0.010", "100.0", "101.5", "0.015"], None, None,
-                                                ["TSTUSDT", "-2", "3.00", "2.90", "0.20"]]),
+                                                ["TSTUSDT", "-2", "3.00", "2.90", "0.20"],
+                                                ["ZROUSDT", "0", "0", "0", "0"], ["ZRAUSDT", "0.0", "0", "0", "0"]]),
         ("Futures USDT balance", FUT_BAL_HDR, [["USDT", "10.00000000", "0.21712345", "9.00000000"]]),
         ("Futures USDT Collateral", FUT_COL_HDR, [["SYC", "0.5", "20", "20", "0.0001", "0.65", "0.91", "40",
                                                    "0.01"]]),
@@ -219,7 +223,10 @@ def workbook_18(path):
     ]))
     table(wb, "Current Assets & Wallets", ASSETS_HDR,
           [["SYC", "SynthCoin", "1.5", "0.0001", "synthaddr0000000000000000000001", ""],
-           ["TST", "TestToken", "20", "0.000001", "synthaddr0000000000000000000002", "SYNTHMEMO1"]])
+           ["TST", "TestToken", "20", "0.000001", "synthaddr0000000000000000000002", "SYNTHMEMO1"],
+           ["ZRO", "ZeroCoin", "0", "0", "", ""],
+           ["ZRA", "ZeroAddrCoin", "0", "0", "synthaddr0000000000000000000009", ""],
+           ["ZRM", "ZeroMemoCoin", "0", "0", "", "SYNTHMEMO2"]])
     table(wb, "Order History", ORDER_HDR,
           [[uid, "SYCUSDT", "100", "0.01", "100", "0", "0.01", "2021-06-01 10:00:00", "2021-06-01 10:00:01",
             "BUY", "FILLED", "LIMIT", "0", "USDT", "SYC"]])
@@ -375,7 +382,8 @@ def assets_overview(wb):
         ("Fiat", None, []),
         ("Margin - Cross", CROSS_HDR + ["USDT Equivalent"], [["SYC", "", "1", "0", "0", "11"]]),
         ("Margin - Isolated", ISOLATED_HDR + ["USDT Equivalent"],
-         [["SYC/USDT", "'-", "'-", "'-", "'-", "'-", "'-", "'-"]]),
+         [["SYC/USDT", "'-", "'-", "'-", "'-", "'-", "'-", "'-"],
+          ["TST/USDT", "2.5", "3", "TST", "1", "1", "0", "0.1"]]),
         ("Pool", None, []),
         ("Funding", ["Currency Name", "Currency Code", "All Positions", "BTC Equivalent", "USDT Equivalent"],
          [["TestToken", "TST", "1", "0", "0.1"]]),

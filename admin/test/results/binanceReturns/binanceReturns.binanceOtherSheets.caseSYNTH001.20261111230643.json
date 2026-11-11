@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "module_name": "binanceReturns",
+    "artifact_name": "Binance - Other Sheets",
+    "function_name": "binanceOtherSheets",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 4,
+    "number_of_rows": 4,
+    "total_data_size_bytes": 390,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/binanceReturns/testdata.binanceReturns.binanceOtherSheets.caseSYNTH001.zip",
+    "start_time": "2026-11-11T23:06:43.320339+00:00",
+    "end_time": "2026-11-11T23:06:43.371877+00:00",
+    "run_time_seconds": 0.04624795913696289,
+    "last_commit": {
+      "hash": "7063d4a1a89120c76f7a5b54e6a8efd1cd19d8f9",
+      "author_name": "Maxitelmo",
+      "author_email": "50964800+Maxitelmo@users.noreply.github.com",
+      "date": "2026-11-11T19:07:39+00:00",
+      "message": "binanceReturns: support the 2024 return layout"
+    }
+  },
+  "headers": [
+    "Sheet",
+    "Sheet Row",
+    "Cells (as produced)",
+    "Source File"
+  ],
+  "data": [
+    [
+      "SYNTH Unknown Sheet",
+      1,
+      "A: SYNTH Label; B: SYNTH Value",
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "SYNTH Unknown Sheet",
+      2,
+      "A: synth-a; B: 1",
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "Fiat Withdrawal History",
+      1,
+      "A: SYNTH Unknown Fiat Header; B: SYNTH Other",
+      "account_three/SYNTH_binance_return_2024_layout.xlsx"
+    ],
+    [
+      "Fiat Withdrawal History",
+      2,
+      "A: synth-x; B: 1",
+      "account_three/SYNTH_binance_return_2024_layout.xlsx"
+    ]
+  ]
+}

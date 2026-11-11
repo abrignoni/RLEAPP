@@ -1,0 +1,77 @@
+{
+  "metadata": {
+    "module_name": "binanceReturns",
+    "artifact_name": "Binance - Binance Pay",
+    "function_name": "binancePay",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 15,
+    "number_of_rows": 2,
+    "total_data_size_bytes": 257,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/binanceReturns/testdata.binanceReturns.binancePay.caseSYNTH001.zip",
+    "start_time": "2026-11-11T23:06:43.661444+00:00",
+    "end_time": "2026-11-11T23:06:43.714761+00:00",
+    "run_time_seconds": 0.04759407043457031,
+    "last_commit": {
+      "hash": "7063d4a1a89120c76f7a5b54e6a8efd1cd19d8f9",
+      "author_name": "Maxitelmo",
+      "author_email": "50964800+Maxitelmo@users.noreply.github.com",
+      "date": "2026-11-11T19:07:39+00:00",
+      "message": "binanceReturns: support the 2024 return layout"
+    }
+  },
+  "headers": [
+    "Transaction Time",
+    "User ID",
+    "Transaction wallet ID",
+    "Merchant Name",
+    "Counterparty Wallet ID",
+    "Counterparty Binance ID",
+    "Order ID",
+    "Transaction ID",
+    "Transaction Type",
+    "Currency",
+    "Amount",
+    "USDT equivalent",
+    "Other Columns (as produced)",
+    "Sheet Row",
+    "Source File"
+  ],
+  "data": [
+    [
+      "2021-09-02 00:00:00",
+      "90000001",
+      "",
+      "SYNTH MERCHANT",
+      "",
+      "",
+      "",
+      "",
+      "PAY",
+      "TST",
+      "5",
+      "",
+      "",
+      2,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      "2023-05-01 00:00:00",
+      "90000003",
+      "900000001",
+      "",
+      "900000002",
+      "900000003",
+      "900000000000000001",
+      "S_P_900000000000000001",
+      "C2C",
+      "TST",
+      "-1.5",
+      "-0.15",
+      "",
+      2,
+      "account_three/SYNTH_binance_return_2024_layout.xlsx"
+    ]
+  ]
+}
