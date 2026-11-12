@@ -35,10 +35,15 @@ __artifacts_v2__ = {
                  "reported as produced and not converted. The heading used an ASCII or a full-width opening "
                  "parenthesis in the observed returns; both are read. In the 2022 returns compared cell by cell, "
                  "Mobile, User nationality, 2FA Opening time and SMS were empty, and Heading ID and Heading Email "
-                 "matched User ID and Email.",
+                 "matched User ID and Email."
+                 " In the four returns tested, Status and 2FA held one value on every row, and Sheet Row held one "
+                 "value on every row because the block starts on the same row in each. Tax ID, TnC and TnC Sign "
+                 "Date were empty on every row. Heading ID and User ID were identical on every row, and so were "
+                 "Heading Email and Email. Other Columns (as produced) was empty on every row; it holds any "
+                 "column a return adds that this artifact does not name.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
@@ -68,10 +73,14 @@ __artifacts_v2__ = {
                  " its row. Seen only in the 2024 return; there Address Validation held a header and no records, "
                  "so its columns have only been exercised on synthetic data. Columns are named as the return names"
                  " them and dates are reported as produced. Heading ID is the id from the sheet's heading line, so"
-                 " rows from several workbooks stay separable.",
+                 " rows from several workbooks stay separable."
+                 " In the four returns tested, ID Address, issuing Authority, Issuing Date, Residence, "
+                 "Region/State, City, Address and Postal/Zip Code were empty on every row. Other Columns (as "
+                 "produced) was empty on every row; it holds any column a return adds that this artifact does not "
+                 "name.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-11",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
@@ -86,10 +95,13 @@ __artifacts_v2__ = {
                  "Balance - Other Blocks. Values are reported as the text the return holds. The return does not "
                  "say at what time the balances were taken. A row is listed only when one of its amounts is not "
                  "zero (blank, '-' and 0 count as zero). Block Index gives, per block, how many rows were left out"
-                 " this way.",
+                 " this way."
+                 " In the four returns tested, only the 2024 return had this sheet, so Sheet and Block (as "
+                 "produced) held one value on every row. Other Columns (as produced) was empty on every row; it "
+                 "holds any column a return adds that this artifact does not name.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-11",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
@@ -107,10 +119,13 @@ __artifacts_v2__ = {
                  "some of them only; a column a block lacks is blank. USDT Equivalent appears only in the 2024 "
                  "layout. Amounts are reported as the text the return holds. The return does not say at what time "
                  "the balances were taken. A row is listed only when one of its amounts is not zero (blank, '-' "
-                 "and 0 count as zero). Block Index gives, per block, how many rows were left out this way.",
+                 "and 0 count as zero). Block Index gives, per block, how many rows were left out this way."
+                 " In the four returns tested, In Withdrawal and Pending Order were identical on every row. Other "
+                 "Columns (as produced) was empty on every row; it holds any column a return adds that this "
+                 "artifact does not name.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
@@ -123,10 +138,13 @@ __artifacts_v2__ = {
                 "notes": "Seen only in the 2024 return, in the block titled 'Earn - flexible savings'. Rates and amounts "
                  "are reported as the text the return holds. A row is listed only when one of its amounts is not "
                  "zero (blank, '-' and 0 count as zero). Block Index gives, per block, how many rows were left out"
-                 " this way.",
+                 " this way."
+                 " In the four returns tested, Total Amount and Accruing Interest were identical on every row. "
+                 "Other Columns (as produced) was empty on every row; it holds any column a return adds that this "
+                 "artifact does not name.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-11",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
@@ -143,10 +161,14 @@ __artifacts_v2__ = {
                  " row is listed only when one of its amounts is not zero (blank, '-' and 0 count as zero); in the"
                  " 2022 returns compared cell by cell, more than 90% of the rows of these blocks were all zero, "
                  "one row per asset or pair listed. Block Index gives, per block, how many rows were left out this"
-                 " way.",
+                 " way."
+                 " In the four returns tested, every row listed came from one 2022 block, so Sheet and Block (as "
+                 "produced) held one value on every row, and USDT Equivalent, which appears only in the 2024 "
+                 "layout, was empty. Other Columns (as produced) was empty on every row; it holds any column a "
+                 "return adds that this artifact does not name.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
@@ -162,10 +184,13 @@ __artifacts_v2__ = {
                  "appears only in the 2024 layout. Amounts are reported as the text the return holds. A row is "
                  "listed only when one of its amounts is not zero (blank, '-' and 0 count as zero); in the 2022 "
                  "returns compared cell by cell, more than 90% of the rows of these blocks were all zero, one row "
-                 "per asset or pair listed. Block Index gives, per block, how many rows were left out this way.",
+                 "per asset or pair listed. Block Index gives, per block, how many rows were left out this way."
+                 " In the four returns tested, USDT Equivalent was empty on every row listed, since it appears "
+                 "only in the 2024 layout. Other Columns (as produced) was empty on every row; it holds any "
+                 "column a return adds that this artifact does not name.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
@@ -179,10 +204,15 @@ __artifacts_v2__ = {
                 "notes": "Columns are named as the return names them, lower-case asset and locked included. A block is "
                  "assigned by its header row. Amounts and rates are reported as the text the return holds. A row "
                  "is listed only when one of its amounts is not zero (blank, '-' and 0 count as zero). Block Index"
-                 " gives, per block, how many rows were left out this way.",
+                 " gives, per block, how many rows were left out this way."
+                 " In the four returns tested, every row listed came from one block of the 2022 Account Balance "
+                 "sheet, so Sheet and Block (as produced) held one value on every row; locked, Loan Amount(USDT), Total Principal For "
+                 "Interest(USDT), Current Rate, Liquidation Price and Total Interest(USDT) also held one value on "
+                 "every row. Other Columns (as produced) was empty on every row; it holds any column a return "
+                 "adds that this artifact does not name.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
@@ -288,10 +318,11 @@ __artifacts_v2__ = {
                  "are the union of the layouts observed: BUSD in the 2022 returns; Account Type and USDT in the "
                  "2024 return. A header with a trailing space ('Destination Address ') is read the same as one "
                  "without. Apply Time carries no zone in the return and is reported as produced. Label/Tag/Memo "
-                 "was empty on every row of the 2022 returns compared cell by cell.",
+                 "was empty on every row of the 2022 returns compared cell by cell."
+                 " In the four returns tested, Status held one value on every row.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
@@ -324,10 +355,12 @@ __artifacts_v2__ = {
                  "Source appear only in the 2024 layout. Time and Update Time carry no zone in the return and are "
                  "reported as produced. In the 2022 returns compared cell by cell, the one with records held a "
                  "single space in Type on every row, reported blank. Margin Order held a header and no records in "
-                 "the 2024 return, so it has only been exercised on synthetic data.",
+                 "the 2024 return, so it has only been exercised on synthetic data."
+                 " In the four returns tested, no return had Margin Order rows, so Sheet held one value on "
+                 "every row.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
@@ -341,10 +374,12 @@ __artifacts_v2__ = {
                  "sheet carries columns this artifact does not name; such columns are kept there as JSON. Sheet "
                  "names the log each row came from. Seen only in the 2024 return. Time carries no zone in the "
                  "return and is reported as produced. Type and Description are reported as produced; the module "
-                 "does not interpret them.",
+                 "does not interpret them."
+                 " In the four returns tested, Commission ID was empty on every row, and Available and Freeze "
+                 "were identical on every row.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-11",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
@@ -357,10 +392,12 @@ __artifacts_v2__ = {
         "notes": "Columns are named as the return names them. Other Columns (as produced) is empty unless the "
                  "sheet carries columns this artifact does not name; such columns are kept there as JSON. Seen "
                  "only in the 2024 return. Times carry no zone in the return and are reported as produced. Buy or "
-                 "Sell is reported as produced.",
+                 "Sell is reported as produced."
+                 " In the four returns tested, Crypto and Status held one value on every row, and Target UID and "
+                 "Take ID were identical on every row.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-11",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
@@ -429,10 +466,12 @@ __artifacts_v2__ = {
         "notes": "Timestamp (UTC) is converted from the column the return labels 'Timestamp (UTC)'; it is blank "
                  "when the value is not in the form YYYY-MM-DD HH:MM:SS, and Timestamp (as produced) holds the "
                  "value as written on every row. Port Number appears only in the 2024 layout. Operation, "
-                 "Geolocation and the other columns are reported as produced.",
+                 "Geolocation and the other columns are reported as produced."
+                 " In the four returns tested, Port Number was empty on every row. Other Columns (as produced) "
+                 "was empty on every row; it holds any column a return adds that this artifact does not name.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
@@ -444,10 +483,12 @@ __artifacts_v2__ = {
         "description": "Records from the OTC Payment sheet.",
         "notes": "Columns are named as the return names them. Other Columns (as produced) is empty unless the "
                  "sheet carries columns this artifact does not name; such columns are kept there as JSON. Seen in "
-                 "the 2022 returns; the 2024 return had an OTC Payment ID History sheet instead.",
+                 "the 2022 returns; the 2024 return had an OTC Payment ID History sheet instead."
+                 " In the four returns tested, Name, Bank account number, Bank name and Account opening branch "
+                 "were empty on every row.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
@@ -461,10 +502,12 @@ __artifacts_v2__ = {
                  "sheet carries columns this artifact does not name; such columns are kept there as JSON. Seen "
                  "only in the 2024 return. Update time values there carried a zone suffix in parentheses inside "
                  "the value; they are reported as produced and not converted. Payment Detail is reported as "
-                 "produced.",
+                 "produced."
+                 " In the four returns tested, User Id held one value on every row. Each return tested covers one "
+                 "account.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-11",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
@@ -477,10 +520,12 @@ __artifacts_v2__ = {
         "notes": "Columns are named as the return names them. Other Columns (as produced) is empty unless the "
                  "sheet carries columns this artifact does not name; such columns are kept there as JSON. Columns "
                  "are the union of the layouts observed: TotalAsset BUSD in the 2022 returns, TotalAsset USDT in "
-                 "the 2024 return. Amounts are reported as the text the return holds.",
+                 "the 2024 return. Amounts are reported as the text the return holds."
+                 " In the four returns tested, TotalAsset and Free were identical on every row, and Freeze, "
+                 "Withdrawing and Locked were identical on every row.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
@@ -511,10 +556,12 @@ __artifacts_v2__ = {
         "notes": "Columns are named as the return names them. Other Columns (as produced) is empty unless the "
                  "sheet carries columns this artifact does not name; such columns are kept there as JSON. Wallet, "
                  "counterparty, order and transaction ID columns and USDT equivalent appear only in the 2024 "
-                 "layout. Times carry no zone in the return and are reported as produced.",
+                 "layout. Times carry no zone in the return and are reported as produced."
+                 " In the four returns tested, User ID and Transaction Type held one value on every row, and "
+                 "Merchant Name was empty on every row. Each return tested covers one account.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
@@ -527,10 +574,12 @@ __artifacts_v2__ = {
         "notes": "Columns are named as the return names them. Other Columns (as produced) is empty unless the "
                  "sheet carries columns this artifact does not name; such columns are kept there as JSON. USDT "
                  "Equivalent appears only in the 2024 layout. Times carry no zone in the return and are reported "
-                 "as produced; in the 2024 return they carried a suffix in parentheses inside the value.",
+                 "as produced; in the 2024 return they carried a suffix in parentheses inside the value."
+                 " In the four returns tested, TransId, OtcUserId, SpreadUserId, ChannelUserId, UserRemark and "
+                 "ChannelRemark were empty on every row.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
@@ -616,10 +665,12 @@ __artifacts_v2__ = {
                  "with the same Device Number. In some 2022 returns each header also carried a Chinese label after"
                  " the English one; columns are matched on the English words. Recent Usage Timestamp (UTC) is "
                  "converted from the column the return labels UTC and is blank when the value is not in the form "
-                 "YYYY-MM-DD HH:MM:SS.",
+                 "YYYY-MM-DD HH:MM:SS."
+                 " In the four returns tested, Other Columns (as produced) was empty on every row; it holds any "
+                 "column a return adds that this artifact does not name.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
@@ -647,10 +698,12 @@ __artifacts_v2__ = {
         "notes": "Images are read from the workbook's own drawing parts, not from the sheet's cells. In the 2022 "
                  "returns compared cell by cell they were JPEG images anchored on the KYC Documents sheet, which "
                  "held no cells. The module does not say what an image shows. An image stored in the workbook but "
-                 "not anchored on any sheet is reported with a blank Sheet.",
+                 "not anchored on any sheet is reported with a blank Sheet."
+                 " In the four returns tested, every image was on the KYC Documents sheet and was a JPEG, so "
+                 "Sheet and Detected Type held one value on every row.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
