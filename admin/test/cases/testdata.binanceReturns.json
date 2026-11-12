@@ -17,7 +17,7 @@
         "artifacts": {
             "binanceCustomerInfo": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -27,7 +27,7 @@
             },
             "binanceApiInfo": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -37,7 +37,7 @@
             },
             "binanceCustomerDetails": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -47,7 +47,7 @@
             },
             "binanceBalanceOverview": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -57,7 +57,7 @@
             },
             "binanceBalanceHoldings": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -67,7 +67,7 @@
             },
             "binanceBalanceEarnProducts": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -77,7 +77,7 @@
             },
             "binanceBalanceFuturesPositions": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -87,7 +87,7 @@
             },
             "binanceBalanceFuturesBalances": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -97,7 +97,7 @@
             },
             "binanceBalanceFuturesCollateral": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -107,7 +107,7 @@
             },
             "binanceBalanceMargin": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -117,7 +117,7 @@
             },
             "binanceBalanceBlocks": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -127,7 +127,7 @@
             },
             "binanceOtherBlocks": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -137,7 +137,7 @@
             },
             "binanceCurrentAssets": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -147,7 +147,7 @@
             },
             "binanceDeposits": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -157,7 +157,7 @@
             },
             "binanceWithdrawals": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -167,7 +167,7 @@
             },
             "binanceAttemptedWithdrawals": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -177,7 +177,7 @@
             },
             "binanceOrders": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -187,7 +187,7 @@
             },
             "binanceAssetLogs": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -197,7 +197,7 @@
             },
             "binanceP2P": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -207,7 +207,7 @@
             },
             "binanceFiatHistory": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -217,7 +217,7 @@
             },
             "binanceFiatOrders": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -227,7 +227,7 @@
             },
             "binanceFiatPaymentMethods": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -237,7 +237,7 @@
             },
             "binanceAccessLogs": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -247,7 +247,7 @@
             },
             "binanceOtcPayment": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -257,7 +257,7 @@
             },
             "binanceOtcPaymentIdHistory": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -267,7 +267,7 @@
             },
             "binanceFundingWallet": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -277,7 +277,7 @@
             },
             "binanceSend": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -287,7 +287,7 @@
             },
             "binancePay": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -297,7 +297,7 @@
             },
             "binanceOtcTrading": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -307,7 +307,7 @@
             },
             "binanceCards": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -317,7 +317,7 @@
             },
             "binanceCardTransactions": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -327,7 +327,7 @@
             },
             "binanceGiftCards": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -337,7 +337,7 @@
             },
             "binanceLoans": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -347,7 +347,7 @@
             },
             "binanceDevices": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -357,7 +357,7 @@
             },
             "binanceDeviceAttributes": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -367,7 +367,7 @@
             },
             "binanceEmbeddedImages": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -377,7 +377,7 @@
             },
             "binanceOtherSheets": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {
@@ -387,7 +387,7 @@
             },
             "binanceParsingNotes": {
                 "search_patterns": [
-                    "*.xlsx"
+                    "*.[Xx][Ll][Ss][Xx]"
                 ],
                 "file_count": 4,
                 "expected_output": {

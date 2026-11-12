@@ -52,7 +52,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "user",
     },
@@ -67,7 +67,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-11",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "key",
     },
@@ -89,14 +89,14 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "id",
     },
     "binanceBalanceOverview": {
         "name": "Binance - Account Balance - Overview",
         "description": "Records from Assets Overview blocks with the per-account BTC overview layout.",
-                "notes": "Seen only in the Assets Overview sheet of the 2024 return, in the block titled 'single "
+        "notes": "Seen only in the Assets Overview sheet of the 2024 return, in the block titled 'single "
                  "overview'. The estimated total balance lines above the first block are reported under Account "
                  "Balance - Other Blocks. Values are reported as the text the return holds. The return does not "
                  "say at what time the balances were taken. A row is listed only when one of its amounts is not "
@@ -110,7 +110,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "chart-pie",
     },
@@ -118,7 +118,7 @@ __artifacts_v2__ = {
         "name": "Binance - Account Balance - Holdings",
         "description": "Records from Account Balance and Assets Overview blocks that list currencies with their "
                  "positions (Spot, Funding, Earn staking and Autoinvest).",
-                "notes": "A block is assigned to this artifact by its header row, not its title. Sheet is the sheet it "
+        "notes": "A block is assigned to this artifact by its header row, not its title. Sheet is the sheet it "
                  "came from (Account Balance in the 2022 returns, Assets Overview in the 2024 return) and Block "
                  "(as produced) its title row. Spot blocks carry Available Positions, In Withdrawal and Pending "
                  "Order; the 2024 Funding, staking and Autoinvest blocks do not, and Position Status appears in "
@@ -134,14 +134,14 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "wallet",
     },
     "binanceBalanceEarnProducts": {
         "name": "Binance - Account Balance - Earn Products",
         "description": "Records from Assets Overview blocks with the Earn product layout.",
-                "notes": "Seen only in the 2024 return, in the block titled 'Earn - flexible savings'. Rates and amounts "
+        "notes": "Seen only in the 2024 return, in the block titled 'Earn - flexible savings'. Rates and amounts "
                  "are reported as the text the return holds. A row is listed only when one of its amounts is not "
                  "zero (blank, '-' and 0 count as zero). Block Index gives, per block, how many rows were left out"
                  " this way."
@@ -153,14 +153,15 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "percentage",
     },
     "binanceBalanceFuturesPositions": {
         "name": "Binance - Account Balance - Futures Positions",
-        "description": "Records from Account Balance and Assets Overview blocks with the futures position column layout.",
-                        "notes": "Blocks with this layout were titled 'Futures USDT position' and 'Futures 币本位 position' in the "
+        "description": "Records from Account Balance and Assets Overview blocks with the futures position column "
+                       "layout.",
+        "notes": "Blocks with this layout were titled 'Futures USDT position' and 'Futures 币本位 position' in the "
                  "2022 returns, and 'Futures USDT position' and 'Futures Coin position' in the 2024 return; Block "
                  "(as produced) keeps the title untranslated. A block is assigned by its header row. USDT "
                  "Equivalent appears only in the 2024 layout. Amounts are reported as the text the return holds. A"
@@ -177,15 +178,16 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "trending-up",
     },
     "binanceBalanceFuturesBalances": {
         "name": "Binance - Account Balance - Futures Balances",
-        "description": "Records from Account Balance and Assets Overview blocks with the futures balance column layout.",
-                        "notes": "Blocks with this layout were titled 'Futures USDT balance' and 'Futures 币本位 balance' in the 2022"
-                 " returns, and 'Futures USDT balance' and 'Futures Coin balance' in the 2024 return; Block (as "
+        "description": "Records from Account Balance and Assets Overview blocks with the futures balance column "
+                       "layout.",
+        "notes": "Blocks with this layout were titled 'Futures USDT balance' and 'Futures 币本位 balance' in the "
+                 "2022 returns, and 'Futures USDT balance' and 'Futures Coin balance' in the 2024 return; Block (as "
                  "produced) keeps the title untranslated. A block is assigned by its header row. USDT Equivalent "
                  "appears only in the 2024 layout. Amounts are reported as the text the return holds. A row is "
                  "listed only when one of its amounts is not zero (blank, '-' and 0 count as zero); in the 2022 "
@@ -199,7 +201,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "scale",
     },
@@ -207,21 +209,21 @@ __artifacts_v2__ = {
         "name": "Binance - Account Balance - Futures Collateral",
         "description": "Records from Account Balance and Assets Overview blocks with the futures collateral column "
                  "layout.",
-                "notes": "Columns are named as the return names them, lower-case asset and locked included. A block is "
+        "notes": "Columns are named as the return names them, lower-case asset and locked included. A block is "
                  "assigned by its header row. Amounts and rates are reported as the text the return holds. A row "
                  "is listed only when one of its amounts is not zero (blank, '-' and 0 count as zero). Block Index"
                  " gives, per block, how many rows were left out this way."
                  " In the four returns tested, every row listed came from one block of the 2022 Account Balance "
-                 "sheet, so Sheet and Block (as produced) held one value on every row; locked, Loan Amount(USDT), Total Principal For "
-                 "Interest(USDT), Current Rate, Liquidation Price and Total Interest(USDT) also held one value on "
-                 "every row. Other Columns (as produced) was empty on every row; it holds any column a return "
-                 "adds that this artifact does not name.",
+                 "sheet, so Sheet and Block (as produced) held one value on every row; locked, Loan Amount(USDT), "
+                 "Total Principal For Interest(USDT), Current Rate, Liquidation Price and Total Interest(USDT) "
+                 "also held one value on every row. Other Columns (as produced) was empty on every row; it holds any "
+                 "column a return adds that this artifact does not name.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "lock",
     },
@@ -229,7 +231,7 @@ __artifacts_v2__ = {
         "name": "Binance - Account Balance - Margin",
         "description": "Records from Account Balance and Assets Overview blocks with the Margin - Cross or Margin - "
                  "Isolated column layout.",
-                        "notes": "Block (as produced) says which: Margin - Cross rows carry Interest, Margin - Isolated rows carry"
+        "notes": "Block (as produced) says which: Margin - Cross rows carry Interest, Margin - Isolated rows carry"
                  " Trading Pair, Risk Ratio and Effective Multiple; a column a block lacks is blank. A block is "
                  "assigned by its header row. USDT Equivalent appears only in the 2024 layout. Amounts and ratios "
                  "are reported as the text the return holds; '-' is reported as produced. A row is listed only "
@@ -241,7 +243,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-11",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "stack-2",
     },
@@ -259,7 +261,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-11",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "list",
     },
@@ -277,7 +279,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-11",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "layout-grid",
     },
@@ -295,7 +297,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-11",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "wallet",
     },
@@ -312,7 +314,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-11",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "download",
     },
@@ -331,7 +333,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "upload",
     },
@@ -348,7 +350,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-11",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "ban",
     },
@@ -369,7 +371,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "shopping-cart",
     },
@@ -388,7 +390,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "list",
     },
@@ -406,7 +408,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "arrows-exchange",
     },
@@ -426,7 +428,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-11",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "building-bank",
     },
@@ -446,7 +448,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-11",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "building-bank",
     },
@@ -462,7 +464,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-11",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "credit-card",
     },
@@ -480,7 +482,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "login",
     },
@@ -497,7 +499,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "credit-card",
     },
@@ -516,7 +518,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "history",
     },
@@ -534,7 +536,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "wallet",
     },
@@ -552,7 +554,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-11",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "send",
     },
@@ -570,7 +572,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "cash",
     },
@@ -588,7 +590,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "arrows-exchange",
     },
@@ -604,7 +606,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-11",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "credit-card",
     },
@@ -623,7 +625,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-11",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "receipt",
     },
@@ -640,7 +642,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-11",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "gift",
     },
@@ -659,7 +661,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-11",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "moneybag",
     },
@@ -679,7 +681,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "device-mobile",
     },
@@ -694,7 +696,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-11",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "list-details",
     },
@@ -712,14 +714,14 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "photo",
     },
     "binanceOtherSheets": {
         "name": "Binance - Other Sheets",
-        "description": "Rows of sheets this module does not recognise, or whose header matches no known layout, reported"
-                 " cell for cell.",
+        "description": "Rows of sheets this module does not recognise, or whose header matches no known layout, "
+                       "reported cell for cell.",
         "notes": "Cells (as produced) is every non-empty cell of the row as 'column letter: value' pairs, because "
                  "the module does not know which row of an unknown sheet is its header.",
         "author": "@Maxitelmo, Claude",
@@ -727,7 +729,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-11",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "table",
     },
@@ -745,7 +747,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
-        "paths": ("*.xlsx",),
+        "paths": ("*.[Xx][Ll][Ss][Xx]",),
         "output_types": "standard",
         "artifact_icon": "alert-triangle",
     },
@@ -1164,6 +1166,8 @@ def _blocks(rows):
     A title is a row with one non-empty cell, in column A, that is the first row of the
     sheet or follows an empty row, and whose next non-empty row is a note or has more than
     one cell. Rows before the first title are returned as the preamble.
+    A one-cell row starting 'Note:' before any record is the block's note, with or without
+    a header row above it.
     """
     blocks, preamble, current = [], [], None
     for index, cells in enumerate(rows):
@@ -1182,8 +1186,9 @@ def _blocks(rows):
                 continue
         if current is None:
             preamble.append((number, cells))
-        elif current["header"] is None and not current["records"] and len(filled) == 1 \
+        elif not current["records"] and not current["note"] and len(filled) == 1 \
                 and cells[0].startswith("Note:"):
+            # In place of the header in the returns observed; also read when it follows one.
             current["note"] = cells[0]
         elif current["header"] is None:
             current["header_raw"] = cells

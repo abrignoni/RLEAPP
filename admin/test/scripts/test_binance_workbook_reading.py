@@ -1,4 +1,5 @@
-"""Binance returns: other providers' workbooks, repeated headers and reading each workbook once."""
+"""Binance returns: other providers' workbooks, repeated headers, notes and reading each workbook once."""
+import fnmatch
 from pathlib import Path
 import sys
 import tempfile
@@ -111,6 +112,38 @@ class WorkbookReading(unittest.TestCase):
                 run(name, context)
         self.assertEqual(read.call_count, 21)
         self.assertEqual(len(run("binanceDeposits", context)[1]), 20)
+
+    def test_pattern_matches_the_extension_in_any_case(self):
+        for name, info in artifact.__artifacts_v2__.items():
+            with self.subTest(artifact=name):
+                (pattern,) = info["paths"]
+                for path in ("root/return.xlsx", "root/folder/RETURN.XLSX", "root/Return.Xlsx"):
+                    self.assertTrue(fnmatch.fnmatchcase(path, pattern), path)
+                for path in ("root/return.xls", "root/return.xlsm", "root/return.xlsx.bak"):
+                    self.assertFalse(fnmatch.fnmatchcase(path, pattern), path)
+
+    def test_upper_case_extension_is_read(self):
+        good = self.root / "RETURN.XLSX"
+        binance_workbook(good, [["Create Time", "Amount"], ["2021-01-01 00:00:00", "1"]])
+        self.assertEqual(len(run("binanceDeposits", Context(good))[1]), 1)
+
+    def test_note_is_read_with_or_without_a_header_above_it(self):
+        note = ("Note: empty data",)
+        header = ("Currency Name", "Currency Code", "All Positions", "BTC Equivalent")
+        record = ("Synth Coin", "SYN", "1", "0.1")
+        rows = [
+            ("Spot",), note, (),
+            ("Funding",), header, note, (),
+            ("Earn",), header, record, ("Note: after a record",),
+        ]
+        rows = [tuple(row) + ("",) * (4 - len(row)) for row in rows]
+        _preamble, blocks = artifact._blocks(rows)  # pylint: disable=protected-access
+        self.assertEqual([block["title"] for block in blocks], ["Spot", "Funding", "Earn"])
+        spot, funding, earn = blocks[0], blocks[1], blocks[2]
+        self.assertEqual((spot["note"], spot["header"], spot["records"]), (note[0], None, []))
+        self.assertEqual((funding["note"], funding["header"], funding["records"]), (note[0], list(header), []))
+        self.assertEqual(earn["note"], "")
+        self.assertEqual([cells[0] for _number, cells in earn["records"]], ["Synth Coin", "Note: after a record"])
 
 
 if __name__ == "__main__":
