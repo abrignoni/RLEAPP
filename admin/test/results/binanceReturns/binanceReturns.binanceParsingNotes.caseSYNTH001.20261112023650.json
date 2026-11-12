@@ -5,20 +5,20 @@
     "function_name": "binanceParsingNotes",
     "case_number": "caseSYNTH001",
     "number_of_columns": 4,
-    "number_of_rows": 13,
-    "total_data_size_bytes": 2644,
+    "number_of_rows": 12,
+    "total_data_size_bytes": 2555,
     "media_checkins": 0,
     "media_embedded_checkins": 0,
     "input_zip_path": "admin/test/cases/data/binanceReturns/testdata.binanceReturns.binanceParsingNotes.caseSYNTH001.zip",
-    "start_time": "2026-11-11T23:32:15.996772+00:00",
-    "end_time": "2026-11-11T23:32:16.057394+00:00",
-    "run_time_seconds": 0.05388474464416504,
+    "start_time": "2026-11-12T02:36:50.475072+00:00",
+    "end_time": "2026-11-12T02:36:50.549907+00:00",
+    "run_time_seconds": 0.06543540954589844,
     "last_commit": {
-      "hash": "1edf779f1a999dcb7fbf4147eaa7469d320abe63",
+      "hash": "4e305eec0d721f3f369424ec8f04ebb73b292cc0",
       "author_name": "Maxitelmo",
       "author_email": "50964800+Maxitelmo@users.noreply.github.com",
-      "date": "2026-11-11T23:19:11+00:00",
-      "message": "binanceReturns: list only balances held, merge related artifacts"
+      "date": "2026-11-12T00:36:45+00:00",
+      "message": "binanceReturns: document the columns check_artifact_output flags"
     }
   },
   "headers": [
@@ -28,12 +28,6 @@
     "Source File"
   ],
   "data": [
-    [
-      "",
-      "",
-      "not read as a Binance return: no sheet named 'Access Logs'",
-      "SYNTH_not_a_binance_return.xlsx"
-    ],
     [
       "",
       "",

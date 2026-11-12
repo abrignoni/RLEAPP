@@ -15,10 +15,16 @@ Assets Overview are made of blocks (a one-cell title row, then a header row and 
 a 'Note: empty data' row). Approved Devices lists a device on one row and its Key/Value
 pairs on that row and the rows under it. KYC Documents holds no cells, only embedded images.
 
-Nothing in a recognised workbook is dropped: columns this module does not name go to
-'Other Columns (as produced)', blocks it does not recognise to the 'Other Blocks' artifacts,
-sheets it does not recognise, or whose header matches no known layout, to 'Other Sheets',
-and every such placement is listed in 'Parsing Notes'.
+What this module does not name in a recognised workbook is still reported: columns go to
+'Other Columns (as produced)', a column whose header repeats an earlier one included; blocks
+it does not recognise go to the 'Other Blocks' artifacts; sheets it does not recognise, or
+whose header matches no known layout, go to 'Other Sheets'; and every such placement is
+listed in 'Parsing Notes'. Two kinds of row are left out and counted instead: balance rows
+whose amounts are all zero (counted per block in 'Block Index') and Current Assets & Wallets
+rows that hold no position (counted per workbook in 'Parsing Notes').
+
+A matched .xlsx that is not a Binance return, or cannot be opened, produces no row in any
+artifact; it is named in the run log.
 """
 
 __artifacts_v2__ = {
@@ -728,13 +734,15 @@ __artifacts_v2__ = {
     "binanceParsingNotes": {
         "name": "Binance - Parsing Notes",
         "description": "What the module could not read or place, per workbook.",
-        "notes": "Lists every .xlsx matched that was not read as a Binance return and why, workbooks that could "
-                 "not be opened, the sheets of each recognised workbook, and every sheet, block or row reported "
-                 "under one of the Other artifacts, and how many Current Assets & Wallets rows were left out for "
-                 "holding no position. Review the source workbook for each note.",
+        "notes": "Lists the sheets of each recognised workbook, every sheet, block or row reported under one of "
+                 "the Other artifacts, every column whose header repeats an earlier one, and how many Current "
+                 "Assets & Wallets rows were left out for holding no position. Review the source workbook for "
+                 "each note. A matched .xlsx that was not read as a Binance return, or could not be opened, is "
+                 "not listed here: the module matches every .xlsx, so those are named in the run log with the "
+                 "reason.",
         "author": "@Maxitelmo, Claude",
         "creation_date": "2026-11-09",
-        "last_update_date": "2026-11-11",
+        "last_update_date": "2026-11-12",
         "requirements": "openpyxl",
         "category": "Binance Returns",
         "paths": ("*.xlsx",),
@@ -743,7 +751,6 @@ __artifacts_v2__ = {
     },
 }
 
-import functools
 import json
 import os
 import posixpath
@@ -759,6 +766,7 @@ from openpyxl.utils.exceptions import InvalidFileException
 _REQUIRED_SHEETS = ("Customer Information", "Access Logs")
 _BLOCK_SHEETS = ("Account Balance", "Assets Overview")
 _OTHER_BLOCKS = "(before the first block)"
+_REPEATED_NOTE = "header repeats an earlier column's name; reported under Other Columns (as produced) as: "
 
 # Plain table sheets. For each artifact: the sheets it reads (a name ending in '*' matches by
 # prefix), the header names that select it when a sheet has had more than one layout, and the
@@ -992,6 +1000,27 @@ def _header(value):
     return " ".join(words)
 
 
+def _headers(cells):
+    """Normalised header names of a row; a name that repeats an earlier one gets its column letter.
+
+    Records are keyed by header name, so two columns with one name would keep only the last
+    value. The renamed column matches no named column and is reported under Other Columns.
+    """
+    names, seen = [], set()
+    for index, value in enumerate(cells):
+        name = _header(value)
+        if name and name in seen:
+            name = f"{name} (column {_column_letter(index)})"
+        seen.add(name)
+        names.append(name)
+    return names
+
+
+def _repeated(header):
+    """The names _headers gave a column letter because they repeat an earlier header."""
+    return [name for index, name in enumerate(header or ()) if name.endswith(f" (column {_column_letter(index)})")]
+
+
 def _column_letter(index):
     letters = ""
     index += 1
@@ -1046,8 +1075,23 @@ def _letters(cells):
 
 
 # ------------------------------------------------------------------ workbook reading
-@functools.lru_cache(maxsize=16)
-def _load(path, _stamp):
+# Every artifact of this module reads the same workbooks, so each is read once per run, a
+# workbook that is not a Binance return or cannot be opened included.
+_LOADED = {}
+
+
+def _load(path, stamp):
+    """(sheets, note) for a workbook, read once per path, modification time and size."""
+    key = (path, stamp)
+    if key not in _LOADED:
+        try:
+            _LOADED[key] = _read(path)
+        except _READ_ERRORS as err:
+            _LOADED[key] = (None, f"could not be opened as a workbook ({type(err).__name__})")
+    return _LOADED[key]
+
+
+def _read(path):
     """(sheets, note): sheets maps name -> list of row tuples, or None when not a Binance return."""
     workbook = openpyxl.load_workbook(path, read_only=True, data_only=True)
     try:
@@ -1064,20 +1108,24 @@ def _load(path, _stamp):
         workbook.close()
 
 
-def _workbooks(context, notes=None):
-    """(source path, sheets) for every matched file that is a Binance return."""
+def _workbooks(context, skipped=None):
+    """(source path, sheets) for every matched file that is a Binance return.
+
+    Files not read are appended to skipped as (source path, reason).
+    """
     out = []
     for file_found in sorted({str(f) for f in context.get_files_found()}):
         if not file_found.lower().endswith(".xlsx") or os.path.basename(file_found).startswith("~$"):
             continue
         try:
             stat = os.stat(file_found)
-            sheets, note = _load(file_found, (stat.st_mtime_ns, stat.st_size))
-        except _READ_ERRORS as err:
+        except OSError as err:
             sheets, note = None, f"could not be opened as a workbook ({type(err).__name__})"
+        else:
+            sheets, note = _load(file_found, (stat.st_mtime_ns, stat.st_size))
         if sheets is None:
-            if notes is not None:
-                notes.append((file_found, "", "", note))
+            if skipped is not None:
+                skipped.append((file_found, note))
             continue
         out.append((file_found, sheets))
     return out
@@ -1092,7 +1140,7 @@ def _header_row(sheet_rows):
     index = next((i for i, r in enumerate(sheet_rows) if not _blank(r)), None)
     if index is None:
         return None, None
-    return index, [_header(c) for c in sheet_rows[index]]
+    return index, _headers(sheet_rows[index])
 
 
 def _table_claims(sheets):
@@ -1139,7 +1187,7 @@ def _blocks(rows):
             current["note"] = cells[0]
         elif current["header"] is None:
             current["header_raw"] = cells
-            current["header"] = [_header(c) for c in cells]
+            current["header"] = _headers(cells)
         else:
             current["records"].append((number, cells))
     return preamble, blocks
@@ -1301,7 +1349,7 @@ def _device_rows(sheet_rows):
     header_index = next((i for i, r in enumerate(sheet_rows) if not _blank(r)), None)
     if header_index is None:
         return [], [], []
-    header = [_header(c) for c in sheet_rows[header_index]]
+    header = _headers(sheet_rows[header_index])
     key_col = header.index("Key") if "Key" in header else None
     value_col = header.index("Value") if "Value" in header else None
     device_cols = [i for i in range(len(header)) if i not in (key_col, value_col)]
@@ -1682,8 +1730,12 @@ def binanceOtherSheets(context):
 @artifact_processor
 def binanceParsingNotes(context):
     headers = ("Sheet", "Sheet Row", "Note", "Source File")
-    notes = []
-    workbooks = _workbooks(context, notes)
+    notes, skipped = [], []
+    workbooks = _workbooks(context, skipped)
+    # The module matches every .xlsx, so a workbook from another provider is expected here;
+    # it goes to the run log, not into a Binance artifact.
+    for source, reason in skipped:
+        logfunc(f"Binance returns: {context.get_relative_path(source)} {reason}")
     other_blocks = __artifacts_v2__["binanceOtherBlocks"]["name"]
     for source, sheets in workbooks:
         titles = list(sheets)
@@ -1695,9 +1747,11 @@ def binanceParsingNotes(context):
                           "reported under Other Sheets: " + "; ".join(unknown)))
         for title, artifact in claims.items():
             spec = _TABLES[artifact]
+            index, header = _header_row(sheets[title])
+            if _repeated(header):
+                notes.append((source, title, index + 1, _REPEATED_NOTE + "; ".join(_repeated(header))))
             if "skip_empty" not in spec:
                 continue
-            index, header = _header_row(sheets[title])
             skipped = sum(1 for cells in sheets[title][index + 1:]
                           if any(cells) and _empty_table_row(spec, header, cells)) if index is not None else 0
             if skipped:
@@ -1716,6 +1770,10 @@ def binanceParsingNotes(context):
             if block["title"] not in _CUSTOMER_BLOCKS:
                 notes.append((source, "Customer Information", block["row"],
                               f"block '{block['title']}' not recognised, reported under {other_blocks}"))
+            if _repeated(block["header"]):
+                notes.append((source, "Customer Information", block["row"],
+                              f"block '{block['title']}': " + _REPEATED_NOTE
+                              + "; ".join(_repeated(block["header"]))))
         for title, preamble, blocks in _block_sheets(sheets):
             for number, _cells in preamble:
                 notes.append((source, title, number, f"row before the first block, reported under {other_blocks}"))
@@ -1724,8 +1782,14 @@ def binanceParsingNotes(context):
                     notes.append((source, title, block["row"],
                                   f"block '{block['title']}' has a header no known layout matches, reported "
                                   f"under {other_blocks}"))
+                if _repeated(block["header"]):
+                    notes.append((source, title, block["row"], f"block '{block['title']}': " + _REPEATED_NOTE
+                                  + "; ".join(_repeated(block["header"]))))
         if "Approved Devices" in sheets:
             _devices, _attributes, orphans = _device_rows(sheets["Approved Devices"])
+            index, header = _header_row(sheets["Approved Devices"])
+            if _repeated(header):
+                notes.append((source, "Approved Devices", index + 1, _REPEATED_NOTE + "; ".join(_repeated(header))))
             for number in orphans:
                 notes.append((source, "Approved Devices", number,
                               "Key/Value pair above the first device; reported with a blank Device Number"))
