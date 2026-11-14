@@ -1,0 +1,96 @@
+{
+  "metadata": {
+    "module_name": "binanceReturns",
+    "artifact_name": "Binance - Approved Devices",
+    "function_name": "binanceDevices",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 12,
+    "number_of_rows": 4,
+    "total_data_size_bytes": 488,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/binanceReturns/testdata.binanceReturns.binanceDevices.caseSYNTH001.zip",
+    "start_time": "2026-11-11T23:32:14.640467+00:00",
+    "end_time": "2026-11-11T23:32:14.699839+00:00",
+    "run_time_seconds": 0.049909114837646484,
+    "last_commit": {
+      "hash": "1edf779f1a999dcb7fbf4147eaa7469d320abe63",
+      "author_name": "Maxitelmo",
+      "author_email": "50964800+Maxitelmo@users.noreply.github.com",
+      "date": "2026-11-11T23:19:11+00:00",
+      "message": "binanceReturns: list only balances held, merge related artifacts"
+    }
+  },
+  "headers": [
+    "Recent Usage Timestamp (UTC)",
+    "Recent Usage Timestamp (as produced)",
+    "Device Number",
+    "Device Name",
+    "Client",
+    "IP Address",
+    "Geolocation",
+    "Status",
+    "Attribute Pairs",
+    "Other Columns (as produced)",
+    "Sheet Row",
+    "Source File"
+  ],
+  "data": [
+    [
+      1627866123,
+      "2021-08-02 01:02:03",
+      1,
+      "SYNTH-PHONE",
+      "android",
+      "203.0.113.5",
+      "Synthland",
+      "Normal",
+      3,
+      "",
+      3,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      1627779723,
+      "2021-08-01 01:02:03",
+      2,
+      "SYNTH-BROWSER",
+      "web",
+      "203.0.113.6",
+      "Synthland",
+      "Deleted",
+      2,
+      "",
+      6,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ],
+    [
+      1673856000,
+      "2023-01-16 08:00:00",
+      1,
+      "SYNTH-LAPTOP",
+      "web",
+      "203.0.113.20",
+      "Synthland",
+      "Normal",
+      2,
+      "",
+      2,
+      "account_three/SYNTH_binance_return_2024_layout.xlsx"
+    ],
+    [
+      1612180740,
+      "2021-02-01 11:59:00",
+      1,
+      "SYNTH-TABLET",
+      "ios",
+      "192.0.2.50",
+      "Synthland",
+      "Normal",
+      2,
+      "",
+      2,
+      "account_two/SYNTH_binance_return_8_sheets.xlsx"
+    ]
+  ]
+}
