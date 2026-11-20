@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "module_name": "binanceReturns",
+    "artifact_name": "Binance - Account Balance - Overview",
+    "function_name": "binanceBalanceOverview",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 12,
+    "number_of_rows": 1,
+    "total_data_size_bytes": 99,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/binanceReturns/testdata.binanceReturns.binanceBalanceOverview.caseSYNTH001.zip",
+    "start_time": "2026-11-11T23:32:14.854448+00:00",
+    "end_time": "2026-11-11T23:32:14.909980+00:00",
+    "run_time_seconds": 0.04860544204711914,
+    "last_commit": {
+      "hash": "1edf779f1a999dcb7fbf4147eaa7469d320abe63",
+      "author_name": "Maxitelmo",
+      "author_email": "50964800+Maxitelmo@users.noreply.github.com",
+      "date": "2026-11-11T23:19:11+00:00",
+      "message": "binanceReturns: list only balances held, merge related artifacts"
+    }
+  },
+  "headers": [
+    "Sheet",
+    "Block (as produced)",
+    "Spot(BTC)",
+    "Futures(BTC)",
+    "Earn(BTC)",
+    "MARGIN(BTC)",
+    "Pool(BTC)",
+    "Funding(BTC)",
+    "Option(BTC)",
+    "Other Columns (as produced)",
+    "Sheet Row",
+    "Source File"
+  ],
+  "data": [
+    [
+      "Assets Overview",
+      "single overview",
+      "0.1",
+      "0",
+      "0.02",
+      "0",
+      "0",
+      "0.003",
+      "0",
+      "",
+      11,
+      "account_three/SYNTH_binance_return_2024_layout.xlsx"
+    ]
+  ]
+}

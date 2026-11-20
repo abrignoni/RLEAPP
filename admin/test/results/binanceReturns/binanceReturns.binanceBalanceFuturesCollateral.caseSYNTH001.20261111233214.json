@@ -1,0 +1,58 @@
+{
+  "metadata": {
+    "module_name": "binanceReturns",
+    "artifact_name": "Binance - Account Balance - Futures Collateral",
+    "function_name": "binanceBalanceFuturesCollateral",
+    "case_number": "caseSYNTH001",
+    "number_of_columns": 14,
+    "number_of_rows": 1,
+    "total_data_size_bytes": 117,
+    "media_checkins": 0,
+    "media_embedded_checkins": 0,
+    "input_zip_path": "admin/test/cases/data/binanceReturns/testdata.binanceReturns.binanceBalanceFuturesCollateral.caseSYNTH001.zip",
+    "start_time": "2026-11-11T23:32:14.382465+00:00",
+    "end_time": "2026-11-11T23:32:14.438374+00:00",
+    "run_time_seconds": 0.049851417541503906,
+    "last_commit": {
+      "hash": "1edf779f1a999dcb7fbf4147eaa7469d320abe63",
+      "author_name": "Maxitelmo",
+      "author_email": "50964800+Maxitelmo@users.noreply.github.com",
+      "date": "2026-11-11T23:19:11+00:00",
+      "message": "binanceReturns: list only balances held, merge related artifacts"
+    }
+  },
+  "headers": [
+    "Sheet",
+    "Block (as produced)",
+    "asset",
+    "locked",
+    "Loan Amount(USDT)",
+    "Total Principal For Interest(USDT)",
+    "Current Rate",
+    "Initial Rate",
+    "Liquidation Collateral Rate",
+    "Liquidation Price",
+    "Total Interest(USDT)",
+    "Other Columns (as produced)",
+    "Sheet Row",
+    "Source File"
+  ],
+  "data": [
+    [
+      "Account Balance",
+      "Futures USDT Collateral",
+      "SYC",
+      "0.5",
+      "20",
+      "20",
+      "0.0001",
+      "0.65",
+      "0.91",
+      "40",
+      "0.01",
+      "",
+      26,
+      "account_one/SYNTH_binance_return_18_sheets.xlsx"
+    ]
+  ]
+}
