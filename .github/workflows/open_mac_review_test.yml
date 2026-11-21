@@ -1,0 +1,19 @@
+name: Open disposable review test
+on:
+  push:
+    branches: [codex/private-review-bot-test-20261121]
+    paths: [.github/workflows/open_mac_review_test.yml]
+permissions:
+  pull-requests: write
+jobs:
+  open-draft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Open the test as a draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method POST repos/abrignoni/RLEAPP/pulls \
+            -f head=codex/private-review-bot-test-20261121 -f base=main -F draft=true \
+            -f title='Verify collaborator PR review delivery' \
+            -f body='Disposable review test. The maintainer will close it after verifying the inline finding and private inbox report.'
