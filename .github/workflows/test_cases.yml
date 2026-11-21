@@ -51,3 +51,5 @@ jobs:
 
       - name: Run test cases against recorded baselines
         run: python admin/test/scripts/run_test_cases.py
+
+# Disposable maintainer CI routing check.
