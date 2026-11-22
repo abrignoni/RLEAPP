@@ -50,6 +50,7 @@ from functools import wraps
 
 # LEAPP version unique imports
 from typing import Pattern
+from html import escape as _html_escape
 from scripts.html_safe import esc, safe_local_path
 from scripts.lavafuncs import lava_process_artifact, lava_insert_sqlite_data, lava_iter_artifact_rows, lava_update_record_count, \
     lava_get_media_item, \
@@ -168,6 +169,12 @@ def screen_log_session(func):
     return wrapped
 
 
+def _html_text(value):
+    """Escape a value for HTML element text. Quotes stay as they are, so the log files
+    still read and search the same; a value placed in an attribute goes through esc()."""
+    return _html_escape(str(value), quote=False)
+
+
 def logfunc(message=""):
     def redirect_logs(string):
         _console_write(string)
@@ -189,7 +196,7 @@ def logfunc(message=""):
 
     if OutputParameters.screen_output_file_path:
         _screen_log.write(OutputParameters.screen_output_file_path,
-                          message + '<br>' + OutputParameters.nl)
+                          _html_text(message) + '<br>' + OutputParameters.nl)
     else:
         _screen_log.write('', '')
     print(message)

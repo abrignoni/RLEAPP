@@ -16,6 +16,7 @@ import leapp_functions.app.history as history
 from scripts.search_files import *
 from scripts.raw_image import FileSeekerRaw, cli_raw_input, input_text, logical_among, logical_refusal
 from scripts.ilapfuncs import *
+from scripts.html_safe import esc
 from leapp_functions.app.output import validate_output_folder_available
 from scripts.version_info import rleapp_version
 from time import process_time, gmtime, strftime, perf_counter
@@ -555,7 +556,7 @@ def crunch_artifacts(
         logfunc('\n--------------------------------------------------------------------------------------')
 
         log = open(os.path.join(out_params.output_folder_base, '_HTML', '_Script_Logs', 'ProcessedFilesLog.html'), 'w+', encoding='utf8')
-        log.write(f'Extraction/Path selected: {input_path}<br><br>')
+        log.write(f'Extraction/Path selected: {esc(input_path)}<br><br>')
         
         # Search for the files per the arguments
         parsed_modules = 0
@@ -581,9 +582,9 @@ def crunch_artifacts(
                 search_regexes = [plugin.search]
             files_found = []
             found_already = set()
-            log.write(f'<b>For {plugin.name} artifact</b>')
+            log.write(f'<b>For {esc(plugin.name)} artifact</b>')
             if search_regexes is None:
-                log.write(f'<ul><li>No search regexes provided for {plugin.name} artifact.')
+                log.write(f'<ul><li>No search regexes provided for {esc(plugin.name)} artifact.')
                 log.write("<ul><li><i>'_lava_artifacts.db'</i> used as source file.</li></ul></li></ul>")
                 files_found = [os.path.join(out_params.output_folder_base, '_lava_artifacts.db')]
             else:
@@ -594,14 +595,14 @@ def crunch_artifacts(
                     pattern_already_searched = artifact_search_regex in seeker.searched
                     found = seeker.search(artifact_search_regex)
                     if not found:
-                        log.write(f'<ul><li>No file found for regex <i>{artifact_search_regex}</i></li></ul>')
+                        log.write(f'<ul><li>No file found for regex <i>{esc(artifact_search_regex)}</i></li></ul>')
                     else:
-                        log.write(f'<ul><li>{len(found)} {"files" if len(found) > 1 else "file"} for regex <i>{artifact_search_regex}</i> located at:')
+                        log.write(f'<ul><li>{len(found)} {"files" if len(found) > 1 else "file"} for regex <i>{esc(artifact_search_regex)}</i> located at:')
                         for pathh in found:
                             # Strip \\?\ only for log display; file_infos is keyed with the
                             # original long-path form on Windows.
                             display_path = pathh[4:] if pathh.startswith('\\\\?\\') else pathh
-                            log.write(f'<ul><li>{Context.get_relative_path(display_path)}</li></ul>')
+                            log.write(f'<ul><li>{esc(Context.get_relative_path(display_path))}</li></ul>')
                             if seeker.file_infos.get(pathh):
                                 file_path_id = id(seeker.file_infos.get(pathh))
                                 if not pattern_already_searched and file_path_id not in file_path_ids:
