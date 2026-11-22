@@ -41,6 +41,29 @@ class TakeoutHtmlBodyTests(unittest.TestCase):
         message.add_attachment(inner)
         self.assertEqual(columns(message)[1:], ('', ''))
 
+    def test_an_attached_multipart_is_not_the_body(self):
+        inner = EmailMessage()
+        inner.set_content(PAGE, subtype='html')
+        inner.make_related()
+        inner['Content-Disposition'] = 'attachment; filename="page.mht"'
+        message = EmailMessage()
+        message.set_content('  \n')
+        message.make_mixed()
+        message.attach(inner)
+        self.assertEqual(columns(message)[1:], ('', ''))
+
+    def test_unclosed_style_and_script_keep_their_text(self):
+        for name in ('style', 'script'):
+            message = EmailMessage()
+            message.set_content(f'<{name}>a{{}}</{name}><p>Kept</p><{name}>open', subtype='html')
+            self.assertEqual(columns(message)[0].splitlines()[0], 'Kept')
+            self.assertIn('open', columns(message)[0])
+
+    def test_markup_the_parser_refuses_does_not_stop_the_artifact(self):
+        message = EmailMessage()
+        message.set_content('<p>Hello</p><![bogus]>', subtype='html')
+        self.assertIn('Hello', columns(message)[0])
+
     def test_no_text_parts(self):
         message = EmailMessage()
         message.set_content(b'x', maintype='application', subtype='octet-stream')

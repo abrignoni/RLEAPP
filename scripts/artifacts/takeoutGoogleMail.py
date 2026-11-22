@@ -26,7 +26,7 @@ __artifacts_v2__ = {
                  "as one space, and is dropped at the ends of the line. Other invisible characters are"
                  " left as they are. Each a element with a non-empty href is marked [n], a repeated "
                  "target keeps its first number, and Links lists the link targets by those numbers as "
-                 "Python's HTML parser returns them, with character references decoded. Malformed "
+                 "Python's HTML parser returns them, with character references decoded. Malformed HTML that the parser refuses is reported as stored. Malformed "
                  "HTML, and a link target holding a bare ampersand before an entity name, can read "
                  "differently between Python versions. On thisisdfir_takeout (174 messages) the plain "
                  "part was used for 136 and the HTML part for 37, and 1 had no text in either part. A "
@@ -96,11 +96,13 @@ def _get_html_body(message):
     pending = [message]
     while pending:
         part = pending.pop()
+        if part is not message and part.get_content_disposition() == 'attachment':
+            continue
         if part.is_multipart():
             if part is message or part.get_content_maintype() != 'message':
                 pending.extend(reversed(part.get_payload()))
             continue
-        if part.get_content_type() != 'text/html' or part.get_content_disposition() == 'attachment':
+        if part.get_content_type() != 'text/html':
             continue
         payload = part.get_payload(decode=True)
         if payload is not None:
