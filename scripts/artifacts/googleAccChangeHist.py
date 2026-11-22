@@ -5,15 +5,18 @@ __artifacts_v2__ = {
                        "(Google Account/*.ChangeHistory.html).",
         "author": "@AlexisBrignoni",
         "creation_date": "2023-05-16",
-        "last_update_date": "2026-06-28",
+        "last_update_date": "2026-11-22",
         "requirements": "none",
         "category": "Google Returns Account Change History",
-        "notes": "The return ships this as a pre-rendered HTML page; the full document is embedded "
-                 "verbatim in the Account Change History column (shown as escaped source text, not rendered).",
+        "notes": "The return ships this as a pre-rendered HTML page. The text of the full document is "
+                 "stored in the Account Change History column, decoded as UTF-8. A byte that is not "
+                 "valid UTF-8 is written as a backslash escape, and CR LF line ends are stored as LF. "
+                 "The HTML report shows it as source text with the markup escaped and does not render "
+                 "it. LAVA and the TSV export hold the same text without HTML escaping.",
         "paths": ('*/*GoogleAccount.ChangeHistory_*.Preserved/Google Account/*.ChangeHistory.html',
                   '*/*GoogleAccount.ChangeHistory_*/Google Account/*.ChangeHistory.html'),
         "output_types": "standard",
-        "html_columns": ["Account Change History"],
+        "multiline_columns": ["Account Change History"],
         "artifact_icon": "clock",
     }
 }
@@ -21,7 +24,6 @@ __artifacts_v2__ = {
 import os
 
 from scripts.ilapfuncs import artifact_processor
-from scripts.html_safe import safe_source
 
 
 @artifact_processor
@@ -34,7 +36,7 @@ def googleAccChangeHist(context):
             continue
         source_path = file_found
         with open(file_found, encoding='utf-8', errors='backslashreplace') as f:
-            data_list.append((safe_source(f.read()), context.get_relative_path(file_found)))
+            data_list.append((f.read(), context.get_relative_path(file_found)))
 
     data_headers = ('Account Change History', 'Source File')
     return data_headers, data_list, context.get_relative_path(source_path)
