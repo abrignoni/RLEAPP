@@ -5,7 +5,7 @@ __artifacts_v2__ = {
         "author": "@AlexisBrignoni, Codex",
         "creation_date": "2022-01-19",
         "last_update_date": "2026-11-22",
-        "requirements": "BeautifulSoup",
+        "requirements": "beautifulsoup4",
         "category": "Google Takeout Archive",
         "notes": "Body is the first eligible text/plain part, using a supported declared charset when strict "
                  "decoding succeeds. Supported character sets are ASCII, UTF-8, UTF-16/32 (including "
@@ -13,17 +13,24 @@ __artifacts_v2__ = {
                  "and EUC-JP/KR; their Python codec aliases are accepted. Missing, malformed, unknown or "
                  "unsupported charset declarations and invalid byte sequences use Latin-1 as a compatibility "
                  "fallback, not an inferred original encoding; text may display wrongly. An empty selected "
-                 "plain part is not replaced by a later plain part. When the selected plain part is "
-                 "missing or blank, Body is text extracted from the first text/html part not marked as"
-                 " an attachment, decoded by the same charset rules, and Body Source names the part "
-                 "used. From HTML, tags, comments and the text of closed style and script elements are"
-                 " removed, line breaks are placed at br and block tags, each link is marked [n], and "
-                 "Links lists the link targets by those numbers as Python's HTML parser returns them, "
-                 "with character references decoded. Malformed HTML can read differently between "
-                 "Python versions. On thisisdfir_takeout (174 messages) the plain part was used for "
-                 "136 and the HTML part for 37, and 1 had no text in either part. A blank Body does "
-                 "not mean the message had no content."
-                 " A "
+                 "plain part is not replaced by a later plain part. The plain selection does not skip "
+                 "attachments or attached messages, so Body can be a text attachment's text. When the "
+                 "selected plain part is missing or blank, Body is text extracted from the first "
+                 "text/html part of the message itself that is not marked as an attachment, decoded by"
+                 " the same charset rules, and Body Source names the part used. From HTML, tags, "
+                 "comments and the text of closed style and script elements are removed, and line "
+                 "breaks are placed at br and block tags. When a style or script element is never "
+                 "closed, everything after its opening tag is kept as raw source. That includes the "
+                 "style or script text and any tags. Within a line, each run of whitespace (no-break "
+                 "spaces included), soft hyphens (U+00AD), U+034F, U+200B to U+200D and U+FEFF shows "
+                 "as one space, and is dropped at the ends of the line. Other invisible characters are"
+                 " left as they are. Each a element with a non-empty href is marked [n], a repeated "
+                 "target keeps its first number, and Links lists the link targets by those numbers as "
+                 "Python's HTML parser returns them, with character references decoded. Malformed "
+                 "HTML, and a link target holding a bare ampersand before an entity name, can read "
+                 "differently between Python versions. On thisisdfir_takeout (174 messages) the plain "
+                 "part was used for 136 and the HTML part for 37, and 1 had no text in either part. A "
+                 "blank Body does not mean the message had no content. A "
                  "Date header with no zone is treated as UTC. Attachments are the multipart message parts "
                  "that carry a Content-Disposition header and nonempty payload, which can include inline "
                  "parts. Selection, repeated inputs and per-row Source File are preserved; the report-level "
@@ -83,11 +90,17 @@ def _get_body(message):
 
 
 def _get_html_body(message):
-    """Return the decoded first text/html part that is not an attachment, or ''."""
-    for part in message.walk():
-        if part.is_multipart() or part.get_content_type() != 'text/html':
+    """Return the decoded first text/html part of the message itself, or ''.
+
+    Attachments and the contents of attached messages are not this message's body."""
+    pending = [message]
+    while pending:
+        part = pending.pop()
+        if part.is_multipart():
+            if part is message or part.get_content_maintype() != 'message':
+                pending.extend(reversed(part.get_payload()))
             continue
-        if part.get_content_disposition() == 'attachment':
+        if part.get_content_type() != 'text/html' or part.get_content_disposition() == 'attachment':
             continue
         payload = part.get_payload(decode=True)
         if payload is not None:

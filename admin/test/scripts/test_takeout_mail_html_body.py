@@ -33,6 +33,14 @@ class TakeoutHtmlBodyTests(unittest.TestCase):
         message.add_attachment(PAGE, subtype='html', filename='page.html')
         self.assertEqual(columns(message)[1:], ('', ''))
 
+    def test_an_attached_message_is_not_the_body(self):
+        inner = EmailMessage()
+        inner.set_content(PAGE, subtype='html')
+        message = EmailMessage()
+        message.set_content('  \n')
+        message.add_attachment(inner)
+        self.assertEqual(columns(message)[1:], ('', ''))
+
     def test_no_text_parts(self):
         message = EmailMessage()
         message.set_content(b'x', maintype='application', subtype='octet-stream')
