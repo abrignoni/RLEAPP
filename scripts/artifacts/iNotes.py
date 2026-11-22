@@ -5,7 +5,7 @@ __artifacts_v2__ = {
                        "and attachments.",
         "author": "@AlexisBrignoni",
         "creation_date": "2023-02-02",
-        "last_update_date": "2026-06-28",
+        "last_update_date": "2026-11-22",
         "requirements": "none",
         "category": "Apple Notes",
         "notes": "Timestamp Created and Timestamp Modified are the record's created and modified "
@@ -16,7 +16,7 @@ __artifacts_v2__ = {
                  "Note does not establish the note had no text.",
         "paths": ('*/Notes/Metadata.txt', '*/Notes/*/**'),
         "output_types": "standard",
-        "html_columns": ["Note"],
+        "multiline_columns": ["Note"],
         "artifact_icon": "file-text",
     }
 }
@@ -25,7 +25,6 @@ import json
 import os
 
 from scripts.ilapfuncs import artifact_processor, convert_unix_ts_to_utc, check_in_media
-from scripts.html_safe import safe_source
 
 
 @artifact_processor
@@ -64,7 +63,7 @@ def iNotes(context):
                 # output folder name cannot decide which file holds the note body.
                 if 'content' not in context.get_relative_path(match):
                     with open(match, encoding='utf-8', errors='backslashreplace') as g:
-                        note_text = safe_source(g.read())
+                        note_text = g.read()
 
             data_list.append((created, modified, note_text, recordname, refs,
                               '' if deleted is None else deleted,
