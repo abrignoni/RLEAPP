@@ -131,5 +131,16 @@ class PooledWorkbookHeaders(unittest.TestCase):
                 self.assertEqual(len({sanitize_sql_name(name) for name in headers}), 3)
 
 
+    def test_blank_and_punctuation_headings_do_not_overwrite_each_other(self):
+        for module in all_modules():
+            for blank in ('', ' ', None):
+                with self.subTest(module=module.__name__, blank=blank):
+                    _, rows = private(module, '_pool_workbooks')([
+                        workbook(module, 'a.xlsx', [blank, '-', '#'], [['b1', 'd1', 'h1']]),
+                        workbook(module, 'b.xlsx', [blank, '#', '-'], [['b2', 'h2', 'd2']])])
+                    self.assertEqual(rows, [['b1', 'd1', 'h1', 'a.xlsx'],
+                                            ['b2', 'd2', 'h2', 'b.xlsx']])
+
+
 if __name__ == '__main__':
     unittest.main()

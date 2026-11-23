@@ -45,7 +45,7 @@ _RESERVED = {'from', 'to', 'order', 'group', 'where', 'select', 'index', 'join',
 def _safe_headers(cells):
     seen, used, out = {}, set(), []
     for i, cell in enumerate(cells):
-        name = str(cell).strip() if cell not in (None, '') else f'Column {i + 1}'
+        name = ('' if cell is None else str(cell).strip()) or f'Column {i + 1}'
         if sanitize_sql_name(name) in _RESERVED:
             name = f'{name} Value'
         key = sanitize_sql_name(name)
@@ -64,12 +64,13 @@ def _heading_keys(cells):
     """Identify each heading by its own text and occurrence, or by position when it has none."""
     seen, keys = {}, []
     for i, cell in enumerate(cells):
-        if cell in (None, ''):
-            keys.append(('', i))
+        text = '' if cell is None else str(cell).strip()
+        if not text:
+            keys.append(('position', i))
             continue
-        text = sanitize_sql_name(str(cell).strip())
+        text = sanitize_sql_name(text).strip('_') or text
         seen[text] = seen.get(text, -1) + 1
-        keys.append((text, seen[text]))
+        keys.append(('heading', text, seen[text]))
     return keys
 
 
@@ -85,7 +86,7 @@ def _pool_workbooks(workbooks):
     for source, headers, heading_keys, rows in with_rows:
         width = max(len(headers), *(len(row) for row in rows))
         names = list(headers) + [f'Column {i + 1}' for i in range(len(headers), width)]
-        keys = list(heading_keys) + [('', i) for i in range(len(headers), width)]
+        keys = list(heading_keys) + [('position', i) for i in range(len(headers), width)]
         for name, key in zip(names, keys):
             if key not in positions:
                 positions[key] = len(columns)
