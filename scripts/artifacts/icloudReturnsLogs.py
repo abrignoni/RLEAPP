@@ -7,7 +7,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-23",
         "requirements": "openpyxl",
         "category": "iCloud Returns",
-        "notes": "When more than one workbook contributes rows, each value is placed under the column whose heading matches its own. Headings are matched ignoring case and punctuation, and the first spelling read is the one shown. Columns with no heading are matched by position. Repeated headings are matched in order of appearance. A Source File column is added with the evidence-relative path of the workbook each row came from. If a workbook has its own Source File heading, the added column is named Source File (1). With one contributing workbook the columns are unchanged and no Source File column is added.",
+        "notes": "When more than one workbook contributes rows, each value is placed under the column whose heading matches its own. Headings are matched ignoring case and punctuation, and the first spelling read is the one shown. Columns with no heading are matched by position. Repeated headings are matched in order of appearance. A Source File column is added with the evidence-relative path of the workbook each row came from. If a workbook has its own Source File heading, the added column takes a numbered name such as Source File (1). With one contributing workbook the columns are unchanged and no Source File column is added.",
         "paths": ('*/LOG/*_iCloudLogs.xlsx',),
         "output_types": "standard",
         "artifact_icon": "list",
@@ -29,62 +29,79 @@ _RESERVED = {'from', 'to', 'order', 'group', 'where', 'select', 'index', 'join',
 
 
 def _safe_headers(cells):
-    seen, out = {}, []
+    seen, used, out = {}, set(), []
     for i, cell in enumerate(cells):
         name = str(cell).strip() if cell not in (None, '') else f'Column {i + 1}'
         if sanitize_sql_name(name) in _RESERVED:
             name = f'{name} Value'
         key = sanitize_sql_name(name)
         seen[key] = seen.get(key, -1) + 1
-        if seen[key]:
-            name = f'{name} ({seen[key]})'
-        out.append(name)
+        count = seen[key]
+        unique = f'{name} ({count})' if count else name
+        while sanitize_sql_name(unique) in used:
+            count += 1
+            unique = f'{name} ({count})'
+        used.add(sanitize_sql_name(unique))
+        out.append(unique)
     return out
 
 
+def _heading_keys(cells):
+    """Identify each heading by its own text and occurrence, or by position when it has none."""
+    seen, keys = {}, []
+    for i, cell in enumerate(cells):
+        if cell in (None, ''):
+            keys.append(('', i))
+            continue
+        text = sanitize_sql_name(str(cell).strip())
+        seen[text] = seen.get(text, -1) + 1
+        keys.append((text, seen[text]))
+    return keys
+
+
 def _pool_workbooks(workbooks):
-    """Combine (source, headers, rows) workbooks, keeping each value under its own heading."""
+    """Combine (source, headers, heading_keys, rows) workbooks, keeping values under their headings."""
     with_rows = [workbook for workbook in workbooks
-                 if any(value != '' for row in workbook[2] for value in row)]
+                 if any(value != '' for row in workbook[3] for value in row)]
     if len(with_rows) < 2:
         chosen = with_rows or workbooks
-        return (tuple(chosen[-1][1]), list(chosen[-1][2])) if chosen else ((), [])
+        return (tuple(chosen[-1][1]), list(chosen[-1][3])) if chosen else ((), [])
 
-    columns, positions, named_rows = [], {}, []
-    for source, headers, rows in with_rows:
+    columns, positions, keyed_rows = [], {}, []
+    for source, headers, heading_keys, rows in with_rows:
         width = max(len(headers), *(len(row) for row in rows))
-        names = _safe_headers(list(headers) + [''] * (width - len(headers)))
-        keys = [sanitize_sql_name(name) for name in names]
+        names = list(headers) + [f'Column {i + 1}' for i in range(len(headers), width)]
+        keys = list(heading_keys) + [('', i) for i in range(len(headers), width)]
         for name, key in zip(names, keys):
             if key not in positions:
                 positions[key] = len(columns)
                 columns.append(name)
-        named_rows.extend((source, keys, row) for row in rows)
+        keyed_rows.extend((source, keys, row) for row in rows)
 
     data_list = []
-    for source, keys, row in named_rows:
+    for source, keys, row in keyed_rows:
         aligned = [''] * len(columns)
         for key, value in zip(keys, row):
             aligned[positions[key]] = value
         data_list.append(aligned + [source])
-    source_column = _safe_headers(columns + ['Source File'])[-1]
-    return tuple(columns + [source_column]), data_list
+    return tuple(_safe_headers(columns + ['Source File'])), data_list
 
 
 def _parse_icloud_xlsx(file_found, header_row):
     workbook = load_workbook(file_found, read_only=True, data_only=True)
     sheet = workbook.worksheets[0]
-    headers, rows = [], []
+    headers, heading_keys, rows = [], [], []
     for i, row in enumerate(sheet.iter_rows(values_only=True)):
         if i < header_row:
             continue
         cells = [str(c) if isinstance(c, (date, time)) else ('' if c is None else c) for c in row]
         if i == header_row:
             headers = _safe_headers(cells)
+            heading_keys = _heading_keys(cells)
         else:
             rows.append(cells)
     workbook.close()
-    return headers, rows
+    return headers, heading_keys, rows
 
 
 @artifact_processor
@@ -96,8 +113,8 @@ def icloudReturnsLogs(context):
         if basename.startswith('~') or basename.startswith('.'):
             continue
         sources.append(file_found)
-        sheet_headers, rows = _parse_icloud_xlsx(file_found, 6)
+        sheet_headers, heading_keys, rows = _parse_icloud_xlsx(file_found, 6)
         if sheet_headers:
-            workbooks.append((context.get_relative_path(file_found), sheet_headers, rows))
+            workbooks.append((context.get_relative_path(file_found), sheet_headers, heading_keys, rows))
     headers, data_list = _pool_workbooks(workbooks)
     return headers, data_list, '\n'.join(sources)
