@@ -1,35 +1,53 @@
 __artifacts_v2__ = {
     "chaseReturnsRTL": {
         "name": "Chase - Refresh Token Login",
-        "description": "Refresh Token Login events from a Chase Bank PDF return.",
+        "description": "Text blocks in a PDF that start with 'Refresh Token Login' at the start of a "
+                       "line or after a comma and print a date before the next comma. Written for "
+                       "Chase Bank returns. The module does not check that a PDF is one.",
         "author": "@AlexisBrignoni, Shawn Ramsey, Codex",
         "creation_date": "2022-12-29",
-        "last_update_date": "2026-10-04",
+        "last_update_date": "2026-11-23",
         "requirements": "pypdf",
         "category": "Chase Returns",
-        "notes": "Timestamp is retained as printed text. "
-                 "The time zone of the printed value is not established here. GEOLAT/GEOLON are "
-                 "exposed as Latitude/Longitude so the rows map (KML).",
+        "notes": "Timestamp starts two characters before the first slash in the block and ends at "
+                 "the next comma. If the text before the date holds a slash, Timestamp and Username "
+                 "are wrong. It is read from the PDF text with line breaks removed. It is not "
+                 "converted. The time zone of the printed value is not established here. Username "
+                 "is the text between 'Refresh Token Login' and the Timestamp start. Its meaning is "
+                 "not established. GEOLAT and GEOLON are shown as Latitude and Longitude so rows "
+                 "that have both are written to KML. The KML point does not carry the timestamp. "
+                 "The format of the printed coordinates is not established. A login block runs to "
+                 "the next login header. It ends earlier only at an item that follows a comma, has "
+                 "no ' - ' separator, and prints a date and a time. Other text in between, "
+                 "including a different event type, is read as part of that login. A field value "
+                 "is cut at its first ' - ' or ', '. A repeated field keeps its first value.",
         "paths": ('*.pdf',),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
         "artifact_icon": "login-2",
     },
     "chaseAccountInfo": {
         "name": "Chase - Account Information",
-        "description": "Account holder identity (User Data block) from a Chase Bank PDF return.",
+        "description": "Fields of the User Data block in a PDF. Written for Chase Bank returns.",
         "author": "@AlexisBrignoni, Shawn Ramsey",
         "creation_date": "2022-12-29",
-        "last_update_date": "2026-06-28",
+        "last_update_date": "2026-11-23",
         "requirements": "pypdf",
         "category": "Chase Returns",
-        "notes": "Reports the text between the labels of each User Data block (User ID, E-mail "
-                 "Address, Name, Address 1, Address 2, City, State, Zip, Country Code, W. Phone, "
-                 "H. Phone), as extracted from the PDF text.",
+        "notes": "Reports the text after each label (User ID, E-mail Address, Name, Address 1, "
+                 "Address 2, City, State, Zip, Country Code, W. Phone, H. Phone) up to the next "
+                 "expected label. H. Phone runs to the end of the block. A block runs from 'User "
+                 "Data' to the next 'Combined Events', or to the end of the text if there is none. "
+                 "A label that ends its line gives an empty field. E-mail Address ends at the word "
+                 "'Customer'. If a label is missing, a field can hold more text "
+                 "than its own value. Values come from the PDF text with line breaks removed and "
+                 "outer spaces trimmed.",
         "paths": ('*.pdf',),
         "output_types": "standard",
         "artifact_icon": "user",
     },
 }
+
+import re
 
 from pypdf import PdfReader
 
@@ -41,6 +59,14 @@ _RTL_KEYS = ['TIMESTAMP', 'USERNAME', 'APPLICATIONID', 'COMMENTS', 'DEVAPPINSTAL
              'INPT_DID', 'LANGUAGE', 'MLWR_SC', 'RT_SC', 'STS', 'TKN_TP', 'USR_AGNT_DVC_NM',
              'SERVERID', 'CHANNELID', 'SLOTCODE', 'DEVICE_TRUST_LEVEL', 'FAILED_DVC_TRUST_RULE']
 _RTL_FIELD_KEYS = set(_RTL_KEYS[2:])
+_RTL_DATE = r'\b\d{1,2}/\d{1,2}/\d{4}\b'
+_RTL_ITEM_START = r'(?:^[ \t]*|(?<=, ))'
+# A login header starts a line or a comma-separated item and reaches its date before any comma.
+_RTL_EVENT_START = re.compile(rf'{_RTL_ITEM_START}(Refresh Token Login [^,]*?{_RTL_DATE})', re.M)
+# Any other event starts the same way, is not a KEY - value item, and prints a date and time.
+# Its header and date can sit on different lines.
+_RTL_OTHER_EVENT = re.compile(
+    rf'{_RTL_ITEM_START}(?![^,]* - )[^,]+?{_RTL_DATE}\s+\d{{1,2}}:\d{{2}}', re.M)
 _RTL_HEADERS = (('Timestamp (as printed)', 'Username', 'APPLICATIONID', 'COMMENTS', 'DEVAPPINSTALL',
                  'DEVAPPVER', 'DEVID', 'DEVLOCALE', 'DEVOSVER', 'DEV_MDL_VER', 'DVC_ID', 'DVC_MAK',
                  'DVC_MDL', 'DVC_NAME', 'DVC_OS', 'ENC_DVC_ID', 'ERR_CD', 'ERR_DESC', 'Latitude',
@@ -57,6 +83,19 @@ def find_nth(haystack, needle, n, start=0):
     return start
 
 
+def _rtl_record_end(text, header_end):
+    """End a login at the next login header or other event, read from text with its line breaks.
+
+    Another event must follow a comma. Text after an unfinished field continues that field.
+    """
+    next_header = _RTL_EVENT_START.search(text, header_end)
+    limit = next_header.start() if next_header else len(text)
+    for event in _RTL_OTHER_EVENT.finditer(text, header_end, limit):
+        if text[header_end:event.start()].rstrip().endswith(','):
+            return event.start()
+    return limit
+
+
 def _between(text, start, end):
     start_idx = text.find(start)
     if start_idx == -1:
@@ -71,10 +110,11 @@ def _ts(value):
     return (value or '').strip()
 
 
-def _pdf_text(file_found):
+def _pdf_text(file_found, keep_lines=False):
     with open(file_found, 'rb') as fp:
         reader = PdfReader(fp)
-        return ''.join(page.extract_text() for page in reader.pages).replace('\n', '')
+        pages = [page.extract_text() for page in reader.pages]
+    return '\n'.join(pages) if keep_lines else ''.join(pages).replace('\n', '')
 
 
 @artifact_processor
@@ -85,19 +125,17 @@ def chaseReturnsRTL(context):
         if not file_found.lower().endswith('.pdf'):
             continue
         source_path = file_found
-        text = _pdf_text(file_found)
+        text = _pdf_text(file_found, keep_lines=True)
 
         index = 0
         while True:
-            index = text.find('Refresh Token Login', index)
-            if index == -1:
+            header = _RTL_EVENT_START.search(text, index)
+            if header is None:
                 break
-            start_point = index
-            end_point = find_nth(text, '/', 3, index) - 2
-            if end_point <= start_point:
-                end_point = len(text)
+            start_point = header.start(1)
+            end_point = _rtl_record_end(text, header.end())
             index = end_point
-            subtext = text[start_point:end_point]
+            subtext = text[start_point:end_point].replace('\n', '')
 
             first_slash = find_nth(subtext, '/', 1)
             if first_slash < 2:
@@ -105,15 +143,15 @@ def chaseReturnsRTL(context):
             ts_start = first_slash - 2
             ts_end = find_nth(subtext, ',', 1, ts_start)
             timestamp = subtext[ts_start:ts_end] if ts_end != -1 else subtext[ts_start:]
-            username = subtext[subtext.find('Refresh Token Login ') + 20:first_slash - 2]
+            username = subtext[subtext.find('Refresh Token Login ') + 20:first_slash - 2].strip()
 
             row = {key: '' for key in _RTL_KEYS}
             row['TIMESTAMP'] = timestamp
             row['USERNAME'] = username
             for item in subtext.split(', '):
                 line_item = item.split(' - ')
-                if len(line_item) > 1 and line_item[0] in _RTL_FIELD_KEYS:
-                    row[line_item[0]] = line_item[1]
+                if len(line_item) > 1 and line_item[0] in _RTL_FIELD_KEYS and not row[line_item[0]]:
+                    row[line_item[0]] = line_item[1].strip()
 
             block = [row[key] for key in _RTL_KEYS]
             block[0] = _ts(block[0])
@@ -158,5 +196,5 @@ def chaseAccountInfo(context):
             ))
 
     data_headers = ('User ID', 'Email', 'Name', 'Address 1', 'Address 2', 'City', 'State', 'Zip',
-                    'Country Code', ('Work Phone', 'phonenumber'), ('Home Phone', 'phonenumber'))
+                    'Country Code', ('W. Phone', 'phonenumber'), ('H. Phone', 'phonenumber'))
     return data_headers, data_list, context.get_relative_path(source_path)
