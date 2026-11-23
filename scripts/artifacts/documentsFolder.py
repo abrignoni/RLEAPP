@@ -1,19 +1,26 @@
 __artifacts_v2__ = {
     "documentsFolder": {
         "name": "iCloud Documents Folders",
-        "description": "Files in iCloud backup Documents folders, with detected type and a media "
-                       "preview.",
+        "description": "Files under backup/<name>/Documents/ in the return, with the file type "
+                       "when its signature is recognized and a media preview.",
         "author": "@AlexisBrignoni, Codex",
         "creation_date": "2023-02-15",
-        "last_update_date": "2026-10-04",
+        "last_update_date": "2026-11-23",
         "requirements": "none",
         "category": "iCloud Documents Folders",
-        "notes": "Staged File mtime is the modification-time value of the extracted copy, in "
-                 "Unix seconds. It does not establish a source event time. For a ZIP member "
-                 "that carries an NTFS or extended timestamp field it is that field's UTC time. "
-                 "For a ZIP member with neither, the staging process interprets the zone-less "
-                 "member time in the examiner's local zone, so this value can depend on the "
-                 "machine running the tool.",
+        "notes": "File Modified is the modification time the tool reads from the input for the "
+                 "file as a UTC time, to the whole second, such as from a tar header or a zip "
+                 "entry's NTFS or extended timestamp field. When the tool reads no UTC time, File"
+                 " Modified is blank and Modified (no zone, as stored) shows the date and time "
+                 "the input holds, with no zone conversion. That is the case for a FAT directory "
+                 "entry, an exFAT directory entry (its stored UTC offset is not applied or shown "
+                 "here) and a zip entry with only its DOS date and time. Both columns are blank "
+                 "when the input holds neither, and a recorded time of 0 is treated as no time. "
+                 "For a folder or single-file input File Modified is the time the operating "
+                 "system reports for that file on the examiner's machine, including any "
+                 "conversion it applied, and whatever copied the file there may have set it. The "
+                 "staged copy's own time is not reported. File Modified does not establish a "
+                 "source event time.",
         "paths": ('*/backup/*/Documents/**',),
         "output_types": "standard",
         "artifact_icon": "folder",
@@ -22,8 +29,37 @@ __artifacts_v2__ = {
 
 import os
 
+from datetime import datetime, timedelta, timezone
 from scripts.filetype import guess_mime, guess_extension
 from scripts.ilapfuncs import artifact_processor, check_in_media
+
+
+def _utc(seconds):
+    """Unix seconds as a UTC datetime in whole seconds, '' for none or a value datetime cannot hold."""
+    if seconds is None:
+        return ''
+    try:
+        return datetime(1970, 1, 1, tzinfo=timezone.utc) + timedelta(seconds=int(seconds))
+    except OverflowError:
+        return ''
+
+
+def _file_times(seeker, path):
+    """(UTC seconds, reading with no zone) the input records for a staged file.
+
+    The staged copy's own time is not used: for a FAT, exFAT or DOS-only zip reading it is
+    that reading placed in the examiner's time zone.
+    """
+    infos = getattr(seeker, 'file_infos', None) or {}
+    windows = str(path).replace('/', '\\')
+    bare = windows.removeprefix('\\\\?\\')
+    info = next((infos[name] for name in (str(path), windows, bare, '\\\\?\\' + bare)
+                 if name in infos), None)
+    times = getattr(info, 'times', None)
+    for value in (getattr(times, 'modified', None), getattr(info, 'modification_date', None)):
+        if isinstance(value, (int, float)) and value:
+            return value, ''
+    return None, getattr(times, 'modified_no_zone', None) or ''
 
 
 @artifact_processor
@@ -38,11 +74,12 @@ def documentsFolder(context):
         if filename.startswith('.'):
             continue
         source_path = file_found
-        modified = str(os.path.getmtime(file_found))
+        modified, no_zone = _file_times(context.get_seeker(), file_found)
         media = check_in_media(file_found, filename)
-        data_list.append((modified, filename, media, guess_extension(file_found),
+        data_list.append((_utc(modified), no_zone, filename,
+                          media, guess_extension(file_found),
                           guess_mime(file_found), context.get_relative_path(file_found)))
 
-    data_headers = ('Staged File mtime (Unix seconds)', 'Filename', ('Media', 'media'), 'EXT', 'MIME',
-                    'Path')
+    data_headers = (('File Modified', 'datetime'), 'Modified (no zone, as stored)', 'Filename', ('Media', 'media'), 'EXT',
+                    'MIME', 'Path')
     return data_headers, data_list, context.get_relative_path(source_path)
