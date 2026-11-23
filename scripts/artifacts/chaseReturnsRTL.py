@@ -1,20 +1,26 @@
 __artifacts_v2__ = {
     "chaseReturnsRTL": {
         "name": "Chase - Refresh Token Login",
-        "description": "Text blocks that start with 'Refresh Token Login' in a PDF. Written for Chase "
-                       "Bank returns. The module does not check that a PDF is one.",
+        "description": "Text blocks in a PDF that start with 'Refresh Token Login' at the start of a "
+                       "line or after a comma and print a date before the next comma. Written for "
+                       "Chase Bank returns. The module does not check that a PDF is one.",
         "author": "@AlexisBrignoni, Shawn Ramsey, Codex",
         "creation_date": "2022-12-29",
         "last_update_date": "2026-11-23",
         "requirements": "pypdf",
         "category": "Chase Returns",
-        "notes": "Timestamp is the text from the first date to the next comma, taken from the PDF "
-                 "text with line breaks removed. It is not converted. The time zone of the printed "
-                 "value is not established here. Username is the text printed between 'Refresh "
-                 "Token Login' and the date. Its meaning is not established. GEOLAT and GEOLON are "
-                 "shown as Latitude and Longitude so rows that have both are written to KML. The "
-                 "KML point does not carry the timestamp. The format of the printed coordinates is "
-                 "not established.",
+        "notes": "Timestamp starts two characters before the first slash in the block and ends at "
+                 "the next comma. If the text before the date holds a slash, Timestamp and Username "
+                 "are wrong. It is read from the PDF text with line breaks removed. It is not "
+                 "converted. The time zone of the printed value is not established here. Username "
+                 "is the text between 'Refresh Token Login' and the Timestamp start. Its meaning is "
+                 "not established. GEOLAT and GEOLON are shown as Latitude and Longitude so rows "
+                 "that have both are written to KML. The KML point does not carry the timestamp. "
+                 "The format of the printed coordinates is not established. A login block runs to "
+                 "the next login header. It ends earlier only at an item that follows a comma, has "
+                 "no ' - ' separator, and prints a date and a time. Other text in between, "
+                 "including a different event type, is read as part of that login. A field value "
+                 "is cut at its first ' - ' or ', '. A repeated field keeps its first value.",
         "paths": ('*.pdf',),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
         "artifact_icon": "login-2",
@@ -29,8 +35,10 @@ __artifacts_v2__ = {
         "category": "Chase Returns",
         "notes": "Reports the text after each label (User ID, E-mail Address, Name, Address 1, "
                  "Address 2, City, State, Zip, Country Code, W. Phone, H. Phone) up to the next "
-                 "expected label, from 'User Data' to the next 'Combined Events'. E-mail Address "
-                 "ends at the word 'Customer'. If a label is missing, a field can hold more text "
+                 "expected label. H. Phone runs to the end of the block. A block runs from 'User "
+                 "Data' to the next 'Combined Events', or to the end of the text if there is none. "
+                 "A label that ends its line gives an empty field. E-mail Address ends at the word "
+                 "'Customer'. If a label is missing, a field can hold more text "
                  "than its own value. Values come from the PDF text with line breaks removed and "
                  "outer spaces trimmed.",
         "paths": ('*.pdf',),
@@ -56,9 +64,9 @@ _RTL_ITEM_START = r'(?:^[ \t]*|(?<=, ))'
 # A login header starts a line or a comma-separated item and reaches its date before any comma.
 _RTL_EVENT_START = re.compile(rf'{_RTL_ITEM_START}(Refresh Token Login [^,]*?{_RTL_DATE})', re.M)
 # Any other event starts the same way, is not a KEY - value item, and prints a date and time.
+# Its header and date can sit on different lines.
 _RTL_OTHER_EVENT = re.compile(
-    rf"{_RTL_ITEM_START}(?!(?:{'|'.join(sorted(_RTL_FIELD_KEYS))}) - )"
-    rf'[^,\n]+?{_RTL_DATE}[ \t]+\d{{1,2}}:\d{{2}}', re.M)
+    rf'{_RTL_ITEM_START}(?![^,]* - )[^,]+?{_RTL_DATE}\s+\d{{1,2}}:\d{{2}}', re.M)
 _RTL_HEADERS = (('Timestamp (as printed)', 'Username', 'APPLICATIONID', 'COMMENTS', 'DEVAPPINSTALL',
                  'DEVAPPVER', 'DEVID', 'DEVLOCALE', 'DEVOSVER', 'DEV_MDL_VER', 'DVC_ID', 'DVC_MAK',
                  'DVC_MDL', 'DVC_NAME', 'DVC_OS', 'ENC_DVC_ID', 'ERR_CD', 'ERR_DESC', 'Latitude',
@@ -76,11 +84,16 @@ def find_nth(haystack, needle, n, start=0):
 
 
 def _rtl_record_end(text, header_end):
-    """End a login at the next login header or other event, read from text with its line breaks."""
+    """End a login at the next login header or other event, read from text with its line breaks.
+
+    Another event must follow a comma. Text after an unfinished field continues that field.
+    """
     next_header = _RTL_EVENT_START.search(text, header_end)
     limit = next_header.start() if next_header else len(text)
-    other_event = _RTL_OTHER_EVENT.search(text, header_end, limit)
-    return other_event.start() if other_event else limit
+    for event in _RTL_OTHER_EVENT.finditer(text, header_end, limit):
+        if text[header_end:event.start()].rstrip().endswith(','):
+            return event.start()
+    return limit
 
 
 def _between(text, start, end):
