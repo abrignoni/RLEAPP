@@ -23,7 +23,8 @@ __artifacts_v2__ = {
                  "point does not carry the timestamp. Its name and description show N/A in that "
                  "place. The format of the printed coordinates is not established. A login block "
                  "runs to the next login header, or to the end of the PDF text for the last login. "
-                 "Text printed after the last login can end up in its last field. A block ends "
+                 "Text printed after the last login can end up in the last field printed in that "
+                 "login. It does not reach Source File. A block ends "
                  "earlier only at an item that follows a comma, has no ' - ' separator, and prints "
                  "a date and a time. Other text in between, including a different event type, is "
                  "read as part of that login. A field value is cut at its first ' - ' or ', '. A "
@@ -31,7 +32,7 @@ __artifacts_v2__ = {
                  "rows are combined. A PDF that cannot be read stops the artifact and no rows are "
                  "reported. The located-at line on this artifact's report page and the LAVA source "
                  "path list the PDFs that produced rows. The processed files log lists every PDF "
-                 "matched. A row does not name its own PDF.",
+                 "matched. Source File names the PDF each row was read from.",
         "paths": ('*.pdf',),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
         "artifact_icon": "login-2",
@@ -40,7 +41,8 @@ __artifacts_v2__ = {
         "name": "Chase - Account Information",
         "description": "Fields of each text span that starts at 'User Data' in a PDF. Written for "
                        "Chase Bank returns. The module does not check that a PDF is one. Any "
-                       "readable PDF whose text holds the phrase gives a row, which can be empty.",
+                       "readable PDF whose text holds the phrase gives a row. Its fields "
+                       "other than Source File can be empty.",
         "author": "@AlexisBrignoni, Shawn Ramsey",
         "creation_date": "2022-12-29",
         "last_update_date": "2026-11-23",
@@ -53,13 +55,13 @@ __artifacts_v2__ = {
                  "A label that ends its line gives an empty field, even when its value is printed "
                  "on the next line. E-mail Address ends at the word 'Customer'. If a label is "
                  "missing, its own field is empty and the field before it can hold more text "
-                 "than its own value. Values come from the PDF text with line breaks removed and "
-                 "outer spaces trimmed. With several PDFs, the rows are combined. A PDF that cannot "
+                 "than its own value. Values other than Source File come from the PDF text with "
+                 "line breaks removed and outer spaces trimmed. With several PDFs, the rows are combined. A PDF that cannot "
                  "be read stops the artifact and no rows are reported. The located-at "
                  "line on this artifact's report page and the LAVA source path list the PDFs that "
-                 "produced rows. The processed files log lists every PDF matched. A row does not "
-                 "name its own PDF. These rows carry no event time, so they are not written to "
-                 "the timeline.",
+                 "produced rows. The processed files log lists every PDF matched. Source File "
+                 "names the PDF each row was read from. These rows carry no event time, so they "
+                 "are not written to the timeline.",
         "paths": ('*.pdf',),
         "output_types": ['html', 'tsv', 'lava'],
         "artifact_icon": "user",
@@ -91,7 +93,7 @@ _RTL_HEADERS = (('Timestamp (as printed)', 'Username', 'APPLICATIONID', 'COMMENT
                  'DVC_MDL', 'DVC_NAME', 'DVC_OS', 'ENC_DVC_ID', 'ERR_CD', 'ERR_DESC', 'Latitude',
                  'Longitude', 'GEOTS', 'INPT_DID', 'LANGUAGE', 'MLWR_SC', 'RT_SC', 'STS', 'TKN_TP',
                  'USR_AGNT_DVC_NM', 'SERVERID', 'CHANNELID', 'SLOTCODE', 'DEVICE_TRUST_LEVEL',
-                 'FAILED_DVC_TRUST_RULE'))
+                 'FAILED_DVC_TRUST_RULE', 'Source File'))
 
 
 def find_nth(haystack, needle, n, start=0):
@@ -178,6 +180,7 @@ def chaseReturnsRTL(context):
 
             block = [row[key] for key in _RTL_KEYS]
             block[0] = _ts(block[0])
+            block.append(context.get_relative_path(file_found))
             data_list.append(block)
 
         if len(data_list) > rows_before:
@@ -217,11 +220,13 @@ def chaseAccountInfo(context):
                 _between(subtext, 'Country Code: ', 'W. Phone:'),
                 _between(subtext, 'W. Phone: ', 'H. Phone:'),
                 _between(subtext, 'H. Phone: ', 'Combined Events'),
+                context.get_relative_path(file_found),
             ))
 
         if len(data_list) > rows_before:
             row_sources.append(file_found)
 
     data_headers = ('User ID', 'Email', 'Name', 'Address 1', 'Address 2', 'City', 'State', 'Zip',
-                    'Country Code', ('W. Phone', 'phonenumber'), ('H. Phone', 'phonenumber'))
+                    'Country Code', ('W. Phone', 'phonenumber'), ('H. Phone', 'phonenumber'),
+                    'Source File')
     return data_headers, data_list, '\n'.join(row_sources or pdf_files)
