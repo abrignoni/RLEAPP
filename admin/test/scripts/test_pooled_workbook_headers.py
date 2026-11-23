@@ -72,6 +72,13 @@ class PooledWorkbookHeaders(unittest.TestCase):
         self.assertEqual(headers, ('Sender', 'Body'))
         self.assertEqual(rows, [['s', 'b']])
 
+    def test_blank_rows_do_not_count_as_a_contributing_workbook(self):
+        module = importlib.import_module('scripts.artifacts.icloudMsgsInCloud')
+        headers, rows = module._pool_workbooks([('a.xlsx', ['Sender', 'Body'], [['s', 'b']]),
+                                                ('b.xlsx', ['Body', 'Sender'], [['', '']])])
+        self.assertEqual(headers, ('Sender', 'Body'))
+        self.assertEqual(rows, [['s', 'b']])
+
     def test_missing_extra_and_unheaded_values_survive(self):
         module = importlib.import_module('scripts.artifacts.icloudMsgsInCloud')
         headers, rows = module._pool_workbooks([('a.xlsx', ['Sender'], [['s1', 'beyond-header']]),

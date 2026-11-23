@@ -7,7 +7,7 @@ __artifacts_v2__ = {
         "last_update_date": "2026-11-23",
         "requirements": "openpyxl",
         "category": "iCloud Returns",
-        "notes": "When several workbooks contribute rows, values are aligned by column heading and a Source File column names the workbook each row came from.",
+        "notes": "When more than one workbook contributes rows, each value is placed under the column whose heading matches its own. Headings are matched ignoring case and punctuation, and the first spelling read is the one shown. Columns with no heading are matched by position. Repeated headings are matched in order of appearance. A Source File column is added with the evidence-relative path of the workbook each row came from. If a workbook has its own Source File heading, the added column is named Source File (1). With one contributing workbook the columns are unchanged and no Source File column is added.",
         "paths": ('*/LOG/*_IDS_QueryLogs.xlsx',),
         "output_types": "standard",
         "artifact_icon": "search",
@@ -44,7 +44,8 @@ def _safe_headers(cells):
 
 def _pool_workbooks(workbooks):
     """Combine (source, headers, rows) workbooks, keeping each value under its own heading."""
-    with_rows = [workbook for workbook in workbooks if workbook[2]]
+    with_rows = [workbook for workbook in workbooks
+                 if any(value != '' for row in workbook[2] for value in row)]
     if len(with_rows) < 2:
         chosen = with_rows or workbooks
         return (tuple(chosen[-1][1]), list(chosen[-1][2])) if chosen else ((), [])
