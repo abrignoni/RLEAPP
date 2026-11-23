@@ -1,40 +1,52 @@
 __artifacts_v2__ = {
     "chaseReturnsRTL": {
         "name": "Chase - Refresh Token Login",
-        "description": "Refresh Token Login events from a Chase Bank PDF return.",
+        "description": "Text blocks that start with 'Refresh Token Login' in a PDF. Written for Chase "
+                       "Bank returns. The module does not check that a PDF is one.",
         "author": "@AlexisBrignoni, Shawn Ramsey, Codex",
         "creation_date": "2022-12-29",
-        "last_update_date": "2026-10-04",
+        "last_update_date": "2026-11-23",
         "requirements": "pypdf",
         "category": "Chase Returns",
-        "notes": "Timestamp is retained as printed text. "
-                 "The time zone of the printed value is not established here. GEOLAT/GEOLON are "
-                 "exposed as Latitude/Longitude so the rows map (KML).",
+        "notes": "Timestamp is the text from the first date to the next comma, taken from the PDF "
+                 "text with line breaks removed. It is not converted. The time zone of the printed "
+                 "value is not established here. Username is the text printed between 'Refresh "
+                 "Token Login' and the date. Its meaning is not established. GEOLAT and GEOLON are "
+                 "shown as Latitude and Longitude so rows that have both are written to KML. The "
+                 "KML point does not carry the timestamp. The format of the printed coordinates is "
+                 "not established.",
         "paths": ('*.pdf',),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
         "artifact_icon": "login-2",
     },
     "chaseAccountInfo": {
         "name": "Chase - Account Information",
-        "description": "Account holder identity (User Data block) from a Chase Bank PDF return.",
+        "description": "Fields of the User Data block in a PDF. Written for Chase Bank returns.",
         "author": "@AlexisBrignoni, Shawn Ramsey",
         "creation_date": "2022-12-29",
-        "last_update_date": "2026-06-28",
+        "last_update_date": "2026-11-23",
         "requirements": "pypdf",
         "category": "Chase Returns",
-        "notes": "Reports the text between the labels of each User Data block (User ID, E-mail "
-                 "Address, Name, Address 1, Address 2, City, State, Zip, Country Code, W. Phone, "
-                 "H. Phone), as extracted from the PDF text.",
+        "notes": "Reports the text after each label (User ID, E-mail Address, Name, Address 1, "
+                 "Address 2, City, State, Zip, Country Code, W. Phone, H. Phone) up to the next "
+                 "expected label, from 'User Data' to the next 'Combined Events'. E-mail Address "
+                 "ends at the word 'Customer'. If a label is missing, a field can hold more text "
+                 "than its own value. Values come from the PDF text with line breaks removed and "
+                 "outer spaces trimmed.",
         "paths": ('*.pdf',),
         "output_types": "standard",
         "artifact_icon": "user",
     },
 }
 
+import re
+
 from pypdf import PdfReader
 
 from scripts.ilapfuncs import artifact_processor
 
+_RTL_HEADER = 'Refresh Token Login'
+_RTL_EVENT_DATE = re.compile(r'(?<!- )\b\d{1,2}/\d{1,2}/\d{4}\b')
 _RTL_KEYS = ['TIMESTAMP', 'USERNAME', 'APPLICATIONID', 'COMMENTS', 'DEVAPPINSTALL', 'DEVAPPVER',
              'DEVID', 'DEVLOCALE', 'DEVOSVER', 'DEV_MDL_VER', 'DVC_ID', 'DVC_MAK', 'DVC_MDL',
              'DVC_NAME', 'DVC_OS', 'ENC_DVC_ID', 'ERR_CD', 'ERR_DESC', 'GEOLAT', 'GEOLON', 'GEOTS',
@@ -55,6 +67,19 @@ def find_nth(haystack, needle, n, start=0):
         start = haystack.find(needle, start + len(needle))
         n -= 1
     return start
+
+
+def _rtl_record_end(text, start):
+    """End a login at the next login header, or at the next event's date if one comes first.
+
+    A date right after ' - ' is a field value, so it does not end the record.
+    """
+    next_header = text.find(_RTL_HEADER, start + len(_RTL_HEADER))
+    limit = next_header if next_header != -1 else len(text)
+    dates = _RTL_EVENT_DATE.finditer(text, start, limit)
+    next(dates, None)  # the login's own timestamp
+    following = next(dates, None)
+    return following.start() if following else limit
 
 
 def _between(text, start, end):
@@ -89,13 +114,11 @@ def chaseReturnsRTL(context):
 
         index = 0
         while True:
-            index = text.find('Refresh Token Login', index)
+            index = text.find(_RTL_HEADER, index)
             if index == -1:
                 break
             start_point = index
-            end_point = find_nth(text, '/', 3, index) - 2
-            if end_point <= start_point:
-                end_point = len(text)
+            end_point = _rtl_record_end(text, start_point)
             index = end_point
             subtext = text[start_point:end_point]
 
@@ -105,7 +128,7 @@ def chaseReturnsRTL(context):
             ts_start = first_slash - 2
             ts_end = find_nth(subtext, ',', 1, ts_start)
             timestamp = subtext[ts_start:ts_end] if ts_end != -1 else subtext[ts_start:]
-            username = subtext[subtext.find('Refresh Token Login ') + 20:first_slash - 2]
+            username = subtext[subtext.find('Refresh Token Login ') + 20:first_slash - 2].strip()
 
             row = {key: '' for key in _RTL_KEYS}
             row['TIMESTAMP'] = timestamp
@@ -158,5 +181,5 @@ def chaseAccountInfo(context):
             ))
 
     data_headers = ('User ID', 'Email', 'Name', 'Address 1', 'Address 2', 'City', 'State', 'Zip',
-                    'Country Code', ('Work Phone', 'phonenumber'), ('Home Phone', 'phonenumber'))
+                    'Country Code', ('W. Phone', 'phonenumber'), ('H. Phone', 'phonenumber'))
     return data_headers, data_list, context.get_relative_path(source_path)
