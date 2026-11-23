@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT))
 
 from scripts.artifacts import chaseReturnsRTL as artifact  # pylint: disable=wrong-import-position
+from scripts.ilapfuncs import check_output_types  # pylint: disable=wrong-import-position
 
 
 def pdf_bytes(lines):
@@ -145,6 +146,66 @@ class ChaseRefreshTokenLogins(unittest.TestCase):
         rows = self.rows([login(1), other, login(2)])
         self.assertEqual([row['COMMENTS'] for row in rows], ['ok', 'ok'])
         self.assertEqual([row['STS'] for row in rows], ['S1', 'S2'])
+
+
+def account(number):
+    return (f'User Data User ID: synth{number} E-mail Address: synth{number}@example.test '
+            f'Customer Name: Synthetic {number} Address 1: 1 Test St Address 2: Unit {number} '
+            'City: Testville State: TS Zip: 00000 Country Code: US '
+            'W. Phone: 555-0100 H. Phone: 555-0101 Combined Events')
+
+
+class FilesContext:
+    def __init__(self, paths):
+        self.paths = paths
+
+    def get_files_found(self):
+        return self.paths
+
+    @staticmethod
+    def get_relative_path(path):
+        return path
+
+
+class ChaseSeveralPdfs(unittest.TestCase):
+    """Two PDFs produce rows. A third, which sorts last, produces none."""
+
+    def setUp(self):
+        folder = tempfile.TemporaryDirectory()
+        self.addCleanup(folder.cleanup)
+        self.first = Path(folder.name) / 'a_return.pdf'
+        self.second = Path(folder.name) / 'b_return.pdf'
+        self.unrelated = Path(folder.name) / 'z_cover.pdf'
+        self.first.write_bytes(pdf_bytes([account(1), login(1)]))
+        self.second.write_bytes(pdf_bytes([account(2), login(2)]))
+        self.unrelated.write_bytes(pdf_bytes(['Cover letter with no records']))
+        # Handed over out of order, as a directory walk can.
+        self.context = FilesContext([str(self.unrelated), str(self.second), str(self.first)])
+
+    def test_login_source_names_each_pdf_with_rows(self):
+        _, data, source = artifact.chaseReturnsRTL.__wrapped__(self.context)
+        status = artifact._RTL_KEYS.index('STS')  # pylint: disable=protected-access
+        self.assertEqual([row[status] for row in data], ['S1', 'S2'])
+        self.assertEqual(source.split('\n'), [str(self.first), str(self.second)])
+
+    def test_account_source_names_each_pdf_with_rows(self):
+        _, data, source = artifact.chaseAccountInfo.__wrapped__(self.context)
+        self.assertEqual([row[0] for row in data], ['synth1', 'synth2'])
+        self.assertEqual(source.split('\n'), [str(self.first), str(self.second)])
+
+    def test_pdfs_with_no_rows_are_still_named(self):
+        context = FilesContext([str(self.unrelated)])
+        for function in (artifact.chaseReturnsRTL, artifact.chaseAccountInfo):
+            with self.subTest(function=function.__name__):
+                _, data, source = function.__wrapped__(context)
+                self.assertEqual(data, [])
+                self.assertEqual(source, str(self.unrelated))
+
+    def test_account_info_is_not_written_to_the_timeline(self):
+        output_types = artifact.__artifacts_v2__['chaseAccountInfo']['output_types']
+        self.assertFalse(check_output_types('timeline', output_types))
+        for output in ('html', 'tsv', 'lava'):
+            self.assertTrue(check_output_types(output, output_types), output)
 
 
 if __name__ == '__main__':

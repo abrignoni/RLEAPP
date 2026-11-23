@@ -12,22 +12,29 @@ __artifacts_v2__ = {
         "notes": "Timestamp starts two characters before the first slash in the block and ends at "
                  "the next comma. If the text before the date holds a slash, Timestamp and Username "
                  "are wrong. It is read from the PDF text with line breaks removed. It is not "
-                 "converted. The time zone of the printed value is not established here. Username "
-                 "is the text between 'Refresh Token Login' and the Timestamp start. Its meaning is "
-                 "not established. GEOLAT and GEOLON are shown as Latitude and Longitude so rows "
-                 "that have both are written to KML. The KML point does not carry the timestamp. "
+                 "converted, and the timeline key is this same text, which does not sort by time. "
+                 "The time zone of the printed value is not established here. Username is the "
+                 "module's name for the text between 'Refresh Token Login' and the Timestamp "
+                 "start. Its meaning is not established. GEOLAT and GEOLON are shown as Latitude "
+                 "and Longitude. A row with any text in both is written to KML as printed, "
+                 "including text that is not a number. The KML point does not carry the timestamp. "
                  "The format of the printed coordinates is not established. A login block runs to "
                  "the next login header. It ends earlier only at an item that follows a comma, has "
                  "no ' - ' separator, and prints a date and a time. Other text in between, "
                  "including a different event type, is read as part of that login. A field value "
-                 "is cut at its first ' - ' or ', '. A repeated field keeps its first value.",
+                 "is cut at its first ' - ' or ', '. A repeated field keeps its first value. With "
+                 "several PDFs, the rows are combined. The located-at line on this artifact's "
+                 "report page and the LAVA source path list the PDFs that produced rows. The "
+                 "processed files log lists every PDF matched. A row does not name its own PDF.",
         "paths": ('*.pdf',),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
         "artifact_icon": "login-2",
     },
     "chaseAccountInfo": {
         "name": "Chase - Account Information",
-        "description": "Fields of the User Data block in a PDF. Written for Chase Bank returns.",
+        "description": "Fields of each text span that starts at 'User Data' in a PDF. Written for "
+                       "Chase Bank returns. The module does not check that a PDF is one, so any "
+                       "PDF holding the phrase gives a row, which can be empty.",
         "author": "@AlexisBrignoni, Shawn Ramsey",
         "creation_date": "2022-12-29",
         "last_update_date": "2026-11-23",
@@ -38,11 +45,16 @@ __artifacts_v2__ = {
                  "expected label. H. Phone runs to the end of the block. A block runs from 'User "
                  "Data' to the next 'Combined Events', or to the end of the text if there is none. "
                  "A label that ends its line gives an empty field. E-mail Address ends at the word "
-                 "'Customer'. If a label is missing, a field can hold more text "
+                 "'Customer'. If a label is missing, its own field is empty and the field before "
+                 "it can hold more text "
                  "than its own value. Values come from the PDF text with line breaks removed and "
-                 "outer spaces trimmed.",
+                 "outer spaces trimmed. With several PDFs, the rows are combined. The located-at "
+                 "line on this artifact's report page and the LAVA source path list the PDFs that "
+                 "produced rows. The processed files log lists every PDF matched. A row does not "
+                 "name its own PDF. These rows carry no event time, so they are not written to "
+                 "the timeline.",
         "paths": ('*.pdf',),
-        "output_types": "standard",
+        "output_types": ['html', 'tsv', 'lava'],
         "artifact_icon": "user",
     },
 }
@@ -117,14 +129,18 @@ def _pdf_text(file_found, keep_lines=False):
     return '\n'.join(pages) if keep_lines else ''.join(pages).replace('\n', '')
 
 
+def _pdf_files(context):
+    """The matched PDFs in a fixed order, so rows do not depend on the walk order."""
+    return sorted(path for path in map(str, context.get_files_found())
+                  if path.lower().endswith('.pdf'))
+
+
 @artifact_processor
 def chaseReturnsRTL(context):
-    data_list, source_path = [], ''
-    for file_found in context.get_files_found():
-        file_found = str(file_found)
-        if not file_found.lower().endswith('.pdf'):
-            continue
-        source_path = file_found
+    data_list, row_sources = [], []
+    pdf_files = _pdf_files(context)
+    for file_found in pdf_files:
+        rows_before = len(data_list)
         text = _pdf_text(file_found, keep_lines=True)
 
         index = 0
@@ -157,17 +173,18 @@ def chaseReturnsRTL(context):
             block[0] = _ts(block[0])
             data_list.append(block)
 
-    return _RTL_HEADERS, data_list, context.get_relative_path(source_path)
+        if len(data_list) > rows_before:
+            row_sources.append(file_found)
+
+    return _RTL_HEADERS, data_list, '\n'.join(row_sources or pdf_files)
 
 
 @artifact_processor
 def chaseAccountInfo(context):
-    data_list, source_path = [], ''
-    for file_found in context.get_files_found():
-        file_found = str(file_found)
-        if not file_found.lower().endswith('.pdf'):
-            continue
-        source_path = file_found
+    data_list, row_sources = [], []
+    pdf_files = _pdf_files(context)
+    for file_found in pdf_files:
+        rows_before = len(data_list)
         text = _pdf_text(file_found)
 
         index = 0
@@ -195,6 +212,9 @@ def chaseAccountInfo(context):
                 _between(subtext, 'H. Phone: ', 'Combined Events'),
             ))
 
+        if len(data_list) > rows_before:
+            row_sources.append(file_found)
+
     data_headers = ('User ID', 'Email', 'Name', 'Address 1', 'Address 2', 'City', 'State', 'Zip',
                     'Country Code', ('W. Phone', 'phonenumber'), ('H. Phone', 'phonenumber'))
-    return data_headers, data_list, context.get_relative_path(source_path)
+    return data_headers, data_list, '\n'.join(row_sources or pdf_files)
