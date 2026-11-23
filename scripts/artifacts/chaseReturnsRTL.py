@@ -45,16 +45,20 @@ from pypdf import PdfReader
 
 from scripts.ilapfuncs import artifact_processor
 
-_RTL_HEADER = 'Refresh Token Login'
-_RTL_EVENT_DATE = re.compile(r'\b\d{1,2}/\d{1,2}/\d{4}\b')
-# A header follows a removed line break or ", ", and reaches its date before any comma.
-_RTL_EVENT_START = re.compile(r'(?<![^,] )Refresh Token Login [^,]*?\b\d{1,2}/\d{1,2}/\d{4}\b')
 _RTL_KEYS = ['TIMESTAMP', 'USERNAME', 'APPLICATIONID', 'COMMENTS', 'DEVAPPINSTALL', 'DEVAPPVER',
              'DEVID', 'DEVLOCALE', 'DEVOSVER', 'DEV_MDL_VER', 'DVC_ID', 'DVC_MAK', 'DVC_MDL',
              'DVC_NAME', 'DVC_OS', 'ENC_DVC_ID', 'ERR_CD', 'ERR_DESC', 'GEOLAT', 'GEOLON', 'GEOTS',
              'INPT_DID', 'LANGUAGE', 'MLWR_SC', 'RT_SC', 'STS', 'TKN_TP', 'USR_AGNT_DVC_NM',
              'SERVERID', 'CHANNELID', 'SLOTCODE', 'DEVICE_TRUST_LEVEL', 'FAILED_DVC_TRUST_RULE']
 _RTL_FIELD_KEYS = set(_RTL_KEYS[2:])
+_RTL_DATE = r'\b\d{1,2}/\d{1,2}/\d{4}\b'
+_RTL_ITEM_START = r'(?:^[ \t]*|(?<=, ))'
+# A login header starts a line or a comma-separated item and reaches its date before any comma.
+_RTL_EVENT_START = re.compile(rf'{_RTL_ITEM_START}(Refresh Token Login [^,]*?{_RTL_DATE})', re.M)
+# Any other event starts the same way, is not a KEY - value item, and prints a date and time.
+_RTL_OTHER_EVENT = re.compile(
+    rf"{_RTL_ITEM_START}(?!(?:{'|'.join(sorted(_RTL_FIELD_KEYS))}) - )"
+    rf'[^,\n]+?{_RTL_DATE}[ \t]+\d{{1,2}}:\d{{2}}', re.M)
 _RTL_HEADERS = (('Timestamp (as printed)', 'Username', 'APPLICATIONID', 'COMMENTS', 'DEVAPPINSTALL',
                  'DEVAPPVER', 'DEVID', 'DEVLOCALE', 'DEVOSVER', 'DEV_MDL_VER', 'DVC_ID', 'DVC_MAK',
                  'DVC_MDL', 'DVC_NAME', 'DVC_OS', 'ENC_DVC_ID', 'ERR_CD', 'ERR_DESC', 'Latitude',
@@ -71,26 +75,12 @@ def find_nth(haystack, needle, n, start=0):
     return start
 
 
-def _rtl_record_end(text, start):
-    """End a login at the next login header, or at the next event's date if one comes first.
-
-    A date inside a KEY - value item is a field value, so it does not end the record.
-    """
-    next_header = _RTL_EVENT_START.search(text, start + len(_RTL_HEADER))
+def _rtl_record_end(text, header_end):
+    """End a login at the next login header or other event, read from text with its line breaks."""
+    next_header = _RTL_EVENT_START.search(text, header_end)
     limit = next_header.start() if next_header else len(text)
-    dates = _RTL_EVENT_DATE.finditer(text, start, limit)
-    next(dates, None)  # the login's own timestamp
-    for date in dates:
-        if not _in_field(text, start, date.start()):
-            return date.start()
-    return limit
-
-
-def _in_field(text, start, position):
-    comma = text.rfind(', ', start, position)
-    item = text[comma + 2:position] if comma != -1 else text[start:position]
-    key, separator, _ = item.partition(' - ')
-    return bool(separator) and key in _RTL_FIELD_KEYS
+    other_event = _RTL_OTHER_EVENT.search(text, header_end, limit)
+    return other_event.start() if other_event else limit
 
 
 def _between(text, start, end):
@@ -107,10 +97,11 @@ def _ts(value):
     return (value or '').strip()
 
 
-def _pdf_text(file_found):
+def _pdf_text(file_found, keep_lines=False):
     with open(file_found, 'rb') as fp:
         reader = PdfReader(fp)
-        return ''.join(page.extract_text() for page in reader.pages).replace('\n', '')
+        pages = [page.extract_text() for page in reader.pages]
+    return '\n'.join(pages) if keep_lines else ''.join(pages).replace('\n', '')
 
 
 @artifact_processor
@@ -121,17 +112,17 @@ def chaseReturnsRTL(context):
         if not file_found.lower().endswith('.pdf'):
             continue
         source_path = file_found
-        text = _pdf_text(file_found)
+        text = _pdf_text(file_found, keep_lines=True)
 
         index = 0
         while True:
             header = _RTL_EVENT_START.search(text, index)
             if header is None:
                 break
-            start_point = header.start()
-            end_point = _rtl_record_end(text, start_point)
+            start_point = header.start(1)
+            end_point = _rtl_record_end(text, header.end())
             index = end_point
-            subtext = text[start_point:end_point]
+            subtext = text[start_point:end_point].replace('\n', '')
 
             first_slash = find_nth(subtext, '/', 1)
             if first_slash < 2:
@@ -147,7 +138,7 @@ def chaseReturnsRTL(context):
             for item in subtext.split(', '):
                 line_item = item.split(' - ')
                 if len(line_item) > 1 and line_item[0] in _RTL_FIELD_KEYS and not row[line_item[0]]:
-                    row[line_item[0]] = line_item[1]
+                    row[line_item[0]] = line_item[1].strip()
 
             block = [row[key] for key in _RTL_KEYS]
             block[0] = _ts(block[0])

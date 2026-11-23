@@ -102,6 +102,20 @@ class ChaseRefreshTokenLogins(unittest.TestCase):
                          ['01/01/2026', '01/02/2026', '01/03/2026'])
         self.assertEqual([row['STS'] for row in rows], ['S1', 'S2', 'S3'])
 
+    def test_spaces_around_a_line_break_do_not_hide_a_login(self):
+        for lines in ([login(1), '  ' + login(2), login(3)],
+                      [login(1).rstrip(', ') + '  ', login(2).rstrip(', ') + ' ', login(3)]):
+            with self.subTest(lines=lines):
+                rows = self.rows(lines)
+                self.assertEqual([row['STS'] for row in rows], ['S1', 'S2', 'S3'])
+                self.assertEqual([row['USERNAME'] for row in rows], ['user1', 'user2', 'user3'])
+
+    def test_other_event_after_a_line_with_no_comma_adds_no_fields(self):
+        other = 'Other Event user9 01/09/2026 12:00:00, ERR_DESC - other-error, STS - S9, '
+        rows = self.rows([login(1).rstrip(', '), other, login(2)])
+        self.assertEqual([row['ERR_DESC'] for row in rows], ['', ''])
+        self.assertEqual([row['STS'] for row in rows], ['S1', 'S2'])
+
     def test_a_different_event_does_not_write_into_the_login(self):
         other = 'Other Event user9 01/09/2026 12:00:00, COMMENTS - other, STS - S9, '
         rows = self.rows([login(1), other, login(2)])
