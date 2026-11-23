@@ -167,6 +167,12 @@ class FilesContext:
         return path
 
 
+class RelativeContext(FilesContext):
+    @staticmethod
+    def get_relative_path(path):
+        return f'relative/{Path(path).name}'
+
+
 class ChaseSeveralPdfs(unittest.TestCase):
     """Two PDFs produce rows. A third, which sorts last, produces none."""
 
@@ -200,6 +206,19 @@ class ChaseSeveralPdfs(unittest.TestCase):
                 _, data, source = function.__wrapped__(context)
                 self.assertEqual(data, [])
                 self.assertEqual(source, str(self.unrelated))
+
+    def test_each_row_names_its_own_pdf(self):
+        # Identical text in both PDFs, so only Source File can tell the rows apart.
+        self.second.write_bytes(self.first.read_bytes())
+        context = RelativeContext([str(self.unrelated), str(self.second), str(self.first)])
+        for function in (artifact.chaseReturnsRTL, artifact.chaseAccountInfo):
+            with self.subTest(function=function.__name__):
+                headers, data, _ = function.__wrapped__(context)
+                self.assertEqual(headers[-1], 'Source File')
+                self.assertEqual({len(row) for row in data}, {len(headers)})
+                self.assertEqual([row[-1] for row in data],
+                                 ['relative/a_return.pdf', 'relative/b_return.pdf'])
+                self.assertEqual(list(data[0])[:-1], list(data[1])[:-1])
 
     def test_account_info_is_not_written_to_the_timeline(self):
         output_types = artifact.__artifacts_v2__['chaseAccountInfo']['output_types']
