@@ -46,7 +46,9 @@ from pypdf import PdfReader
 from scripts.ilapfuncs import artifact_processor
 
 _RTL_HEADER = 'Refresh Token Login'
-_RTL_EVENT_DATE = re.compile(r'(?<!- )\b\d{1,2}/\d{1,2}/\d{4}\b')
+_RTL_EVENT_DATE = re.compile(r'\b\d{1,2}/\d{1,2}/\d{4}\b')
+# A header follows a removed line break or ", ", and reaches its date before any comma.
+_RTL_EVENT_START = re.compile(r'(?<![^,] )Refresh Token Login [^,]*?\b\d{1,2}/\d{1,2}/\d{4}\b')
 _RTL_KEYS = ['TIMESTAMP', 'USERNAME', 'APPLICATIONID', 'COMMENTS', 'DEVAPPINSTALL', 'DEVAPPVER',
              'DEVID', 'DEVLOCALE', 'DEVOSVER', 'DEV_MDL_VER', 'DVC_ID', 'DVC_MAK', 'DVC_MDL',
              'DVC_NAME', 'DVC_OS', 'ENC_DVC_ID', 'ERR_CD', 'ERR_DESC', 'GEOLAT', 'GEOLON', 'GEOTS',
@@ -72,14 +74,23 @@ def find_nth(haystack, needle, n, start=0):
 def _rtl_record_end(text, start):
     """End a login at the next login header, or at the next event's date if one comes first.
 
-    A date right after ' - ' is a field value, so it does not end the record.
+    A date inside a KEY - value item is a field value, so it does not end the record.
     """
-    next_header = text.find(_RTL_HEADER, start + len(_RTL_HEADER))
-    limit = next_header if next_header != -1 else len(text)
+    next_header = _RTL_EVENT_START.search(text, start + len(_RTL_HEADER))
+    limit = next_header.start() if next_header else len(text)
     dates = _RTL_EVENT_DATE.finditer(text, start, limit)
     next(dates, None)  # the login's own timestamp
-    following = next(dates, None)
-    return following.start() if following else limit
+    for date in dates:
+        if not _in_field(text, start, date.start()):
+            return date.start()
+    return limit
+
+
+def _in_field(text, start, position):
+    comma = text.rfind(', ', start, position)
+    item = text[comma + 2:position] if comma != -1 else text[start:position]
+    key, separator, _ = item.partition(' - ')
+    return bool(separator) and key in _RTL_FIELD_KEYS
 
 
 def _between(text, start, end):
@@ -114,10 +125,10 @@ def chaseReturnsRTL(context):
 
         index = 0
         while True:
-            index = text.find(_RTL_HEADER, index)
-            if index == -1:
+            header = _RTL_EVENT_START.search(text, index)
+            if header is None:
                 break
-            start_point = index
+            start_point = header.start()
             end_point = _rtl_record_end(text, start_point)
             index = end_point
             subtext = text[start_point:end_point]
@@ -135,7 +146,7 @@ def chaseReturnsRTL(context):
             row['USERNAME'] = username
             for item in subtext.split(', '):
                 line_item = item.split(' - ')
-                if len(line_item) > 1 and line_item[0] in _RTL_FIELD_KEYS:
+                if len(line_item) > 1 and line_item[0] in _RTL_FIELD_KEYS and not row[line_item[0]]:
                     row[line_item[0]] = line_item[1]
 
             block = [row[key] for key in _RTL_KEYS]

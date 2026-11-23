@@ -83,6 +83,25 @@ class ChaseRefreshTokenLogins(unittest.TestCase):
         self.assertEqual(rows[0]['GEOTS'], '02/03/2026 11:00:00')
         self.assertEqual([row['STS'] for row in rows], ['S1', 'S2'])
 
+    def test_date_inside_a_comment_keeps_the_rest_of_the_record(self):
+        rows = self.rows([login(1, 'reset on 02/03/2026'), login(2)])
+        self.assertEqual([row['COMMENTS'] for row in rows], ['reset on 02/03/2026', 'ok'])
+        self.assertEqual([row['STS'] for row in rows], ['S1', 'S2'])
+
+    def test_login_phrase_inside_a_comment_is_not_a_login(self):
+        for comment in ('Refresh Token Login failed', 'Refresh Token Login failed on 02/03/2026',
+                        'second Refresh Token Login on 02/03/2026'):
+            with self.subTest(comment=comment):
+                rows = self.rows([login(1, comment), login(2)])
+                self.assertEqual([row['COMMENTS'] for row in rows], [comment, 'ok'])
+                self.assertEqual([row['STS'] for row in rows], ['S1', 'S2'])
+
+    def test_header_right_after_a_line_with_no_trailing_comma(self):
+        rows = self.rows([login(1).rstrip(', '), login(2).rstrip(', '), login(3)])
+        self.assertEqual([row['TIMESTAMP'][:10] for row in rows],
+                         ['01/01/2026', '01/02/2026', '01/03/2026'])
+        self.assertEqual([row['STS'] for row in rows], ['S1', 'S2', 'S3'])
+
     def test_a_different_event_does_not_write_into_the_login(self):
         other = 'Other Event user9 01/09/2026 12:00:00, COMMENTS - other, STS - S9, '
         rows = self.rows([login(1), other, login(2)])
