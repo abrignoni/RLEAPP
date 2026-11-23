@@ -2,30 +2,36 @@ __artifacts_v2__ = {
     "chaseReturnsRTL": {
         "name": "Chase - Refresh Token Login",
         "description": "Text blocks in a PDF that start with 'Refresh Token Login' at the start of a "
-                       "line or after a comma and print a date before the next comma. Written for "
-                       "Chase Bank returns. The module does not check that a PDF is one.",
+                       "line or after a comma and a space, and print a date (digits/digits/4 "
+                       "digits) before the next comma. Written for Chase Bank returns. The module "
+                       "does not check that a PDF is one.",
         "author": "@AlexisBrignoni, Shawn Ramsey, Codex",
         "creation_date": "2022-12-29",
         "last_update_date": "2026-11-23",
         "requirements": "pypdf",
         "category": "Chase Returns",
         "notes": "Timestamp starts two characters before the first slash in the block and ends at "
-                 "the next comma. If the text before the date holds a slash, Timestamp and Username "
-                 "are wrong. It is read from the PDF text with line breaks removed. It is not "
-                 "converted, and the timeline key is this same text, which does not sort by time. "
-                 "The time zone of the printed value is not established here. Username is the "
-                 "module's name for the text between 'Refresh Token Login' and the Timestamp "
-                 "start. Its meaning is not established. GEOLAT and GEOLON are shown as Latitude "
-                 "and Longitude. A row with any text in both is written to KML as printed, "
-                 "including text that is not a number. The KML point does not carry the timestamp. "
-                 "The format of the printed coordinates is not established. A login block runs to "
-                 "the next login header. It ends earlier only at an item that follows a comma, has "
-                 "no ' - ' separator, and prints a date and a time. Other text in between, "
-                 "including a different event type, is read as part of that login. A field value "
-                 "is cut at its first ' - ' or ', '. A repeated field keeps its first value. With "
-                 "several PDFs, the rows are combined. The located-at line on this artifact's "
-                 "report page and the LAVA source path list the PDFs that produced rows. The "
-                 "processed files log lists every PDF matched. A row does not name its own PDF.",
+                 "the next comma. If no comma follows, it runs to the end of the block. If the "
+                 "text before the date holds a slash, Timestamp and Username are wrong. It is read "
+                 "from the PDF text with line breaks removed. It is not converted, only trimmed of "
+                 "outer spaces. The timeline key is this same text. It sorts as text, which is not "
+                 "time order when the year is printed last. The time zone of the printed value is "
+                 "not established here. Username is the module's name for the text between "
+                 "'Refresh Token Login' and the Timestamp start. Its meaning is not established. "
+                 "GEOLAT and GEOLON are shown as Latitude and Longitude. A row with any text in "
+                 "both is written to KML as printed, including text that is not a number. The KML "
+                 "point does not carry the timestamp. Its name and description show N/A in that "
+                 "place. The format of the printed coordinates is not established. A login block "
+                 "runs to the next login header, or to the end of the PDF text for the last login. "
+                 "Text printed after the last login can end up in its last field. A block ends "
+                 "earlier only at an item that follows a comma, has no ' - ' separator, and prints "
+                 "a date and a time. Other text in between, including a different event type, is "
+                 "read as part of that login. A field value is cut at its first ' - ' or ', '. A "
+                 "repeated field keeps its first value that is not empty. With several PDFs, the "
+                 "rows are combined. A PDF that cannot be read stops the artifact and no rows are "
+                 "reported. The located-at line on this artifact's report page and the LAVA source "
+                 "path list the PDFs that produced rows. The processed files log lists every PDF "
+                 "matched. A row does not name its own PDF.",
         "paths": ('*.pdf',),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
         "artifact_icon": "login-2",
@@ -33,8 +39,8 @@ __artifacts_v2__ = {
     "chaseAccountInfo": {
         "name": "Chase - Account Information",
         "description": "Fields of each text span that starts at 'User Data' in a PDF. Written for "
-                       "Chase Bank returns. The module does not check that a PDF is one, so any "
-                       "PDF holding the phrase gives a row, which can be empty.",
+                       "Chase Bank returns. The module does not check that a PDF is one. Any "
+                       "readable PDF whose text holds the phrase gives a row, which can be empty.",
         "author": "@AlexisBrignoni, Shawn Ramsey",
         "creation_date": "2022-12-29",
         "last_update_date": "2026-11-23",
@@ -44,11 +50,12 @@ __artifacts_v2__ = {
                  "Address 2, City, State, Zip, Country Code, W. Phone, H. Phone) up to the next "
                  "expected label. H. Phone runs to the end of the block. A block runs from 'User "
                  "Data' to the next 'Combined Events', or to the end of the text if there is none. "
-                 "A label that ends its line gives an empty field. E-mail Address ends at the word "
-                 "'Customer'. If a label is missing, its own field is empty and the field before "
-                 "it can hold more text "
+                 "A label that ends its line gives an empty field, even when its value is printed "
+                 "on the next line. E-mail Address ends at the word 'Customer'. If a label is "
+                 "missing, its own field is empty and the field before it can hold more text "
                  "than its own value. Values come from the PDF text with line breaks removed and "
-                 "outer spaces trimmed. With several PDFs, the rows are combined. The located-at "
+                 "outer spaces trimmed. With several PDFs, the rows are combined. A PDF that cannot "
+                 "be read stops the artifact and no rows are reported. The located-at "
                  "line on this artifact's report page and the LAVA source path list the PDFs that "
                  "produced rows. The processed files log lists every PDF matched. A row does not "
                  "name its own PDF. These rows carry no event time, so they are not written to "
