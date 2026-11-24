@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2021-08-27",
         "last_update_date": "2026-06-27",
         "requirements": "none",
-        "category": "Instagram Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "The column headed Following holds the blocked account's value as stored in "
                  "relationships_blocked_users. The heading does not mean the account is "
                  "followed.",

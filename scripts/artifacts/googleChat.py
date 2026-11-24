@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2022-03-08",
         "last_update_date": "2026-06-27",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "When a message record has no created_date, Created Timestamp holds its "
                  "deleted_date and Sender Name reads deleted. A record with neither date is not "
                  "reported. Group Members repeats the member list of group_info.json on every "

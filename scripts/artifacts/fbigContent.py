@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-07-01",
         "last_update_date": "2026-09-19",
         "requirements": "none",
-        "category": "Facebook - Instagram Returns",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "One row per record of the Photos section of records.html and every preservation_N.html; Snapshot File names the file. "
                  "The Media column renders the file the record's 'Linked Media File:' names inside the return's linked_media folder; Linked Media File keeps that name. "
                  "Column names are the provider's field labels. Per its embedded definition, Taken is when the image was uploaded, Status whether the image can be viewed, Source the device through which the photo was taken, Is Published whether it is currently on the profile, Shared to Platform whether it was shared to a different platform, Carousel Id the identifier a post gets when it contains more than one media, and Upload Ip the address (with source port after a colon, when available) associated with the upload. "
@@ -23,7 +23,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-07-01",
         "last_update_date": "2026-09-19",
         "requirements": "none",
-        "category": "Facebook - Instagram Returns",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "One row per record of the Videos section of records.html and every preservation_N.html, read with the same field layout as the Photos artifact (the provider's embedded definitions list the same fields for both, plus Cross Post Id for a video shared from Instagram to Facebook). "
                  "The section held no records on the return this was built against ('No responsive records'), so this artifact is unexercised; its row layout was proven only on the Photos section.",
         "paths": ('*/records.html', '*/preservation*.html', '*/linked_media/*'),
@@ -37,7 +37,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-06-30",
         "last_update_date": "2026-09-19",
         "requirements": "none",
-        "category": "Facebook - Instagram Returns",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "One row per record of the Archived Stories section of records.html and every preservation_N.html; Snapshot File names the file. "
                  "Per the provider's embedded definition the section displays stories archived to the account, Time is when the media was uploaded, Owner the owner of the account and AI whether the content was created using generative AI. "
                  "Media renders the file named by the record's 'Linked Media File:' block; on the tested return every story record carried exactly one, a video or an image, and Privacy Setting held one value on every record. AI is reported as stored from the record's AI block. "
@@ -53,7 +53,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-06-30",
         "last_update_date": "2026-09-19",
         "requirements": "none",
-        "category": "Facebook - Instagram Returns",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "One row per snapshot file (records.html and every preservation_N.html) whose Profile Picture section names a linked media file; per the provider's embedded definition it is the profile image at the time of production. "
                  "A snapshot whose section holds 'No responsive records' produces no row here: on the private return this was built against, a snapshot had no profile picture while the other snapshots carried the same file; no sample data is recorded for it.",
         "paths": ('*/records.html', '*/preservation*.html', '*/linked_media/*'),
@@ -67,7 +67,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-06-30",
         "last_update_date": "2026-09-19",
         "requirements": "none",
-        "category": "Facebook - Instagram Returns",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "One row per record of the Comments section of records.html and every preservation_N.html; Snapshot File names the file. "
                  "Per the provider's embedded definition the section displays comments left by the account holder on their own or other users' images and videos, Media Content Id identifies the media commented on, Media Owner is the account owner of that content, and Date Created is when the comment was published. "
                  "Owner and Media Owner are reported as stored ('username (Instagram: numeric id) [display name]' on the tested return). Status held one value on every comment of the tested return.",
@@ -82,7 +82,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-06-30",
         "last_update_date": "2026-09-19",
         "requirements": "none",
-        "category": "Facebook - Instagram Returns",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "One row per record of the Likes section of records.html and every preservation_N.html; Snapshot File names the file. "
                  "Per the provider's embedded definition, Like Timestamp is when the account holder liked the post, Liked Post Owner Vanity the username of the post owner, Taken when the liked media was uploaded, Url the link to the media, and the remaining columns describe the liked media (Status, Source, Filter, Is Published, Shared to Platform, Upload Ip, Carousel Id, Cross Post Id) as stored. "
                  "Each snapshot file lists its own set of likes and the counts differed widely between the three snapshots of the tested return. Records split across the return's page breaks are rejoined before reporting. On the tested return, which is private, the row count equalled the number of 'Like Timestamp' labels in the source text of each file; no sample data is recorded for it.",
@@ -97,7 +97,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-19",
         "last_update_date": "2026-09-19",
         "requirements": "none",
-        "category": "Facebook - Instagram Returns",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "One row per Like block of the Comment Likes section of records.html and every preservation_N.html; Snapshot File names the file. "
                  "Per the provider's embedded definition, Time is when the account holder liked the comment, Comment Author Vanity the account holder that made the comment, and Post Url Of Comment Liked the URL of the comment liked. "
                  "The Comment Author Vanity field was empty on one of the five Like blocks of the tested return; the column is then blank.",
@@ -112,7 +112,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-19",
         "last_update_date": "2026-09-19",
         "requirements": "none",
-        "category": "Facebook - Instagram Returns",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "One row per Media block inside each Saved Media Item of the Saved Media section of records.html and every preservation_N.html; Snapshot File names the file. "
                  "Per the provider's embedded definition, Saved At is the date and time the media was saved, Taken when the media was uploaded, and the remaining columns describe the saved media as stored. "
                  "A Saved Media Item can hold several Media blocks (one item of the tested return held ten): they share the item's Saved At, and Saved Item Number counts the items in document order so the blocks of one item can be told apart. "

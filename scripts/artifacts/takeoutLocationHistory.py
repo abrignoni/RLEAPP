@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2021-09-21",
         "last_update_date": "2026-10-04",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Reworked from cheeky4n6monkey/4n6-scripts Google_Takeout_Location_History. Sub-activity "
                  "Count is the number of type and confidence pairs in the activity entry. Activity "
                  "timestampMs is the entry's timestampMs value as stored, and Timestamp Activity is "

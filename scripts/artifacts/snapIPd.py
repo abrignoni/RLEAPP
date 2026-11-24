@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2024-06-13",
         "last_update_date": "2026-07-09",
         "requirements": "none",
-        "category": "Snapchat Returns",
+        "category": "Snapchat",
         "notes": "",
         "paths": ('*/ip_data.csv',),
         "output_types": "standard",

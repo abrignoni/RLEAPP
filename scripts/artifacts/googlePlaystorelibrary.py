@@ -7,7 +7,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-05-16",
         "last_update_date": "2026-06-28",
         "requirements": "none",
-        "category": "Google Returns Google Play Library",
+        "category": "Google",
         "notes": "Dynamic-schema CSV: column headers are read from the file's first row and made "
                  "LAVA-safe (blanks/duplicates/SQL reserved words). Values are kept as exported "
                  "(TEXT) since the column set varies per return. When more than one matching "

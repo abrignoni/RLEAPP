@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2024-06-13",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Snapchat Returns",
+        "category": "Snapchat",
         "notes": "Update by Shawn Ramsey 2024-08-05. Latitude and Longitude are the number before "
                  "the ± sign in each cell. Latitude Accuracy and Longitude Accuracy are the text "
                  "after the ± sign in the latitude cell and in the longitude cell, as stored; a "
@@ -22,7 +22,7 @@ __artifacts_v2__ = {
         "creation_date": "2024-06-13",
         "last_update_date": "2026-07-09",
         "requirements": "none",
-        "category": "Snapchat Returns",
+        "category": "Snapchat",
         "notes": "Update by Shawn Ramsey 2024-08-05.",
         "paths": ('*/geo_locations.csv',),
         "output_types": ['html', 'tsv', 'timeline', 'lava', 'kml'],
@@ -35,7 +35,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-07-09",
         "last_update_date": "2026-07-09",
         "requirements": "none",
-        "category": "Snapchat Returns",
+        "category": "Snapchat",
         "notes": "",
         "paths": ('*/geo_locations.csv',),
         "output_types": "standard",

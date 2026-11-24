@@ -7,7 +7,7 @@ __artifacts_v2__ = {
         "creation_date": "2021-09-29",
         "last_update_date": "2026-06-28",
         "requirements": "openpyxl",
-        "category": "TikTok Returns",
+        "category": "TikTok",
         "notes": "Reads the active sheet of each '- video metadata.xlsx' file. The first row is "
                  "skipped as the header and the first three columns are reported, by position, as "
                  "Media ID, Timestamp Upload and Media Caption; the spreadsheet's own column titles "

@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2022-02-27",
         "last_update_date": "2026-10-07",
         "requirements": "ijson",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Edited from cheeky4n6monkey/4n6-scripts Google_Takeout_Records. "
                  "Sub-activity Count is the number of entries iterated from each activity entry's "
                  "activity list; their stored types and confidences are rendered in Detected Activity. "

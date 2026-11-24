@@ -1,6 +1,6 @@
 __artifacts_v2__ = {
     "get_fb_messages": {
-        "name": "Messages",
+        "name": "Facebook Messenger - Messages",
         "description": "Messages from a Facebook Messenger JSON export. Outgoing is set by "
                        "treating the first listed participant as the account owner, which the "
                        "export is not shown to state.",
@@ -8,7 +8,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-06-01",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Facebook Messenger",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Outgoing, Sender and Receiver depend on treating the first listed participant as "
                  "the account owner; the export is not shown to state which participant that is, so "
                  "confirm direction against the participants list. Attachment File shows the first "

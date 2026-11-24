@@ -3,7 +3,7 @@ def _meta(name, paths, icon):
             "description": f"{name} from a Gab law enforcement return.",
             "author": "@AlexisBrignoni", "creation_date": "2024-02-02",
             "last_update_date": "2026-06-28", "requirements": "none",
-            "category": "Gab Returns", "notes": "", "paths": paths,
+            "category": "Gab", "notes": "", "paths": paths,
             "output_types": "standard", "artifact_icon": icon}
 
 

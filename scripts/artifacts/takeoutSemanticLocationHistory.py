@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2022-09-15",
         "last_update_date": "2026-10-07",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Latitude and Longitude report location.latitudeE7 and location.longitudeE7 divided by "
                  "1e7 when the respective key is present. A missing coordinate key yields a native None "
                  "value (blank in HTML/TSV and NULL in the report database), not 0.0; an actual stored "
@@ -24,7 +24,7 @@ __artifacts_v2__ = {
         "creation_date": "2022-09-15",
         "last_update_date": "2026-10-07",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Start/End coordinates are separate columns; no KML file is written for this artifact. "
                  "An absent whole start or end location retains NOT_SPECIFIED. A present location "
                  "mapping with a missing coordinate key yields a native None value (blank in HTML/TSV "

@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2021-08-30",
         "last_update_date": "2025-07-03",
         "requirements": "none",
-        "category": "Instagram Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Only message_1.json of each thread folder is read; check the folder for "
                  "further message_N.json files.",
         "paths": ('*/messages/inbox/*'),

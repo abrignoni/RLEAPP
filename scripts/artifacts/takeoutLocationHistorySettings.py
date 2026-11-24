@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2024-03-21",
         "last_update_date": "2026-10-04",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Mixed time columns use text storage and do not populate timeline/date filters. createdTime is reported by its stored field name; its event meaning is "
                  "not established. Missing fields are blank. Zone-less timestamps remain text. "
                  "Device OS Version and iPhone Model use the lookup tables in this module. "

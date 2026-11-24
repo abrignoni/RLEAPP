@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-06-30",
         "last_update_date": "2026-09-19",
         "requirements": "none",
-        "category": "Facebook - Instagram Returns",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "One row per record of the Followers section of records.html and every preservation_N.html; Snapshot File names the file. "
                  "Per the provider's embedded definition the section lists all the accounts following the account holder at the time of production, and Time is when an account started following the account holder. "
                  "Follower is reported as stored, 'username (Instagram: numeric id) [display name]' on the tested return, and its three parts are also split into their own columns; Display Name is blank when the stored value carries no bracketed part. "
@@ -22,7 +22,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-06-30",
         "last_update_date": "2026-09-19",
         "requirements": "none",
-        "category": "Facebook - Instagram Returns",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "One row per record of the Following section of records.html and every preservation_N.html; Snapshot File names the file. "
                  "Per the provider's embedded definition the section lists all the accounts the account holder is following at the time of production, and Time is when the account holder started following an account. "
                  "Following is reported as stored, 'username (Instagram: numeric id) [display name]' on the tested return, and its three parts are also split into their own columns. "
@@ -38,7 +38,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-06-30",
         "last_update_date": "2026-09-19",
         "requirements": "none",
-        "category": "Facebook - Instagram Returns",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "One row per entry of the Incoming Follow Requests section of records.html and every preservation_N.html; Snapshot File names the file. "
                  "Per the provider's embedded definition the section lists the accounts awaiting approval to follow the account holder. No time column is reported. Every text field of a record in this section is reported as a Requester row; whether the provider's section can carry a time field is not established here. "
                  "Requester is reported as stored, 'username (Instagram: numeric id) [display name]' on the tested return, and its three parts are also split into their own columns.",
@@ -53,7 +53,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-06-30",
         "last_update_date": "2026-09-19",
         "requirements": "none",
-        "category": "Facebook - Instagram Returns",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "One row per record of the Searches section of records.html and every preservation_N.html. "
                  "Per the provider's embedded definition the section returns a list of accounts, tags, or places searched for from the account, Timestamp is the most recent time the item was searched for and clicked on, and Type is the type of search conducted. "
                  "The section held no records on the return this was built against, so the field layout is taken from that definition and is unexercised: Time is read from a Time or Timestamp field, Type from a Type field, and every other field of the record lands in Details as 'label: value'.",

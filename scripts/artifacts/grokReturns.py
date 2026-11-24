@@ -8,7 +8,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-10-24",
         "last_update_date": "2026-10-24",
         "requirements": "none",
-        "category": "Grok (xAI) Returns",
+        "category": "X (Twitter, Grok)",
         "notes": "xAI's README states that every record in the return is kept in UTC, and that "
                  "the deletion time is null when the account has not been deleted; Delete Time "
                  "is blank when the file holds no value. The deletion path has not been run "
@@ -27,7 +27,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-10-24",
         "last_update_date": "2026-10-24",
         "requirements": "none",
-        "category": "Grok (xAI) Returns",
+        "category": "X (Twitter, Grok)",
         "notes": "This artifact has not been run against a multi-factor device record; its "
                  "columns follow the README's field list. The README also lists totpSecret "
                  "(encrypted), webAuthnPasskey and webAuthnConfirmSkr. They are authentication "
@@ -44,7 +44,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-10-24",
         "last_update_date": "2026-10-24",
         "requirements": "none",
-        "category": "Grok (xAI) Returns",
+        "category": "X (Twitter, Grok)",
         "notes": "First Login is createTime and Last Login is lastLoginTime, which xAI's README "
                  "describes as the first and the most recent login from the address. User ID "
                  "separates accounts when a return covers more than one, and holds one value "
@@ -60,7 +60,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-10-24",
         "last_update_date": "2026-10-24",
         "requirements": "none",
-        "category": "Grok (xAI) Returns",
+        "category": "X (Twitter, Grok)",
         "notes": "xAI's README says Last Auth Time falls back to the creation time for older "
                  "records, so a Last Auth Time equal to Create Time is not on its own evidence "
                  "of an authentication at that moment. Start Verification Time and Verification "
@@ -81,7 +81,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-10-24",
         "last_update_date": "2026-10-24",
         "requirements": "none",
-        "category": "Grok (xAI) Returns",
+        "category": "X (Twitter, Grok)",
         "notes": "Deleted Time is header.deleteTime, present only in the deleted-conversations "
                  "file, whose README entry for it is a soft-deletion timestamp. Listed In names "
                  "the file the conversation came from. Responses counts the response objects the "
@@ -108,7 +108,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-10-24",
         "last_update_date": "2026-10-24",
         "requirements": "none",
-        "category": "Grok (xAI) Returns",
+        "category": "X (Twitter, Grok)",
         "notes": "Sender is the stored sender value; the README describes it as who sent the "
                  "message (human, assistant, or a model name), and the conversation view treats "
                  "human as sent by the account. Response Time is responses.createTime, which the "
@@ -155,7 +155,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-10-24",
         "last_update_date": "2026-10-24",
         "requirements": "none",
-        "category": "Grok (xAI) Returns",
+        "category": "X (Twitter, Grok)",
         "notes": "Listed In names the file the record came from. The deleted-asset file carries "
                  "no deletion time and a different field set (it adds postId and mediaKind), so "
                  "columns it lacks are blank on those rows; its File Source uses the backend "
@@ -188,7 +188,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-10-24",
         "last_update_date": "2026-10-24",
         "requirements": "none",
-        "category": "Grok (xAI) Returns",
+        "category": "X (Twitter, Grok)",
         "notes": "Listed In names the file the record came from and holds one value when only "
                  "one of the two files has records. The deleted-media-posts path has not been "
                  "run against a record. Media is the file mediaPath names, under the naming "
@@ -217,7 +217,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-10-24",
         "last_update_date": "2026-10-24",
         "requirements": "none",
-        "category": "Grok (xAI) Returns",
+        "category": "X (Twitter, Grok)",
         "notes": "Referenced By lists each place in the same account's files where the id at the "
                  "start of the file name appears as an asset id, an asset key (key, "
                  "previewImageKey or an auxKeys entry), a deleted-asset id, key or post id, a "

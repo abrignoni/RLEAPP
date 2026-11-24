@@ -4,7 +4,7 @@ __artifacts_v2__ = {
         "description": "Account basic information from a Snapchat data archive (account.json).",
         "author": "@AlexisBrignoni", "creation_date": "2023-12-11",
         "last_update_date": "2026-06-28", "requirements": "none",
-        "category": "Snapchat Archive", "notes": "",
+        "category": "Snapchat", "notes": "",
         "paths": ('*/account.json',), "output_types": "standard", "artifact_icon": "user",
     },
     "snapArchiveDeviceInfo": {
@@ -12,7 +12,7 @@ __artifacts_v2__ = {
         "description": "Device information from a Snapchat data archive (account.json).",
         "author": "@AlexisBrignoni", "creation_date": "2023-12-11",
         "last_update_date": "2026-06-28", "requirements": "none",
-        "category": "Snapchat Archive", "notes": "",
+        "category": "Snapchat", "notes": "",
         "paths": ('*/account.json',), "output_types": "standard", "artifact_icon": "device-mobile",
     },
     "snapArchiveDeviceHistory": {
@@ -20,7 +20,7 @@ __artifacts_v2__ = {
         "description": "Device history from a Snapchat data archive (account.json).",
         "author": "@AlexisBrignoni", "creation_date": "2023-12-11",
         "last_update_date": "2026-06-28", "requirements": "none",
-        "category": "Snapchat Archive", "notes": "",
+        "category": "Snapchat", "notes": "",
         "paths": ('*/account.json',), "output_types": "standard", "artifact_icon": "clock",
     },
     "snapArchiveLoginHistory": {
@@ -28,7 +28,7 @@ __artifacts_v2__ = {
         "description": "Login history from a Snapchat data archive (account.json).",
         "author": "@AlexisBrignoni", "creation_date": "2023-12-11",
         "last_update_date": "2026-06-28", "requirements": "none",
-        "category": "Snapchat Archive", "notes": "",
+        "category": "Snapchat", "notes": "",
         "paths": ('*/account.json',), "output_types": "standard", "artifact_icon": "login-2",
     }
 }

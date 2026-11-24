@@ -4,7 +4,7 @@ __artifacts_v2__ = {
         "description": "Account information from a Snapchat law enforcement return (subscriber_info.csv).",
         "author": "@AlexisBrignoni, Codex", "creation_date": "2024-06-13",
         "last_update_date": "2026-10-07", "requirements": "none",
-        "category": "Snapchat Returns", "notes": "Email Address and Phone Number report email_address and phone_number as listed in the matching "
+        "category": "Snapchat", "notes": "Email Address and Phone Number report email_address and phone_number as listed in the matching "
                                                  "subscriber section. The parser does not check whether either was verified. Email status and Phone "
                                                  "Status report email_status and phone_status as listed; these values are retained without "
                                                  "interpreting their meanings. Original artifact contribution: @AlexisBrignoni.",
@@ -15,7 +15,7 @@ __artifacts_v2__ = {
         "description": "Account change history from a Snapchat law enforcement return (subscriber_info.csv or subscriber_account_change_history.csv).",
         "author": "@AlexisBrignoni", "creation_date": "2024-06-13",
         "last_update_date": "2026-07-09", "requirements": "none",
-        "category": "Snapchat Returns", "notes": "",
+        "category": "Snapchat", "notes": "",
         "paths": ('*/subscriber_info.csv', '*/subscriber_account_change_history.csv'),
         "output_types": "standard", "artifact_icon": "clock",
     },
@@ -24,7 +24,7 @@ __artifacts_v2__ = {
         "description": "Value changes from a Snapchat law enforcement return (subscriber_info.csv).",
         "author": "@AlexisBrignoni", "creation_date": "2024-06-13",
         "last_update_date": "2026-07-09", "requirements": "none",
-        "category": "Snapchat Returns", "notes": "",
+        "category": "Snapchat", "notes": "",
         "paths": ('*/subscriber_info.csv',), "output_types": "standard", "artifact_icon": "edit",
     },
     "snapSubDetails": {
@@ -32,7 +32,7 @@ __artifacts_v2__ = {
         "description": "Account details from a Snapchat law enforcement return (subscriber_info.csv).",
         "author": "@AlexisBrignoni", "creation_date": "2024-06-13",
         "last_update_date": "2026-07-09", "requirements": "none",
-        "category": "Snapchat Returns", "notes": "",
+        "category": "Snapchat", "notes": "",
         "paths": ('*/subscriber_info.csv',), "output_types": "standard", "artifact_icon": "info-circle",
     },
     "snapSubPrivacy": {
@@ -40,7 +40,7 @@ __artifacts_v2__ = {
         "description": "Privacy settings from a Snapchat law enforcement return (subscriber_info.csv).",
         "author": "@AlexisBrignoni", "creation_date": "2024-06-13",
         "last_update_date": "2026-07-09", "requirements": "none",
-        "category": "Snapchat Returns", "notes": "",
+        "category": "Snapchat", "notes": "",
         "paths": ('*/subscriber_info.csv',), "output_types": "standard", "artifact_icon": "lock",
     },
     "snapSubBitmoji": {
@@ -48,7 +48,7 @@ __artifacts_v2__ = {
         "description": "Bitmoji info from a Snapchat law enforcement return (subscriber_info.csv).",
         "author": "@AlexisBrignoni", "creation_date": "2024-06-13",
         "last_update_date": "2026-07-09", "requirements": "none",
-        "category": "Snapchat Returns", "notes": "",
+        "category": "Snapchat", "notes": "",
         "paths": ('*/subscriber_info.csv',), "output_types": "standard", "artifact_icon": "mood-smile",
     }
 }

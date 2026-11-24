@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-09-14",
         "last_update_date": "2026-06-19",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "",
         "paths": "*/Sleep/Sleep Profile.csv",
         "output_types": "standard",
@@ -19,7 +19,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-09-14",
         "last_update_date": "2026-06-19",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Column headings are the parser's labels and are not read from the file. End "
                  "Timestamp holds the file's second column. Deep & REM Score, Restoration Score "
                  "and Time Asleep Score hold the fourth, fifth and sixth columns, which the "
@@ -38,7 +38,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-09-14",
         "last_update_date": "2026-06-19",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Sleep Points, Responsiveness Points and Exertion Points hold the fourth, sixth "
                  "and eighth columns of the file as stored. The (n/30) and (n/40) in the "
                  "headings are the parser's labels; the fifth, seventh and ninth columns are not "
@@ -54,7 +54,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-09-14",
         "last_update_date": "2026-06-19",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Height and Weight are shown as stored; the units in the headings (cm, kg) are "
                  "the parser's labels and are not read from the file. The column headed Strike "
                  "Length (Walking) holds the walking stride length value.",
@@ -69,7 +69,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-09-14",
         "last_update_date": "2026-06-19",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "",
         "paths": "*/Paired Devices/Trackers.csv",
         "output_types": "standard",
@@ -82,7 +82,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-09-14",
         "last_update_date": "2026-06-19",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "",
         "paths": "*/Activity Goals/Activity Goals.csv",
         "output_types": "standard",
@@ -95,7 +95,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-09-14",
         "last_update_date": "2026-06-19",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "",
         "paths": "*/Oxygen Saturation (SpO2)/Daily SpO2 - *.csv",
         "output_types": "standard",
@@ -108,7 +108,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-09-14",
         "last_update_date": "2026-06-19",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "",
         "paths": "*/Temperature/Computed Temperature - *.csv",
         "output_types": "standard",

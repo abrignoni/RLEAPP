@@ -8,7 +8,7 @@ __artifacts_v2__ = {
         "creation_date": "2022-03-12",
         "last_update_date": "2026-10-04",
         "requirements": "none",
-        "category": "Whatsapp Exported Chat",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Bracketed numeric date/time prefixes identify message starts. Timestamp is kept as "
                  "printed text; its date order and time zone are not established. Count is the "
                  "starting line number. Text before the first recognised message is retained "

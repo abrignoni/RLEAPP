@@ -3,7 +3,7 @@ def _meta(name, basename, icon, html_columns=None):
             "description": f"{name} from a Reddit law enforcement return ({basename}).",
             "author": "@AlexisBrignoni", "creation_date": "2023-04-22",
             "last_update_date": "2026-06-28", "requirements": "none",
-            "category": "Reddit Returns", "notes": "Source File is the path of the CSV each "
+            "category": "Reddit", "notes": "Source File is the path of the CSV each "
             "row came from. The file is read with a decoder that treats it as Latin-1 and "
             "interprets backslash sequences, so non-ASCII characters and backslashes can differ "
             "from the source file; confirm such text against the CSV.",

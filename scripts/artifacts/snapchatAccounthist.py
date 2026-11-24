@@ -3,7 +3,7 @@ def _m(name, icon):
             "description": f"{name} from a Snapchat data archive (account_history.json).",
             "author": "@AlexisBrignoni", "creation_date": "2023-12-11",
             "last_update_date": "2026-06-28", "requirements": "none",
-            "category": "Snapchat Archive", "notes": "",
+            "category": "Snapchat", "notes": "",
             "paths": ('*/account_history.json',), "output_types": "standard", "artifact_icon": icon}
 
 

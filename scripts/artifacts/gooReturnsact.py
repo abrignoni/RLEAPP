@@ -7,7 +7,7 @@ __artifacts_v2__ = {
         "creation_date": "2022-05-29",
         "last_update_date": "2026-06-28",
         "requirements": "none",
-        "category": "Google Returns",
+        "category": "Google",
         "notes": "Dynamic-schema CSV: headers are read from the file's first row, with the first "
                  "column moved to the end, and made LAVA-safe. When more than one Activities "
                  "file is found, every row is shown under the header row of the last file read, "

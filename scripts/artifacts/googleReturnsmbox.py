@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2022-01-19",
         "last_update_date": "2026-06-28",
         "requirements": "none",
-        "category": "Google Returns",
+        "category": "Google",
         "notes": "Parses the same mbox as the Takeout 'Google Takeout - Mail (MBOX)' artifact, "
                  "plus the warrant-return *.Mail.MessageContent_* folder. Attachments are the "
                  "parts carrying a Content-Disposition header. Body is the message's last "

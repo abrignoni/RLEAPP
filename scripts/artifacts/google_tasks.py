@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2022-04-28",
         "last_update_date": "2026-06-01",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "A task list holding no tasks is reported as one row. On that row only Task "
                  "List Name comes from the list; the other columns repeat the values of the last "
                  "task read before it, or are blank, and must be disregarded.",

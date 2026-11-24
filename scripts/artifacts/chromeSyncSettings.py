@@ -13,7 +13,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-11-14",
         "last_update_date": "2026-11-14",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Reads each Chrome/SyncSettings.json a Takeout holds. The file is a JSON object whose "
                  "top-level keys are sections; in the tested export they are Apps, App Settings, Preferences "
                  "and Themes, each a list. Preferences held name and value entries; the other three lists "

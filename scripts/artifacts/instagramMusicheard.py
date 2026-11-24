@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2021-08-27",
         "last_update_date": "2026-06-27",
         "requirements": "none",
-        "category": "Instagram Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "",
         "paths": ('*/ads_and_content/music_heard_in_stories.json'),
         "output_types": "standard",

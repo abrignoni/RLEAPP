@@ -25,7 +25,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': '2026-09-24',
         'requirements': 'none',
-        'category': 'Robinhood Returns',
+        'category': 'Finance & Crypto',
         'notes': ('Timestamp (UTC) is converted from created_at when that value states a UTC offset or a '
                   'recognised zone abbreviation; Time Basis records the basis. When created_at states no zone or '
                   'cannot be read, Timestamp (UTC) is blank and Time Basis says so. '
@@ -48,7 +48,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': '2026-09-24',
         'requirements': 'none',
-        'category': 'Robinhood Returns',
+        'category': 'Finance & Crypto',
         'notes': ('Time Entered: The file states no time zone for this column, so it is reported as produced and '
                   'not converted. This file states no account number. Leading and trailing spaces in a cell are '
                   'removed; nothing else in a value is changed. Other Columns (as produced) is empty unless the '
@@ -68,7 +68,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': '2026-09-24',
         'requirements': 'none',
-        'category': 'Robinhood Returns',
+        'category': 'Finance & Crypto',
         'notes': ('event_date_time: The file states no time zone for this column, so it is reported as produced '
                   'and not converted. geo_ip columns are reported as produced. Leading and trailing spaces in a '
                   'cell are removed; nothing else in a value is changed. Other Columns (as produced) is empty '
@@ -88,7 +88,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': '2026-09-24',
         'requirements': 'none',
-        'category': 'Robinhood Returns',
+        'category': 'Finance & Crypto',
         'notes': ('Values are as produced. BASIS NOT SHOWN and COST BASIS are reported as produced. How one '
                   'qualifies the other is not established here. Leading and trailing spaces in a cell are '
                   'removed; nothing else in a value is '
@@ -109,7 +109,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': '2026-09-28',
         'requirements': 'pdfminer.six',
-        'category': 'Robinhood Returns',
+        'category': 'Finance & Crypto',
         'notes': ('Text is read from positions on the page (label rows, column positions, font sizes) observed in '
                   'the tested production. Location gives the page and the vertical position in points of the text '
                   'a row came from, and Source Text gives that text as read. Reader-detected unmapped text and '
@@ -136,7 +136,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': '2026-09-28',
         'requirements': 'pdfminer.six',
-        'category': 'Robinhood Returns',
+        'category': 'Finance & Crypto',
         'notes': ('Text is read from positions on the page (label rows, column positions, font sizes) observed in '
                   'the tested production. Location gives the page and the vertical position in points of the text '
                   'a row came from, and Source Text gives that text as read. Reader-detected unmapped text and '
@@ -165,7 +165,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': '2026-09-28',
         'requirements': 'pdfminer.six',
-        'category': 'Robinhood Returns',
+        'category': 'Finance & Crypto',
         'notes': ('RHF holdings are not mapped into the Holdings column. On RHF statements, source lines outside '
                   'the header and activity tables, including positions, are retained in Parsing Notes; repeated '
                   'section titles and page numbers are excluded. A warning identifies this limit. PDF layout '
@@ -204,7 +204,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': '2026-09-28',
         'requirements': 'pdfminer.six',
-        'category': 'Robinhood Returns',
+        'category': 'Finance & Crypto',
         'notes': ('Text is read from positions on the page (label rows, column positions, font sizes) observed in '
                   'the tested production. Location gives the page and the vertical position in points of the text '
                   'a row came from, and Source Text gives that text as read. Reader-detected unmapped text and '
@@ -235,7 +235,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': '2026-09-28',
         'requirements': 'pdfminer.six',
-        'category': 'Robinhood Returns',
+        'category': 'Finance & Crypto',
         'notes': ("One row per note. Level 'error' marks an unreadable PDF or CSV, with file name and exception "
                   "type; 'warning' marks an unrecognised layout, a CSV header lacking a column an artifact needs, "
                   'missing account attribution, or text kept but not '

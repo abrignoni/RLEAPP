@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2021-09-16",
         "last_update_date": "2026-11-07",
         "requirements": "Pillow, heicreader",
-        "category": "iCloud Returns",
+        "category": "Apple (iCloud, AirDrop)",
         "notes": "Timestamp is the record's originalCreationDate. Latitude, Longitude and Exif "
                  "are filled only for HEIC files found in the return; blank on other file types "
                  "does not mean the file has none. A record whose file name does not decode as "

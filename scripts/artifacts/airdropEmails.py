@@ -7,7 +7,7 @@ __artifacts_v2__ = {
         "creation_date": "2022-03-16",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Airdrop Emails",
+        "category": "Apple (iCloud, AirDrop)",
         "notes": "Tests SHA-256 of each candidate email (scripts/emails/emails.txt) against the 5 "
                  "character start and end fragments the pattern Email=[xxxxx...xxxxx] matches in "
                  "the log's lines. Each distinct fragment pair that a candidate matches is "
