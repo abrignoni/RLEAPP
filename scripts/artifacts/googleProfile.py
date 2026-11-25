@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2021-08-23",
         "last_update_date": "2026-06-27",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "",
         "paths": ('*/Profile/Profile.json', '*/Profile/ProfilePhoto.jpg'),
         "output_types": "standard",

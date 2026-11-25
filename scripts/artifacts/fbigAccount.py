@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-07-01",
         "last_update_date": "2026-09-19",
         "requirements": "none",
-        "category": "Facebook - Instagram Returns",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Reads records.html and every preservation_N.html in the return (the Meta business-records archive format, div.t.o/div.t.i/div.m/div.p blocks; see scripts/meta_records.py). "
                  "Each snapshot file is reported separately, named in the Snapshot File column, because a preservation is a separate capture with its own Generated time and its own contents. "
                  "Sections carried: request parameters (Service, Internal Ticket Number, Target, Account Identifier, Account Type, Generated, Date Range), Name, Registered Email Addresses, Vanity Name, Registration Date, Registration IP, Account Closure Date, Account Read Receipts, Phone Numbers, Privacy Settings, Popular Block, Gender, Date Of Birth, Website, About Me, Linked Accounts, Threads Registration Date and Profile Picture. "
@@ -25,7 +25,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-19",
         "last_update_date": "2026-09-19",
         "requirements": "none",
-        "category": "Facebook - Instagram Returns",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "One row per change record in the Name Changes, Email Changes, Vanity Changes, Phone Number Changes, Password Changes and Account Status History sections, from records.html and every preservation_N.html. "
                  "Change Type names the section. Old Value and New Value are taken from the record's 'Old ...' and 'New ...' fields; a section whose record carries a single value (Email, Status) reports it as New Value; every other field of the record goes to Details as 'label: value'. "
                  "Only Vanity Changes carried a record on the return this was built against, so the other five sections are handled from the provider's embedded field definitions and are unexercised. "
@@ -41,7 +41,7 @@ __artifacts_v2__ = {
         "creation_date": "2024-08-07",
         "last_update_date": "2026-09-19",
         "requirements": "none",
-        "category": "Facebook - Instagram Returns",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "One row per record of the Ip Addresses section of records.html and every preservation_N.html; Snapshot File names the file. "
                  "IP Address is reported as stored: per the provider's embedded definition the source port, when available, follows the address after a colon, and IPv6 addresses are printed in brackets. "
                  "Action is the provider's own event name as stored (four distinct values on the tested return: v1_profile_changed, media_upload, v1_user_block and v1_logout); no meaning beyond the name is asserted. "
@@ -57,7 +57,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-06-30",
         "last_update_date": "2026-09-19",
         "requirements": "none",
-        "category": "Facebook - Instagram Returns",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "One row per record of the Devices section of records.html and every preservation_N.html. "
                  "Per the provider's embedded definition: Type is the model number of the device, Id an identifier associated with the device, Active whether Instagram was accessed by the device, and User the Instagram accounts seen on the device ID. "
                  "A record can carry several User fields; they are joined one per line. On the return this was built against Type was the word 'UUID' on every record, Id an identifier reported as stored, and Users was filled on some records and blank on others; no sample data is recorded for it. "
@@ -73,7 +73,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-19",
         "last_update_date": "2026-09-19",
         "requirements": "none",
-        "category": "Facebook - Instagram Returns",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "One row per Device block of the Devices Info section of records.html and every preservation_N.html. "
                  "The provider prints a device's fields in groups separated by spacers (two groups per device on every Device block of the tested return); all groups of one Device block are merged into the one row. "
                  "Column names are the provider's field labels. Per its embedded definition, Family Device Id is the identifier shared by all Meta apps on the same physical device, Family Device First Seen and Last Seen are when that identifier was first and last seen, App Scoped Device IDs are app-specific device identifiers, and Associated Users are the Instagram accounts associated with the device. "
@@ -90,7 +90,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-19",
         "last_update_date": "2026-09-19",
         "requirements": "none",
-        "category": "Facebook - Instagram Returns",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "One row per record of the Encrypted Connection Info section of records.html and every preservation_N.html. "
                  "Per the provider's embedded definition this section describes the device the account holder used to access end-to-end encrypted features, and can also reflect opening the app from a non-running state, receiving push notifications, or sharing through the iOS share sheet or Android chat bubble. "
                  "The return this was built against carried Device Type, Device Manufacturer, Device Model and Device Os Version; the definition also lists Current Connected IP, Current Connected Port, Device OS Build Number, Last Active Time, Last Connected IP and Online Since, which are reported in Other Fields as 'label: value' when present and are unexercised.",
@@ -105,7 +105,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-19",
         "last_update_date": "2026-09-19",
         "requirements": "none",
-        "category": "Facebook - Instagram Returns",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "One row per record of the Privacy Blocks section of records.html and every preservation_N.html. "
                  "Per the provider's embedded definition the section lists any account that has blocked the account holder, with Blocker the account holder who blocked and Blocked the account holder who was blocked. "
                  "Both are reported as stored ('username [display name] (numeric id)' on the tested return) with the username and numeric id also split into their own columns. No time is recorded in this section. On the tested return the Blocked account was the same account on every row, consistent with the definition (accounts that have blocked the account holder).",

@@ -12,7 +12,7 @@ __artifacts_v2__ = {
         'creation_date': '2022-06-12',
         'last_update_date': '2026-10-09',
         'requirements': 'none',
-        'category': 'Twitter Returns',
+        'category': 'X (Twitter, Grok)',
         'notes': (
             'Time columns preserve mixed values as text and do not populate timeline/date '
             'filters.'
@@ -28,7 +28,7 @@ __artifacts_v2__ = {
         'creation_date': '2022-06-12',
         'last_update_date': '2026-10-09',
         'requirements': 'none',
-        'category': 'Twitter Returns',
+        'category': 'X (Twitter, Grok)',
         'notes': (
             'Time columns preserve mixed values as text and do not populate timeline/date '
             'filters.'
@@ -44,7 +44,7 @@ __artifacts_v2__ = {
         'creation_date': '2022-06-12',
         'last_update_date': '2026-10-09',
         'requirements': 'none',
-        'category': 'Twitter Returns',
+        'category': 'X (Twitter, Grok)',
         'notes': (
             'Time columns preserve mixed values as text and do not populate timeline/date '
             'filters.'
@@ -64,7 +64,7 @@ __artifacts_v2__ = {
         'creation_date': '2022-06-12',
         'last_update_date': '2026-10-24',
         'requirements': 'none',
-        'category': 'Twitter Returns',
+        'category': 'X (Twitter, Grok)',
         'notes': (
             'Time columns preserve mixed values as text and do not populate timeline/date '
             'filters.'
@@ -80,7 +80,7 @@ __artifacts_v2__ = {
         'creation_date': '2022-06-12',
         'last_update_date': '2026-10-09',
         'requirements': 'none',
-        'category': 'Twitter Returns',
+        'category': 'X (Twitter, Grok)',
         'notes': (
             'Time columns preserve mixed values as text and do not populate timeline/date '
             'filters.'
@@ -96,7 +96,7 @@ __artifacts_v2__ = {
         'creation_date': '2022-06-12',
         'last_update_date': '2026-10-09',
         'requirements': 'none',
-        'category': 'Twitter Returns',
+        'category': 'X (Twitter, Grok)',
         'notes': (
             'Time columns preserve mixed values as text and do not populate timeline/date '
             'filters.'
@@ -112,7 +112,7 @@ __artifacts_v2__ = {
         'creation_date': '2022-06-12',
         'last_update_date': '2026-10-09',
         'requirements': 'none',
-        'category': 'Twitter Returns',
+        'category': 'X (Twitter, Grok)',
         'notes': (
             'Time columns preserve mixed values as text and do not populate timeline/date '
             'filters.'
@@ -128,7 +128,7 @@ __artifacts_v2__ = {
         'creation_date': '2022-06-12',
         'last_update_date': '2026-10-09',
         'requirements': 'none',
-        'category': 'Twitter Returns',
+        'category': 'X (Twitter, Grok)',
         'notes': (
             'Time columns preserve mixed values as text and do not populate timeline/date '
             'filters.'
@@ -144,7 +144,7 @@ __artifacts_v2__ = {
         'creation_date': '2022-06-12',
         'last_update_date': '2026-10-09',
         'requirements': 'none',
-        'category': 'Twitter Returns',
+        'category': 'X (Twitter, Grok)',
         'notes': (
             'Time columns preserve mixed values as text and do not populate timeline/date '
             'filters.'
@@ -160,7 +160,7 @@ __artifacts_v2__ = {
         'creation_date': '2022-06-12',
         'last_update_date': '2026-10-09',
         'requirements': 'none',
-        'category': 'Twitter Returns',
+        'category': 'X (Twitter, Grok)',
         'notes': (
             'Time columns preserve mixed values as text and do not populate timeline/date '
             'filters.'
@@ -181,7 +181,7 @@ __artifacts_v2__ = {
         'creation_date': '2022-06-12',
         'last_update_date': '2026-10-09',
         'requirements': 'none',
-        'category': 'Twitter Returns',
+        'category': 'X (Twitter, Grok)',
         'notes': (
             'Time columns preserve mixed values as text and do not populate timeline/date '
             'filters.'
@@ -197,7 +197,7 @@ __artifacts_v2__ = {
         'creation_date': '2022-06-12',
         'last_update_date': '2026-10-09',
         'requirements': 'none',
-        'category': 'Twitter Returns',
+        'category': 'X (Twitter, Grok)',
         'notes': (
             'Time columns preserve mixed values as text and do not populate timeline/date '
             'filters.'
@@ -219,7 +219,7 @@ __artifacts_v2__ = {
         'creation_date': '2022-06-12',
         'last_update_date': '2026-10-09',
         'requirements': 'none',
-        'category': 'Twitter Returns',
+        'category': 'X (Twitter, Grok)',
         'notes': (
             'Time columns preserve mixed values as text and do not populate timeline/date '
             'filters.'

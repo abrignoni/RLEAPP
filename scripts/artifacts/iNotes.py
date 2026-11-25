@@ -7,7 +7,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-02-02",
         "last_update_date": "2026-11-22",
         "requirements": "none",
-        "category": "Apple Notes",
+        "category": "Apple (iCloud, AirDrop)",
         "notes": "Timestamp Created and Timestamp Modified are the record's created and modified "
                  "timestamp values, read as Unix epoch values whose unit is taken from the size "
                  "of the number, and shown in UTC to the second. Attachments holds every matched "

@@ -9,7 +9,7 @@ __artifacts_v2__ = {
         "creation_date": "2022-12-29",
         "last_update_date": "2026-11-23",
         "requirements": "pypdf",
-        "category": "Chase Returns",
+        "category": "Finance & Crypto",
         "notes": "Timestamp starts two characters before the first slash in the block and ends at "
                  "the next comma. If no comma follows, it runs to the end of the block. If the "
                  "text before the date holds a slash, Timestamp and Username are wrong. It is read "
@@ -47,7 +47,7 @@ __artifacts_v2__ = {
         "creation_date": "2022-12-29",
         "last_update_date": "2026-11-23",
         "requirements": "pypdf",
-        "category": "Chase Returns",
+        "category": "Finance & Crypto",
         "notes": "Reports the text after each label (User ID, E-mail Address, Name, Address 1, "
                  "Address 2, City, State, Zip, Country Code, W. Phone, H. Phone) up to the next "
                  "expected label. H. Phone runs to the end of the block. A block runs from 'User "

@@ -7,7 +7,7 @@ __artifacts_v2__ = {
         "creation_date": "2025-07-23",
         "last_update_date": "2026-07-09",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Each service's MyActivity.html file is attached to the report so the "
                  "original HTML can be opened and reviewed manually from the report; the file "
                  "contents are not parsed into rows. The Service column is taken from the "

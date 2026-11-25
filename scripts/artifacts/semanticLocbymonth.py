@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-05-28",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Additional Latitude and Additional Longitude are location.latitudeE7 and "
                  "location.longitudeE7 divided by 1e7 and are blank when the entry holds no such key. "
                  "Calibrated Probability (as stored) is the "
@@ -24,7 +24,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-05-28",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Start/End/Parking coordinates are separate columns. When a segment has "
                  "waypoints, the Waypoints cell lists the start coordinate, then the end "
                  "coordinate, then each waypoint in file order. No KML file is written for this "

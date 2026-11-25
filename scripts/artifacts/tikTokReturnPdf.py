@@ -8,7 +8,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
-        "category": "TikTok Returns",
+        "category": "TikTok",
         "notes": "Lists the PDFs under App, Content and Profile whose first page ends with the "
                  "provider's footer naming TikTok, whether or not another artifact parses them. A "
                  "PDF without that footer is not listed. Section Title and Provider Notice are read "
@@ -39,7 +39,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
-        "category": "TikTok Returns",
+        "category": "TikTok",
         "notes": "In the tested return BSI is a two-column table; fields are paired by row "
                  "position, so a field name not seen before is still reported under its printed "
                  "name. Values are "
@@ -61,7 +61,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
-        "category": "TikTok Returns",
+        "category": "TikTok",
         "notes": "Action is 'logout' when the record prints a 'User logout time' field and 'login' "
                  "otherwise. Country is the country the return prints beside each IP. Country and "
                  "IP were each uniform in the tested return.",
@@ -80,7 +80,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
-        "category": "TikTok Returns",
+        "category": "TikTok",
         "notes": "Multi-part sections are read in part order and combined. Country is the "
                  "country the return prints beside each IP. Country was uniform across the "
                  "tested return.",
@@ -99,7 +99,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
-        "category": "TikTok Returns",
+        "category": "TikTok",
         "notes": "Event is the provider's event name as printed (observed in the tested return: "
                  "video_play, publish, post_comment, share_video). Their meaning is not documented "
                  "in the return and "
@@ -122,7 +122,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
-        "category": "TikTok Returns",
+        "category": "TikTok",
         "notes": "Country is the country the return prints beside each IP. Country was uniform "
                  "across the tested return. Video ID is not limited to Content/Videos: in the "
                  "tested return it also carried Stories and Photo post IDs, and some IDs "
@@ -142,7 +142,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
-        "category": "TikTok Returns",
+        "category": "TikTok",
         "notes": "Media is linked by the video ID, which is the name, without extension, of each "
                  "file in Content/Videos (or of the folder a file sits in). Video Link is the "
                  "hyperlink behind the printed word 'URL'; blank where the PDF carries the word "
@@ -164,7 +164,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
-        "category": "TikTok Returns",
+        "category": "TikTok",
         "notes": "Media is linked by the post ID, which is the folder name in Content/Stories; "
                  "in the tested return some rows had no folder. Caption was blank on every "
                  "row of the tested return and is kept because the section prints the field. "
@@ -186,7 +186,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
-        "category": "TikTok Returns",
+        "category": "TikTok",
         "notes": "Media is linked by the photo post ID, which is the folder name in "
                  "Content/Photo Post. A file is put in Audio when its first bytes are an ID3 "
                  "tag, an MPEG audio frame header or a file type box with the M4A brand; every "
@@ -210,7 +210,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
-        "category": "TikTok Returns",
+        "category": "TikTok",
         "notes": "Comment image media is linked by the file name the return prints for it "
                  "('saved as Images/...'), looked up only in the comments folder the record "
                  "came from (Content/Video Comments or Content/Photo Comments). Source File "
@@ -235,7 +235,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
-        "category": "TikTok Returns",
+        "category": "TikTok",
         "notes": "Room ID, Host User ID and Device IP are split out of the printed lines. The "
                  "tested return held one record. If a line does not match the expected layout its "
                  "text is kept whole in Room ID or "
@@ -257,7 +257,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-28",
         "last_update_date": "2026-09-29",
         "requirements": "pdfminer.six",
-        "category": "TikTok Returns",
+        "category": "TikTok",
         "notes": "Covers files the metadata sections do not reference, which the per-section "
                  "artifacts cannot show. A file is listed only when the return folder it sits "
                  "in also holds VideoMetadata.pdf, StoriesMetadata.pdf, PhotoMetadata.pdf or "

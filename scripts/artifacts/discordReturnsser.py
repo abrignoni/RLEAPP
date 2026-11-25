@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2021-12-04",
         "last_update_date": "2026-06-28",
         "requirements": "none",
-        "category": "Discord Returns",
+        "category": "Discord",
         "notes": "",
         "paths": ('*/servers/*.json',),
         "output_types": "standard",

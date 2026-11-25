@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2021-09-25",
         "last_update_date": "2026-06-27",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Transaction Timestamp is preserved as the raw source value (not converted; the "
                  "time zone of the stored value is not established).",
         "paths": ('*/Google Pay/Google transactions/transactions_*.csv'),

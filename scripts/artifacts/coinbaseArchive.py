@@ -3,7 +3,7 @@ def _meta(name, icon):
             "description": f"{name} from a Coinbase data file (coinbase_data.json).",
             "author": "Mark McKinnon", "creation_date": "2021-11-25",
             "last_update_date": "2026-06-28", "requirements": "none",
-            "category": "Coinbase Archive", "notes": "", "paths": ('**/coinbase_data.json',),
+            "category": "Finance & Crypto", "notes": "", "paths": ('**/coinbase_data.json',),
             "output_types": "standard", "artifact_icon": icon}
 
 

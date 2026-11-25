@@ -8,7 +8,7 @@ __artifacts_v2__ = {
         "creation_date": "2025-07-23",
         "last_update_date": "2026-10-04",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Mixed time columns use text storage and do not populate timeline/date filters. Published values that are ISO 8601 strings with a Z or an offset are converted "
                  "to timezone-aware UTC; unparseable values are kept verbatim as text. A value "
                  "with no Z or offset is retained as stored text.",
@@ -23,7 +23,7 @@ __artifacts_v2__ = {
         "creation_date": "2025-07-23",
         "last_update_date": "2026-10-04",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Mixed time columns use text storage and do not populate timeline/date filters. Published and Updated values that are ISO 8601 strings with a Z or an offset are "
                  "converted to timezone-aware UTC; unparseable values are kept verbatim as text. A "
                  "value with no Z or offset is retained as stored text.",
@@ -38,7 +38,7 @@ __artifacts_v2__ = {
         "creation_date": "2025-07-23",
         "last_update_date": "2026-10-04",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Mixed time columns use text storage and do not populate timeline/date filters. Published values that are ISO 8601 strings with a Z or an offset are converted "
                  "to timezone-aware UTC; unparseable values are kept verbatim as text. A value "
                  "with no Z or offset is retained as stored text.",
@@ -53,7 +53,7 @@ __artifacts_v2__ = {
         "creation_date": "2025-07-23",
         "last_update_date": "2026-10-04",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Mixed time columns use text storage and do not populate timeline/date filters. Published and Updated values that are ISO 8601 strings with a Z or an offset are "
                  "converted to timezone-aware UTC; unparseable values are kept verbatim as text. A "
                  "value with no Z or offset is retained as stored text.",

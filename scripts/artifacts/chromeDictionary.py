@@ -9,7 +9,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-08-02",
         "last_update_date": "2026-07-09",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "",
         "paths": ('*/Chrome/Dictionary.csv',),
         "output_types": "standard",

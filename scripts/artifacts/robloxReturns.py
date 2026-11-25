@@ -7,7 +7,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
-        "category": "Roblox Returns",
+        "category": "Roblox",
         "notes": "Column names ending in _utc come from the provider's own header row. "
                  "Fields mapped from a private sample. No provider documentation of the return "
                  "format was used.",
@@ -25,7 +25,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-08-14",
         "last_update_date": "2026-10-04",
         "requirements": "none",
-        "category": "Roblox Returns",
+        "category": "Roblox",
         "notes": "Mixed time columns use text storage and do not populate timeline/date filters. In the reviewed sample rows arrive grouped by conversation with a fully "
                  "empty separator row between groups; empty rows are skipped. Two row "
                  "layouts were observed in the reviewed sample: rows that populate every column, "
@@ -47,7 +47,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
-        "category": "Roblox Returns",
+        "category": "Roblox",
         "notes": "Timestamps are taken from the 'created_time (UTC seconds)' and "
                  "'updated_time (UTC seconds)' epoch columns. In the reviewed sample the "
                  "file also carried human-readable 'MM/DD/YYYY hh:mm:ss' columns; this artifact "
@@ -64,7 +64,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
-        "category": "Roblox Returns",
+        "category": "Roblox",
         "notes": "createdutc/updatedutc are delivered as month-first "
                  "'MM/DD/YYYY hh:mm:ss' text; the order is shown by in-file values with a "
                  "second component greater than 12 and by the provider naming the same "
@@ -85,7 +85,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
-        "category": "Roblox Returns",
+        "category": "Roblox",
         "notes": "createdutc/updatedutc arrive as 13-digit integers. They are parsed as "
                  "Unix epoch milliseconds; that unit is inferred from the value range "
                  "(in the reviewed sample the parsed values fell inside the dump window the "
@@ -104,7 +104,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
-        "category": "Roblox Returns",
+        "category": "Roblox",
         "notes": "createdutc/updatedutc are month-first 'MM/DD/YYYY hh:mm:ss' text; see the "
                  "Friend List artifact notes for the sourcing of that order. Fields mapped "
                  "from a private sample.",
@@ -121,7 +121,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
-        "category": "Roblox Returns",
+        "category": "Roblox",
         "notes": "Fields mapped from a private sample.",
         "paths": ('*/Device information of the Roblox user*.csv',),
         "output_types": "standard",
@@ -135,7 +135,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
-        "category": "Roblox Returns",
+        "category": "Roblox",
         "notes": "Fields mapped from a private sample.",
         "paths": ('*/Device ID of the Roblox user*.csv',),
         "output_types": "standard",
@@ -149,7 +149,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
-        "category": "Roblox Returns",
+        "category": "Roblox",
         "notes": "created/updated are shown exactly as delivered. Their column names carry "
                  "no timezone and the values observed were day-ambiguous, so they are not "
                  "converted. Fields mapped from a private sample.",
@@ -166,7 +166,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
-        "category": "Roblox Returns",
+        "category": "Roblox",
         "notes": "What ad_id identifies is not established; values are "
                  "UUID-formatted and are reported as stored. Any CSV whose header row is "
                  "exactly 'ad_id' is treated as this record type. Fields mapped from a "
@@ -184,7 +184,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
-        "category": "Roblox Returns",
+        "category": "Roblox",
         "notes": "asset_createdutc/asset_updatedutc/creator_createdutc are month-first "
                  "'MM/DD/YYYY hh:mm:ss' text; see the Friend List artifact notes for the "
                  "sourcing of that order. In the reviewed sample the asset_hash_id values "
@@ -208,7 +208,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-08-14",
         "last_update_date": "2026-10-04",
         "requirements": "none",
-        "category": "Roblox Returns",
+        "category": "Roblox",
         "notes": "Mixed time columns use text storage and do not populate timeline/date filters. The dump was observed delivered twice, once with bare hash-and-label "
                  "names (hash-IMAGE, hash-MODEL, hash-PLACE, hash-ANIMATION) and once with "
                  "extensions (.png, .rbxm, .rbxl); duplicate metadata rows are collapsed. "
@@ -237,7 +237,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-08-14",
         "last_update_date": "2026-10-04",
         "requirements": "none",
-        "category": "Roblox Returns",
+        "category": "Roblox",
         "notes": "Mixed time columns use text storage and do not populate timeline/date filters. Field names id, status, type, subject, recipient, tags, via, created_at and "
                  "updated_at match the published Zendesk Tickets API ticket object "
                  "(https://developer.zendesk.com/api-reference/ticketing/tickets/tickets/, read "
@@ -261,7 +261,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-08-14",
         "last_update_date": "2026-10-04",
         "requirements": "none",
-        "category": "Roblox Returns",
+        "category": "Roblox",
         "notes": "Mixed time columns use text storage and do not populate timeline/date filters. Field names id, type, public, via, created_at, plain_body and metadata match the "
                  "published Zendesk Ticket Comments API comment object "
                  "(https://developer.zendesk.com/api-reference/ticketing/tickets/ticket_comments/, "
@@ -286,7 +286,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-08-14",
         "last_update_date": "2026-08-14",
         "requirements": "none",
-        "category": "Roblox Returns",
+        "category": "Roblox",
         "notes": "In the reviewed sample these PDFs were rendered from Google Docs "
                  "(per their Producer metadata), and no row structure is assumed. Observed "
                  "in a private sample.",

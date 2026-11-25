@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2021-08-20",
         "last_update_date": "2026-06-27",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "",
         "paths": ('*/Chrome/Extensions.json'),
         "output_types": "standard",

@@ -3,7 +3,7 @@ def _meta(name, paths, icon):
             "description": f"{name} from a Netflix law enforcement return.",
             "author": "Mark McKinnon", "creation_date": "2021-09-01",
             "last_update_date": "2026-06-28", "requirements": "none",
-            "category": "Netflix Archive", "notes": "", "paths": paths,
+            "category": "Netflix", "notes": "", "paths": paths,
             "output_types": "standard", "artifact_icon": icon}
 
 

@@ -7,7 +7,7 @@ __artifacts_v2__ = {
         "creation_date": "2021-09-29",
         "last_update_date": "2026-09-21",
         "requirements": "pypdf",
-        "category": "TikTok Returns",
+        "category": "TikTok",
         "notes": "Source File names the PDF each row came from, so rows from several returns stay "
                  "apart. The PDF's text is read with pypdf, and each field is taken from a line "
                  "whose text before the first colon contains the field's label (username, "

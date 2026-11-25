@@ -10,7 +10,7 @@ __artifacts_v2__ = {
         "creation_date": "2022-09-08",
         "last_update_date": "2026-06-28",
         "requirements": "none",
-        "category": "Airdrop Discoverable",
+        "category": "Apple (iCloud, AirDrop)",
         "notes": "Timestamp is the unified-log time parsed with its UTC offset and normalized to "
                  "UTC. The 'Updated People' column was named 'Update' in the original (a SQL "
                  "reserved word); the 'UWB Capable' header fixes the original 'UWC capable' typo "

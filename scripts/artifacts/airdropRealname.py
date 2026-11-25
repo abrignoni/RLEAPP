@@ -8,7 +8,7 @@ __artifacts_v2__ = {
         "creation_date": "2022-09-10",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Airdrop Real Names",
+        "category": "Apple (iCloud, AirDrop)",
         "notes": "Tests SHA-256 of each candidate name (scripts/names/realnames.txt) against the "
                  "first 10 characters logged after 'realName:', read as the first 5 and last 5 "
                  "characters of a SHA-256. That the logged value is a hash fragment is not "

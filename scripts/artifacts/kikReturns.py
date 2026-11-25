@@ -3,7 +3,7 @@ def _meta(name, paths, icon, html_columns=None):
             "description": f"{name} from a Kik law enforcement return.",
             "author": "@AlexisBrignoni", "creation_date": "2021-08-17",
             "last_update_date": "2026-06-28", "requirements": "none",
-            "category": "Kik Returns", "notes": "", "paths": paths,
+            "category": "Kik", "notes": "", "paths": paths,
             "output_types": "standard", "artifact_icon": icon}
     if html_columns:
         meta["html_columns"] = html_columns

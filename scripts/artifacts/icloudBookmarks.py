@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2021-08-18",
         "last_update_date": "2026-11-23",
         "requirements": "openpyxl",
-        "category": "iCloud Returns",
+        "category": "Apple (iCloud, AirDrop)",
         "notes": "When more than one workbook contributes rows, each value is placed under the column whose heading matches its own. Headings are matched ignoring case and punctuation, and the first spelling read is the one shown. Columns with no heading are matched by position. Repeated headings are matched in order of appearance. A Source File column is added with the evidence-relative path of the workbook each row came from. If a workbook has its own Source File heading, the added column takes a numbered name such as Source File (1). With one contributing workbook the columns are unchanged and no Source File column is added.",
         "paths": ('*/Bookmarks/*_iCloud_Bookmarks.xlsx',),
         "output_types": "standard",

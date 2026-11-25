@@ -21,7 +21,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': '2026-09-24',
         'requirements': 'none',
-        'category': 'Coinbase Compliance Report',
+        'category': 'Finance & Crypto',
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
                   'line reduced to one; line breaks inside a cell are kept. User ID is the USER ID from the '
                   "report's USER ATTRIBUTES section, repeated on each row so rows from several reports in one "
@@ -45,7 +45,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': "2026-10-04",
         'requirements': 'none',
-        'category': 'Coinbase Compliance Report',
+        'category': 'Finance & Crypto',
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
                   'line reduced to one; line breaks inside a cell are kept. Timestamp (UTC) is converted only '
                   'when the value states an offset (-0800, Z) or a zone abbreviation; abbreviations are read as '
@@ -78,7 +78,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': '2026-09-24',
         'requirements': 'none',
-        'category': 'Coinbase Compliance Report',
+        'category': 'Finance & Crypto',
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
                   'line reduced to one; line breaks inside a cell are kept. Other Columns (as produced) is empty '
                   'unless the file carries columns this artifact does not name; any such column is kept there as '
@@ -104,7 +104,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': "2026-10-04",
         'requirements': 'none',
-        'category': 'Coinbase Compliance Report',
+        'category': 'Finance & Crypto',
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
                   'line reduced to one; line breaks inside a cell are kept. Timestamp (UTC) is derived from '
                   'CHANGED AT. Timestamp (UTC) is converted only when the value states an offset (-0800, Z) or a '
@@ -138,7 +138,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': '2026-09-24',
         'requirements': 'none',
-        'category': 'Coinbase Compliance Report',
+        'category': 'Finance & Crypto',
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
                   'line reduced to one; line breaks inside a cell are kept. Other Columns (as produced) is empty '
                   'unless the file carries columns this artifact does not name; any such column is kept there as '
@@ -164,7 +164,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': '2026-09-24',
         'requirements': 'none',
-        'category': 'Coinbase Compliance Report',
+        'category': 'Finance & Crypto',
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
                   'line reduced to one; line breaks inside a cell are kept. Other Columns (as produced) is empty '
                   'unless the file carries columns this artifact does not name; any such column is kept there as '
@@ -191,7 +191,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': '2026-09-24',
         'requirements': 'none',
-        'category': 'Coinbase Compliance Report',
+        'category': 'Finance & Crypto',
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
                   'line reduced to one; line breaks inside a cell are kept. Each of these sections has its own '
                   'columns, so each row is reported as COLUMN: value pairs in the order produced. The PAYMENT '
@@ -218,7 +218,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': "2026-10-04",
         'requirements': 'none',
-        'category': 'Coinbase Compliance Report',
+        'category': 'Finance & Crypto',
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
                   'line reduced to one; line breaks inside a cell are kept. The section title is a long list of '
                   'asset symbols that changes between productions, so the section is found by its ending and its '
@@ -253,7 +253,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': '2026-09-24',
         'requirements': 'none',
-        'category': 'Coinbase Compliance Report',
+        'category': 'Finance & Crypto',
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
                   'line reduced to one; line breaks inside a cell are kept. These sections are grids: a row with '
                   'an empty first cell names the asset and the value columns, and the rows under it give a metric '
@@ -281,7 +281,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': "2026-10-04",
         'requirements': 'none',
-        'category': 'Coinbase Compliance Report',
+        'category': 'Finance & Crypto',
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
                   'line reduced to one; line breaks inside a cell are kept. Amounts, balances and USD values are '
                   'as produced. Timestamp (UTC) is converted only when the value states an offset (-0800, Z) or a '
@@ -314,7 +314,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': "2026-10-04",
         'requirements': 'none',
-        'category': 'Coinbase Compliance Report',
+        'category': 'Finance & Crypto',
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
                   'line reduced to one; line breaks inside a cell are kept. Each row is reported as COLUMN: value '
                   'pairs in the order produced, because the two sections have different columns. Timestamp (UTC) '
@@ -346,7 +346,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': "2026-10-04",
         'requirements': 'none',
-        'category': 'Coinbase Compliance Report',
+        'category': 'Finance & Crypto',
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
                   'line reduced to one; line breaks inside a cell are kept. IP, FINGERPRINT and LOCATION are '
                   'reported as produced. Timestamp (UTC) is converted only when the value states an offset '
@@ -379,7 +379,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': "2026-10-04",
         'requirements': 'none',
-        'category': 'Coinbase Compliance Report',
+        'category': 'Finance & Crypto',
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
                   'line reduced to one; line breaks inside a cell are kept. Timestamp (UTC) is derived from '
                   'CREATED. Timestamp (UTC) is converted only when the value states an offset (-0800, Z) or a '
@@ -412,7 +412,7 @@ __artifacts_v2__ = {
         'creation_date': '2026-09-23',
         'last_update_date': '2026-09-24',
         'requirements': 'none',
-        'category': 'Coinbase Compliance Report',
+        'category': 'Finance & Crypto',
         'notes': ('Cell text is reported with leading and trailing spaces removed and runs of spaces inside a '
                   'line reduced to one; line breaks inside a cell are kept. Rows are reported cell for cell, '
                   "joined with ' | ', with the section title and the CSV record number. The first row of each "

@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2022-01-19",
         "last_update_date": "2026-11-22",
         "requirements": "beautifulsoup4",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Body is the first eligible text/plain part, using a supported declared charset when strict "
                  "decoding succeeds. Supported character sets are ASCII, UTF-8, UTF-16/32 (including "
                  "little/big endian), ISO-8859-1/2/5/15, Windows-1252/932, KOI8-R, Shift-JIS, Big5, GB18030 "

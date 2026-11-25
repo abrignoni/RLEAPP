@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-08-24",
         "last_update_date": "2026-06-27",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "",
         "paths": ('*/Chrome/Device Information.json'),
         "output_types": "standard",

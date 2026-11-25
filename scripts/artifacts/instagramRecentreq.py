@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2021-08-27",
         "last_update_date": "2026-06-27",
         "requirements": "none",
-        "category": "Instagram Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "The column headed Following holds the account value of each follow request "
                  "record as stored. The heading does not establish a follow relationship.",
         "paths": ('*/followers_and_following/recent_follow_requests.json'),

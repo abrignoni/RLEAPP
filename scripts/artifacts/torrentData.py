@@ -7,7 +7,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-09-27",
         "last_update_date": "2026-10-09",
         "requirements": "bencoding",
-        "category": "Torrent Data",
+        "category": "Other Files",
         "notes": "Info Hash is the SHA-1, in upper case, of the bytes of the info dictionary as "
                  "stored in the file, located by walking the file's bencoded structure. It is "
                  "blank when those bytes cannot be located. For a torrent with a files list, "

@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2022-04-05",
         "last_update_date": "2026-07-03",
         "requirements": "none",
-        "category": "Snapchat Archive",
+        "category": "Snapchat",
         "notes": "Direction is derived, not stored: Received when the message has a From value, "
                  "Sent when it has only a To value, and blank when it has neither. It has not been "
                  "checked against archive layouts that record the sender another way. Text is read "

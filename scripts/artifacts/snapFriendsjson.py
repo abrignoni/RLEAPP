@@ -2,49 +2,49 @@ __artifacts_v2__ = {
     "snapArchiveFriends": {
         "name": "Snapchat Archive - Friends", "description": "Friends from a Snapchat data archive (friends.json).",
         "author": "@AlexisBrignoni", "creation_date": "2023-12-11", "last_update_date": "2026-06-28",
-        "requirements": "none", "category": "Snapchat Archive", "notes": "",
+        "requirements": "none", "category": "Snapchat", "notes": "",
         "paths": ('*/friends.json',), "output_types": "standard", "artifact_icon": "users",
     },
     "snapArchiveFriendRequestsSent": {
         "name": "Snapchat Archive - Friend Requests Sent", "description": "Friend requests sent from a Snapchat data archive (friends.json).",
         "author": "@AlexisBrignoni", "creation_date": "2023-12-11", "last_update_date": "2026-06-28",
-        "requirements": "none", "category": "Snapchat Archive", "notes": "",
+        "requirements": "none", "category": "Snapchat", "notes": "",
         "paths": ('*/friends.json',), "output_types": "standard", "artifact_icon": "user-plus",
     },
     "snapArchiveBlockedUsers": {
         "name": "Snapchat Archive - Blocked Users", "description": "Blocked users from a Snapchat data archive (friends.json).",
         "author": "@AlexisBrignoni", "creation_date": "2023-12-11", "last_update_date": "2026-06-28",
-        "requirements": "none", "category": "Snapchat Archive", "notes": "",
+        "requirements": "none", "category": "Snapchat", "notes": "",
         "paths": ('*/friends.json',), "output_types": "standard", "artifact_icon": "user-x",
     },
     "snapArchiveDeletedFriends": {
         "name": "Snapchat Archive - Deleted Friends", "description": "Deleted friends from a Snapchat data archive (friends.json).",
         "author": "@AlexisBrignoni", "creation_date": "2023-12-11", "last_update_date": "2026-06-28",
-        "requirements": "none", "category": "Snapchat Archive", "notes": "",
+        "requirements": "none", "category": "Snapchat", "notes": "",
         "paths": ('*/friends.json',), "output_types": "standard", "artifact_icon": "user-minus",
     },
     "snapArchiveHiddenFriendSuggestions": {
         "name": "Snapchat Archive - Hidden Friend Suggestions", "description": "Hidden friend suggestions from a Snapchat data archive (friends.json).",
         "author": "@AlexisBrignoni", "creation_date": "2023-12-11", "last_update_date": "2026-06-28",
-        "requirements": "none", "category": "Snapchat Archive", "notes": "",
+        "requirements": "none", "category": "Snapchat", "notes": "",
         "paths": ('*/friends.json',), "output_types": "standard", "artifact_icon": "eye-off",
     },
     "snapArchiveIgnoredSnapchatters": {
         "name": "Snapchat Archive - Ignored Snapchatters", "description": "Ignored Snapchatters from a Snapchat data archive (friends.json).",
         "author": "@AlexisBrignoni", "creation_date": "2023-12-11", "last_update_date": "2026-06-28",
-        "requirements": "none", "category": "Snapchat Archive", "notes": "",
+        "requirements": "none", "category": "Snapchat", "notes": "",
         "paths": ('*/friends.json',), "output_types": "standard", "artifact_icon": "user-x",
     },
     "snapArchivePendingRequests": {
         "name": "Snapchat Archive - Pending Requests", "description": "Pending requests from a Snapchat data archive (friends.json).",
         "author": "@AlexisBrignoni", "creation_date": "2023-12-11", "last_update_date": "2026-06-28",
-        "requirements": "none", "category": "Snapchat Archive", "notes": "",
+        "requirements": "none", "category": "Snapchat", "notes": "",
         "paths": ('*/friends.json',), "output_types": "standard", "artifact_icon": "clock",
     },
     "snapArchiveShortcuts": {
         "name": "Snapchat Archive - Shortcuts", "description": "Shortcuts from a Snapchat data archive (friends.json).",
         "author": "@AlexisBrignoni", "creation_date": "2023-12-11", "last_update_date": "2026-06-28",
-        "requirements": "none", "category": "Snapchat Archive", "notes": "",
+        "requirements": "none", "category": "Snapchat", "notes": "",
         "paths": ('*/friends.json',), "output_types": "standard", "artifact_icon": "bookmark",
     }
 }

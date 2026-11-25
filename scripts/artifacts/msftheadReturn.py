@@ -7,7 +7,7 @@ __artifacts_v2__ = {
         "creation_date": "2022-02-09",
         "last_update_date": "2026-06-28",
         "requirements": "none",
-        "category": "Microsoft Returns",
+        "category": "Microsoft",
         "notes": "Timestamp is the email Date header (RFC 2822) normalized to UTC. A Date header "
                  "with no time zone is read as UTC.",
         "paths": ('*.eml_hdr.eml',),

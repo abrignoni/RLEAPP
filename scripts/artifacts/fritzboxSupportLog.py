@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-07-05",
         "last_update_date": "2026-07-05",
         "requirements": "none",
-        "category": "FritzBox Supportdata",
+        "category": "FritzBox",
         "notes": "",
         "paths": ('*/support_FRITZ*.txt'),
         "output_types": "standard",
@@ -19,7 +19,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-07-05",
         "last_update_date": "2026-07-05",
         "requirements": "none",
-        "category": "FritzBox Supportdata",
+        "category": "FritzBox",
         "notes": "Timestamp is the log's local time converted to UTC using the time zone "
                  "abbreviation on the dump's date line; the log stores no zone. For CET or CEST "
                  "and for EST or EDT the parser applies its own daylight saving rule; for other "
@@ -36,7 +36,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-07-05",
         "last_update_date": "2026-07-05",
         "requirements": "none",
-        "category": "FritzBox Supportdata",
+        "category": "FritzBox",
         "notes": "Timestamp is the log's local time converted to UTC using the time zone "
                  "abbreviation on the dump's date line; the log stores no zone. For CET or CEST "
                  "and for EST or EDT the parser applies its own daylight saving rule; for other "
@@ -53,7 +53,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-07-05",
         "last_update_date": "2026-07-05",
         "requirements": "none",
-        "category": "FritzBox Supportdata",
+        "category": "FritzBox",
         "notes": "",
         "paths": ('*/support_FRITZ*.txt'),
         "output_types": "standard",
@@ -66,7 +66,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-07-05",
         "last_update_date": "2026-07-05",
         "requirements": "none",
-        "category": "FritzBox Supportdata",
+        "category": "FritzBox",
         "notes": "Timestamp is the log's local time converted to UTC using the time zone "
                  "abbreviation on the dump's date line; the log stores no zone. For CET or CEST "
                  "and for EST or EDT the parser applies its own daylight saving rule; for other "
@@ -83,7 +83,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-07-05",
         "last_update_date": "2026-07-05",
         "requirements": "none",
-        "category": "FritzBox Supportdata",
+        "category": "FritzBox",
         "notes": "Timestamp is estimated: the dump date minus the uptime the dump prints (to the "
                  "minute) gives a boot time, and each line's seconds since boot are added to it. "
                  "The dump stores no absolute time for these lines. When the dump has no uptime "

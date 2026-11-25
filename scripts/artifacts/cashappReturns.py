@@ -30,7 +30,7 @@ def _meta(name, icon, notes, html_columns=None, description=None):
                            f"(*-for-subject-SQ_CASH-*.xlsx).",
             "author": "Shawn Ramsey, @AlexisBrignoni, Codex", "creation_date": "2024-02-02",
             "last_update_date": "2026-10-04", "requirements": "openpyxl",
-            "category": "Cash App Returns", "notes": notes,
+            "category": "Finance & Crypto", "notes": notes,
             "paths": ('*/*-for-subject-SQ_CASH-*.xlsx',), "output_types": "standard",
             "artifact_icon": icon}
     if html_columns:

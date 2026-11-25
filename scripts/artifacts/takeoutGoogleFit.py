@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2021-09-25",
         "last_update_date": "2026-06-19",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "",
         "paths": ('*/Fit/Daily activity metrics/Daily activity metrics.csv',),
         "output_types": "standard",  # or ["html", "tsv", "timeline", "lava"]

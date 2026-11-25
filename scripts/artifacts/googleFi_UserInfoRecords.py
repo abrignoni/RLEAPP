@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2022-02-28",
         "last_update_date": "2026-06-27",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Duration is the sixth field with the text 'Duration:' removed, shown as "
                  "stored; the unit in the heading (Minutes) is not read from the file. The "
                  "Start, End and Network Carrier Start times are read as UTC after any ' UTC' "

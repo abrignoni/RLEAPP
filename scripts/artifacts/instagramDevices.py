@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2021-08-30",
         "last_update_date": "2025-07-03",
         "requirements": "none",
-        "category": "Instagram Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "",
         "paths": ('*/device_information/devices.json'),
         "output_types": "standard",  # or ["html", "tsv", "timeline", "lava"]

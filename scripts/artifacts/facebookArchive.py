@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-22",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Facebook Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Read from security_and_login_information/account_activity.json in a Facebook Download "
                  "Your Information (DYI) JSON export. One row per entry in account_activity_v2 of the "
                  "first matching file; when the input holds more than one export only the first file "
@@ -26,7 +26,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-22",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Facebook Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Read from security_and_login_information/logins_and_logouts.json, one row per entry "
                  "in account_accesses_v2. Timestamp is Unix seconds. Action, Site and IP Address are "
                  "reported as stored. When the input holds more than one export only the first file "
@@ -43,7 +43,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-22",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Facebook Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Read from security_and_login_information/ip_address_activity.json, one row per entry "
                  "in used_ip_address_v2. Timestamp is Unix seconds. IP, Action and User Agent are "
                  "reported as stored. When the input holds more than one export only the first file "
@@ -60,7 +60,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-22",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Facebook Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Read from security_and_login_information/where_you_re_logged_in.json, one row per "
                  "entry in active_sessions_v2. Created and Updated are Unix seconds. IP Address, "
                  "Device, Location, App, Session Type, User Agent and Datr Cookie are reported as "
@@ -78,7 +78,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-22",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Facebook Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Read from security_and_login_information/record_details.json, one row per entry in "
                  "admin_records_v2. Event names the recorded account change. Session Created is Unix "
                  "seconds, with the Session IP, User Agent and Datr Cookie the export attached to the "
@@ -99,7 +99,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-22",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Facebook Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Read from security_and_login_information/registration_information.json. Registered is "
                  "the file's top level Unix seconds timestamp. Label and Value are the export's own "
                  "registration label_values pairs, one row each, reported as stored, except that a "
@@ -118,7 +118,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-22",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Facebook Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Read from logged_information/search/your_search_history.json, one row per entry in "
                  "searches_v2. Timestamp is Unix seconds. Search is the text values the entry carries "
                  "in its data array, joined; Title is the entry's own title, reported as stored. When "
@@ -135,7 +135,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-22",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Facebook Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Read from logged_information/interactions/profile_visits.json, one row per entry. "
                  "Timestamp is Unix seconds. Details joins the entry's label_values pairs as label: "
                  "value, reported as stored, except that a timestamp_value is shown as a UTC date and "
@@ -154,7 +154,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-22",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Facebook Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Read from logged_information/location/primary_location.json. How the platform arrives "
                  "at this location is not established here, and it is not shown to be a device GPS fix. "
                  "Label and Value are the export's own label_values pairs, flattened one row each, "
@@ -174,7 +174,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-22",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Facebook Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Read from personal_information/profile_information/profile_information.json, from the "
                  "profile_v2 object. Full Name, First Name, Middle Name, Last Name, Emails, Birthday, "
                  "Gender, Pronoun, Current City, Hometown and Relationship Status are the account "
@@ -194,7 +194,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-22",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Facebook Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Read from personal_information/profile_information/your_devices.json, one row per "
                  "entry. Details joins the entry's label_values pairs as label: value, reported as "
                  "stored, except that a timestamp_value is shown as a UTC date and time and a value "
@@ -213,7 +213,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-22",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Facebook Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Read from connections/friends/your_friends.json, one row per entry in friends_v2. "
                  "Timestamp is Unix seconds; what event it marks is not established here. Name is the "
                  "friend's name as stored. When the input holds more than one export only the first "
@@ -230,7 +230,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-22",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Facebook Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Read from connections/friends/received_friend_requests.json (received_requests_v2) and "
                  "connections/friends/rejected_friend_requests.json (rejected_requests_v2). Kind says "
                  "which file the row came from. Timestamp is Unix seconds. Name is stored as recorded. "
@@ -247,7 +247,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-22",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Facebook Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Read from your_facebook_activity/comments_and_reactions/comments.json. Each truthy "
                  "comment object in an entry's data array gives one row, in stored array order; "
                  "repeated comment items are retained. An entry with no truthy comment object gives one "
@@ -270,7 +270,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-22",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Facebook Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Read from your_facebook_activity/comments_and_reactions/likes_and_reactions.json, one "
                  "row per entry. Timestamp is Unix seconds. Details joins the entry's label_values "
                  "pairs as label: value, reported as stored, except that a timestamp_value is shown as "
@@ -290,7 +290,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-22",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Facebook Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Read from "
                  "your_facebook_activity/posts/your_posts__check_ins__photos_and_videos_*.json, one row "
                  "per post entry. Timestamp is Unix seconds. Title and Post text are reported as "
@@ -309,7 +309,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-22",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Facebook Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Read from the files named message_<number>.json under your_facebook_activity/messages "
                  "in a Facebook Download Your Information (DYI) export, so every numbered message file "
                  "of a thread is read. Rows are in the order the files are supplied and, within a file, "
@@ -350,7 +350,7 @@ __artifacts_v2__ = {
         "creation_date": "2026-09-22",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Facebook Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "Read from your_facebook_activity/facebook_payments/payment_history.json, one row per "
                  "payment in payments_v2.payments; when that list is empty one row is written holding "
                  "only Preferred Currency, which is not a payment. The fields of each payment are "

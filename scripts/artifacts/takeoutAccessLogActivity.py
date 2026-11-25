@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2021-09-25",
         "last_update_date": "2026-10-04",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Mixed time columns use text storage and do not populate timeline/date filters. ",
         "paths": ('*/Access Log Activity/Activities*.csv',),
         "output_types": "standard",
@@ -19,7 +19,7 @@ __artifacts_v2__ = {
         "creation_date": "2021-09-25",
         "last_update_date": "2026-10-04",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "Mixed time columns use text storage and do not populate timeline/date filters. Old-format last country and activity time are read after their labels in "
                  "the free-text field. First Activity and Device Last Location Timestamp are "
                  "blank for that layout. Zone-less timestamps remain stored text.",

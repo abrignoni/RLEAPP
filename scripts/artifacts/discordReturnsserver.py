@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2021-12-04",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Discord Returns",
+        "category": "Discord",
         "notes": "Columns are assigned by position after the header row is skipped; the header "
                  "names are not read. ID is taken from the first column and Channel ID from the "
                  "second, the reverse of the Discord direct message reader. Which order a return "

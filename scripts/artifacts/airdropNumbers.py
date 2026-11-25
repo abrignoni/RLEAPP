@@ -11,7 +11,7 @@ __artifacts_v2__ = {
         "creation_date": "2022-03-15",
         "last_update_date": "2026-10-09",
         "requirements": "none",
-        "category": "Airdrop Numbers",
+        "category": "Apple (iCloud, AirDrop)",
         "notes": "Brute-forces every candidate number for each area code in "
                  "scripts/areacodes/areacodes_us.txt and compares its SHA-256 with the 5 character "
                  "start and end fragments the pattern Phone=[xxxxx...xxxxx] matches in the log's "

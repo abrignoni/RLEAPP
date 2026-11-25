@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2022-05-29",
         "last_update_date": "2026-06-28",
         "requirements": "ijson",
-        "category": "Google Returns",
+        "category": "Google",
         "notes": "Parses the same source as the Takeout 'Google Location History - Records' "
                  "artifact. Only location records that carry an activity block are reported, one "
                  "row per entry of that block, so a location is repeated when its block holds "

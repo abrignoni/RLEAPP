@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2021-08-30",
         "last_update_date": "2025-07-04",
         "requirements": "none",
-        "category": "Instagram Archive",
+        "category": "Meta (Facebook, Instagram, WhatsApp)",
         "notes": "The column headed Timestamp (Local) holds the record's Time value converted to "
                  "UTC. The column headed Timestamp (UTC) holds the record's title text with each "
                  "letter T replaced by a space; the time zone of that text is not established.",

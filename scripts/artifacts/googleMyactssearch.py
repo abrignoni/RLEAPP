@@ -7,7 +7,7 @@ __artifacts_v2__ = {
         "creation_date": "2023-05-16",
         "last_update_date": "2026-11-22",
         "requirements": "none",
-        "category": "Google Returns My Activity Search",
+        "category": "Google",
         "notes": "The return ships this as a pre-rendered HTML page. The text of the full document is "
                  "stored in the Search Activity column, decoded as UTF-8. A byte that is not valid "
                  "UTF-8 is written as a backslash escape, and CR LF line ends are stored as LF. The "

@@ -6,7 +6,7 @@ __artifacts_v2__ = {
         "creation_date": "2021-09-25",
         "last_update_date": "2026-06-27",
         "requirements": "none",
-        "category": "Google Takeout Archive",
+        "category": "Google",
         "notes": "",
         "paths": ('*/YouTube and YouTube Music/subscriptions/subscriptions.csv'),
         "output_types": "standard",
