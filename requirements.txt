@@ -15,7 +15,7 @@ heicreader @ https://github.com/abrignoni/heicreader/releases/download/v0.1.0/he
 heicreader @ https://github.com/abrignoni/heicreader/releases/download/v0.1.0/heicreader-0.1.0-py3-none-win_arm64.whl ; sys_platform == "win32" and platform_machine == "ARM64"
 heicreader @ https://github.com/abrignoni/heicreader/releases/download/v0.1.0/heicreader-0.1.0-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.musllinux_1_1_x86_64.whl ; sys_platform == "linux" and platform_machine == "x86_64"
 heicreader @ https://github.com/abrignoni/heicreader/releases/download/v0.1.0/heicreader-0.1.0-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.musllinux_1_1_aarch64.whl ; sys_platform == "linux" and platform_machine == "aarch64"
-PyCryptodome
+PyCryptodome>=3.23.0  # AES.MODE_KW (RFC 3394 key unwrap), for encrypted iTunes backups, came in 3.23.0
 simplekml
 xmltodict
 xlrd==1.2.0
