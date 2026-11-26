@@ -5,7 +5,8 @@ on:
     branches:
       - main
     paths:
-      - 'scripts/artifacts/**'
+      - 'scripts/**'
+      - 'admin/scripts/helper_index.py'
   workflow_dispatch:
 
 permissions:
@@ -29,6 +30,7 @@ jobs:
     - name: Run documentation scripts
       run: |
         python admin/scripts/module_info.py
+        python admin/scripts/helper_index.py
 
     - name: Check for changes
       id: git-check
