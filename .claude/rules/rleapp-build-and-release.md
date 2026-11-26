@@ -48,9 +48,11 @@ Decided in `build.py`, which the spec loads, so it is tested without running PyI
 (`admin/test/scripts/test_packaging_build.py`, which also exec's the spec with PyInstaller
 stubbed out).
 
-- `scripts/`, `leapp_functions/` and `assets/` ship as files, without `__pycache__`. The
-  plugin loader reads the artifacts from `scripts/artifacts` as source, the report copies
-  `scripts/_elements`, and the window loads its images from `assets/`.
+- `scripts/`, `leapp_functions/`, `assets/` and `data/` ship as files, without
+  `__pycache__`. The plugin loader reads the artifacts from `scripts/artifacts` as source,
+  the report copies `scripts/_elements`, and the window loads its images from `assets/`.
+  `leapp_functions` reads `data/leapp_config.json` (name, version, description) as soon as
+  it is imported.
 - **Every artifact module is also a hidden import**, so PyInstaller follows what they
   import. What it still cannot follow is a module imported by a name built at run time,
   and an artifact whose file name is not a valid module name.
@@ -83,7 +85,7 @@ a local build; releases do not use it.
 
 ## What the driver guarantees
 
-The version is read from `rleapp_version` in `scripts/version_info.py` as text and passed
+The version is read from `version` in `data/leapp_config.json` and passed
 to the spec (the Windows version resource, the bundle's `Info.plist`) and to Inno Setup;
 `installer.iss` refuses to compile without it. Windows and macOS take only numbers there,
 so `2026.4.1-dev` becomes `2026.4.1` in those fields. `ONEFILE` reaches the spec through
@@ -99,7 +101,7 @@ refuses to build one layout over the other; `--clean` is the explicit way.
 
 ## What `smoke` checks
 
-`--version` against `scripts/version_info.py`; a run over an empty extraction, which loads
+`--version` against `data/leapp_config.json`; a run over an empty extraction, which loads
 and runs every artifact and writes a report; a run over the NTFS raw fixture, whose log has
 to show the walk; and `rleapp --selfcheck`, which takes the window's path, starts Tk, loads
 the images from `assets/` and every artifact, then exits before drawing a window. The
@@ -144,7 +146,7 @@ once and has to report the version. Linux builds are made on Ubuntu 22.04 for it
 requests that touch packaging.
 
 `release.yml` runs the same steps when a `v*` tag is pushed, refuses a tag that is not
-`v` + `rleapp_version`, names the assets `RLEAPP-<version>-<platform>-<arch>`
+`v` + the `version` in `data/leapp_config.json`, names the assets `RLEAPP-<version>-<platform>-<arch>`
 (portable.zip on Windows, .dmg on macOS, .AppImage on Linux; no Linux .tar.gz), stages
 them in `release-assets/` (never `assets/`, which holds the window's images), adds
 `SHA256SUMS.txt`, and creates a **draft** release; publishing is a click. Dispatched by
@@ -183,7 +185,7 @@ creates `v*` tags, and a `release` environment admitting only those refs, holdin
 token, with `environment: release` on the build job. Only the owner can create
 environments and rulesets on this personal-account repository.
 
-Set the release version in `scripts/version_info.py` first, tag that commit, then bump to
+Set the release version in `data/leapp_config.json` first, tag that commit, then bump to
 the next `-dev`: the tag check compares the two.
 
 These names replaced the per-program downloads (`rleappGUI-v*-Windows_x86_64.zip`,

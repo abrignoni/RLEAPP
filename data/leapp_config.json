@@ -1,0 +1,9 @@
+{
+  "name": "RLEAPP",
+  "version": "2026.4.7-dev",
+  "description": "Returns, Logs, Events and Protobuf Parser",
+  "report_description": "RLEAPP is an open source project that aims to parse service provider returns for the purpose of triage analysis.",
+  "objective": "Triage Service Provider Returns.",
+  "profile_extension": ".rlprofile",
+  "casedata_extension": ".lcasedata"
+}

@@ -31,8 +31,8 @@ they are silently unchecked. Prefer a literal dict in new modules.
   one executable, `rleapp`, that opens the window without arguments. Every artifact module
   is a hidden import, so what the artifacts import is followed without a list. What it
   cannot follow is a name built at run time (`importlib.import_module(some_variable)`) or a
-  data file kept outside `scripts/`, `leapp_functions/` or `assets/`: expect a working dev
-  run and a broken build, and run `python packaging/build.py smoke` or `test_builds.yml`.
+  data file kept outside `scripts/`, `leapp_functions/`, `assets/` or `data/`: expect a
+  working dev run and a broken build, and run `python packaging/build.py smoke` or `test_builds.yml`.
   See `.claude/rules/rleapp-build-and-release.md`.
 - This repo does not depend on protobuf or blackboxprotobuf, and should not start.
 - Returns routinely contain real personal data for real people. See

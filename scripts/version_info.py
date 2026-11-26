@@ -4,9 +4,6 @@ Format = [ Name, Blog-url, Twitter-handle, Github-url]
 Leave blank if not available
 """
 
-leapp_name = 'RLEAPP'
-rleapp_version = '2026.4.7-dev'
-
 rleapp_contributors = [
     ['Alexis Brignoni', 'https://abrignoni.com', '@AlexisBrignoni', 'https://github.com/abrignoni'],
     ['Yogesh Khatri', 'https://swiftforensics.com', '@SwiftForensics', 'https://github.com/ydkhatri'],

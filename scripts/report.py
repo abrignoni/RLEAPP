@@ -17,10 +17,11 @@ from scripts.html_parts import nav_bar_script, nav_bar_script_footer, \
     tabs_code_with_lava, body_sidebar_dynamic_data_placeholder
 from scripts.ilapfuncs import logfunc, html_tables_held_back
 import scripts.artifact_report as artifact_report
-from scripts.version_info import rleapp_version, rleapp_contributors
+from scripts.version_info import rleapp_contributors
 
 from leapp_functions.data_sources.text_files import get_txt_file_content
 from leapp_functions.data_sources.json_files import get_json_file_content
+from leapp_functions import leapp
 
 
 def get_tabler_icon_names():
@@ -306,17 +307,16 @@ def create_index_html(reportfolderbase, time_in_secs, time_hms, extraction_type,
 
     # WRITE INDEX.HTML LAST
     filename = 'index.html'
-    page_title = 'RLEAPP Report'
-    body_heading = 'Returns Logs Events And Properties Parser'
-    body_description = 'RLEAPP is an open source project that aims to parse service provider returns '\
-        'for the purpose of triage analysis.'
+    page_title = f'{leapp.name} Report'
+    body_heading = leapp.description
+    body_description = leapp.report_description
     active_nav_list_data = mark_item_active(nav_list_data, filename) + nav_bar_script
 
     html_reportfolderbase = Path(reportfolderbase).joinpath('_HTML')
     html_reportfolderbase.mkdir(exist_ok=True)
     with html_reportfolderbase.joinpath(filename).open('w', encoding='utf8') as f:
         f.write(page_header.format(page_title))
-        f.write(body_start.format(f"RLEAPP {rleapp_version}"))
+        f.write(body_start.format(f"{leapp.name} {leapp.version}"))
         f.write(body_sidebar_setup + active_nav_list_data + body_sidebar_trailer)
         f.write(body_main_header + body_main_data_title.format(body_heading, body_description))
         f.write(content)
@@ -326,11 +326,11 @@ def create_index_html(reportfolderbase, time_in_secs, time_hms, extraction_type,
 
     # Create Index Redirection Page
     redirection = \
-        """
+        f"""
         <html>
             <head>
                 <meta http-equiv="refresh" content="0; url=_HTML/index.html" />
-                <title>RLEAPP Report</title>
+                <title>{leapp.name} Report</title>
             </head>
         </html>
         """

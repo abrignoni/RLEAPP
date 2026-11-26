@@ -15,7 +15,6 @@ import leapp_functions.app.history as history
 
 from PIL import Image, ImageTk
 from tkinter import ttk, filedialog as tk_filedialog, messagebox as tk_msgbox
-from scripts.version_info import rleapp_version, leapp_name
 from scripts.search_files import *
 from scripts.raw_image import (RAW_IMAGE_LABEL, RAW_IMAGE_SUFFIXES, RAW_IMAGE_FILE_PATTERNS,
                                names_an_image_folder, ask_raw_input, input_text,
@@ -32,6 +31,7 @@ from leapp_functions.lava_launcher import (
 )
 from leapp_functions.app.platform import sanitize_file_name
 from leapp_functions.app.output import default_output_folder_name, validate_output_folder_available
+from leapp_functions import leapp
 from scripts.context import Context
 from scripts.lavafuncs import lava_json_name
 
@@ -473,14 +473,14 @@ def open_settings_window():
 
         def clear_single_leapp_history():
             if not tk_msgbox.askyesno(
-                    title=f'Clear {leapp_name} history',
+                    title=f'Clear {leapp.name} history',
                     message=(
                         f'Clear shared recent input/output paths and '
-                        f'{leapp_name} recent run entries?'
+                        f'{leapp.name} recent run entries?'
                     ),
                     parent=clear_window):
                 return
-            history.clear_single_leapp_history(leapp_name.lower())
+            history.clear_single_leapp_history(leapp.name.lower())
             update_clear_history_button()
             close_clear_window()
 
@@ -496,10 +496,10 @@ def open_settings_window():
 
         clear_single_leapp_btn = ttk.Button(
             button_frame,
-            text=f'Clear {leapp_name} History',
+            text=f'Clear {leapp.name} History',
             command=clear_single_leapp_history)
         clear_single_leapp_btn.pack(side='left', padx=5)
-        if not history.has_single_leapp_history(leapp_name.lower()):
+        if not history.has_single_leapp_history(leapp.name.lower()):
             clear_single_leapp_btn.config(state=tk.DISABLED)
 
         clear_all_btn = ttk.Button(
@@ -688,7 +688,7 @@ def finish_crunch(crunch_successful, out_params):
         # Record the run in history
         report_path = os.path.join(out_params.output_folder_base, 'index.html')
         lava_project_path = os.path.join(out_params.output_folder_base, lava_json_name)
-        history.record_recent_run(leapp_name.lower(), rleapp_version, lava_project_path)
+        history.record_recent_run(leapp.name.lower(), leapp.version, lava_project_path)
 
         output_folder_path = out_params.output_folder_base
         if report_path.startswith('\\\\?\\'):  # windows
@@ -1025,7 +1025,7 @@ margin_height = (screen_height - window_height) // 2
 
 ## Main window properties
 main_window.minsize(890, 690)
-main_window.title(f'RLEAPP version {rleapp_version}')
+main_window.title(f'{leapp.name} version {leapp.version}')
 main_window.configure(bg=theme_bgcolor)
 logo_icon = tk.PhotoImage(file=icon)
 main_window.iconphoto(True, logo_icon)

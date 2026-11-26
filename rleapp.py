@@ -18,13 +18,11 @@ from scripts.raw_image import FileSeekerRaw, cli_raw_input, input_text, logical_
 from scripts.ilapfuncs import *
 from scripts.html_safe import esc
 from leapp_functions.app.output import validate_output_folder_available
-from scripts.version_info import rleapp_version
+from leapp_functions import leapp
 from time import process_time, gmtime, strftime, perf_counter
 from scripts.lavafuncs import *
 from scripts.context import Context
 from scripts.lavafuncs import lava_json_name
-
-leapp_name = "RLEAPP"
 
 # How many of the slowest artifacts to list at the end of a run. Enough to show a
 # pattern, short enough that nobody has to scroll past it.
@@ -87,7 +85,8 @@ def validate_args(args):
         raise argparse.ArgumentError(None, 'LEAPP Case Data file not found! Run the program again.')
 
     if args.load_profile and not os.path.exists(args.load_profile):
-        raise argparse.ArgumentError(None, 'RLEAPP Profile file not found! Run the program again.')
+        raise argparse.ArgumentError(
+            None, f'{leapp.name} Profile file not found! Run the program again.')
 
 
 def create_profile(plugins, path):
@@ -96,7 +95,7 @@ def create_profile(plugins, path):
     modules_in_profile = {}
 
     user_choice = ''
-    print('--- RLEAPP Profile file creation ---\n')
+    print(f'--- {leapp.name} Profile file creation ---\n')
     instructions = 'You can type:\n'
     instructions += '   - \'a\' to add or remove modules in the profile file\n'
     instructions += '   - \'l\' to display the list of all available modules with their number\n'
@@ -146,10 +145,11 @@ def create_profile(plugins, path):
                 profile_filename = ''
                 while not profile_filename:
                     profile_filename = input('Enter the name of the profile: ')
-                profile_filename += '.rlprofile'
+                profile_filename += leapp.profile_extension
                 filename = os.path.join(path, profile_filename)
                 with open(filename, "wt", encoding="utf-8") as profile_file:
-                    json.dump({"leapp": "rleapp", "format_version": 1, "plugins": modules}, profile_file)
+                    json.dump({"leapp": leapp.name.lower(), "format_version": 1, "plugins": modules},
+                              profile_file)
                 print('\nProfile saved:', filename)
                 print()
             else:
@@ -171,7 +171,7 @@ def create_casedata(path):
     case_data_filename = ''
     while not case_data_filename:
         case_data_filename = input('Enter the name of the Case Data file: ')
-    case_data_filename += '.lcasedata'
+    case_data_filename += leapp.casedata_extension
     filename = os.path.join(path, case_data_filename)
     with open(filename, "wt", encoding="utf-8") as case_data_file:
         json.dump({"leapp": "case_data", "case_data_values": case_data_values}, case_data_file)
@@ -191,7 +191,8 @@ def profile_plugins_not_found(profile_plugins, available_plugins):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='RLEAPP: Returns, Logs, Events, and Protobuf Parser.')
+    parser = argparse.ArgumentParser(
+        description=f'{leapp.name} v{leapp.version}: {leapp.description}.')
     parser.add_argument('-t', choices=['fs', 'tar', 'zip', 'gz', 'raw'], required=False, action="store",
                         help=("Specify the input type. "
                               "'fs' for a folder containing extracted files with normal paths and names, "
@@ -238,10 +239,13 @@ def main():
                              '(.BEK) file. Repeatable')
     parser.add_argument('-w', '--wrap_text', required=False, action="store_false", default=True,
                         help='Do not wrap text for output of data files')
-    parser.add_argument('-m', '--load_profile', required=False, action="store", help="Path to RLEAPP Profile file (.rlprofile).")
-    parser.add_argument('-d', '--load_case_data', required=False, action="store", help="Path to LEAPP Case Data file (.lcasedata).")
+    parser.add_argument('-m', '--load_profile', required=False, action="store",
+                        help=f"Path to {leapp.name} Profile file ({leapp.profile_extension}).")
+    parser.add_argument('-d', '--load_case_data', required=False, action="store",
+                        help=f"Path to LEAPP Case Data file ({leapp.casedata_extension}).")
     parser.add_argument('-c', '--create_profile_casedata', required=False, action="store",
-                        help=("Generate a RLEAPP Profile file (.rlprofile) or LEAPP Case Data file (.lcasedata) into the specified path. "
+                        help=(f"Generate an {leapp.name} Profile file ({leapp.profile_extension}) or "
+                              f"LEAPP Case Data file ({leapp.casedata_extension}) into the specified path. "
                               "This argument is meant to be used alone, without any other arguments."))
     parser.add_argument('-p', '--artifact_paths', required=False, action="store_true",
                         help=("Generate a text file list of artifact paths. "
@@ -262,7 +266,7 @@ def main():
                              "records no times. Off by default; links and folders are recorded by "
                              "kind without a digest.")
     parser.add_argument('--custom_artifacts_path', required=False, action="store", help="Additional path to load artifacts from (e.g., scripts/alternate_artifacts)")
-    parser.add_argument('--version', action='version', version=f'{leapp_name} {rleapp_version}')
+    parser.add_argument('--version', action='version', version=f'{leapp.name} {leapp.version}')
 
 
     # Check if no arguments were provided
@@ -327,10 +331,12 @@ def main():
         if os.path.isdir(args.create_profile_casedata):
             create_choice = ''
             print('-' * 55)
-            print('Welcome to RLEAPP Profile or Case Data file creation\n')
+            print(f'Welcome to {leapp.name} Profile or Case Data file creation\n')
             instructions = 'You can type:\n'
-            instructions += '   - \'1\' to create a RLEAPP Profile file (.rlprofile)\n'
-            instructions += '   - \'2\' to create a LEAPP Case Data file (.lcasedata)\n'
+            instructions += (f"   - '1' to create an {leapp.name} Profile file "
+                             f"({leapp.profile_extension})\n")
+            instructions += (f"   - '2' to create a LEAPP Case Data file "
+                             f"({leapp.casedata_extension})\n")
             instructions += '   - \'q\' to quit\n'
             while not create_choice:
                 print(instructions)
@@ -348,7 +354,8 @@ def main():
                     print('Please enter a valid choice!!!\n')
                     create_choice = ''
         else:
-            print('OUTPUT folder for storing RLEAPP Profile file does not exist!\nRun the program again.')
+            print(f'OUTPUT folder for storing {leapp.name} Profile file does not exist!\n'
+                  'Run the program again.')
             return
 
     if args.load_case_data:
@@ -389,7 +396,7 @@ def main():
 
         if not profile_load_error:
             if isinstance(profile, dict):
-                if profile.get("leapp") != "rleapp" or profile.get("format_version") != 1:
+                if profile.get("leapp") != leapp.name.lower() or profile.get("format_version") != 1:
                     profile_load_error = "File was not a valid profile file: incorrect LEAPP or version"
                     print(profile_load_error)
                     return
@@ -457,7 +464,7 @@ def main():
     if crunch_successful:
         # _lava_data.lava exists only after finalize; recording earlier is a no-op.
         lava_project_path = os.path.join(out_params.output_folder_base, lava_json_name)
-        history.record_recent_run(leapp_name.lower(), rleapp_version, lava_project_path)
+        history.record_recent_run(leapp.name.lower(), leapp.version, lava_project_path)
 
 def staged_file_record(seeker, staged, file_info, hash_files):
     """(SHA-256 or None, kind) for one staged path, as _file_path_list records it.
@@ -498,8 +505,8 @@ def crunch_artifacts(
     logfunc('Processing started. Please wait. This may take a few minutes...')
 
     logfunc('\n--------------------------------------------------------------------------------------')
-    logfunc(f'RLEAPP v{rleapp_version}: RLEAPP Returns, Logs, Events, and Protobuf Parser')
-    logfunc('Objective: Triage Service Provider Returns.')
+    logfunc(f'{leapp.name} v{leapp.version}: {leapp.description}')
+    logfunc(f'Objective: {leapp.objective}')
     logfunc('By: Alexis Brignoni | @AlexisBrignoni | abrignoni.com')
     logfunc('By: Yogesh Khatri   | @SwiftForensics | swiftforensics.com\n')
     
