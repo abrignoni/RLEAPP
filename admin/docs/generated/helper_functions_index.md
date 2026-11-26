@@ -6,10 +6,12 @@ changes anything under `scripts/`.
 
 Read this before writing a helper of your own: a reader, a timestamp conversion, a path
 shortener or a storage-view collapse may already be here. "Used by" is the number of artifact
-modules that import the name. A class's public methods are listed under it, since artifacts
-call them on an object (`context.get_files_found()`). The first line of each docstring is
-shown; open the module for the rest. `admin/docs/helper_functions.md` explains where the five
-cores' helpers differ.
+modules that import the name. A class row shows its constructor, and its public methods and
+properties are listed under it, since artifacts call them on an object
+(`context.get_files_found()`). `scripts.context` is listed even where no artifact imports it,
+because artifacts are handed a Context. A name a module imports from another one is listed
+with the module it is defined in. The first line of each docstring is shown; open the module
+for the rest. `admin/docs/helper_functions.md` explains where the five cores' helpers differ.
 
 ## `scripts.ilapfuncs`
 
@@ -78,19 +80,19 @@ cores' helpers differ.
 | 0 | `kmlgen` | `kmlgen(report_folder, kmlactivity, data_list, data_headers)` | (no docstring) |
 | 0 | `lava_only_info` | `lava_only_info(category, artifact_name, table_name, records)` | Stores artifact information in the lava_only_artifacts dictionary |
 | 0 | `logdevinfo` | `logdevinfo(message='')` | (no docstring) |
-| 0 | class `MediaItem` | | (no docstring) |
+| 0 | class `MediaItem` | `MediaItem(id)` | (no docstring) |
 | | `MediaItem.set_values` | `set_values(self, media_info)` | (no docstring) |
-| 0 | class `MediaReferences` | | (no docstring) |
+| 0 | class `MediaReferences` | `MediaReferences(id)` | (no docstring) |
 | | `MediaReferences.set_values` | `set_values(self, media_ref_info)` | (no docstring) |
 | 0 | `null_absent_columns` | `null_absent_columns(path, query)` | Replace references to columns the database lacks with NULL. |
 | 0 | `open_sqlite_db_readonly` | `open_sqlite_db_readonly(path)` | Opens a sqlite db in read-only mode, so original db (and -wal/journal are intact) |
-| 0 | class `OutputParameters` | | Defines the parameters that are common for |
+| 0 | class `OutputParameters` | `OutputParameters(output_folder, custom_folder_name=None)` | Defines the parameters that are common for |
 | 0 | `record_html_table_held_back` | `record_html_table_held_back(category, artifact_name, safe_artifact_name, rows)` | Remember a table the HTML report held back, for the index page and the run log. |
 | 0 | `sanitize_report_name` | `sanitize_report_name(name, kind='name')` | Replaces path separators in an artifact name or category so it is usable as a file |
 | 0 | `screen_log_session` | `screen_log_session(func)` | Keep the HTML log open during processing and close it on every exit. |
 | 0 | `set_media_references` | `set_media_references(media_ref_id, media_id, module_name, artifact_name, name)` | Set the media references in the LAVA database. |
 | 0 | `sqlite_databases` | `sqlite_databases(files_found)` | The found files that are not SQLite sidecars, as strings, in their original order. |
-| 0 | class `SqliteRecords` | | The rows of one query, read as the caller iterates. |
+| 0 | class `SqliteRecords` | `SqliteRecords(db, cursor)` | The rows of one query, read as the caller iterates. |
 | | `SqliteRecords.close` | `close(self)` | Release the cursor and the connection. Safe to call more than once. |
 | 0 | `strings` | `strings(data)` | (no docstring) |
 | 0 | `strings_raw` | `strings_raw(data)` | (no docstring) |
@@ -142,7 +144,7 @@ cores' helpers differ.
 | 7 | `esc` | `esc(value)` | HTML-escape a single evidence value for safe use in text or an attribute. |
 | 4 | `safe_join` | `safe_join(values, sep='<br>')` | Escape each evidence value and join with a tool-controlled separator. |
 | 1 | `safe_url` | `safe_url(url, text=None, target=None)` | Render an evidence URL as escaped text. **Never returns a link.** |
-| 0 | `safe_local_link` | `safe_local_link(path, text=None)` | Build an ``<a href>`` to a file inside the report folder. |
+| 0 | `safe_local_link` | `safe_local_link(path, text=None)` | Build an ``&lt;a href&gt;`` to a file inside the report folder. |
 | 0 | `safe_local_path` | `safe_local_path(path)` | Percent-encode a report-relative path for use in an ``href``/``src`` attribute. |
 | 0 | `safe_source` | `safe_source(text)` | Escape an evidence text/document body for display as source on the HTML page. |
 
@@ -163,9 +165,9 @@ Imported as a module by 5 artifact module(s), whose uses of its names are not co
 | 0 | `load` | `load(path)` | Parse a return HTML file, once per run (every artifact reads the same files). |
 | 0 | `media_refs` | `media_refs(record)` | (no docstring) |
 | 0 | `media_type_hint` | `media_type_hint(path)` | 'audio/mp4' for an ISO-BMFF file whose tracks are sound only, else None. |
-| 0 | `parse_account` | `parse_account(value)` | 'username (Instagram: 123) [display name]' -> (username, id, display name). |
-| 0 | `parse_ts` | `parse_ts(value)` | 'YYYY-MM-DD HH:MM:SS UTC', ISO 8601 or epoch seconds -> aware UTC datetime. |
-| 0 | class `Records` | | One parsed HTML file of a return. |
+| 0 | `parse_account` | `parse_account(value)` | 'username (Instagram: 123) [display name]' -&gt; (username, id, display name). |
+| 0 | `parse_ts` | `parse_ts(value)` | 'YYYY-MM-DD HH:MM:SS UTC', ISO 8601 or epoch seconds -&gt; aware UTC datetime. |
+| 0 | class `Records` | `Records(path)` | One parsed HTML file of a return. |
 | | `Records.has` | `has(self, name)` | (no docstring) |
 | | `Records.fields` | `fields(self, name)` | (no docstring) |
 | | `Records.text` | `text(self, name, label=None)` | The text value of a section's first leaf field (or the one named). |
@@ -208,3 +210,37 @@ Imported as a module by 5 artifact module(s), whose uses of its names are not co
 | Used by | Name | Signature | First docstring line |
 | ---: | --- | --- | --- |
 | 1 | `body_text_and_links` | `body_text_and_links(html_body)` | The readable text of an HTML body plus the link targets it carries. |
+
+## `scripts.context`
+
+`scripts/context.py`
+
+| Used by | Name | Signature | First docstring line |
+| ---: | --- | --- | --- |
+| 0 | class `Context` | | Context class provides a static context for managing and accessing global |
+| | `Context.set_output_params` | `set_output_params(output_params)` | Sets the OutputParameters instance in the Context. This should only be |
+| | `Context.set_data_folder` | `set_data_folder(data_folder)` | Sets the folder the seeker stages evidence into, without the rest of the |
+| | `Context.set_report_folder` | `set_report_folder(report_folder)` | Sets the report folder path in the Context. |
+| | `Context.set_seeker` | `set_seeker(seeker)` | Sets the seeker object in the Context class. |
+| | `Context.set_artifact_info` | `set_artifact_info(artifact_info)` | Sets the artifact information in the Context. |
+| | `Context.set_module_name` | `set_module_name(module_name)` | Sets the module name in the Context class. |
+| | `Context.set_module_file_path` | `set_module_file_path(module_file_path)` | Sets the file path for the current module in the Context. |
+| | `Context.set_artifact_name` | `set_artifact_name(artifact_name)` | Sets the artifact name in the Context. |
+| | `Context.set_artifact_func_name` | `set_artifact_func_name(artifact_func_name)` | Sets the function name for the current artifact in the Context. |
+| | `Context.set_files_found` | `set_files_found(files_found)` | Sets the list of files found in the current context. |
+| | `Context.get_output_params` | `get_output_params()` | Retrieves the current OutputParameters instance from the Context. |
+| | `Context.get_report_folder` | `get_report_folder()` | Retrieves the current report folder path from the Context. |
+| | `Context.get_seeker` | `get_seeker()` | Retrieve the current seeker object from the Context. |
+| | `Context.get_artifact_info` | `get_artifact_info()` | Retrieve the current artifact information (__artifact_v2__) from the |
+| | `Context.get_module_name` | `get_module_name()` | Retrieves the current module name from the Context. |
+| | `Context.get_module_file_path` | `get_module_file_path()` | Returns the file path of the current module set in the Context. |
+| | `Context.get_artifact_name` | `get_artifact_name()` | Retrieves the current artifact name from the Context. |
+| | `Context.get_artifact_func_name` | `get_artifact_func_name()` | Retrieves the current artifact processor function name from the Context. |
+| | `Context.get_files_found` | `get_files_found()` | Retrieves the list of files found in the current context. |
+| | `Context.get_filename_lookup_map` | `get_filename_lookup_map()` | Retrieves the filename lookup map, initializing it if necessary. |
+| | `Context.get_source_file_path` | `get_source_file_path(partial_path)` | Finds the full source path for a given partial or relative path. |
+| | `Context.get_data_folder` | `get_data_folder()` | Returns the global extraction folder path. |
+| | `Context.create_artifact_result` | `create_artifact_result(headers=None, source_path=None, estimated_row_count=None, async_write=False, queue_size=5000, batch_size=10000, rows=None)` | Create an artifact result wrapper for modules with large row sets. |
+| | `Context.get_artifact_result` | `get_artifact_result()` | Return the ArtifactResult the current artifact created, or None. |
+| | `Context.get_relative_path` | `get_relative_path(full_path)` | Converts a full on-disk path into one that carries none of the |
+| | `Context.clear` | `clear()` | Resets all context-related class variables to None, effectively |
