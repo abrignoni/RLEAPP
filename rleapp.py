@@ -566,13 +566,23 @@ def crunch_artifacts(
         log.write(f'Extraction/Path selected: {esc(input_path)}<br><br>')
         
         # Search for the files per the arguments
-        parsed_modules = 0
         plugin_run_times = []
+        stopped_note = ''
         lava_only = False
         artifact_search_pattern_id = 0
         file_path_ids = set()
 
         for plugin_number, plugin in enumerate(plugins, start=1):
+            GuiWindow.SetProgressBar(plugin_number - 1, len(plugins))
+            if GuiWindow.stop_requested:
+                GuiWindow.stopped = True
+                not_run = plugins[plugin_number - 1:]
+                stopped_note = (f'Stopped by the user: {len(not_run)} of '
+                                f'{len(plugins)} artifacts were not run.')
+                logfunc(f'\n{stopped_note}')
+                for left in not_run:
+                    lava_add_module(left.module_name, "Not run", 0, left.name)
+                break
             # Timed from here, before the file search, because the search runs after the
             # "artifact started" line is printed and is itself a place a run can sit.
             plugin_start = perf_counter()
@@ -664,9 +674,9 @@ def crunch_artifacts(
             plugin_run_times.append((plugin.name, plugin_elapsed))
             logfunc('{} [{}] artifact completed in {:.1f}s'.format(
                 plugin.name, plugin.module_name, plugin_elapsed))
-            parsed_modules += 1
-            GuiWindow.SetProgressBar(parsed_modules, len(plugins))
             log.flush()
+        if not GuiWindow.stopped:
+            GuiWindow.SetProgressBar(len(plugins), len(plugins))
         log.close()
         if hashes is not None:
             hashes.close()
@@ -676,7 +686,7 @@ def crunch_artifacts(
         if lava_only:
             write_lava_only_log()
         logfunc('')
-        logfunc('Processes completed.')
+        logfunc('Processes stopped.' if GuiWindow.stopped else 'Processes completed.')
         end = process_time()
         end_wall = perf_counter()
         run_time_secs =  end - start
@@ -685,6 +695,7 @@ def crunch_artifacts(
         run_time_secs =  end_wall - start_wall
         run_time_HMS = strftime('%H:%M:%S', gmtime(run_time_secs))
         logfunc("Run time (wall clock) = {}".format(run_time_HMS))
+        GuiWindow.run_time = run_time_HMS
 
         # Filtered on the rounded value so the list holds exactly what the per-artifact
         # lines showed as 1.0s or more, with no artifact visible above the cut but missing here.
@@ -705,7 +716,9 @@ def crunch_artifacts(
             if input_path.startswith('\\\\?\\'):
                 input_path = input_path[4:]
 
-        report.generate_report(out_params.output_folder_base, run_time_secs, run_time_HMS, extracttype, input_path, casedata, profile_filename, icons, lava_only)
+        report.generate_report(out_params.output_folder_base, run_time_secs, run_time_HMS,
+                               extracttype, input_path, casedata, profile_filename, icons, lava_only,
+                               stopped_note)
         logfunc('Report generation Completed.')
 
         logfunc('')
