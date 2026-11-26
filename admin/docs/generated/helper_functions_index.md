@@ -144,7 +144,7 @@ for the rest. `admin/docs/helper_functions.md` explains where the five cores' he
 | 7 | `esc` | `esc(value)` | HTML-escape a single evidence value for safe use in text or an attribute. |
 | 4 | `safe_join` | `safe_join(values, sep='<br>')` | Escape each evidence value and join with a tool-controlled separator. |
 | 1 | `safe_url` | `safe_url(url, text=None, target=None)` | Render an evidence URL as escaped text. **Never returns a link.** |
-| 0 | `safe_local_link` | `safe_local_link(path, text=None)` | Build an ``&lt;a href&gt;`` to a file inside the report folder. |
+| 0 | `safe_local_link` | `safe_local_link(path, text=None)` | Build an ``<a href>`` to a file inside the report folder. |
 | 0 | `safe_local_path` | `safe_local_path(path)` | Percent-encode a report-relative path for use in an ``href``/``src`` attribute. |
 | 0 | `safe_source` | `safe_source(text)` | Escape an evidence text/document body for display as source on the HTML page. |
 
