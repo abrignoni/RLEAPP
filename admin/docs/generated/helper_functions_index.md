@@ -119,7 +119,7 @@ for the rest. `admin/docs/helper_functions.md` explains where the five cores' he
 | 0 | `lava_commit` | `lava_commit()` | Commit the LAVA database. |
 | 0 | `lava_create_sqlite_table` | `lava_create_sqlite_table(table_name, data)` | Creates a SQLite table with the specified name and columns based on the provided data. |
 | 0 | `lava_discard_artifact` | `lava_discard_artifact(category, tablename)` | Drop a streamed artifact's table and remove it from the manifest. |
-| 0 | `lava_finalize_output` | `lava_finalize_output(output_path)` | Finalizes the LAVA output by completing data processing and saving results. |
+| 0 | `lava_finalize_output` | `lava_finalize_output(output_path, processing_status='Complete')` | Finalizes the LAVA output by completing data processing and saving results. |
 | 0 | `lava_get_full_media_info` | `lava_get_full_media_info(media_ref_id)` | Retrieves complete media information for a given media reference ID from the LAVA database. |
 | 0 | `lava_get_media_item` | `lava_get_media_item(media_id)` | Retrieve a media item from the lava database by its ID. |
 | 0 | `lava_get_media_references` | `lava_get_media_references(media_ref)` | Retrieves a single media reference record from the _lava_media_references table. |
